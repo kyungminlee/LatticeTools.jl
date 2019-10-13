@@ -109,10 +109,6 @@ end
 
 
 import Base.isapprox
-
-"""
-    isapprox(x, y; rtol::Real=atol>0 ? 0 : √eps, atol::Real=0, nans::Bool=false, norm::Function)
-"""
 function isapprox(fc1 ::FractCoord, fc2 ::FractCoord;
                   atol::Real=sqrt(eps(Float64)),
                   rtol::Real=sqrt(eps(Float64))) ::Bool
@@ -122,7 +118,6 @@ end
 
 
 import Base.show
-
 function show(io::IO, fc::FractCoord)
     print(io, "FractCoord(", fc.whole, " + ", fc.fraction,")")
 end
