@@ -3,6 +3,9 @@ uuid = "f0da6d2f-861b-4198-860c-d50f6f65dfeb"
 authors = ["Kyungmin Lee"]
 version = "0.1.0"
 
+[deps]
+LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
+
 [compat]
 julia = "1"
 
