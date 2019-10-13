@@ -196,7 +196,7 @@ end
 """
     getorbital
 
-    Get the orbital (its orbital name and its fractional coordinates) with the given name.
+Get the orbital (its orbital name and its fractional coordinates) with the given name.
 
 # Arguments
 * `uc ::UnitCell{O}`
@@ -213,7 +213,7 @@ end
 """
     getorbitalcoord
 
-    Get the fractional coordinates of the orbital with the given name.
+Get the fractional coordinates of the orbital with the given name.
 
 # Arguments
 * `uc ::UnitCell{O}`
