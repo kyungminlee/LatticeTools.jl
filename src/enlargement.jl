@@ -5,7 +5,7 @@ export ExactLinearAlgebra
 
 module ExactLinearAlgebra
 
-function get_cofactor_matrix_unsafe!(out ::Matrix{I}, mat ::Matrix{I}, row ::Integer, col ::Integer) where {I<:Number}
+function get_cofactor_matrix_unsafe!(out ::AbstractMatrix{I}, mat ::AbstractMatrix{I}, row ::Integer, col ::Integer) where {I<:Number}
   out[1:row-1, 1:col-1] = mat[1:row-1, 1:col-1]
   out[1:row-1, col:end] = mat[1:row-1, col+1:end]
   out[row:end, 1:col-1] = mat[row+1:end, 1:col-1]
@@ -13,7 +13,7 @@ function get_cofactor_matrix_unsafe!(out ::Matrix{I}, mat ::Matrix{I}, row ::Int
   out
 end
 
-function determinant_unsafe(mat ::Matrix{S}) where {S<:Union{Integer,Complex{<:Integer}}}
+function determinant_unsafe(mat ::AbstractMatrix{S}) where {S<:Union{Integer,Complex{<:Integer}}}
   n = size(mat)[1]
   n == 1 && return mat[1]
   out = Matrix{S}(undef, (n-1, n-1))
@@ -27,14 +27,14 @@ function determinant_unsafe(mat ::Matrix{S}) where {S<:Union{Integer,Complex{<:I
   return D
 end
 
-function determinant(mat::Matrix{S}) where {S<:Union{Integer,Complex{<:Integer}}}
+function determinant(mat::AbstractMatrix{S}) where {S<:Union{Integer,Complex{<:Integer}}}
   n, m = size(mat)
   n != m && throw(ArgumentError("matrix needs to be square"))
   n <= 0 && throw(ArgumentError("matrix empty"))
   return determinant_unsafe(mat)
 end
 
-function inverse(mat::Matrix{S}) where {S<:Union{Integer,Complex{<:Integer}}}
+function inverse(mat::AbstractMatrix{S}) where {S<:Union{Integer,Complex{<:Integer}}}
   n, m = size(mat)
   n != m && throw(ArgumentError("matrix needs to be square"))
   n <= 0 && throw(ArgumentError("matrix empty"))
@@ -64,7 +64,7 @@ Generate a hypercubic cluster
  . . o . . .
  . . . . . .
 """
-function hypercubic_cluster(scale_matrix ::Matrix{<:Integer}; inverse_scale_matrix ::Matrix{<:Integer} = nothing)
+function hypercubic_cluster(scale_matrix ::AbstractMatrix{<:Integer}; inverse_scale_matrix ::AbstractMatrix{<:Integer} = nothing)
   n, m = size(scale_matrix)
   d = ExactLinearAlgebra.determinant(scale_matrix)
   d == 0 && throw(SingularException("scale matrix null"))
@@ -106,7 +106,7 @@ end
     - which takes the unitcell displacement in the orignal displacement
     - which returns a tuple of (supercell lattice displacement, sublattice subscript)
 """
-function make_supercell(unitcell ::UnitCell{O}, scale_matrix ::Matrix{<:Integer}) where O
+function make_supercell(unitcell ::UnitCell{O}, scale_matrix ::AbstractMatrix{<:Integer}) where O
   # check dimensions
   new_latticevectors = unitcell.latticevectors * scale_matrix
   inverse_scale_matrix = ExactLinearAlgebra.inverse(scale_matrix)
