@@ -45,7 +45,7 @@ using TightBindingLattice
 
     @testset "inverse" begin
       @test_throws ArgumentError ExactLinearAlgebra.inverse([1 2 3; 4 5 6])
-      @test_throws SingularException ExactLinearAlgebra.inverse(ones(Int, 0, 0))
+      @test_throws ArgumentError ExactLinearAlgebra.inverse(ones(Int, 0, 0))
       @test ExactLinearAlgebra.inverse(7*ones(Int, 1, 1)) == ones(Int, 1, 1)//7
 
       @test maximum(abs.(inv(mat) - ExactLinearAlgebra.inverse(mat))) < sqrt(eps(Float64))
