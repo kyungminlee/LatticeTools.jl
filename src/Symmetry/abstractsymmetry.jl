@@ -1,0 +1,5 @@
+export AbstractSymmetryGroup
+export AbstractSymmetryOperation
+
+abstract type AbstractSymmetryGroup end
+abstract type AbstractSymmetryOperation end
