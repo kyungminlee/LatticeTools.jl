@@ -68,7 +68,7 @@ function hypercubic_cluster(scale_matrix ::Matrix{<:Integer}; inverse_scale_matr
   n, m = size(scale_matrix)
   d = ExactLinearAlgebra.determinant(scale_matrix)
   if d == 0
-    throw(ArgumentError("scale matrix null"))
+    throw(SingularException("scale matrix null"))
   end
   @show d
 
