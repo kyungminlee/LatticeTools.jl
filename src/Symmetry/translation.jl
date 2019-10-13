@@ -1,6 +1,8 @@
 export TranslationGroup
 export is_compatible
 
+using LinearAlgebra
+
 struct TranslationGroup <: AbstractSymmetryGroup
   generators ::Vector{Permutation}
   
@@ -46,8 +48,9 @@ i.e. k¹ R¹ + k² R² + ... + kᴺ Rᴺ = 0 (mod 1)
 function is_compatible(
     fractional_momentum ::AbstractVector{Rational},
     identity_translation ::AbstractVector{<:Integer}
-    )
-  value = sum( i * j for (i,j) in zip(fractional_momentum, identity_translation))
+  )
+  #value = sum( i * j for (i,j) in zip(fractional_momentum, identity_translation))
+  value = sum( fractional_momentum .* identity_translation)
   return mod(value, 1) == 0
 end
 

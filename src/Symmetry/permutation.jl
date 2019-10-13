@@ -1,17 +1,12 @@
-
 export Permutation
 
 struct Permutation <: AbstractSymmetryOperation
   map ::Vector{Int}
   cycle_length ::Int
-  function Permutation(perms ::AbstractVector{Int}; max_cycle=2048)
+  function Permutation(perms ::AbstractVector{<:Integer}; max_cycle ::Integer=2048)
     n = length(perms)
-    for (i, j) in enumerate(perms)
-      if ! (1 <= i <= n)
-        throw(ArgumentError("argument is not a proper permutation (domain != universe)"))
-      elseif !(1 <= j <= n)
-        throw(ArgumentError("argument is not a proper permutation (target != universe)"))
-      end
+    if sort(perms) != 1:n
+      throw(ArgumentError("argument is not a proper permutation (target != universe)"))
     end
     map = Vector{Int}(perms)
     
@@ -27,7 +22,6 @@ struct Permutation <: AbstractSymmetryOperation
     return new(map, cycle_length)
   end
 end
-
 
 import Base.*
 function *(p1 ::Permutation, p2 ::Permutation)
