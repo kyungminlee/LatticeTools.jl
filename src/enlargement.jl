@@ -2,21 +2,10 @@
 export make_supercell
 export hyprercubic_cluster
 export ExactLinearAlgebra
+
 module ExactLinearAlgebra
 
 function get_cofactor_matrix_unsafe!(out ::Matrix{I}, mat ::Matrix{I}, row ::Integer, col ::Integer) where {I<:Number}
-  # n = size(mat)[1]
-  # r2, c2 = 1, 1
-  # for r in 1:n, c in 1:n
-  #   if r != row && c != col
-  #     @inbounds out[r2,c2] = mat[r,c]
-  #     c2 += 1
-  #     if c2 == n
-  #       c2 = 1
-  #       r2 += 1
-  #     end
-  #   end
-  # end
   out[1:row-1, 1:col-1] = mat[1:row-1, 1:col-1]
   out[1:row-1, col:end] = mat[1:row-1, col+1:end]
   out[row:end, 1:col-1] = mat[row+1:end, 1:col-1]
@@ -61,15 +50,12 @@ function inverse(mat::Matrix{S}) where {S<:Union{Integer,Complex{<:Integer}}}
   return transpose(cofactor) // D
 end
 
-
-
 end # module ExactLinearAlgebra
 
 """
     hypercubic_cluster
 
 Generate a hypercubic cluster
-
 
  . . . . . . 
  . . . o . .
