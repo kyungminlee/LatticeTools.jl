@@ -1,7 +1,7 @@
 
 export make_supercell
 export hyprercubic_cluster
-
+export ExactLinearAlgebra
 module ExactLinearAlgebra
 
 function get_cofactor_matrix_unsafe!(out ::Matrix{I}, mat ::Matrix{I}, row ::Integer, col ::Integer) where {I<:Number}
