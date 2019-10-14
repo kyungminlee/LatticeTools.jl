@@ -57,9 +57,7 @@ struct FractCoord
     end
 
     function FractCoord(ndim ::Integer)
-        if ndim <= 0
-            throw(ArgumentError("ndim should be positive"))
-        end
+        ndim <= 0 && throw(ArgumentError("ndim should be positive"))
         w = zeros(Int, ndim)
         f = zeros(Float64, ndim)
         return new(w, f)
@@ -75,13 +73,12 @@ Dimension of the fractional coordinates
 # Arguments
 * `fc ::FractCoord`: Fractional coordinates.
 """
-function dimension(fc ::FractCoord) ::Integer
-    @assert length(fc.whole) == length(fc.fraction) "whole and fraction must be of same length"
-    return length(fc.whole)
-end
-
+dimension(fc ::FractCoord) = length(fc.whole)
 
 import Base: +, -
+function +(fc ::FractCoord) ::FractCoord
+    return fc
+end
 
 function -(fc ::FractCoord) ::FractCoord
     return FractCoord(-(fc.whole + fc.fraction))
