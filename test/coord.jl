@@ -52,7 +52,8 @@
     fc1 = FractCoord([-2, 1], [0.8, 0.5])
     fc2 = FractCoord([1, 2], [0.1, 0.8])
     w = [3, 1]
-    @test isapprox(-fc1, FractCoord([1, -2], [0.2, 0.5]))
+    @test (+fc1) == fc1
+    @test isapprox(+fc1, fc1)
     @test isapprox(fc1 + fc2, FractCoord([-1, 4], [0.9, 0.3]))
     @test isapprox(fc1 - fc2, FractCoord([-3, -2], [0.7, 0.7]))
     @test isapprox(fc1 + w, FractCoord([1, 2], [0.8, 0.5]))
@@ -72,7 +73,7 @@
     @test_throws ArgumentError fract2carte([0.5 0.0 0.0; 0.0 1.0 0.0; 0.0 0.0 1.0], fc)
   end
 
-  @testset "Conversion fract2carte/carte2fract" begin
+  @testset "fract2carte/carte2fract" begin
     latticevectors = [0.5 0.0; 0.0 1.0]
     rawfractcoord = [-1.2, 1.5]
 

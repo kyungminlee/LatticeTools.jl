@@ -1,19 +1,39 @@
 @testset "UnitCell" begin
   latticevectors = [0.5 0.0; 0.0 1.0]
 
-  @testset "Constructor" begin
+  @testset "Constructors" begin
     uc = make_unitcell(latticevectors)
-    make_unitcell([[1.0,0.0], [0.0,1.0]])
     @test isapprox(uc.latticevectors, latticevectors)
     @test isapprox(uc.reducedreciprocallatticevectors, [2.0 0.0; 0.0 1.0])
     @test isapprox(uc.reciprocallatticevectors, [4*pi 0.0; 0.0 2*pi])
-  end
 
-  @testset "Constructor Exceptions" begin
+    uc2 = make_unitcell([[0.5,0.0], [0.0,1.0]])
+
     @test_throws ArgumentError make_unitcell(latticevectors; OrbitalType=Int)
     @test_throws ArgumentError make_unitcell([1.0 0.0;]; OrbitalType=String)
     @test_throws ArgumentError make_unitcell([1.0 0.0; 1.0 0.0]; OrbitalType=String)
     @test_throws ArgumentError make_unitcell([1.0 0.0; 0.0 1.0]; OrbitalType=String, tol=-1E-8)
+
+    uc1d = make_unitcell(2.0)
+    uc1d.latticevectors == 2.0 * ones(Float64, 1, 1)
+  end
+
+  @testset "Equality" begin
+    uc1 = make_unitcell([2.0 0.0; 1.0 2.0]; OrbitalType=String)
+    uc2 = make_unitcell([2.0 0.0; 1.0 2.0]; OrbitalType=String)
+    uc3 = make_unitcell([2.0 0.0; 1.0 2.0]; OrbitalType=Tuple{String, Int})
+    uc4 = make_unitcell([2.0 0.0; 0.0 2.0]; OrbitalType=String)
+    @test uc1 == uc2
+    @test uc1 != uc3
+    @test uc1 != uc4
+  end
+
+  @testset "AngledLatticeVectors" begin
+    uc1 = make_unitcell([2.0 0.0; 1.0 2.0])
+    uc2 = make_unitcell([[2.0, 1.0], [0.0, 2.0]])
+    @test uc1 == uc2
+    @test isapprox(uc1.reciprocallatticevectors / π, [1.0 -0.5; 0.0 1.0])
+    @test isapprox(uc2.reciprocallatticevectors / π, [1.0 -0.5; 0.0 1.0])
   end
 
   @testset "Methods" begin
@@ -67,7 +87,7 @@
     @test getorbitalname(uc, 2) == (:dn, "Ox")
   end
 
-  @testset "Conversion fract2carte/carte2fract" begin
+  @testset "fract2carte/carte2fract" begin
     latticevectors = [0.5 0.0; 0.0 1.0]
     uc = make_unitcell(latticevectors)
 
@@ -84,16 +104,42 @@
     @test isapprox(newfractcoord, correctfractcoord)
   end
 
+  @testset "fract2carte/carte2fract exception" begin
+    latticevectors = [0.5 0.0; 0.0 1.0]
+    uc1 = make_unitcell(latticevectors)
 
+    carte2fract(uc1, [1.0, 2.0])
+    @test_throws ArgumentError carte2fract(uc1, [1.0])
+    @test_throws ArgumentError carte2fract(uc1, [1.0, 2.0, 3.0])
 
+    fract2carte(uc1, FractCoord([1,2], [0.1, 0.2]))
+    @test_throws ArgumentError fract2carte(uc1, FractCoord([1], [0.1]))
+    @test_throws ArgumentError fract2carte(uc1, FractCoord([1,2,3], [0.1, 0.2, 0.3]))
+  end
 
   @testset "momentumgrid" begin
     uc = make_unitcell([1.0 0.0; 0.0 1.0]; OrbitalType=String)
+
+    @test_throws ArgumentError momentumgrid(uc, [2,])
+    @test_throws ArgumentError momentumgrid(uc, [2,3,4])
+    @test_throws ArgumentError momentumgrid(uc, [-2,3])
+
     kg = momentumgrid(uc, [2,3])
     for i in 1:2
         for j in 1:3
-            @test isapprox(kg[i,j], [2 * pi * (i-1) / 2, 2 * pi * (j-1) / 3])
+            @test isapprox(kg[i,j], [2π * (i-1) / 2, 2π * (j-1) / 3])
         end
     end
   end
+
+  @testset "whichunitcell" begin
+    uc = make_unitcell([1.0 0.0; 0.0 1.0]; OrbitalType=String)
+    addorbital!(uc, "A", FractCoord([0,0], [0.1, 0.1]))
+    addorbital!(uc, "B", FractCoord([0,0], [0.2, 0.2]))
+    @test whichunitcell(uc, "A", [1.1, 2.1]) == [1, 2]
+    @test whichunitcell(uc, "A", FractCoord([1,2], [0.1, 0.1])) == [1, 2]
+    @test_throws ArgumentError whichunitcell(uc, "B", [1.1, 2.1])
+    @test_throws ArgumentError whichunitcell(uc, "B", FractCoord([1,2], [0.1, 0.1]))
+  end
+
 end
