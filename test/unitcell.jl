@@ -103,7 +103,14 @@
     @test isapprox(cartecoord, correctcartecoord)
     @test isapprox(newfractcoord, correctfractcoord)
 
-    @test carte2fract(latticevectors, [0.5 - 1E-12, 1.0]) == FractCoord([1, 1], [0.0, 0.0])
+    @test "tolerance" begin
+      fc1 = carte2fract(latticevectors, [0.5 - 1E-9, 1.0])
+      fc2 = carte2fract(latticevectors, [0.5 - 1E-9, 1.0]; tol=0.0)
+      @test fc1.whole == [1, 1]
+      @test isapprox(fc1.fraction, [0.0, 0.0])
+      @test fc2.whole == [0, 1]
+      @test isapprox(fc2.fraction, [1.0, 0.0])
+    end
   end
 
   @testset "fract2carte/carte2fract exception" begin
