@@ -345,7 +345,7 @@ function whichunitcell(uc ::UnitCell{O},
                        tol ::Real=sqrt(eps(Float64))) where {O}
     fc1 = getorbitalcoord(uc, name)
     fc2 = carte2fract(uc, cc)
-    if !isapprox(fc1.fraction, fc2.fraction; rtol=tol)
+    if !isapprox(fc1.fraction, fc2.fraction; atol=tol)
         throw(ArgumentError("$(fc1.fraction) != $(fc2.fraction) [tol=$(tol)]"))
     end
     R = fc2.whole - fc1.whole
@@ -365,7 +365,7 @@ function whichunitcell(uc ::UnitCell{O},
                        tol ::Real=sqrt(eps(Float64))) where {O}
     fc1 = getorbitalcoord(uc, name)
     fc2 = fc
-    if !isapprox(fc1.fraction, fc2.fraction; rtol=tol)
+    if !isapprox(fc1.fraction, fc2.fraction; atol=tol)
         throw(ArgumentError("$(fc1.fraction) != $(fc2.fraction) [tol=$(tol)]"))
     end
     R = fc2.whole - fc1.whole
@@ -394,4 +394,17 @@ function momentumgrid(uc::UnitCell, shape::AbstractVector{<:Integer})
     cubicgrid = map((x) -> [x...], Base.product(ranges...))
     momentumgrid = map((x) -> uc.reciprocallatticevectors * x, cubicgrid)
     return momentumgrid
+end
+
+
+import Base.==
+function (==)(lhs::UnitCell{O}, rhs::UnitCell{O}) where O
+  return (
+    lhs.latticevectors == rhs.latticevectors &&
+    lhs.orbitals == rhs.orbitals
+  )
+end
+
+function (==)(lhs::UnitCell{O1}, rhs::UnitCell{O2}) where O1 where O2
+  return false
 end
