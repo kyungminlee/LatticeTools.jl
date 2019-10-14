@@ -88,7 +88,7 @@
     @test isapprox(cartecoord, correctcartecoord)
     @test isapprox(newfractcoord, correctfractcoord)
 
-    @test "tolerance" begin
+    @testset "tolerance" begin
       fc1 = carte2fract(latticevectors, [0.5 - 1E-9, 1.0])
       fc2 = carte2fract(latticevectors, [0.5 - 1E-9, 1.0]; tol=0.0)
       @test fc1.whole == [1, 1]
