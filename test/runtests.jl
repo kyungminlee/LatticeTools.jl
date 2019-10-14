@@ -1,6 +1,6 @@
 using TightBindingLattice
 using Test
 
-include("coord.jl")
-include("unitcell.jl")
-include("enlargement.jl")
+include("test_coord.jl")
+include("test_unitcell.jl")
+include("test_enlargement.jl")
