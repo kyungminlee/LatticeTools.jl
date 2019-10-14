@@ -54,6 +54,7 @@
     w = [3, 1]
     @test (+fc1) == fc1
     @test isapprox(+fc1, fc1)
+    @test isapprox(-fc1, FractCoord([1, -2], [ 0.2, 0.5]))
     @test isapprox(fc1 + fc2, FractCoord([-1, 4], [0.9, 0.3]))
     @test isapprox(fc1 - fc2, FractCoord([-3, -2], [0.7, 0.7]))
     @test isapprox(fc1 + w, FractCoord([1, 2], [0.8, 0.5]))
