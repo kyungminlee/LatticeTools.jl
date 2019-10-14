@@ -102,6 +102,11 @@
     @test isapprox(fractcoord, correctfractcoord)
     @test isapprox(cartecoord, correctcartecoord)
     @test isapprox(newfractcoord, correctfractcoord)
+
+    fc = carte2fract(uc, [0.5 - 1E-12, 1.0])
+    @test fc.whole == [1,1]
+    @test fc.fraction == [0.0, 0.0]
+
   end
 
   @testset "fract2carte/carte2fract exception" begin
@@ -125,10 +130,8 @@
     @test_throws ArgumentError momentumgrid(uc, [-2,3])
 
     kg = momentumgrid(uc, [2,3])
-    for i in 1:2
-        for j in 1:3
-            @test isapprox(kg[i,j], [2π * (i-1) / 2, 2π * (j-1) / 3])
-        end
+    for i in 1:2, j in 1:3
+      @test isapprox(kg[i,j], [2π * (i-1) / 2, 2π * (j-1) / 3])
     end
   end
 
