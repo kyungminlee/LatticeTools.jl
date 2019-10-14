@@ -156,5 +156,11 @@ function carte2fract(latticevectors ::AbstractArray{<:AbstractFloat, 2},
     fc = inv(latticevectors) * cc
     w = Int[fld(x, 1) for x in fc]
     f = Float64[mod(x, 1) for x in fc]
+    for i in length(w)
+      if f[i] + tol >= 1.0
+        w[i] += 1
+        f[i] = 0.0
+      end
+    end
     return FractCoord(w, f; tol=tol)
 end
