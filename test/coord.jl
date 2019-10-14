@@ -88,9 +88,7 @@
     @test isapprox(cartecoord, correctcartecoord)
     @test isapprox(newfractcoord, correctfractcoord)
 
-    fc = carte2fract(latticevectors, [0.5 - 1E-12, 1.0])
-    @test fc.whole == [1,1]
-    @test fc.fraction == [0.0, 0.0]
+    @test carte2fract(latticevectors, [0.5 - 1E-12, 1.0]) == FractCoord([1, 1], [0.0, 0.0])
   end
 
   #=
