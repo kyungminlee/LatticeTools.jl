@@ -398,7 +398,3 @@ function (==)(lhs::UnitCell{O}, rhs::UnitCell{O}) where O
     lhs.orbitals == rhs.orbitals
   )
 end
-
-function (==)(lhs::UnitCell{O1}, rhs::UnitCell{O2}) where O1 where O2
-  return false
-end
