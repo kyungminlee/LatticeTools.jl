@@ -104,8 +104,11 @@
     @test isapprox(newfractcoord, correctfractcoord)
 
     @testset "tolerance" begin
-      fc1 = carte2fract(uc, [0.5 - 1E-9, 1.0])
-      fc2 = carte2fract(uc, [0.5 - 1E-9, 1.0]; tol=0.0)
+      latticevectors = [1.0 0.0; 0.0 1.0]
+      uc = make_unitcell(latticevectors)
+
+      fc1 = carte2fract(uc, [1.0 - 1E-9, 1.0])
+      fc2 = carte2fract(uc, [1.0 - 1E-9, 1.0]; tol=0.0)
       @test fc1.whole == [1, 1]
       @test isapprox(fc1.fraction, [0.0, 0.0])
       @test fc2.whole == [0, 1]
