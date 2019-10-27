@@ -1,6 +1,6 @@
 
 export make_supercell
-export hyprercubic_cluster
+export hypercubic_cluster
 export ExactLinearAlgebra
 
 module ExactLinearAlgebra

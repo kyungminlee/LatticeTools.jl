@@ -1,5 +1,5 @@
-export AbstractSymmetryGroup
 export AbstractSymmetryOperation
+export AbstractSymmetryGroup
 
-abstract type AbstractSymmetryGroup end
 abstract type AbstractSymmetryOperation end
+abstract type AbstractSymmetryGroup end
