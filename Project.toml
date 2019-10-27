@@ -1,6 +1,6 @@
 name = "TightBindingLattice"
 uuid = "f0da6d2f-861b-4198-860c-d50f6f65dfeb"
-authors = ["Kyungmin Lee"]
+author = "Kyungmin Lee"
 version = "0.1.1"
 
 [deps]
