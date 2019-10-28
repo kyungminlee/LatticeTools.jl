@@ -59,7 +59,7 @@ end
 
 function translation_element(hypercube ::HypercubicLattice,
                              displacement ::AbstractVector{<:Integer})
-  return Permutation([hypercube.torus_wrap(r .+ displacement)[1] for r in hypercube.coordinates])
+  return Permutation([hypercube.torus_wrap(r .+ displacement)[2] for r in hypercube.coordinates])
 end
 
 
