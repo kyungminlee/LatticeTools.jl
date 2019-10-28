@@ -1,6 +1,8 @@
 export TranslationGroup
 export is_compatible
 export minimal_translation_group
+export get_generators
+export translation_element
 
 struct TranslationGroup <: AbstractSymmetryGroup
   generators ::Vector{Permutation}
@@ -23,8 +25,8 @@ struct TranslationGroup <: AbstractSymmetryGroup
       throw(ArgumentError("non-commuting set of generators"))
     end
 
-    shape = [g.cycle_length for g in generators]
-    translations = vcat( collect( Iterators.product([0:g.cycle_length-1 for g in generators]...) )...)
+    shape = [g.order for g in generators]
+    translations = vcat( collect( Iterators.product([0:g.order-1 for g in generators]...) )...)
     translations = [ [x...] for x in translations]
     elements = [prod(gen^d for (gen, d) in zip(generators, dist)) for (ig, dist) in enumerate(translations)]
 
@@ -53,10 +55,67 @@ struct TranslationGroup <: AbstractSymmetryGroup
   end
 end
 
+function translation_element(hypercube ::HypercubicLattice,
+                             displacement ::AbstractVector{<:Integer})
+  return Permutation([hypercube.torus_wrap(r .+ displacement)[1] for r in hypercube.coordinates])
+end
+
+function groupmod(numer::Permutation, denominators ::AbstractVector{Permutation})
+    min_perm = numer
+    for denom in denominators
+        g = numer * denom
+        while g != numer
+            if g < min_perm
+                min_perm = g
+            end
+            g = g * denom
+        end
+    end
+    return min_perm
+end
+
+function get_generators(hypercube ::HypercubicLattice)
+  translations = [translation_element(hypercube, r) for r in hypercube.coordinates]
+  indices = collect(1:length(hypercube.coordinates))
+  generators = Permutation[]
+  generator_indices = Int[]
+  remaining_translations = Set(translations)
+  function findmaxorder(indices ::Vector{Int}) ::Int # indices
+    max_order = 1
+    max_order_index = 1
+    for i in indices
+      g = translations[i]
+      length(indices) % g.order != 0 && continue
+      if g.order > max_order
+        max_order = g.order
+        max_order_index = i
+      end
+    end
+    return max_order_index
+  end
+
+  while length(indices) > 1
+    idx = findmaxorder(indices)
+    @assert idx > 1
+    push!(generators, translations[idx])
+    push!(generator_indices, idx)
+    remaining_translations = Set([groupmod(translations[i], generators) for i in indices])
+    next_indices = Int[]
+    for i in indices
+      if translations[i] in remaining_translations && !(i in next_indices)
+        push!(next_indices, i)
+      end
+    end
+    indices = next_indices
+  end
+  return generator_indices
+end
+
+
 function minimal_translation_group(tentative_generators::AbstractArray{Permutation}; tol::Real=sqrt(eps(Float64)))
   all_elements = let
-    shape = [g.cycle_length for g in tentative_generators]
-    translations = vcat( collect( Iterators.product([0:g.cycle_length-1 for g in tentative_generators]...) )...)
+    shape = [g.order for g in tentative_generators]
+    translations = vcat( collect( Iterators.product([0:g.order-1 for g in tentative_generators]...) )...)
     translations = [ [x...] for x in translations]
     Set([prod(gen^d for (gen, d) in zip(tentative_generators, dist)) for (ig, dist) in enumerate(translations)])
   end
@@ -64,8 +123,8 @@ function minimal_translation_group(tentative_generators::AbstractArray{Permutati
   generators = Permutation[]
   for g in tentative_generators
     push!(generators, g)
-    shape = [g.cycle_length for g in generators]
-    translations = vcat( collect( Iterators.product([0:g.cycle_length-1 for g in generators]...) )...)
+    shape = [g.order for g in generators]
+    translations = vcat( collect( Iterators.product([0:g.order-1 for g in generators]...) )...)
     translations = [ [x...] for x in translations]
     elements = Set([prod(gen^d for (gen, d) in zip(generators, dist)) for (ig, dist) in enumerate(translations)])
     if all_elements == elements

@@ -3,6 +3,8 @@ export make_supercell
 export hypercubic_cluster
 export ExactLinearAlgebra
 
+using LinearAlgebra
+
 module ExactLinearAlgebra
 
   function get_cofactor_matrix_unsafe!(out ::AbstractMatrix{I}, mat ::AbstractMatrix{I}, row ::Integer, col ::Integer) where {I<:Number}
@@ -52,39 +54,20 @@ module ExactLinearAlgebra
 
 end # module ExactLinearAlgebra
 
-"""
-    hypercubic_cluster
 
-Generate a hypercubic cluster
+export translation_element
+function translation_element(displacement ::AbstractVector{<:Integer},
+                             coordinates ::AbstractVector{<:AbstractVector{<:Integer}},
+                             torus_wrap ::Function
+                             )
+  return Permutation([torus_wrap(r .+ displacement)[1] for r in coordinates])
+end
 
- . . . . . .
- . . . o . .
- . o . . . .
- . . . . o .
- . . o . . .
- . . . . . .
-"""
-function hypercubic_cluster(scale_matrix ::AbstractMatrix{<:Integer}; inverse_scale_matrix ::AbstractMatrix{<:Integer} = nothing)
-  n, m = size(scale_matrix)
-  d = ExactLinearAlgebra.determinant(scale_matrix)
-  d == 0 && throw(SingularException("scale matrix null"))
-
-  if isnothing(inverse_scale_matrix)
-    inverse_scale_matrix = ExactLinearAlgebra.inverse(scale_matrix)
-  end
-  max_range = sum((abs.(scale_matrix[:, i]) for i in 1:n))
-
-  coords = Vector{Int}[]
-  sizehint!(coords, d)
-  for g in Iterators.product([-x:x for x in max_range]...)
-    r1 = collect(g)
-    r2 = inverse_scale_matrix * r1
-    if all(0 <= x < 1 for x in r2)
-      push!(coords, r1)
-    end
-  end
-  @assert length(coords) == d
-  coords
+export translation_symmetry_group
+function translation_symmetry_group(hypercube ::HypercubicLattice)
+  generator_indices = get_generators(hypercube)
+  generators = [translation_element(hypercube, hypercube.coordinates[i]) for i in generator_indices]
+  return TranslationGroup(generators)
 end
 
 
@@ -110,7 +93,7 @@ function make_supercell(unitcell ::UnitCell{O}, scale_matrix ::AbstractMatrix{<:
   # check dimensions
   new_latticevectors = unitcell.latticevectors * scale_matrix
   inverse_scale_matrix = ExactLinearAlgebra.inverse(scale_matrix)
-  unitcell_coordinates = hypercubic_cluster(scale_matrix; inverse_scale_matrix=inverse_scale_matrix)
+  unitcell_coordinates, torus_wrap = hypercubic_cluster(scale_matrix; inverse_scale_matrix=inverse_scale_matrix)
   new_unitcell = make_unitcell(new_latticevectors; OrbitalType=Tuple{O, Vector{Int}})
   for uc in unitcell_coordinates, (orbname, orbcoord) in unitcell.orbitals
     cc = fract2carte(unitcell, orbcoord)
@@ -120,11 +103,11 @@ function make_supercell(unitcell ::UnitCell{O}, scale_matrix ::AbstractMatrix{<:
     addorbital!(new_unitcell, new_orbname, new_orbcoord)
   end
 
-  function embedding(lattice_displacement ::AbstractVector{<:Integer})
-    R2 = I.(floor.(inverse_scale_matrix * lattice_displacement))
-    r2 = lattice_displacement - scale_matrix * R2
-    return R2, r2
-  end
+  # function torus_wrap(lattice_displacement ::AbstractVector{<:Integer})
+  #   R2 = I.(floor.(inverse_scale_matrix * lattice_displacement))
+  #   r2 = lattice_displacement - scale_matrix * R2
+  #   return R2, r2
+  # end
 
-  return new_unitcell, embedding
+  return (new_unitcell, torus_wrap)
 end
