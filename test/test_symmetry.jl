@@ -20,10 +20,10 @@ using LinearAlgebra
   @test p1^2 == p2
   @test p1^3 == p3
 
-  @test p0.cycle_length == 1
-  @test p1.cycle_length == 4
-  @test p2.cycle_length == 2
-  @test p3.cycle_length == 4
+  @test p0.order == 1
+  @test p1.order == 4
+  @test p2.order == 2
+  @test p3.order == 4
 
   @test_throws ArgumentError Permutation([1,2,3,4]) * Permutation([1,2,3,4,5])
   @test hash(Permutation(Int[1,2,3,4])) == hash(Int[1,2,3,4])
@@ -74,8 +74,8 @@ end
   t2 = Permutation([2,5,6,7,3,4,1])
   generators = [t1, t2]
   #translation_group = TranslationGroup(t1, t2)
-  full_shape = [g.cycle_length for g in generators]
-  full_translations = vcat( collect( Iterators.product([0:g.cycle_length-1 for g in generators]...) )...)
+  full_shape = [g.order for g in generators]
+  full_translations = vcat( collect( Iterators.product([0:g.order-1 for g in generators]...) )...)
   full_translations = [ [x...] for x in full_translations]
 
   elemtrans = Dict{Permutation, Vector{Int}}()
