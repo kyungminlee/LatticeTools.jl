@@ -55,14 +55,6 @@ module ExactLinearAlgebra
 end # module ExactLinearAlgebra
 
 
-export translation_element
-function translation_element(displacement ::AbstractVector{<:Integer},
-                             coordinates ::AbstractVector{<:AbstractVector{<:Integer}},
-                             torus_wrap ::Function
-                             )
-  return Permutation([torus_wrap(r .+ displacement)[1] for r in coordinates])
-end
-
 export translation_symmetry_group
 function translation_symmetry_group(hypercube ::HypercubicLattice)
   generator_indices = get_generators(hypercube)

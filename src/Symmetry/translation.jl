@@ -60,19 +60,6 @@ function translation_element(hypercube ::HypercubicLattice,
   return Permutation([hypercube.torus_wrap(r .+ displacement)[1] for r in hypercube.coordinates])
 end
 
-function groupmod(numer::Permutation, denominators ::AbstractVector{Permutation})
-    min_perm = numer
-    for denom in denominators
-        g = numer * denom
-        while g != numer
-            if g < min_perm
-                min_perm = g
-            end
-            g = g * denom
-        end
-    end
-    return min_perm
-end
 
 function get_generators(hypercube ::HypercubicLattice)
   translations = [translation_element(hypercube, r) for r in hypercube.coordinates]
