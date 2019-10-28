@@ -66,7 +66,7 @@ end
 function get_generators(hypercube ::HypercubicLattice)
   translations = [translation_element(hypercube, r) for r in hypercube.coordinates]
   group_order = length(translations)
-  sorted_indices = sortperm(1:group_order; by=(i->translations[i].order), rev=true)
+  sorted_indices = sortperm(1:group_order; by=(i->translations[i].order), rev=true, alg=Base.Sort.DEFAULT_STABLE)
   function factorize(generator_indices ::AbstractVector{<:Integer}, # Return value if successful
                      translation_groups ::AbstractVector{<:AbstractSet{Permutation}},
                      size_product ::Integer,
