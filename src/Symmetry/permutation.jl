@@ -51,7 +51,7 @@ Return `[p2.map[x] for x in p1.map]`.
 
 # Examples
 ```jldoctest
-julia> using ExactDiagonalization
+julia> using TightBindingLattice
 
 julia> Permutation([1,3,2]) * Permutation([2,1,3])
 Permutation([2, 3, 1], 3)
@@ -88,7 +88,7 @@ Exponentiate the permutation.
 
 # Examples
 ```jldoctest
-julia> using ExactDiagonalization
+julia> using TightBindingLattice
 
 julia> Permutation([2,3,4,1])^2
 Permutation([3, 4, 1, 2], 2)
