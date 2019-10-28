@@ -67,6 +67,19 @@ function *(p1 ::Permutation, p2 ::Permutation)
   return Permutation(Int[p2.map[x] for x in p1.map])
 end
 
+import Base.*
+function *(lhs ::Set{Permutation}, rhs::Permutation)
+    return generate_group(lhs..., rhs)
+end
+
+function *(lhs ::Permutation, rhs::Set{Permutation})
+    return generate_group(lhs, rhs...)
+end
+
+function *(lhs ::Set{Permutation}, rhs::Set{Permutation})
+    return generate_group(lhs..., rhs...)
+end
+
 import Base.^
 """
     ^(perm ::Permutation, pow ::Integer)
@@ -119,12 +132,28 @@ hash(p ::Permutation) = hash(p.map)
 
 
 function generate_group(generators ::Permutation...)
-  shape = [g.order for g in generators]
-  translations = vcat( collect( Iterators.product([0:g.order-1 for g in generators]...) )...)
-  translations = [ [x...] for x in translations]
-  elements = [prod(gen^d for (gen, d) in zip(generators, dist)) for (ig, dist) in enumerate(translations)]
-  return Set(elements)
+  change = true
+  group = Set{Permutation}([generators...])
+  while change
+    change = false
+    for g1 in generators, g2 in group
+      g3 = g1 * g2
+      if !(g3 in group)
+        change = true
+        push!(group, g3)
+      end
+    end
+  end
+  return group
 end
+
+#
+#   shape = [g.order for g in generators]
+#   translations = vcat( collect( Iterators.product([0:g.order-1 for g in generators]...) )...)
+#   translations = [ [x...] for x in translations]
+#   elements = [prod(gen^d for (gen, d) in zip(generators, dist)) for (ig, dist) in enumerate(translations)]
+#   return Set(elements)
+# end
 
 
 
