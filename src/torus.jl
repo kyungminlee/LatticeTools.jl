@@ -76,18 +76,11 @@ struct HypercubicLattice
 
     coords = Vector{Int}[]
     sizehint!(coords, abs(d))
-    #for g in Iterators.product([-x:x for x in max_range]...)
-    #for g in Iterators.product([0:2*x+1 for x in reverse(max_range)]...)
-    #  r1 = collect(reverse(g))
     for g in Iterators.product([0:2*x+1 for x in max_range]...)
       r1 = collect(g)
       r2 = inverse_scale_matrix * r1
       R = Int.(floor.(r2))
       r3 = r1 - scale_matrix * R
-
-      #if all(0 <= x < 1 for x in r2)
-      #  push!(coords, r1)
-      #end
       if !(r3 in coords)
         push!(coords, r3)
       end
