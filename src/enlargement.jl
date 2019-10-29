@@ -25,8 +25,11 @@ export hypercubic_cluster
 function make_supercell(unitcell ::UnitCell{O}, scale_matrix ::AbstractMatrix{<:Integer}) where O
   # check dimensions
   new_latticevectors = unitcell.latticevectors * scale_matrix
-  inverse_scale_matrix = ExactLinearAlgebra.inverse(scale_matrix)
-  unitcell_coordinates, torus_wrap = hypercubic_cluster(scale_matrix; inverse_scale_matrix=inverse_scale_matrix)
+  hypercube = HypercubicLattice(scale_matrix)
+  inverse_scale_matrix = hypercube.inverse_scale_matrix
+  unitcell_coordinates = hypercube.coordinates
+  torus_wrap = hypercube.torus_wrap
+
   new_unitcell = make_unitcell(new_latticevectors; OrbitalType=Tuple{O, Vector{Int}})
   for uc in unitcell_coordinates, (orbname, orbcoord) in unitcell.orbitals
     cc = fract2carte(unitcell, orbcoord)
@@ -36,11 +39,5 @@ function make_supercell(unitcell ::UnitCell{O}, scale_matrix ::AbstractMatrix{<:
     addorbital!(new_unitcell, new_orbname, new_orbcoord)
   end
 
-  # function torus_wrap(lattice_displacement ::AbstractVector{<:Integer})
-  #   R2 = I.(floor.(inverse_scale_matrix * lattice_displacement))
-  #   r2 = lattice_displacement - scale_matrix * R2
-  #   return R2, r2
-  # end
-
-  return (new_unitcell, torus_wrap)
+  return (new_unitcell, hypercube)
 end
