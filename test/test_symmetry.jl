@@ -44,7 +44,7 @@ end
   @test length(Set(g.elements)) == 2*3
   @test g.fractional_momenta == [[0//3, 0//2], [1//3, 0//2], [2//3, 0//2],
                                  [0//3, 1//2], [1//3, 1//2], [2//3, 1//2]]
-  χ = [cis(2π * (k ⋅ t)) for k in g.fractional_momenta, t in g.translations]
+  χ = [cis(-2π * (k ⋅ t)) for k in g.fractional_momenta, t in g.translations]
   @test isapprox(g.character_table, χ; atol=sqrt(eps(Float64)))
 
   @test is_compatible([0//1, 0//1], [0,0])
