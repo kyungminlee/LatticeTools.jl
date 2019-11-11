@@ -10,7 +10,7 @@ struct TranslationGroup <: AbstractSymmetryGroup
 
   translations ::Vector{Vector{Int}}
   elements ::Vector{Permutation}
-  fractional_momenta ::Vector{Vector{Rational}}
+  fractional_momenta ::Vector{Vector{Rational{Int}}}
 
   conjugacy_classes ::Vector{Int}  # conjugacy class of element
   character_table ::Array{ComplexF64, 2}
