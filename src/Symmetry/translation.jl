@@ -39,7 +39,7 @@ struct TranslationGroup <: AbstractSymmetryGroup
     fractional_momenta = [momentum(sub) for sub in translations]
 
     conjugacy_classes = collect(1:length(elements))
-    character_table = ComplexF64[cis(dot(float.(kf) .* 2π, t))
+    character_table = ComplexF64[cis(-dot(float.(kf) .* 2π, t))
                                  for kf in fractional_momenta, t in translations]
 
     character_table_r = real.(character_table)
