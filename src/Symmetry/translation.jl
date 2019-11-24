@@ -144,10 +144,13 @@ i.e. k¹ R¹ + k² R² + ... + kᴺ Rᴺ = 0 (mod 1)
 - `identity_translation ::AbstractVector{<:Integer}` : R
 """
 function is_compatible(
-    fractional_momentum ::AbstractVector{<:Rational},
+    fractional_momentum ::AbstractVector{R},
     identity_translation ::AbstractVector{<:Integer}
-    )
-  value = sum( i * j for (i,j) in zip(fractional_momentum, identity_translation))
+    ) where R<:Rational
+  value = Rational{Int}(0)
+  for (i,j) in zip(fractional_momentum, identity_translation)
+    value += i * j
+  end
   return mod(value, 1) == 0
 end
 
