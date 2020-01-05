@@ -321,8 +321,8 @@ function carte2fract(unitcell ::UnitCell,
         throw(ArgumentError("unitcell and cartecoord must have the same dimension"))
     end
     fc = transpose(unitcell.reducedreciprocallatticevectors) * cc
-    w = Int[fld(x, 1.0) for x in fc]
-    f = Float64[mod(x, 1.0) for x in fc]
+    w = Int[fld(x, 1) for x in fc]
+    f = Float64[mod(x, 1) for x in fc]
     return FractCoord(w, f; tol=tol)
 end
 
