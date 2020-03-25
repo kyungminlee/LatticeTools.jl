@@ -47,12 +47,12 @@ export hypercubic_cluster
 
 
 """
-    make_supercell(unitcell, scale_matrix)
+    make_supercell(unitcell, scale_matrix; compute_symmetry=true)
 
 # Arguments
   - `unitcell`
   - `scale_matrix`
-
+  - `compute_symmetry=true` (optional)
 # Returns
   - new unit cell
   - embedding function
@@ -60,7 +60,7 @@ export hypercubic_cluster
     - which returns a tuple of (supercell lattice displacement, sublattice subscript)
   - translation group
 """
-function make_supercell(unitcell ::UnitCell{O}, scale_matrix ::AbstractMatrix{<:Integer}) where O
+function make_supercell(unitcell ::UnitCell{O}, scale_matrix ::AbstractMatrix{<:Integer}; compute_symmetry::Bool=true) where O
   # check dimensions
   new_latticevectors = unitcell.latticevectors * scale_matrix
   hypercube = HypercubicLattice(scale_matrix)
@@ -77,21 +77,25 @@ function make_supercell(unitcell ::UnitCell{O}, scale_matrix ::AbstractMatrix{<:
     addorbital!(new_unitcell, new_orbname, new_orbcoord)
   end
 
-  translation_group = translation_symmetry_group(hypercube)
-  new_generators = Permutation[]
-  for p in translation_group.generators
-      p2 = Vector{Int}(undef, length(p.map) * numorbital(unitcell))
-      for (i, j) in enumerate(p.map)
-          ri = hypercube.coordinates[i]
-          rj = hypercube.coordinates[j]
-          for (orbname, orbcoord) in unitcell.orbitals
-              ip = getorbitalindex(new_unitcell, (orbname, ri))
-              jp = getorbitalindex(new_unitcell, (orbname, rj))
-              p2[ip] = jp
-          end
-      end
-      push!(new_generators, Permutation(p2))
-  end
+  if compute_symmetry
+    translation_group = translation_symmetry_group(hypercube)
+    new_generators = Permutation[]
+    for p in translation_group.generators
+        p2 = Vector{Int}(undef, length(p.map) * numorbital(unitcell))
+        for (i, j) in enumerate(p.map)
+            ri = hypercube.coordinates[i]
+            rj = hypercube.coordinates[j]
+            for (orbname, orbcoord) in unitcell.orbitals
+                ip = getorbitalindex(new_unitcell, (orbname, ri))
+                jp = getorbitalindex(new_unitcell, (orbname, rj))
+                p2[ip] = jp
+            end
+        end
+        push!(new_generators, Permutation(p2))
+    end
 
-  return (new_unitcell, hypercube, TranslationGroup(new_generators))
+    return (new_unitcell, hypercube, TranslationGroup(new_generators))
+  else
+    return (new_unitcell, hypercube, nothing)
+  end
 end
