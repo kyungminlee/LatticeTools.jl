@@ -92,6 +92,13 @@ struct HypercubicLattice
       r2 = r - scale_matrix * R
       return R, coord_indices[r2]
     end
+
+    function torus_wrap(r ::AbstractMatrix{<:Integer})
+      R = Int.(floor.(inverse_scale_matrix * r))
+      r2 = r - scale_matrix * R # TODO: need to be tested
+      return R, [coord_indices[x] for x in eachcol(r2)]
+    end
+
     @assert all(torus_wrap(r) == (zeros(n), i) for (i, r) in enumerate(coords))
 
     return new(scale_matrix, inverse_scale_matrix, coords, coord_indices, torus_wrap)
