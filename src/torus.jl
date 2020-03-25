@@ -1,6 +1,8 @@
 export HypercubicLattice
 export get_generators
 export dimension
+export translation_group_multiplication_table
+export isequiv
 
 export ExactLinearAlgebra
 
@@ -108,3 +110,26 @@ end
 
 
 dimension(hypercube::HypercubicLattice) = size(hypercube.scale_matrix, 1)
+
+
+function isequiv(lhs::HypercubicLattice, rhs::HypercubicLattice)
+    det_lhs = TightBindingLattice.ExactLinearAlgebra.determinant(lhs.scale_matrix)
+    det_rhs = TightBindingLattice.ExactLinearAlgebra.determinant(rhs.scale_matrix)
+    det_lhs != det_rhs && return false
+
+    inv_lhs = TightBindingLattice.ExactLinearAlgebra.inverse(lhs.scale_matrix)
+    inv_rhs = TightBindingLattice.ExactLinearAlgebra.inverse(rhs.scale_matrix)
+
+    return all(isinteger.(inv_lhs * rhs.scale_matrix)) && all(isinteger.(inv_rhs * lhs.scale_matrix))
+end
+
+function translation_group_multiplication_table(hypercube::HypercubicLattice)
+    n = length(hypercube.coordinates)
+    mtab = zeros(Int, (n, n))
+    wrap = hypercube.torus_wrap
+    for (i, ri) in enumerate(hypercube.coordinates), (j, rj) in enumerate(hypercube.coordinates)
+        _, k = wrap(ri.+rj)
+        mtab[i,j] = k
+    end
+    return mtab
+end
