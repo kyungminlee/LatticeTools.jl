@@ -5,14 +5,15 @@ version = "0.2.0"
 
 [deps]
 LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
+YAML = "ddb6d928-2868-570f-bddf-ab3f9cf99eb6"
 
 [compat]
 julia = "1"
 
 [extras]
-Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 Literate = "98b081ad-f1c9-55d3-8b20-4c87d4299306"
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 
 [targets]
-test = ["Test"]
 example = ["Literate"]
+test = ["Test"]
