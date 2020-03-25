@@ -113,6 +113,13 @@ function isapprox(fc1 ::FractCoord, fc2 ::FractCoord;
            isapprox(fc1.fraction, fc2.fraction; atol=atol, rtol=rtol)
 end
 
+import Base.*
+function (*)(mat::AbstractMatrix{<:Number}, fc::FractCoord)
+    return FractCoord(mat * (fc.whole + fc.fraction))
+end
+
+
+
 import Base.==
 function ==(fc1 ::FractCoord, fc2 ::FractCoord) ::Bool
     return (fc1.whole == fc2.whole) && (fc1.fraction == fc2.fraction)
