@@ -68,7 +68,7 @@ Construct a one-dimensional lattice.
 # Optional Arguments
 * `tol=sqrt(eps(Float64))`: Tolerance
 """
-function make_unitcell(latticeconstant ::AbstractFloat;
+function make_unitcell(latticeconstant ::Real;
                        OrbitalType::DataType=Any,
                        tol=sqrt(eps(Float64)))
     return make_unitcell(reshape([latticeconstant], (1,1));
@@ -88,7 +88,7 @@ Construct an n-dimensional lattice.
 # Optional Arguments
 * `tol=sqrt(eps(Float64))`: Epsilon
 """
-function make_unitcell(latticevectors ::AbstractArray{<:AbstractFloat, 2};
+function make_unitcell(latticevectors ::AbstractArray{<:Real, 2};
                        OrbitalType::DataType=Any,
                        tol ::Real=sqrt(eps(Float64)))
     (ndim, ndim_) = size(latticevectors)
@@ -122,7 +122,7 @@ end
 Spatial dimension of the unit cell.
 """
 function dimension(uc ::UnitCell)
-    return size(uc.latticevectors)[1]
+    return size(uc.latticevectors, 1)
 end
 
 
