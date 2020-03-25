@@ -1,5 +1,6 @@
 export HypercubicLattice
 export get_generators
+export dimension
 
 export ExactLinearAlgebra
 
@@ -104,3 +105,6 @@ struct HypercubicLattice
     return new(scale_matrix, inverse_scale_matrix, coords, coord_indices, torus_wrap)
   end
 end
+
+
+dimension(hypercube::HypercubicLattice) = size(hypercube.scale_matrix, 1)
