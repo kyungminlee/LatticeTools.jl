@@ -10,8 +10,12 @@ Create a permutation of integers from 1 to n.
 # Arguments
 - `perms`: an integer vector containing a permutation of integers from 1 to n
 - `max_order`: maximum order
+
+# Note
+The convention for the permutation is that map[i] gets mapped to i.
+In other words, map tells you where each element is from.
 """
-struct Permutation <: AbstractSymmetryOperation
+struct Permutation
   map ::Vector{Int}
   order ::Int
   function Permutation(perms ::AbstractVector{Int}; max_order=2048)
@@ -127,6 +131,7 @@ function isequal(p1 ::Permutation, p2::Permutation)
   return isequal(p1.map, p2.map)
 end
 
+
 import Base.hash
 hash(p ::Permutation) = hash(p.map)
 
@@ -147,7 +152,6 @@ function generate_group(generators ::Permutation...)
   return group
 end
 
-#
 #   shape = [g.order for g in generators]
 #   translations = vcat( collect( Iterators.product([0:g.order-1 for g in generators]...) )...)
 #   translations = [ [x...] for x in translations]
@@ -155,18 +159,16 @@ end
 #   return Set(elements)
 # end
 
-
-
-function groupmod(numer::Permutation, denominators ::AbstractVector{Permutation})
-    min_perm = numer
-    for denom in denominators
-        g = numer * denom
-        while g != numer
-            if g < min_perm
-                min_perm = g
-            end
-            g = g * denom
-        end
-    end
-    return min_perm
-end
+# function groupmod(numer::Permutation, denominators ::AbstractVector{Permutation})
+#     min_perm = numer
+#     for denom in denominators
+#         g = numer * denom
+#         while g != numer
+#             if g < min_perm
+#                 min_perm = g
+#             end
+#             g = g * denom
+#         end
+#     end
+#     return min_perm
+# end
