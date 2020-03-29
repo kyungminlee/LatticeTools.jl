@@ -124,6 +124,11 @@ end
 
 dimension(hypercube::HypercubicLattice) = size(hypercube.scale_matrix, 1)
 
+import Base.(==)
+
+function (==)(lhs::HypercubicLattice, rhs::HypercubicLattice)
+  (lhs.scale_matrix == rhs.scale_matrix) && (lhs.coordinates == rhs.coordinates)
+end
 
 function isequiv(lhs::HypercubicLattice, rhs::HypercubicLattice)
     det_lhs = TightBindingLattice.ExactLinearAlgebra.determinant(lhs.scale_matrix)

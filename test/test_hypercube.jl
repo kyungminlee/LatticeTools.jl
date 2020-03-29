@@ -68,15 +68,22 @@ using TightBindingLattice
 
     @testset "Orthogonal" begin
       hypercube = HypercubicLattice([3 0; 0 3])
+      hypercube2 = HypercubicLattice([3 0; 0 3],
+                                     [[0,0],[1,0],[2,0],[0,1],[1,1],[2,1],[0,2],[1,2],[2,2]])
+      @test hypercube == hypercube2
       @test hypercube.inverse_scale_matrix == [1//3 0; 0 1//3]
+      @test hypercube2.inverse_scale_matrix == [1//3 0; 0 1//3]
 
       for i in 0:6, j in 0:6
         @test hypercube.wrap([i, j]) == ([i÷3, j÷3], [i%3, j%3])
+        @test hypercube2.wrap([i, j]) == ([i÷3, j÷3], [i%3, j%3])
+      end
+      let r = hcat([[i,j] for i in 0:6 for j in 0:6]...),
+          R = hcat([[i÷3,j÷3] for i in 0:6 for j in 0:6]...),
+          ρ = hcat([[i%3,j%3] for i in 0:6 for j in 0:6]...)
+          @test hypercube.wrap(r) == (R, ρ)
+          @test hypercube2.wrap(r) == (R, ρ)
       end
     end
   end
-
-
-
-
 end # testset enlargement
