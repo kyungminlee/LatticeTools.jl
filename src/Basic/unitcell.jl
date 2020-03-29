@@ -43,7 +43,7 @@ mutable struct UnitCell{O}
                          orbitals ::AbstractVector{Tuple{O, FractCoord}},
                          reducedreciprocallatticevectors ::AbstractArray{<:Real, 2},
                          reciprocallatticevectors ::AbstractArray{<:Real, 2},
-                         orbitalindices ::Dict{O, Int}) where {O}
+                         orbitalindices ::AbstractDict{O, Int}) where {O}
         if (O <: Integer)
             throw(ArgumentError("OrbitalType should not be integer to avoid confusion"))
         end
