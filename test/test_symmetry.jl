@@ -24,8 +24,9 @@ using YAML
           "[0, 2]", "[1, 2]", "[2, 2]",
         ]
         @test length(element_names(tsym)) == 9
-        @test element_names(tsym)[1] == element_name(tsym, 1)
-        @test all(element_names(tsym)[i] == element_name(tsym, i) for i in 1:9)
+        for i in 1:9
+          @test element_names(tsym)[i] == element_name(tsym, i)
+        end
       end
 
       @testset "coordinates" begin
@@ -48,9 +49,11 @@ using YAML
         @test tsym.conjugacy_classes == [(name=x, elements=[i]) for (i, x) in enumerate(tsym.element_names)]
         @test size(character_table(tsym)) == (9, 9)
         @test length(irreps(tsym)) == 9
-        @test all(irreps(tsym)[i] == irrep(tsym, i) for i in 1:9)
         @test num_irreps(tsym) == 9
-        @test all(irrep_dimension(tsym, i) == 1 for i in 1:9)
+        for i in 1:9
+          @test irreps(tsym)[i] == irrep(tsym, i)
+          @test irrep_dimension(tsym, i) == 1
+        end
       end
     end # @testset "orthogonal lattice" begin
 
@@ -109,12 +112,10 @@ using YAML
     @test length(psym.conjugacy_classes) == 3 # three conjugacy classes
     @test size(psym.character_table) == (3,3)
     @test psym.character_table ≈ [1 1 1; 1 -1 1; 2 0 -1]
-    @test all(let d = psym.character_table[idx_irrep, 1]
-                size(m) == (d, d)
-              end
-                for (idx_irrep, irrep) in enumerate(irreps(psym))
-                for m in irrep.matrices
-              )
+    for (idx_irrep, irrep) in enumerate(irreps(psym)), m in irrep.matrices
+      d = psym.character_table[idx_irrep, 1]
+      @test size(m) == (d, d)
+    end
     ord_group = group_order(psym.group)
     matrep_lookup = Dict(m=>i for (i, m) in enumerate(psym.matrix_representations))
     matrep_mtab = zeros(Int, (ord_group, ord_group))
@@ -158,13 +159,10 @@ using YAML
       @test size(character_table(psym)) == (5, 5)
     end
 
-    let ir = irreps(psym)
-      @test length(ir) == 5
-      for i in 1:5
-        @test ir[i] == irrep(psym, i)
-      end
+    @test length(irreps(psym)) == 5
+    for i in 1:5
+      @test irreps(psym)[i] == irrep(psym, i)
     end
-
 
     hc1 = HypercubicLattice([4 0; 0 4])
     hc2 = HypercubicLattice([4 0; 0 3])
@@ -215,8 +213,10 @@ using YAML
       irrep_list1 = collect(get_irrep_iterator(lattice, tsym, 2, 1))
       irrep_list2 = collect(zip(perms, phases))
       @test length(irrep_list1) == length(irrep_list2)
-      @test all(x[1] == y[1] for (x,y) in zip(irrep_list1, irrep_list2))
-      @test all(x[2] ≈ y[2] for (x,y) in zip(irrep_list1, irrep_list2))
+      for (x,y) in zip(irrep_list1, irrep_list2)
+        @test x[1] == y[1]
+        @test x[2] ≈ y[2]
+      end
     end
 
     @test iscompatible(lattice, tsym, 1, [1,0]) # Γ point
