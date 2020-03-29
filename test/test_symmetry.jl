@@ -76,6 +76,22 @@ using YAML
 
   end # @testset "BravaisTranslationSymmetry" begin
 
+  @testset "reduction" begin
+
+    # Gamma point is always ok
+    @test iscompatible([0,0], [3,3], [0,0])
+    @test iscompatible([0,0], [3,3], [1,0])
+    @test iscompatible([0,0], [3,3], [2,0])
+
+    # non-zero momentum depends on what the identity translation is
+    @test iscompatible([1,0], [3,3], [0,0]) # zero translation is always identity, so it's always fine
+    @test !iscompatible([1,0], [3,3], [1,0]) # these two translations are not compatible
+    @test !iscompatible([1,0], [3,3], [2,0]) #   with momentum [1,1]
+
+    
+
+  end
+
 
   @testset "PointSymmetry" begin
     psym = PointSymmetryDatabase.get(19)
