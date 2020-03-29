@@ -60,6 +60,7 @@ function parse_expr(expr::AbstractString)
 end
 parse_expr(expr::AbstractArray) = [parse_expr(elem) for elem in expr]
 
+#= # commented for now
 function parse_table(s::AbstractString)
   s = strip(s)
   rows = Vector{Int}[]
@@ -70,6 +71,7 @@ function parse_table(s::AbstractString)
   end
   return transpose(hcat(rows...))
 end
+=#
 
 
 function cleanup_number(x::AbstractFloat, tol::Real)
