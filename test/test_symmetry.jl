@@ -34,6 +34,15 @@ using YAML
         oc2 = tsym.coordinate_to_orthogonal_map[cc]
         @test oc == oc2
       end
+
+      @test group_order(tsym) == 9
+      @test length(element_names(tsym)) == 9
+      @test all(element_names(tsym)[i] == element_name(tsym, i) for i in 1:9)
+      @test size(character_table(tsym)) == (9, 9)
+      @test length(irreps(tsym)) == 9
+      @test all(irreps(tsym)[i] == irrep(tsym, i) for i in 1:9)
+      @test num_irreps(tsym) == 9
+      @test all(irrep_dimension(tsym, i) == 1 for i in 1:9)
     end # @testset "orthogonal lattice" begin
 
     @testset "non-orthogonal lattice" begin
@@ -113,6 +122,61 @@ using YAML
   end
   =#
 
+
+
+  @testset "PointSymmetry" begin
+    # D_4
+    file_path = abspath(@__DIR__, "..", "data", "PointGroup3D", "PointGroup3D-12.yaml")
+    data_yaml = YAML.load_file(file_path)
+
+    let data_yaml_2 = deepcopy(data_yaml)
+      data_yaml_2["Generators"] = [1]
+      @test_throws ArgumentError PointSymmetry(data_yaml_2)
+    end
+
+    psym = PointSymmetry(data_yaml)
+    @test group_order(psym) == 8
+    let elnames = element_names(psym)
+      for i in 1:8
+        elnames[i] == element_name(psym, i)
+      end
+    end
+
+    @test num_irreps(psym) == 5
+
+    let χ = [1  1  1  1  1;
+             1  1  1 -1 -1;
+             1  1 -1 -1  1;
+             1  1 -1  1 -1;
+             2 -2  0  0  0]
+      @test character_table(psym) ≈ χ
+      @test size(character_table(psym)) == (5, 5)
+    end
+
+    let ir = irreps(psym)
+      @test length(ir) == 5
+      for i in 1:5
+        @test ir[i] == irrep(psym, i)
+      end
+    end
+
+
+    hc1 = HypercubicLattice([4 0; 0 4])
+    hc2 = HypercubicLattice([4 0; 0 3])
+    tsym1 = TranslationSymmetry(hc1)
+    tsym2 = TranslationSymmetry(hc2)
+
+    @test_throws DimensionMismatch iscompatible(hc1, psym)
+    @test_throws DimensionMismatch iscompatible(tsym1, psym)
+
+    psym_proj = project(psym, [1 0 0; 0 1 0])
+
+    @test iscompatible(hc1, psym_proj)
+    @test !iscompatible(hc2, psym_proj)
+    @test iscompatible(tsym1, psym_proj)
+    @test !iscompatible(tsym2, psym_proj)
+
+  end # @testset "PointSymmetry"
 
 end # @testset "Symmetry" begin
 
