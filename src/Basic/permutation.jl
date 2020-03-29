@@ -151,24 +151,3 @@ function generate_group(generators ::Permutation...)
   end
   return group
 end
-
-#   shape = [g.order for g in generators]
-#   translations = vcat( collect( Iterators.product([0:g.order-1 for g in generators]...) )...)
-#   translations = [ [x...] for x in translations]
-#   elements = [prod(gen^d for (gen, d) in zip(generators, dist)) for (ig, dist) in enumerate(translations)]
-#   return Set(elements)
-# end
-
-# function groupmod(numer::Permutation, denominators ::AbstractVector{Permutation})
-#     min_perm = numer
-#     for denom in denominators
-#         g = numer * denom
-#         while g != numer
-#             if g < min_perm
-#                 min_perm = g
-#             end
-#             g = g * denom
-#         end
-#     end
-#     return min_perm
-# end
