@@ -70,7 +70,7 @@ using YAML
     idx_gen = tsym.generators[1]
     @test tsym.hypercube.coordinates[idx_gen] == [1, 1]
     # elements ordered according to the "generator" (i.e. orthogonal order)
-    @test tsym.element_names == [
+    @test element_names(tsym) == [
       "[0, 0]", "[1, 1]", "[2, 2]", "[3, 0]",
       "[0, 1]", "[1, 2]", "[2, 0]", "[3, 1]",
       "[0, 2]", "[1, 0]", "[2, 1]", "[3, 2]",
