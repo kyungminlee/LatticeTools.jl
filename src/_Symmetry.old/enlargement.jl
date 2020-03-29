@@ -1,4 +1,4 @@
-
+#=
 export make_supercell
 export hypercubic_cluster
 
@@ -99,4 +99,6 @@ function make_supercell(unitcell ::UnitCell{O}, scale_matrix ::AbstractMatrix{<:
     return (new_unitcell, hypercube, nothing)
   end
 end
+=#
+
 =#
