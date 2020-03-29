@@ -152,4 +152,13 @@
     @test_throws ArgumentError whichunitcell(uc, "B", FractCoord([1,2], [0.1, 0.1]))
   end
 
+  @testset "findorbitalindex" begin
+    uc = make_unitcell([1.0 0.0; 0.0 1.0]; OrbitalType=String)
+    addorbital!(uc, "A", FractCoord([0, 0], [0.0, 0.0]))
+    @test findorbitalindex(uc, FractCoord([0,0], [0.0, 0.0])) == (1, [0,0])
+    @test findorbitalindex(uc, FractCoord([1,0], [0.0, 0.0])) == (1, [1,0])
+
+    @test findorbitalindex(uc, FractCoord([0,0], [0.2, 0.2])) == (-1, Int[])
+  end
+
 end
