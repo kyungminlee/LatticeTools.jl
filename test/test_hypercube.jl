@@ -2,12 +2,12 @@ using Test
 using LinearAlgebra
 using TightBindingLattice
 
-@testset "enlargement.jl" begin
+@testset "hypercube" begin
   @testset "ExactLinearAlgebra" begin
     mat = Int[1 2 3;
               4 5 2;
-              7 8 10]  
-    
+              7 8 10]
+
     @testset "cofactor" begin
       results = Dict(
         (1,1) => [5 2; 8 10],
