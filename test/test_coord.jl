@@ -98,31 +98,9 @@
     end
   end
 
-  #=
-  @testset "Honeycomb" begin
-    a1 = [ sqrt(3.0) * 0.5, 0.5]
-    a2 = [-sqrt(3.0) * 0.5, 0.5]
-    a3 = [0.0, -1.0]
-    b1 = a1 - a2
-    b2 = a2 - a3
-    b3 = a3 - a1
-    lvs = [b1 b2]
-
-    @show a1
-    @show a2
-    @show a3
-
-    @show carte2fract(lvs, a1)
-    @show carte2fract(lvs, a2)
-    @show carte2fract(lvs, a3)
-
-    fa1 = carte2fract(lvs, a1)
-    fa2 = carte2fract(lvs, a2)
-    fa3 = carte2fract(lvs, a3)
-
-    @show fract2carte(lvs, fa1)
-    @show fract2carte(lvs, fa2)
-    @show fract2carte(lvs, fa3)
+  @testset "multiplication" begin
+    fc = FractCoord([-2, 1], [0.8, 0.5])
+    @test isapprox(FractCoord([1, -2], [0.5, 0.8]), [0 1; 1 0] * fc)
   end
-  =#
+
 end
