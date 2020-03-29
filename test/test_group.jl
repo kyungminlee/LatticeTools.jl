@@ -15,7 +15,11 @@ using YAML
         group = FiniteGroup(mtab)
 
         @test group_order(group) == 3
+        @test group_order(group, 1) == 1
+        @test group_order(group, 2) == 3
+        @test group_order(group, 3) == 3
         @test isabelian(group)
+        @test group_multiplication_table(group) == mtab
 
         for i in 1:3, j in 1:3
             @test group_product(group, i, j) == mtab[i, j]
@@ -26,6 +30,7 @@ using YAML
 
         @test generate_subgroup(group, 1) == BitSet([1])
         @test generate_subgroup(group, 2) == BitSet([1,2,3])
+        @test generate_subgroup(group, [1,2]) == BitSet([1,2,3])
 
         @test issubgroup(group, Set([1]))
         @test !issubgroup(group, Set([1,2]))
