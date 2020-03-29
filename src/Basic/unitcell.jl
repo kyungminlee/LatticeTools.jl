@@ -14,6 +14,8 @@ export dimension,
        whichunitcell,
        momentumgrid
 
+export findorbitalindex
+
 using LinearAlgebra
 import Base.zero
 
@@ -397,4 +399,20 @@ function (==)(lhs::UnitCell{O}, rhs::UnitCell{O}) where O
     lhs.latticevectors == rhs.latticevectors &&
     lhs.orbitals == rhs.orbitals
   )
+end
+
+
+"""
+    findorbitalindex
+
+Returns (orbital_index, unitcell_vector), or `(-1, [])` if not found.
+"""
+function findorbitalindex(unitcell::UnitCell, fc::FractCoord; tol=Base.rtoldefault(Float64))
+    i = findfirst(x -> isapprox(x, fc.fraction; atol=tol), [orbfc.fraction for (orbname, orbfc) in unitcell.orbitals])
+    if i !== nothing
+        (orbname, orbfc) = unitcell.orbitals[i]
+        return (i, fc.whole - orbfc.whole)
+    else
+        return (-1, Int[])
+    end
 end
