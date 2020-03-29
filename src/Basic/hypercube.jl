@@ -147,3 +147,33 @@ function translation_group_multiplication_table(hypercube::HypercubicLattice)
     end
     return mtab
 end
+
+
+"""
+    orthogonalize
+
+Find orthogonal generators of the hypercube, and reorder the coordinates accordingly
+"""
+function orthogonalize(hypercube::HypercubicLattice)
+  first_group = FiniteGroup(translation_group_multiplication_table(hypercube))
+  ord_group = group_order(first_group)
+
+  @assert isabelian(first_group)
+  @assert ord_group == length(hypercube.coordinates)
+
+  first_generators = minimal_generating_set(first_group)
+  orthogonal_shape = [first_group.period_lengths[g] for g in first_generators]
+  orthogonal_coordinates = vec([[x...] for x in Iterators.product([0:(d-1) for d in orthogonal_shape]...)])
+  @assert prod(orthogonal_shape) == ord_group
+  @assert length(orthogonal_coordinates) == ord_group
+
+  coordinates = Vector{Int}[]
+  let ortho_latvec = hcat(hypercube.coordinates[first_generators]...)
+      for r_ortho in orthogonal_coordinates
+          _, r = hypercube.wrap(ortho_latvec * r_ortho)
+          push!(coordinates, r)
+      end
+  end
+
+  return HypercubicLattice(hypercube.scale_matrix, coordinates)
+end
