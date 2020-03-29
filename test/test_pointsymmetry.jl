@@ -74,6 +74,12 @@ using YAML
     end # for enumerate(irreps(psym))
   end
 
+  @testset "project" begin
+    project(psym, [1 0 0; 0 1 0])
+    @test_throws ArgumentError project(psym, [1 0; 0 1])
+    @test_throws ArgumentError project(psym, [1 1 1; 1 1 1])
+  end
+
 
   @testset "iscompatible" begin
     hc1 = HypercubicLattice([4 0; 0 4])
@@ -90,6 +96,26 @@ using YAML
     @test !iscompatible(hc2, psym_proj)
     @test iscompatible(tsym1, psym_proj)
     @test !iscompatible(tsym2, psym_proj)
+  end
+
+
+  @testset "lattice permutation" begin
+    unitcell = make_unitcell([1.0 0.0; 0.0 1.0]; OrbitalType=String)
+    addorbital!(unitcell, "Ox", FractCoord([0,0], [0.5, 0.0]))
+    addorbital!(unitcell, "Oy", FractCoord([0,0], [0.0, 0.5]))
+
+    psym = project(PointSymmetryDatabase.get(13), [1 0 0; 0 1 0])
+
+    idx_C4 = 3
+    @test element_name(psym, idx_C4) == "4<sup>+</sup><sub>001</sub>"
+    @test findorbitalmap(unitcell, psym.matrix_representations[idx_C4]) == [(2, [0,0]), (1, [-1,0])]
+    @test findorbitalmap(unitcell, psym)[idx_C4] == [(2, [0,0]), (1, [-1,0])]
+
+    #lattice = make_lattice(unitcell, [4 0; 0 4])
+    #tsym = TranslationSymmetry(lattice)
+    #tsym_perms = get_orbital_permutations(lattice, tsym)
+
+
   end
 
 end # @testset "PointSymmetry"
