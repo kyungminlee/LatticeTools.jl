@@ -32,7 +32,7 @@ struct HypercubicLattice
     end
 
     function wrap(r ::AbstractMatrix{<:Integer})
-      @warn "Need to be tested"
+      #@warn "Need to be tested"
       R = Int.(floor.(inverse_scale_matrix * r))
       r2 = r - scale_matrix * R
       return R, r2
@@ -105,7 +105,7 @@ struct HypercubicLattice
     end
 
     function wrap(r ::AbstractMatrix{<:Integer})
-      @warn "Need to be tested"
+      #@warn "Need to be tested"
       R = Int.(floor.(inverse_scale_matrix * r))
       r2 = r - scale_matrix * R # TODO: need to be tested
       return R, r2
