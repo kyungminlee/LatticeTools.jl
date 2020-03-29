@@ -104,7 +104,7 @@ element_name(tsym::TranslationSymmetry, g) = tsym.element_names[g]
 character_table(sym::TranslationSymmetry) = sym.character_table
 
 irreps(sym::TranslationSymmetry) = sym.irreps
-irrep(sym::TranslationSymmetry, idx::Integer) = sym.irreps[idx]
+irrep(sym::TranslationSymmetry, idx) = sym.irreps[idx]
 num_irreps(sym::TranslationSymmetry) = length(sym.irreps)
 irrep_dimension(sym::TranslationSymmetry, idx::Integer) = size(sym.irreps[idx].matrices[1], 2)
 

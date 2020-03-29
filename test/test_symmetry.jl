@@ -11,38 +11,46 @@ using YAML
       @test length(tsym.generators) == 2
       idx_gen1 = tsym.generators[1]
       idx_gen2 = tsym.generators[2]
-      @test tsym.hypercube.coordinates[idx_gen1] == [1, 0]
-      @test tsym.hypercube.coordinates[idx_gen2] == [0, 1]
-      # elements ordered according to the "generator" (i.e. orthogonal order)
-      @test tsym.element_names == [
-        "[0, 0]", "[1, 0]", "[2, 0]",
-        "[0, 1]", "[1, 1]", "[2, 1]",
-        "[0, 2]", "[1, 2]", "[2, 2]",
-      ]
-      @test tsym.conjugacy_classes == [(name=x, elements=[i]) for (i, x) in enumerate(tsym.element_names)]
-
-      @test tsym.orthogonal_shape == [3, 3]
-      @test tsym.orthogonal_coordinates == tsym.hypercube.coordinates
-      for cc in tsym.hypercube.coordinates
-        oc = tsym.coordinate_to_orthogonal_map[cc]
-        cc2 = tsym.orthogonal_to_coordinate_map[oc]
-        @test cc == cc2
-      end
-
-      for oc in tsym.orthogonal_coordinates
-        cc = tsym.orthogonal_to_coordinate_map[oc]
-        oc2 = tsym.coordinate_to_orthogonal_map[cc]
-        @test oc == oc2
-      end
 
       @test group_order(tsym) == 9
-      @test length(element_names(tsym)) == 9
-      @test all(element_names(tsym)[i] == element_name(tsym, i) for i in 1:9)
-      @test size(character_table(tsym)) == (9, 9)
-      @test length(irreps(tsym)) == 9
-      @test all(irreps(tsym)[i] == irrep(tsym, i) for i in 1:9)
-      @test num_irreps(tsym) == 9
-      @test all(irrep_dimension(tsym, i) == 1 for i in 1:9)
+
+      @testset "elements" begin
+        @test tsym.hypercube.coordinates[idx_gen1] == [1, 0]
+        @test tsym.hypercube.coordinates[idx_gen2] == [0, 1]
+        # elements ordered according to the "generator" (i.e. orthogonal order)
+        @test tsym.element_names == [
+          "[0, 0]", "[1, 0]", "[2, 0]",
+          "[0, 1]", "[1, 1]", "[2, 1]",
+          "[0, 2]", "[1, 2]", "[2, 2]",
+        ]
+        @test length(element_names(tsym)) == 9
+        @test all(element_names(tsym)[i] == element_name(tsym, i) for i in 1:9)
+      end
+
+      @testset "coordinates" begin
+        @test tsym.orthogonal_shape == [3, 3]
+        @test tsym.orthogonal_coordinates == tsym.hypercube.coordinates
+        for cc in tsym.hypercube.coordinates
+          oc = tsym.coordinate_to_orthogonal_map[cc]
+          cc2 = tsym.orthogonal_to_coordinate_map[oc]
+          @test cc == cc2
+        end
+
+        for oc in tsym.orthogonal_coordinates
+          cc = tsym.orthogonal_to_coordinate_map[oc]
+          oc2 = tsym.coordinate_to_orthogonal_map[cc]
+          @test oc == oc2
+        end
+      end
+
+      @testset "irreps" begin
+        @test tsym.conjugacy_classes == [(name=x, elements=[i]) for (i, x) in enumerate(tsym.element_names)]
+        @test size(character_table(tsym)) == (9, 9)
+        @test length(irreps(tsym)) == 9
+        @test all(irreps(tsym)[i] == irrep(tsym, i) for i in 1:9)
+        @test num_irreps(tsym) == 9
+        @test all(irrep_dimension(tsym, i) == 1 for i in 1:9)
+      end
     end # @testset "orthogonal lattice" begin
 
     @testset "non-orthogonal lattice" begin
@@ -87,9 +95,6 @@ using YAML
     @test iscompatible([1,0], [3,3], [0,0]) # zero translation is always identity, so it's always fine
     @test !iscompatible([1,0], [3,3], [1,0]) # these two translations are not compatible
     @test !iscompatible([1,0], [3,3], [2,0]) #   with momentum [1,1]
-
-    
-
   end
 
 
@@ -119,28 +124,7 @@ using YAML
 
   end # @testset "PointSymmetry" begin
 
-  #=
-  @testset "PointSymmetryBravaisRepresentation" begin
-    psym = PointSymmetry(YAML.load_file("repr-19.yaml"))
-
-    hypercube = HypercubicLattice([4 -2; 2 2])
-    @test_throws ArgumentError PointSymmetryBravaisRepresentation(psym, hypercube, [1 0; 0 1])
-    @test_throws ArgumentError PointSymmetryBravaisRepresentation(psym, hypercube, [1 1 1; 1 1 1])
-    @test_throws ArgumentError PointSymmetryBravaisRepresentation(psym, HypercubicLattice([2 0; 0 1]), [1 0 0; 0 1 0])
-
-    psbr = PointSymmetryBravaisRepresentation(psym, hypercube, [1 0 0; 0 1 0])
-
-    n_elements = order(psbr.symmetry.group)
-    for i in 1:n_elements, j in 1:n_elements
-      k = findfirst(x->(x == psbr.permutations[i] * psbr.permutations[j]), psbr.permutations)
-      @test psbr.symmetry.group.multiplication_table[i,j] == k
-    end
-  end
-  =#
-
-
-
-  @testset "PointSymmetry" begin
+  @testset "PointSymmetry2" begin
     # D_4
     file_path = abspath(@__DIR__, "..", "data", "PointGroup3D", "PointGroup3D-12.yaml")
     data_yaml = YAML.load_file(file_path)
@@ -193,6 +177,36 @@ using YAML
     @test !iscompatible(tsym2, psym_proj)
 
   end # @testset "PointSymmetry"
+
+
+  @testset "lattice permutation" begin
+    unitcell = make_unitcell([1.0 0.0; 0.0 1.0]; OrbitalType=String)
+    addorbital!(unitcell, "Ox", FractCoord([0,0], [0.5, 0.0]))
+    addorbital!(unitcell, "Oy", FractCoord([0,0], [0.0, 0.5]))
+
+    lattice = make_lattice(unitcell, [4 0; 0 4])
+
+    perms = get_orbital_permutations(lattice)
+    @test length(perms) == 16
+    #@test length(perms[1].map) == 32
+    @test perms[1].map == 1:32  # identity
+
+    for (ir, r) in enumerate(lattice.hypercube.coordinates)
+      @test [
+        let
+          ivec = [(i-1) % 4, (i-1) ÷ 4]
+          jvec = [(x + 16) % 4 for x in (ivec .+ r)]
+          j = jvec[1] + jvec[2]*4 + 1
+          2 * (j-1) + iorb
+        end
+        for i in 1:16 for iorb in 1:2
+      ] == perms[ir].map
+    end
+
+
+  end # testset lattice permutation
+
+
 
 end # @testset "Symmetry" begin
 
