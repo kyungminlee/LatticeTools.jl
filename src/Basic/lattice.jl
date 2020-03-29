@@ -45,12 +45,12 @@ struct Lattice{O}
 end
 
 function make_lattice(unitcell::UnitCell{O}, scale_matrix::AbstractMatrix{<:Integer}) where O
-  hypercube = HypercubicLattice(scale_matrix)
-  return make_lattice(unitcell, hypercube)
-end
+  hypercube = orthogonalize(HypercubicLattice(scale_matrix))
+  #return make_lattice(unitcell, hypercube)
+#end
 
-function make_lattice(unitcell::UnitCell{O}, hypercube::HypercubicLattice) where O
-  hypercube = orthogonalize(hypercube)
+#function make_lattice(unitcell::UnitCell{O}, hypercube::HypercubicLattice) where O
+  #hypercube = orthogonalize(hypercube)
 
   new_latticevectors = unitcell.latticevectors * hypercube.scale_matrix
   inverse_scale_matrix = hypercube.inverse_scale_matrix
