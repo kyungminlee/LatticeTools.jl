@@ -51,5 +51,37 @@ module ExactLinearAlgebra
 end # module ExactLinearAlgebra
 
 parse_expr(expr::Number) = expr
-parse_expr(expr::AbstractString) = eval(Meta.parse(expr))
+function parse_expr(expr::AbstractString)
+  expr2 = Meta.parse(expr)
+  eval(quote
+    i = 1
+    $expr2
+  end)
+end
 parse_expr(expr::AbstractArray) = [parse_expr(elem) for elem in expr]
+
+function parse_table(s::AbstractString)
+  s = strip(s)
+  rows = Vector{Int}[]
+  for line in split(s, "\n")
+    line = strip(line)
+    row = [parse(Int, x) for x in split(line)]
+    !isempty(row) && push!(rows, row)
+  end
+  return transpose(hcat(rows...))
+end
+
+
+function cleanup_number(x::AbstractFloat, tol::Real)
+  units = [16, 16/sqrt(3), 16*sqrt(3)]
+  for unit in units
+    if isapprox(x*unit, round(x*unit); atol=tol)
+      return round(x*unit)/unit
+    end
+  end
+  return x
+end
+
+cleanup_number(x::Integer, tol::Real) = x
+cleanup_number(x::Complex, tol::Real) = cleanup_number(real(x), tol) + im * cleanup_number(imag(x), tol)
+cleanup_number(x::AbstractArray, tol::Real) = [cleanup_number(y, tol) for y in x]
