@@ -103,7 +103,7 @@ character_table(sym::PointSymmetry) = sym.character_table
 irreps(sym::PointSymmetry) = sym.irreps
 irrep(sym::PointSymmetry, idx::Integer) = sym.irreps[idx]
 num_irreps(sym::PointSymmetry) = length(sym.irreps)
-irrep_dimension(sym::PointSymmetry, idx::Integer) = size(sym.irrep[idx].matrices[1], 2)
+irrep_dimension(sym::PointSymmetry, idx::Integer) = size(sym.irreps[idx].matrices[1], 2)
 
 
 function iscompatible(hypercube::HypercubicLattice, matrix_representation::AbstractMatrix{<:Integer})
