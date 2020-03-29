@@ -24,6 +24,7 @@ using YAML
           "[0, 2]", "[1, 2]", "[2, 2]",
         ]
         @test length(element_names(tsym)) == 9
+        @test element_names(tsym)[1] == element_name(tsym, 1)
         @test all(element_names(tsym)[i] == element_name(tsym, i) for i in 1:9)
       end
 
@@ -95,6 +96,10 @@ using YAML
     @test iscompatible([1,0], [3,3], [0,0]) # zero translation is always identity, so it's always fine
     @test !iscompatible([1,0], [3,3], [1,0]) # these two translations are not compatible
     @test !iscompatible([1,0], [3,3], [2,0]) #   with momentum [1,1]
+
+
+    @test iscompatible([0,0], [3,3], [[0,0], [1,0], [2,0]])
+    @test !iscompatible([1,0], [3,3], [[0,0], [1,0], [2,0]])
   end
 
 
@@ -186,13 +191,15 @@ using YAML
 
     lattice = make_lattice(unitcell, [4 0; 0 4])
 
+    tsym = TranslationSymmetry(lattice)
+
     perms = get_orbital_permutations(lattice)
     @test length(perms) == 16
     #@test length(perms[1].map) == 32
     @test perms[1].map == 1:32  # identity
 
     for (ir, r) in enumerate(lattice.hypercube.coordinates)
-      @test [
+      @test perms[ir].map == [
         let
           ivec = [(i-1) % 4, (i-1) ÷ 4]
           jvec = [(x + 16) % 4 for x in (ivec .+ r)]
@@ -200,8 +207,21 @@ using YAML
           2 * (j-1) + iorb
         end
         for i in 1:16 for iorb in 1:2
-      ] == perms[ir].map
+      ]
     end
+
+    @test_throws BoundsError get_irrep_iterator(lattice, tsym, 1, 2)
+    let phases = [cis(-2π * i / 4) for j in 0:3 for i in 0:3]
+      irrep_list1 = collect(get_irrep_iterator(lattice, tsym, 2, 1))
+      irrep_list2 = collect(zip(perms, phases))
+      @test length(irrep_list1) == length(irrep_list2)
+      @test all(x[1] == y[1] for (x,y) in zip(irrep_list1, irrep_list2))
+      @test all(x[2] ≈ y[2] for (x,y) in zip(irrep_list1, irrep_list2))
+    end
+
+    @test iscompatible(lattice, tsym, 1, [1,0]) # Γ point
+    @test !iscompatible(lattice, tsym, 2, [1,0]) # Γ point
+    @test !iscompatible(lattice, tsym, 2, [[0,0], [1,0]])
 
 
   end # testset lattice permutation
