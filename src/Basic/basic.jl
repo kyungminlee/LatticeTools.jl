@@ -54,7 +54,7 @@ parse_expr(expr::Number) = expr
 function parse_expr(expr::AbstractString)
   expr2 = Meta.parse(expr)
   eval(quote
-    i = 1
+    i = im
     $expr2
   end)
 end
