@@ -19,7 +19,7 @@ using YAML
         "[0, 1]", "[1, 1]", "[2, 1]",
         "[0, 2]", "[1, 2]", "[2, 2]",
       ]
-      @test tsym.conjugacy_classes == [(name=x,) for x in tsym.element_names]
+      @test tsym.conjugacy_classes == [(name=x, elements=[i]) for (i, x) in enumerate(tsym.element_names)]
 
       @test tsym.orthogonal_shape == [3, 3]
       @test tsym.orthogonal_coordinates == tsym.hypercube.coordinates
@@ -48,7 +48,7 @@ using YAML
         "[0, 1]", "[1, 2]", "[2, 0]", "[3, 1]",
         "[0, 2]", "[1, 0]", "[2, 1]", "[3, 2]",
       ]
-      @test tsym.conjugacy_classes == [(name=x,) for x in tsym.element_names]
+      @test tsym.conjugacy_classes == [(name=x, elements=[i]) for (i, x) in enumerate(tsym.element_names)]
 
       @test tsym.orthogonal_shape == [12]
       @test tsym.orthogonal_coordinates == [[0], [1], [2], [3], [4], [5], [6], [7], [8], [9], [10], [11]]
@@ -69,18 +69,20 @@ using YAML
 
 
   @testset "PointSymmetry" begin
-    psym = PointSymmetry(YAML.load_file("repr-19.yaml"))
+    psym = PointSymmetry(YAML.load_file(joinpath(
+          dirname(Base.find_package("TightBindingLattice")), "..",
+          "PointGroupData", "PointGroup3D-19.yaml")))
     @test psym.generators == [2,4]
     @test length(psym.conjugacy_classes) == 3 # three conjugacy classes
     @test size(psym.character_table) == (3,3)
-    @test psym.character_table ≈ [1 1 1; 1 1 -1; 2 -1 0]
+    @test psym.character_table ≈ [1 1 1; 1 -1 1; 2 0 -1]
     @test all(let d = psym.character_table[idx_irrep, 1]
                 size(m) == (d, d)
               end
-                for (idx_irrep, irrep) in enumerate(psym.irreducible_representations)
+                for (idx_irrep, irrep) in enumerate(irreps(psym))
                 for m in irrep.matrices
               )
-    ord_group = order(psym.group)
+    ord_group = group_order(psym.group)
     matrep_lookup = Dict(m=>i for (i, m) in enumerate(psym.matrix_representations))
     matrep_mtab = zeros(Int, (ord_group, ord_group))
     for i1 in 1:ord_group, i2 in 1:ord_group
@@ -94,6 +96,7 @@ using YAML
 
   end # @testset "PointSymmetry" begin
 
+  #=
   @testset "PointSymmetryBravaisRepresentation" begin
     psym = PointSymmetry(YAML.load_file("repr-19.yaml"))
 
@@ -110,6 +113,8 @@ using YAML
       @test psbr.symmetry.group.multiplication_table[i,j] == k
     end
   end
+  =#
+
 
 end # @testset "Symmetry" begin
 
