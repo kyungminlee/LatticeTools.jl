@@ -69,9 +69,7 @@ using YAML
 
 
   @testset "PointSymmetry" begin
-    psym = PointSymmetry(YAML.load_file(joinpath(
-          dirname(Base.find_package("TightBindingLattice")), "..",
-          "PointGroupData", "PointGroup3D-19.yaml")))
+    psym = PointSymmetryDatabase.get(19)
     @test psym.generators == [2,4]
     @test length(psym.conjugacy_classes) == 3 # three conjugacy classes
     @test size(psym.character_table) == (3,3)
