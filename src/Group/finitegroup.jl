@@ -6,6 +6,7 @@ export generate_subgroup
 export issubgroup
 export isabelian
 export minimal_generating_set
+export group_multiplication_table
 
 struct FiniteGroup <: AbstractGroup
     multiplication_table::Matrix{Int}
@@ -125,14 +126,6 @@ function generate_subgroup(group::FiniteGroup,
         end
     end
     return subgroup
-end
-
-
-"""
-    generate_subgroup(group, generators...)
-"""
-function generate_subgroup(group::FiniteGroup, generators::Integer...)
-    return generate_subgroup(group, generators)
 end
 
 
