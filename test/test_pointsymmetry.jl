@@ -14,13 +14,14 @@ using YAML
   end
 
   psym = PointSymmetry(data_yaml)
-  @test group_order(psym) == 8
-  let elnames = element_names(psym)
-    for i in 1:8
-      @test elnames[i] == element_name(psym, i)
+  ord_group = group_order(psym.group)
+
+  @testset "elements" begin
+    @test group_order(psym) == 8
+    for i in 1:ord_group
+      @test element_names(psym)[i] == element_name(psym, i)
     end
   end
-  ord_group = group_order(psym.group)
 
   @testset "generators" begin
     # Generators completely generate the group
@@ -42,44 +43,54 @@ using YAML
   end
 
 
-  @test num_irreps(psym) == 5
+  @testset "irreps" begin
+    @test num_irreps(psym) == 5
+    let χ = [1  1  1  1  1;
+             1  1  1 -1 -1;
+             1  1 -1 -1  1;
+             1  1 -1  1 -1;
+             2 -2  0  0  0]
+      @test character_table(psym) ≈ χ
+      @test size(character_table(psym)) == (5, 5)
+    end
 
-  let χ = [1  1  1  1  1;
-           1  1  1 -1 -1;
-           1  1 -1 -1  1;
-           1  1 -1  1 -1;
-           2 -2  0  0  0]
-    @test character_table(psym) ≈ χ
-    @test size(character_table(psym)) == (5, 5)
+    @test length(irreps(psym)) == 5
+    for i in 1:5
+      @test irreps(psym)[i] == irrep(psym, i)
+    end
+
+    for (idx_irrep, irrep) in enumerate(irreps(psym))
+      d = psym.character_table[idx_irrep, 1]
+      @test irrep_dimension(psym, idx_irrep) == d
+      for m in irrep.matrices
+        @test size(m) == (d, d)
+      end # for irrep.matrices
+      for (idx_cc, cc) in enumerate(psym.conjugacy_classes)
+        character = character_table(psym)[idx_irrep, idx_cc]
+        for idx_elem in cc.elements
+          @test isapprox(tr(irrep.matrices[idx_elem]), character; atol=Base.rtoldefault(Float64))
+        end # for cc.elements
+      end # for enumerate(psym.conjugacy_classes)
+    end # for enumerate(irreps(psym))
   end
 
-  @test length(irreps(psym)) == 5
-  for i in 1:5
-    @test irreps(psym)[i] == irrep(psym, i)
+
+  @testset "iscompatible" begin
+    hc1 = HypercubicLattice([4 0; 0 4])
+    hc2 = HypercubicLattice([4 0; 0 3])
+    tsym1 = TranslationSymmetry(hc1)
+    tsym2 = TranslationSymmetry(hc2)
+
+    @test_throws DimensionMismatch iscompatible(hc1, psym)
+    @test_throws DimensionMismatch iscompatible(tsym1, psym)
+
+    psym_proj = project(psym, [1 0 0; 0 1 0])
+
+    @test iscompatible(hc1, psym_proj)
+    @test !iscompatible(hc2, psym_proj)
+    @test iscompatible(tsym1, psym_proj)
+    @test !iscompatible(tsym2, psym_proj)
   end
-
-  for (idx_irrep, irrep) in enumerate(irreps(psym)), m in irrep.matrices
-    d = psym.character_table[idx_irrep, 1]
-    @test size(m) == (d, d)
-  end
-
-
-
-
-  hc1 = HypercubicLattice([4 0; 0 4])
-  hc2 = HypercubicLattice([4 0; 0 3])
-  tsym1 = TranslationSymmetry(hc1)
-  tsym2 = TranslationSymmetry(hc2)
-
-  @test_throws DimensionMismatch iscompatible(hc1, psym)
-  @test_throws DimensionMismatch iscompatible(tsym1, psym)
-
-  psym_proj = project(psym, [1 0 0; 0 1 0])
-
-  @test iscompatible(hc1, psym_proj)
-  @test !iscompatible(hc2, psym_proj)
-  @test iscompatible(tsym1, psym_proj)
-  @test !iscompatible(tsym2, psym_proj)
 
 end # @testset "PointSymmetry"
 
