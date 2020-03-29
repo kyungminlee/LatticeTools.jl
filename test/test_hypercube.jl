@@ -60,5 +60,23 @@ using TightBindingLattice
   end # testset ExactLinearAlgebra
 
 
+  @testset "HypercubicLattice" begin
+    @testset "failures" begin
+      @test_throws DimensionMismatch HypercubicLattice([1 2 3; 4 5 6])
+      @test_throws ArgumentError HypercubicLattice([1 1; 1 1])
+    end
+
+    @testset "Orthogonal" begin
+      hypercube = HypercubicLattice([3 0; 0 3])
+      @test hypercube.inverse_scale_matrix == [1//3 0; 0 1//3]
+
+      for i in 0:6, j in 0:6
+        @test hypercube.wrap([i, j]) == ([i÷3, j÷3], [i%3, j%3])
+      end
+    end
+  end
+
+
+
 
 end # testset enlargement

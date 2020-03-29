@@ -1,10 +1,11 @@
-export HypercubicLattice
 
+export HypercubicLattice
 export dimension
 export isequiv
 export translation_group_multiplication_table
 export orthogonalize
 
+import LinearAlgebra
 
 struct HypercubicLattice
   scale_matrix ::Matrix{Int}
@@ -19,7 +20,7 @@ struct HypercubicLattice
     n, m = size(scale_matrix)
     n != m && throw(DimensionMismatch("scale_matrix is not square: dimensions are ($n, $m)"))
     d = ExactLinearAlgebra.determinant(scale_matrix)
-    d == 0 && throw(SingularException("scale matrix null"))
+    d == 0 && throw(ArgumentError("scale matrix null"))
     d = abs(d)
 
     inverse_scale_matrix = ExactLinearAlgebra.inverse(scale_matrix)
@@ -76,7 +77,7 @@ struct HypercubicLattice
     n, m = size(scale_matrix)
     n != m && throw(DimensionMismatch("scale_matrix is not square: dimensions are ($n, $m)"))
     d = ExactLinearAlgebra.determinant(scale_matrix)
-    d == 0 && throw(SingularException("scale matrix null"))
+    d == 0 && throw(ArgumentError("scale matrix null"))
     d = abs(d)
 
     inverse_scale_matrix = ExactLinearAlgebra.inverse(scale_matrix)
