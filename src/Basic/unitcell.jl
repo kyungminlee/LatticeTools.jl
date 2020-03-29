@@ -17,7 +17,7 @@ export dimension,
 export findorbitalindex
 
 using LinearAlgebra
-import Base.zero
+#import Base.zero
 
 
 """
@@ -368,12 +368,12 @@ function whichunitcell(uc ::UnitCell{O},
     return R
 end
 
-
+#=
 function zero(uc::UnitCell; dtype::DataType=ComplexF64)
     norb = numorbital(uc)
     return Base.zeros(dtype, (norb, norb))
 end
-
+=#
 
 """
     momentumgrid
