@@ -71,18 +71,20 @@ function *(p1 ::Permutation, p2 ::Permutation)
   return Permutation(Int[p2.map[x] for x in p1.map])
 end
 
+#=
 import Base.*
-function *(lhs ::Set{Permutation}, rhs::Permutation)
+function *(lhs ::AbstractSet{Permutation}, rhs::Permutation)
     return generate_group(lhs..., rhs)
 end
 
-function *(lhs ::Permutation, rhs::Set{Permutation})
+function *(lhs ::Permutation, rhs::AbstractSet{Permutation})
     return generate_group(lhs, rhs...)
 end
 
-function *(lhs ::Set{Permutation}, rhs::Set{Permutation})
+function *(lhs ::AbstractSet{Permutation}, rhs::AbstractSet{Permutation})
     return generate_group(lhs..., rhs...)
 end
+=#
 
 import Base.^
 """
