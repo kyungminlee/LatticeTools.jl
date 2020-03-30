@@ -206,7 +206,7 @@ function little_group(tsym::TranslationSymmetry,
                       psym::PointSymmetry)
 
     k_o2 = tsym.orthogonal_coordinates[momentum_index]
-    lg = Int[]
+    lg = BitSet()
     for (i_elem, matrep) in enumerate(psym.matrix_representations)
         k_o1 = tsym.orthogonal_to_coordinate_map[k_o2]
         k_r1 = tsym.hypercube.wrap(matrep * k_o1)[2]
