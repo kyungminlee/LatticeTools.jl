@@ -10,7 +10,7 @@ function load(groupnum)
     data_directory = abspath(joinpath(@__DIR__, "..", "..", "data", "PointGroup3D"))
     file_path = joinpath(data_directory, "PointGroup3D-$groupnum.yaml")
     data_yaml = YAML.load_file(file_path)
-    point_symmetry = PointSymmetry(data_yaml)
+    point_symmetry = read_point_symmetry(data_yaml)
     return point_symmetry
 end
 

@@ -10,10 +10,10 @@ using YAML
 
   let data_yaml_2 = deepcopy(data_yaml)
     data_yaml_2["Generators"] = [1]
-    @test_throws ArgumentError PointSymmetry(data_yaml_2)
+    @test_throws ArgumentError read_point_symmetry(data_yaml_2)
   end
 
-  psym = PointSymmetry(data_yaml)
+  psym = read_point_symmetry(data_yaml)
   ord_group = group_order(psym.group)
 
   @testset "elements" begin

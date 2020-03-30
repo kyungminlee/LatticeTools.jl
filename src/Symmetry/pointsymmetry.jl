@@ -20,7 +20,7 @@ export get_orbital_permutations
 
 export get_irrep_iterator
 
-
+export read_point_symmetry
 
 struct PointSymmetry
     group::FiniteGroup
@@ -36,13 +36,18 @@ struct PointSymmetry
 
     function PointSymmetry(
             group::FiniteGroup,
-            generators::Vector{Int},
-            conjugacy_classes::Vector{ConjugacyClassType},
-            character_table::Matrix{ComplexF64},
-            irreps::Vector{IrrepType},
-            element_names::Vector{String},
-            matrix_representations::Vector{Matrix{Int}},
-            hermann_mauguinn::String)
+            generators::AbstractVector{<:Integer},
+            conjugacy_classes::AbstractVector{ConjugacyClassType},
+            character_table::AbstractMatrix{<:Number},
+            irreps::AbstractVector{IrrepType},
+            element_names::AbstractVector{<:AbstractString},
+            matrix_representations::AbstractVector{<:AbstractMatrix{<:Integer}},
+            hermann_mauguinn::AbstractString)
+
+        dim = size(psym.matrix_representations[1], 1)
+        if any(size(m) != (dim, dim) for m in psym.matrix_representations)
+            throw(ArgumentError("matrix representations should be square matrices of the same dimension"))
+        end
         return new(group,
                    generators,
                    conjugacy_classes,
@@ -52,47 +57,48 @@ struct PointSymmetry
                    matrix_representations,
                    hermann_mauguinn)
     end
+end
 
-    function PointSymmetry(data::AbstractDict)
-        tol = Base.rtoldefault(Float64)
+function read_point_symmetry(data::AbstractDict)
+    tol = Base.rtoldefault(Float64)
+    multiplication_table = transpose(hcat(parse_expr(data["MultiplicationTable"])...))
 
-        multiplication_table = transpose(hcat(parse_expr(data["MultiplicationTable"])...))
+    group = FiniteGroup(multiplication_table)
+    ord_group = group_order(group)
 
-        group = FiniteGroup(multiplication_table)
-        ord_group = group_order(group)
-
-        generators = data["Generators"]
-        if generate_subgroup(group, generators) != BitSet(1:group_order(group))
-            throw(ArgumentError("Generators $(generators) does not generate the group"))
-        end
-
-        conjugacy_classes = [(name=item["Name"], elements=item["Elements"]) for item in data["ConjugacyClasses"]]
-        let prev_set = BitSet()
-            for (name, elements) in conjugacy_classes
-                !isempty(intersect(elements, prev_set)) && throw(ArgumentError("Same element in multiple conjugacy classes"))
-                union!(prev_set, elements)
-            end
-            prev_set != BitSet(1:ord_group) && throw(ArgumentError("every element must belong to a conjugacy class"))
-        end
-
-        character_table = cleanup_number(transpose(hcat(parse_expr(data["CharacterTable"])...)), tol)
-        let nc = length(conjugacy_classes)
-            size(character_table) != (nc, nc) && throw(ArgumentError("character table has wrong size"))
-        end
-
-        irreps = NamedTuple{(:name, :matrices), Tuple{String, Vector{Matrix{Number}}}}[]
-        for item in data["IrreducibleRepresentations"]
-            matrices = Matrix{Number}[transpose(hcat(parse_expr(elem)...)) for elem in item["Matrices"]]
-            new_item = (name=item["Name"], matrices=cleanup_number(matrices, tol))
-            push!(irreps, new_item)
-        end
-        element_names = data["ElementNames"]
-        matrix_representations = [transpose(hcat(parse_expr(x)...)) for x in data["MatrixRepresentations"]]
-        hermann_mauguinn = data["HermannMauguinn"]
-
-        new(group, generators, conjugacy_classes, character_table, irreps, element_names,
-            matrix_representations, hermann_mauguinn)
+    generators = data["Generators"]
+    if generate_subgroup(group, generators) != BitSet(1:group_order(group))
+        throw(ArgumentError("Generators $(generators) does not generate the group"))
     end
+
+    conjugacy_classes = [(name=item["Name"], elements=item["Elements"]) for item in data["ConjugacyClasses"]]
+    let prev_set = BitSet()
+        for (name, elements) in conjugacy_classes
+            !isempty(intersect(elements, prev_set)) && throw(ArgumentError("Same element in multiple conjugacy classes"))
+            union!(prev_set, elements)
+        end
+        prev_set != BitSet(1:ord_group) && throw(ArgumentError("every element must belong to a conjugacy class"))
+    end
+
+    character_table = cleanup_number(transpose(hcat(parse_expr(data["CharacterTable"])...)), tol)
+    let nc = length(conjugacy_classes)
+        size(character_table) != (nc, nc) && throw(ArgumentError("character table has wrong size"))
+    end
+
+    irreps = NamedTuple{(:name, :matrices), Tuple{String, Vector{Matrix{Number}}}}[]
+    for item in data["IrreducibleRepresentations"]
+        matrices = Matrix{Number}[transpose(hcat(parse_expr(elem)...)) for elem in item["Matrices"]]
+        new_item = (name=item["Name"], matrices=cleanup_number(matrices, tol))
+        push!(irreps, new_item)
+    end
+
+    element_names = data["ElementNames"]
+    matrix_representations = [transpose(hcat(parse_expr(x)...)) for x in data["MatrixRepresentations"]]
+    hermann_mauguinn = data["HermannMauguinn"]
+
+    PointSymmetry(group, generators,
+                  conjugacy_classes, character_table, irreps,
+                  element_names, matrix_representations, hermann_mauguinn)
 end
 
 group_order(psym::PointSymmetry) = group_order(psym.group)
@@ -143,9 +149,6 @@ function project(psym::PointSymmetry,
                  projection::AbstractMatrix{<:Integer};
                  tol::Real=Base.rtoldefault(Float64))
     dim = size(psym.matrix_representations[1], 1)
-    if any(size(m) != (dim, dim) for m in psym.matrix_representations)
-        throw(ArgumentError("matrix representations should be square matrices of the same dimension"))
-    end
     size(projection, 2) != dim && throw(ArgumentError("projection does not match matrix_representations dimension"))
 
     vals = LinearAlgebra.svdvals(projection)
