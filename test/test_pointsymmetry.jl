@@ -115,7 +115,29 @@ using YAML
     #tsym = TranslationSymmetry(lattice)
     #tsym_perms = get_orbital_permutations(lattice, tsym)
 
+    lattice = make_lattice(unitcell, [2 0; 0 2])
+    perms = get_orbital_permutations(lattice, psym)
+    @test length(perms) == length(psym.element_names)
+    @test perms[1] == Permutation(1:8) # identity
 
+    # +90 degrees rotation
+    #
+    # |       |                 |       |
+    # 6       8                 3       7
+    # |       |         C4      |       |
+    # . - 5 - . - 7 -   =>      . - 8 - . - 4 -
+    # |       |                 |       |
+    # 2       4                 1       5
+    # |       |                 |       |
+    # o - 1 - . - 3 -           o - 6 - . - 2 -
+    @test perms[idx_C4] == Permutation([2,3,6,7,4,1,8,5])
+
+    tsym = TranslationSymmetry(lattice)
+
+    @test little_group(tsym, 1, psym) == BitSet(1:8)
+    @test little_group(tsym, 2, psym) == BitSet([1,2,5,6])
+    @test little_group(tsym, 3, psym) == BitSet([1,2,5,6])
+    @test little_group(tsym, 4, psym) == BitSet(1:8)
   end
 
 end # @testset "PointSymmetry"
