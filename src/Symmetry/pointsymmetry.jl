@@ -44,8 +44,8 @@ struct PointSymmetry
             matrix_representations::AbstractVector{<:AbstractMatrix{<:Integer}},
             hermann_mauguinn::AbstractString)
 
-        dim = size(psym.matrix_representations[1], 1)
-        if any(size(m) != (dim, dim) for m in psym.matrix_representations)
+        dim = size(first(matrix_representations), 1)
+        if any(size(m) != (dim, dim) for m in matrix_representations)
             throw(ArgumentError("matrix representations should be square matrices of the same dimension"))
         end
         return new(group,
@@ -85,7 +85,7 @@ function read_point_symmetry(data::AbstractDict)
         size(character_table) != (nc, nc) && throw(ArgumentError("character table has wrong size"))
     end
 
-    irreps = NamedTuple{(:name, :matrices), Tuple{String, Vector{Matrix{Number}}}}[]
+    irreps = IrrepType[]
     for item in data["IrreducibleRepresentations"]
         matrices = Matrix{Number}[transpose(hcat(parse_expr(elem)...)) for elem in item["Matrices"]]
         new_item = (name=item["Name"], matrices=cleanup_number(matrices, tol))

@@ -1,7 +1,7 @@
 module PointSymmetryDatabase
 using YAML
 
-import ..TightBindingLattice: PointSymmetry
+import ..TightBindingLattice: PointSymmetry, read_point_symmetry
 
 NUM_POINT_SYMMETRIES = 32
 POINT_SYMMETRY_DATABASE = Vector{PointSymmetry}(undef, NUM_POINT_SYMMETRIES)
