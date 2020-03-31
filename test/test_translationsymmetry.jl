@@ -6,6 +6,7 @@ using YAML
 
   @testset "orthogonal lattice" begin
     tsym = TranslationSymmetry([3 0; 0 3])
+    @test isabelian(tsym.group)
 
     @test length(tsym.generators) == 2
     idx_gen1 = tsym.generators[1]
@@ -18,7 +19,6 @@ using YAML
       @test generate_subgroup(tsym.group, tsym.generators) == BitSet(1:group_order(tsym))
       @test prod(tsym.group.period_lengths[x] for x in tsym.generators) == group_order(tsym) # since abelian group
     end
-
 
     @testset "elements" begin
       @test tsym.hypercube.coordinates[idx_gen1] == [1, 0]
@@ -33,6 +33,20 @@ using YAML
       for i in 1:9
         @test element_names(tsym)[i] == element_name(tsym, i)
       end
+    end
+
+    @testset "multiplication table" begin
+      mtab = zeros(Int, (9, 9))
+      lookup = Dict(r => i for (i, r) in enumerate(tsym.hypercube.coordinates))
+      for (i, ri) in enumerate(tsym.hypercube.coordinates)
+        for (j, rj) in enumerate(tsym.hypercube.coordinates)
+          _, ek = tsym.hypercube.wrap(ri + rj)
+          k = lookup[ek]
+          mtab[i,j] = k
+        end # for j
+      end # for i
+      @test mtab == group_multiplication_table(tsym)
+      @test mtab == group_multiplication_table(tsym.group)
     end
 
     @testset "coordinates" begin
