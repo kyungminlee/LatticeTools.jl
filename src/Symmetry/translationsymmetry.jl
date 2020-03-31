@@ -1,6 +1,7 @@
 export TranslationSymmetry
 
 export group_order,
+       group_multiplication_table,
        character_table,
        irreps,
        irrep,
@@ -8,6 +9,7 @@ export group_order,
        num_irreps,
        element_names,
        element_name
+
 
 export get_orbital_permutations
 export iscompatible
@@ -98,6 +100,8 @@ end
 
 
 group_order(sym::TranslationSymmetry) = group_order(sym.group)
+group_multiplication_table(psym::TranslationSymmetry) = group_multiplication_table(psym.group)
+
 element_names(sym::TranslationSymmetry) = sym.element_names
 element_name(tsym::TranslationSymmetry, g) = tsym.element_names[g]
 
