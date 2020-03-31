@@ -5,16 +5,8 @@ os:
   - linux
 matrix:
   allow_failures:
-    - julia: 1.0
     - julia: nightly
   include:
-    - julia: 1.0
-      script:
-        - if [[ -a .git/shallow ]]; then git fetch --unshallow; fi
-        - git clone https://github.com/JuliaRegistries/General.git $HOME/.julia/registries/General
-        - git clone https://github.com/kyungminlee/KyungminLeeRegistry.jl.git $HOME/.julia/registries/KyungminLeeRegistry
-        - julia --project -e 'import Pkg; Pkg.build()'
-        - JULIA_NUM_THREADS=2 julia --project --check-bounds=yes -e 'import Pkg; Pkg.test(; coverage=false)'
     - julia: 1.4
       script:
         - if [[ -a .git/shallow ]]; then git fetch --unshallow; fi
