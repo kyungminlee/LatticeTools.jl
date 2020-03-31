@@ -99,46 +99,58 @@ using YAML
   end
 
 
-  @testset "lattice permutation" begin
+  @testset "two-band model" begin
     unitcell = make_unitcell([1.0 0.0; 0.0 1.0]; OrbitalType=String)
     addorbital!(unitcell, "Ox", FractCoord([0,0], [0.5, 0.0]))
     addorbital!(unitcell, "Oy", FractCoord([0,0], [0.0, 0.5]))
 
     psym = project(PointSymmetryDatabase.get(13), [1 0 0; 0 1 0])
 
-    idx_C4 = 3
-    @test element_name(psym, idx_C4) == "4<sup>+</sup><sub>001</sub>"
-    @test findorbitalmap(unitcell, psym.matrix_representations[idx_C4]) == [(2, [0,0]), (1, [-1,0])]
-    @test findorbitalmap(unitcell, psym)[idx_C4] == [(2, [0,0]), (1, [-1,0])]
+    @testset "lattice permutations" begin
+      idx_C4 = 3
+      @test element_name(psym, idx_C4) == "4<sup>+</sup><sub>001</sub>"
+      @test findorbitalmap(unitcell, psym.matrix_representations[idx_C4]) == [(2, [0,0]), (1, [-1,0])]
+      @test findorbitalmap(unitcell, psym)[idx_C4] == [(2, [0,0]), (1, [-1,0])]
 
-    #lattice = make_lattice(unitcell, [4 0; 0 4])
-    #tsym = TranslationSymmetry(lattice)
-    #tsym_perms = get_orbital_permutations(lattice, tsym)
+      #lattice = make_lattice(unitcell, [4 0; 0 4])
+      #tsym = TranslationSymmetry(lattice)
+      #tsym_perms = get_orbital_permutations(lattice, tsym)
 
-    lattice = make_lattice(unitcell, [2 0; 0 2])
-    perms = get_orbital_permutations(lattice, psym)
-    @test length(perms) == length(psym.element_names)
-    @test perms[1] == Permutation(1:8) # identity
+      lattice = make_lattice(unitcell, [2 0; 0 2])
+      tsym = TranslationSymmetry(lattice)
 
-    # +90 degrees rotation
-    #
-    # |       |                 |       |
-    # 6       8                 3       7
-    # |       |         C4      |       |
-    # . - 5 - . - 7 -   =>      . - 8 - . - 4 -
-    # |       |                 |       |
-    # 2       4                 1       5
-    # |       |                 |       |
-    # o - 1 - . - 3 -           o - 6 - . - 2 -
-    @test perms[idx_C4] == Permutation([2,3,6,7,4,1,8,5])
+      perms = get_orbital_permutations(lattice, psym)
+      @test length(perms) == length(psym.element_names)
+      @test perms[1] == Permutation(1:8) # identity
 
-    tsym = TranslationSymmetry(lattice)
+      # |       |                 |       |
+      # 6       8                 3       7
+      # |       |         C4      |       |
+      # . - 5 - . - 7 -   =>      . - 8 - . - 4 -
+      # |       |                 |       |
+      # 2       4                 1       5
+      # |       |                 |       |
+      # o - 1 - . - 3 -           o - 6 - . - 2 -
+      @test perms[idx_C4] == Permutation([2,3,6,7,4,1,8,5])
 
-    @test little_group(tsym, 1, psym) == BitSet(1:8)
-    @test little_group(tsym, 2, psym) == BitSet([1,2,5,6])
-    @test little_group(tsym, 3, psym) == BitSet([1,2,5,6])
-    @test little_group(tsym, 4, psym) == BitSet(1:8)
+      @test little_group_elements(tsym, 1, psym) == collect(1:8)
+      @test little_group_elements(tsym, 2, psym) == [1,2,5,6]
+      @test little_group_elements(tsym, 3, psym) == [1,2,5,6]
+      @test little_group_elements(tsym, 4, psym) == collect(1:8)
+    end # testset "lattice permutations"
+
+    @testset "little_symmetry" begin
+      lattice = make_lattice(unitcell, [4 0; 0 4])
+      tsym = TranslationSymmetry(lattice)
+      for tsym_irrep in 1:num_irreps(tsym)
+        psym_little = little_symmetry(tsym, tsym_irrep, psym)
+        k = tsym.hypercube.coordinates[tsym_irrep]
+        @test iscompatible(tsym, tsym_irrep, psym) == (k in [[0,0], [2,2]])
+        @test iscompatible(tsym, tsym_irrep, psym_little)
+      end # for tsym_irrep
+    end # testset little_symmetry
   end
+
 
 end # @testset "PointSymmetry"
 
