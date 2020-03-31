@@ -343,7 +343,7 @@ function get_irrep_iterator(lattice::Lattice,
     end
     #@assert iscompatible(tsym, psym)
 
-    tsym_permutations = get_orbital_permutations(lattice)
+    tsym_permutations = get_orbital_permutations(lattice, tsym)
     tsym_irrep = irrep(tsym, tsym_irrep_index)
     tsym_irrep_components = [m[tsym_irrep_compo, tsym_irrep_compo] for m in tsym_irrep.matrices]
 
