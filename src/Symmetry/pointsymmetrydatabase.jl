@@ -8,6 +8,17 @@ import ..TightBindingLattice: PointSymmetry, read_point_symmetry
 NUM_POINT_SYMMETRIES = 32
 POINT_SYMMETRY_DATABASE = Vector{PointSymmetry}(undef, NUM_POINT_SYMMETRIES)
 
+
+function __init__()
+    data_directory = abspath(joinpath(@__DIR__, "..", "..", "data", "PointGroup3D"))
+    if isfile(joinpath(data_directory, "PointGroup3D.jld2"))
+        cache_database = load(joinpath(data_directory, "PointGroup3D.jld2"), "POINT_SYMMETRY_DATABASE")
+        for gn in 1:NUM_POINT_SYMMETRIES
+            POINT_SYMMETRY_DATABASE[gn] = cache_database[gn]
+        end
+    end
+end
+
 function load_group(groupnum)
     data_directory = abspath(joinpath(@__DIR__, "..", "..", "data", "PointGroup3D"))
     file_path = joinpath(data_directory, "PointGroup3D-$groupnum.yaml")
@@ -22,15 +33,6 @@ function get(groupnum::Integer)
         POINT_SYMMETRY_DATABASE[groupnum] = load_group(groupnum)
     end
     return POINT_SYMMETRY_DATABASE[groupnum]
-end
-
-let data_directory = abspath(joinpath(@__DIR__, "..", "..", "data", "PointGroup3D"))
-    if isfile(joinpath(data_directory, "PointGroup3D.jld2"))
-        cache_database = load(joinpath(data_directory, "PointGroup3D.jld2"), "POINT_SYMMETRY_DATABASE")
-        for gn in 1:NUM_POINT_SYMMETRIES
-            POINT_SYMMETRY_DATABASE[gn] = cache_database[gn]
-        end
-    end
 end
 
 end # module PointSymmetryDatabase
