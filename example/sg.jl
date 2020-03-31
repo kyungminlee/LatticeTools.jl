@@ -70,14 +70,21 @@ for momentum_index in 1:12
 end
 
 for tsym_irrep_index in 1:12
-    for psym_irrep_index in 1:3
-        println(tsym.irreps[tsym_irrep_index].name,"    ", psym.irreps[psym_irrep_index].name)
+
+    psym_little = little_symmetry(tsym, tsym_irrep_index, psym)
+    @show tsym_irrep_index
+    @show psym_little.hermann_mauguinn
+    @show num_irreps(psym_little)
+
+    for psym_irrep_index in 1:num_irreps(psym_little)
+        println(tsym.irreps[tsym_irrep_index].name,"    ", psym_little.irreps[psym_irrep_index].name)
         for o in get_irrep_iterator(lattice,
-                                    tsym, psym,
+                                    tsym, psym_little,
                                     tsym_irrep_index, psym_irrep_index,
                                     1, 1)
-            @show o
+            #@show o
         end
-        println()
+        #println()
     end
+    println()
 end
