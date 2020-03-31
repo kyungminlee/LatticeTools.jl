@@ -48,9 +48,50 @@ struct PointSymmetry
             matrix_representations::AbstractVector{<:AbstractMatrix{<:Integer}},
             hermann_mauguinn::AbstractString)
 
-        dim = size(first(matrix_representations), 1)
-        if any(size(m) != (dim, dim) for m in matrix_representations)
-            throw(ArgumentError("matrix representations should be square matrices of the same dimension"))
+        # number counting check
+        if length(element_names) != group_order(group)
+            throw(ArgumentError("number of elements different from order of group"))
+        end
+        if length(matrix_representations) != group_order(group)
+            throw(ArgumentError("number of matrix representations different from order of group"))
+        end
+
+        if generate_subgroup(group, generators) != BitSet(1:group_order(group))
+            throw(ArgumentError("Generators $(generators) does not generate the group"))
+        end
+        let prev_set = BitSet()
+            for (name, elements) in conjugacy_classes
+                !isempty(intersect(elements, prev_set)) && throw(ArgumentError("Same element in multiple conjugacy classes"))
+                union!(prev_set, elements)
+            end
+            prev_set != BitSet(1:group_order(group)) && throw(ArgumentError("every element must belong to a conjugacy class"))
+        end
+        let n = length(conjugacy_classes)
+            if size(character_table) != (n, n)
+                throw(ArgumentError("size of character table does not match the number of conjugacy classes"))
+            end
+            if length(irreps) != n
+                throw(ArgumentError("number of irreps match the number of conjugacy classes"))
+            end
+        end
+        for rep in irreps
+            if length(rep.matrices) != group_order(group)
+                throw(Argument("wrong number of matrices in irrep $rep"))
+            end
+            d = size(rep.matrices[1], 1)
+            if !isapprox(rep.matrices[1], Matrix(I, (d,d)); atol=Base.rtoldefault(Float64))
+                throw(ArgumentError("matrix representation of identity should be identity"))
+            end
+            for m in rep.matrices
+                if size(m) != (d,d)
+                    throw(ArgumentError("matrix representation should all have the same dimension"))
+                end
+            end
+        end
+        let dim = size(first(matrix_representations), 1)
+            if any(size(m) != (dim, dim) for m in matrix_representations)
+                throw(ArgumentError("matrix representations should be square matrices of the same dimension"))
+            end
         end
         return new(group,
                    generators,
@@ -71,18 +112,8 @@ function read_point_symmetry(data::AbstractDict)
     ord_group = group_order(group)
 
     generators = data["Generators"]
-    if generate_subgroup(group, generators) != BitSet(1:group_order(group))
-        throw(ArgumentError("Generators $(generators) does not generate the group"))
-    end
 
     conjugacy_classes = [(name=item["Name"], elements=item["Elements"]) for item in data["ConjugacyClasses"]]
-    let prev_set = BitSet()
-        for (name, elements) in conjugacy_classes
-            !isempty(intersect(elements, prev_set)) && throw(ArgumentError("Same element in multiple conjugacy classes"))
-            union!(prev_set, elements)
-        end
-        prev_set != BitSet(1:ord_group) && throw(ArgumentError("every element must belong to a conjugacy class"))
-    end
 
     character_table = cleanup_number(transpose(hcat(parse_expr(data["CharacterTable"])...)), tol)
     let nc = length(conjugacy_classes)
