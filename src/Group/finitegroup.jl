@@ -45,6 +45,13 @@ struct FiniteGroup <: AbstractGroup
 end
 
 
+import Base.==
+
+function ==(lhs::FiniteGroup, rhs::FiniteGroup)
+    return lhs.multiplication_table == rhs.multiplication_table
+end
+
+
 """
     group_order(group)
 
