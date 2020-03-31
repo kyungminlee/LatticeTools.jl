@@ -133,6 +133,11 @@ using YAML
       # o - 1 - . - 3 -           o - 6 - . - 2 -
       @test perms[idx_C4] == Permutation([2,3,6,7,4,1,8,5])
 
+    end # testset "lattice permutations"
+
+    @testset "little group" begin
+      lattice = make_lattice(unitcell, [2 0; 0 2])
+      tsym = TranslationSymmetry(lattice)
       @test little_group_elements(tsym, 1, psym) == collect(1:8)
       @test little_group_elements(tsym, 2, psym) == [1,2,5,6]
       @test little_group_elements(tsym, 3, psym) == [1,2,5,6]
@@ -142,7 +147,7 @@ using YAML
       @test little_group(tsym, 2, psym) == little_group(tsym, psym, [1,2,5,6])
       @test little_group(tsym, 3, psym) == little_group(tsym, psym, [1,2,5,6])
       @test little_group(tsym, 4, psym) == little_group(tsym, psym, 1:8)
-    end # testset "lattice permutations"
+    end
 
     @testset "little_symmetry" begin
       lattice = make_lattice(unitcell, [4 0; 0 4])
