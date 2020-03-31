@@ -112,7 +112,7 @@ function generate_subgroup(group::FiniteGroup, idx::Integer)
         push!(out, jdx)
         jdx = group_product(group, jdx, idx)
     end
-    assert(false)
+    @assert false "algorithm error with generate_subgroup"
     return BitSet()
 end
 
