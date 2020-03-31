@@ -49,5 +49,30 @@ using YAML
         generators = minimal_generating_set(group)
         @test generators == [2, 4]
         @test generate_subgroup(group, generators) == BitSet(1:6) # completely generates
+
+
+        ϕ = [1, 3, 4, 5, 2, 6] # group isomorphism
+        mtab1 = group_multiplication_table(group)
+        mtab2 = zeros(Int, (6,6))
+        for x in 1:6, y in 1:6
+            # ϕ(x)⋅ϕ(y) = ϕ(x⋅y)
+            mtab2[ϕ[x], ϕ[y]] = ϕ[mtab1[x,y]]
+        end
+        group2 = FiniteGroup(mtab2)
+
+        # ϕ: group  ->  group2
+        #       x  |->  ϕ(x)
+        ϕ2 = group_isomorphism(group, group2)
+        mtab3 = zeros(Int, (6,6))
+        for x in 1:6, y in 1:6
+            # ϕ(x)⋅ϕ(y) = ϕ(x⋅y)
+            mtab3[ϕ2[x], ϕ2[y]] = ϕ2[mtab1[x,y]]
+        end
+        @test mtab2 == mtab3  # ϕ and ϕ2 are equivalent
+
+        #@show mtab2
+        #@show group_isomorphism(group, group2) # finds ϕ
+        #@show group_isomorphism(group2, group) # finds ϕ⁻¹
+
     end
 end
