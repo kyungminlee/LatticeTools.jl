@@ -50,7 +50,7 @@ using TightBindingLattice
 
       @test maximum(abs.(inv(mat) - ExactLinearAlgebra.inverse(mat))) < sqrt(eps(Float64))
       for n in [5, 6, 7, 8]
-        a = rand(-3:3, (n, n))
+        a = rand(-3:3, (n, n)) + 30*I
         inv1 = inv(a)
         inv2 = ExactLinearAlgebra.inverse(a)
         @test maximum(abs.(inv1 - inv2)) < sqrt(eps(Float64))
