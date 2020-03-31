@@ -4,6 +4,87 @@ using YAML
 
 
 @testset "PointSymmetry" begin
+
+  @testset "constructor failure" begin
+    group = FiniteGroup([1 2; 2 1])
+    generators = [2]
+    conjugacy_classes = [(name="1", elements=[1]), (name="2", elements=[2])]
+    character_table = [1 1; 1 -1]
+    irreps = [
+        (name="1", matrices=[ones(ComplexF64, 1, 1), ones(ComplexF64, 1, 1)]),
+        (name="2", matrices=[ones(ComplexF64, 1, 1), -ones(ComplexF64, 1, 1)]),
+    ]
+    element_names = ["1", "-1"]
+    matrix_representations = [[1 0; 0 1], [-1 0; 0 -1]]
+    hermann_mauguinn = "-1"
+    PointSymmetry(group, generators,
+                  conjugacy_classes, character_table, irreps,
+                  element_names, matrix_representations, hermann_mauguinn)
+
+    let generators = [1]
+      @test_throws ArgumentError PointSymmetry(group, generators,
+                                               conjugacy_classes, character_table, irreps,
+                                               element_names, matrix_representations, hermann_mauguinn)
+    end
+
+    let conjugacy_classes = [(name="1", elements=[1]), (name="2", elements=[1,2])]
+      @test_throws ArgumentError PointSymmetry(group, generators,
+                                               conjugacy_classes, character_table, irreps,
+                                               element_names, matrix_representations, hermann_mauguinn)
+    end
+    let character_table = [1 2 3; 4 5 6; 7 8 9]
+      @test_throws ArgumentError PointSymmetry(group, generators,
+                                               conjugacy_classes, character_table, irreps,
+                                               element_names, matrix_representations, hermann_mauguinn)
+    end
+    let irreps = [
+          (name="1", matrices=[ones(ComplexF64, 1, 1), ones(ComplexF64, 1, 1)]),
+      ]
+      @test_throws ArgumentError PointSymmetry(group, generators,
+                                               conjugacy_classes, character_table, irreps,
+                                               element_names, matrix_representations, hermann_mauguinn)
+    end
+    let irreps = [
+          (name="1", matrices=[ones(ComplexF64, 1, 1), ones(ComplexF64, 1, 1)]),
+          (name="2", matrices=[ones(ComplexF64, 1, 1), -ones(ComplexF64, 2, 2)]),
+      ]
+      @test_throws ArgumentError PointSymmetry(group, generators,
+                                               conjugacy_classes, character_table, irreps,
+                                               element_names, matrix_representations, hermann_mauguinn)
+    end
+    let irreps = [
+          (name="1", matrices=[ones(ComplexF64, 1, 1), ones(ComplexF64, 1, 1)]),
+          (name="2", matrices=[2*ones(ComplexF64, 1, 1), -ones(ComplexF64, 1, 1)]),
+      ]
+      @test_throws ArgumentError PointSymmetry(group, generators,
+                                               conjugacy_classes, character_table, irreps,
+                                               element_names, matrix_representations, hermann_mauguinn)
+    end
+    let element_names = ["1", "2", "3"]
+      @test_throws ArgumentError PointSymmetry(group, generators,
+                                               conjugacy_classes, character_table, irreps,
+                                               element_names, matrix_representations, hermann_mauguinn)
+    end
+    let matrix_representations = [[1 0; 0 1], [-1 0 0; 0 -1 0]]
+      @test_throws ArgumentError PointSymmetry(group, generators,
+                                               conjugacy_classes, character_table, irreps,
+                                               element_names, matrix_representations, hermann_mauguinn)
+    end
+    let matrix_representations = [[1 0 0; 1 0 0], [-1 0 0; -1 0 0]]
+      @test_throws ArgumentError PointSymmetry(group, generators,
+                                               conjugacy_classes, character_table, irreps,
+                                               element_names, matrix_representations, hermann_mauguinn)
+    end
+    let matrix_representations = [[1 0 0; 1 0 0]]
+      @test_throws ArgumentError PointSymmetry(group, generators,
+                                               conjugacy_classes, character_table, irreps,
+                                               element_names, matrix_representations, hermann_mauguinn)
+    end
+
+  end
+
+
+
   # D_4
   file_path = abspath(@__DIR__, "..", "data", "PointGroup3D", "PointGroup3D-12.yaml")
   data_yaml = YAML.load_file(file_path)
