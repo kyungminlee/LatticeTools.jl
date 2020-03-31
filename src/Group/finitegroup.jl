@@ -181,29 +181,6 @@ function minimal_generating_set(group::FiniteGroup)
 end
 
 
-
-
-
-
-
-#=
-function orthogonalize(group::FiniteGroup)
-    !isabelian(group) && throw(ArgumentError("orthogonalize only works for abelian groups"))
-
-    generators = minimal_generating_set(group)
-    generator_orders = group.period_lengths[generators]
-
-    elements = Int[1]
-
-    for multiindex in Iterator.product([0:(x-1) for x in generator_orders]...)
-        multiindex_vec = [multiindex...]
-    end
-end
-=#
-
-
-
-
 function group_isomorphism(group1::FiniteGroup, group2::FiniteGroup)
     group_order(group1) != group_order(group2) && return nothing
     sort(group1.period_lengths) != sort(group2.period_lengths) && return nothing
@@ -234,27 +211,19 @@ function group_isomorphism(group1::FiniteGroup, group2::FiniteGroup)
             permutations(1:length(element_groups1[pl]), length(element_groups1[pl]))
             for pl in pls
         ]...)
+        #@assert length(pls) == length(perm_set)
         mapping = zeros(Int, ord_group)
-        @assert length(pls) == length(perm_set)
         for (ipl, (pl, perm)) in enumerate(zip(pls, perm_set))
-
-            elg1 = element_groups1[pl]
-            elg2 = element_groups2[pl]
-
+            elg1, elg2 = element_groups1[pl], element_groups2[pl]
             for j in 1:length(perm)
                 mapping[ element_groups1[pl][j] ] = element_groups2[pl][perm[j]]
             end
         end
-
         mtab1p = zeros(Int, (ord_group, ord_group))
-
         for i in 1:ord_group, j in 1:ord_group
             mtab1p[mapping[i], mapping[j]] = mapping[group1.multiplication_table[i, j]]
         end
-
-        if mtab1p == group2.multiplication_table
-            return mapping
-        end
+        mtab1p == group2.multiplication_table && return mapping
     end
     return nothing
 end
