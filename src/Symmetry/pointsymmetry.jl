@@ -15,7 +15,10 @@ export group_order,
 export iscompatible
 export findorbitalmap
 export project
+export little_group_elements
 export little_group
+
+export little_symmetry
 
 export get_orbital_permutations
 
@@ -103,6 +106,8 @@ function read_point_symmetry(data::AbstractDict)
 end
 
 group_order(psym::PointSymmetry) = group_order(psym.group)
+group_multiplication_table(psym::PointSymmetry) = group_multiplication_table(psym.group)
+
 element_name(sym::PointSymmetry, g) = sym.element_names[g]
 element_names(sym::PointSymmetry) = sym.element_names
 
@@ -202,12 +207,12 @@ function get_orbital_permutations(lattice::Lattice, point_symmetry::PointSymmetr
 end
 
 
-function little_group(tsym::TranslationSymmetry,
-                      momentum_index::Integer,
-                      psym::PointSymmetry)
+function little_group_elements(tsym::TranslationSymmetry,
+                               momentum_index::Integer,
+                               psym::PointSymmetry)
 
     k_o2 = tsym.orthogonal_coordinates[momentum_index]
-    lg = BitSet()
+    lg = Int[]
     for (i_elem, matrep) in enumerate(psym.matrix_representations)
         k_o1 = tsym.orthogonal_to_coordinate_map[k_o2]
         k_r1 = tsym.hypercube.wrap(matrep * k_o1)[2]
@@ -216,6 +221,82 @@ function little_group(tsym::TranslationSymmetry,
     end
     return lg
 end
+
+
+function little_group(tsym::TranslationSymmetry, irrep_index::Integer, psym::PointSymmetry)
+    return little_group(tsym, psym, little_group_elements(tsym, irrep_index, psym))
+end
+
+
+function iscompatible(tsym::TranslationSymmetry,
+                      tsym_irrep::Integer,
+                      psym::PointSymmetry)
+    ! iscompatible(tsym, psym) && return false
+
+    return little_group_elements(tsym, tsym_irrep, psym) == 1:group_order(psym)
+
+end
+
+
+
+"""
+Generate a little group with given elements.
+The elements of the little group, which may be sparse, are compressed into consecutive integers.
+"""
+function little_group(tsym::TranslationSymmetry,
+                      psym::PointSymmetry,
+                      elements::AbstractVector{<:Integer})
+    element_lookup = Dict(x=>i for (i, x) in enumerate(elements))
+    ord_group = length(elements)
+    mtab = zeros(Int, (ord_group, ord_group))
+    for i in 1:ord_group, j in 1:ord_group
+        mtab[i,j] = element_lookup[ group_product(psym.group, elements[i], elements[j]) ]
+    end
+    return FiniteGroup(mtab)
+end
+
+
+
+
+function little_symmetry(tsym::TranslationSymmetry, tsym_irrep::Integer, psym::PointSymmetry)
+    tsym_irrep == 1 && return psym
+    (lg_raw, lg_matrep_raw) = let
+        lg_elements = little_group_elements(tsym, tsym_irrep, psym)
+        lg_raw = little_group(tsym, psym, lg_elements)
+        lg_matrep_raw = psym.matrix_representations[lg_elements]
+        (lg_raw, lg_matrep_raw)
+    end
+    little_symmetry_candidates = Tuple{PointSymmetry, Vector{Int}}[]
+    for i in 1:32
+        ps = PointSymmetryDatabase.get(i)
+        ϕ = group_isomorphism(lg_raw, ps.group)
+        if !isnothing(ϕ)
+            push!(little_symmetry_candidates, (ps, ϕ))
+            break
+        end
+    end
+
+    #if length(little_symmetry_candidates) > 1
+    #    @warn ("more than one matching point symmetry: " *
+    #           join([ps.hermann_mauguinn for (ps,ϕ) in little_symmetry_candidates], ", "))
+    #end
+
+    (psym2, ϕ) = first(little_symmetry_candidates)
+
+    lg_matrep = lg_matrep_raw[ϕ]
+
+    # element names may be wrong.
+    PointSymmetry(psym2.group,
+                  psym2.generators,
+                  psym2.conjugacy_classes,
+                  psym2.character_table,
+                  psym2.irreps,
+                  psym2.element_names,
+                  lg_matrep,
+                  psym2.hermann_mauguinn)
+end
+
+
 
 function get_irrep_iterator(lattice::Lattice,
     tsym::TranslationSymmetry,
@@ -227,22 +308,27 @@ function get_irrep_iterator(lattice::Lattice,
     tol::Real=Base.rtoldefault(Float64)
     )
 
+    if tsym_irrep_compo != 1 || psym_irrep_compo != 1
+        @warn "Currently only supports Gamma point, trivial point irrep"
+    end
+    #@assert iscompatible(tsym, psym)
+
     tsym_permutations = get_orbital_permutations(lattice)
     tsym_irrep = irrep(tsym, tsym_irrep_index)
     tsym_irrep_components = [m[tsym_irrep_compo, tsym_irrep_compo] for m in tsym_irrep.matrices]
 
     psym_permutations = get_orbital_permutations(lattice, psym)
-    psym_little_group_generators = little_group(tsym, tsym_irrep_index, psym)
+    #psym_little_group_generators = little_group(tsym, tsym_irrep_index, psym)
 
     psym_irrep = irrep(psym, psym_irrep_index)
     psym_irrep_components = [m[psym_irrep_compo, psym_irrep_compo] for m in psym_irrep.matrices]
 
     return [
         (psym_perm * tsym_perm ,  psym_phase * tsym_phase)
-        for (psym_perm, psym_phase) in zip(psym_permutations[psym_little_group_generators],
-                                           psym_irrep_components[psym_little_group_generators])
         for (tsym_perm, tsym_phase) in zip(tsym_permutations,
                                            tsym_irrep_components)
+        for (psym_perm, psym_phase) in zip(psym_permutations,
+                                           psym_irrep_components)
         if abs(tsym_phase)>tol && abs(psym_phase) > tol
     ]
 end
