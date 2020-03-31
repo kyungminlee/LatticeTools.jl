@@ -3,6 +3,7 @@ export PointSymmetry
 #export PointSymmetryBravaisRepresentation
 #export SymmorphicSpaceSymmetry
 export group_order,
+       group_multiplication_table,
        element_names,
        element_name,
        character_table,
