@@ -77,4 +77,23 @@ using YAML
         #@show group_isomorphism(group2, group) # finds ϕ⁻¹
 
     end
+
+    @testset "group isomorphism" begin
+        # 4
+        group1 = FiniteGroup([1 2 3 4;
+                              2 1 4 3;
+                              3 4 2 1;
+                              4 3 1 2])
+        group1p= FiniteGroup([1 2 3 4;
+                              2 3 4 1;
+                              3 4 1 2;
+                              4 1 2 3])
+        @test !isnothing(group_isomorphism(group1, group1p))
+        # 2/m
+        group2 = FiniteGroup([1 2 3 4;
+                              2 1 4 3;
+                              3 4 1 2;
+                              4 3 2 1])
+        @test isnothing(group_isomorphism(group1, group2))
+    end # @testset "group isomorphism" begin
 end
