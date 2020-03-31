@@ -35,6 +35,8 @@ using YAML
         @test issubgroup(group, Set([1]))
         @test !issubgroup(group, Set([1,2]))
         @test minimal_generating_set(group) == [2]
+
+        @test group_multiplication_table([[1 0; 0 1], [1 0; 0 -1]]) == [1 2; 2 1]
     end
 
     @testset "FiniteGroup-Nonabelian" begin
