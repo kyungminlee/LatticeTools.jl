@@ -11,9 +11,9 @@ addorbital!(unitcell, "B", carte2fract(unitcell, [0.5,-0.5/sqrt(3)]))
 
 lattice = make_lattice(unitcell, scale_matrix)
 
-hypercube = lattice.hypercube
+#hypercube = lattice.hypercube
 #hypercube = orthogonalize(hypercube)
-translation_symmetry = TranslationSymmetry(hypercube)
+translation_symmetry = TranslationSymmetry(lattice)
 
 #data_directory = joinpath("..", "PointGroupData")
 #data_yaml = YAML.load_file(joinpath(data_directory, "PointGroup3D-19.yaml"))
@@ -21,7 +21,7 @@ point_symmetry = project(
     PointSymmetryDatabase.get(19),
     [1 0 0; 0 1 0])
 
-transperm = get_orbital_permutations(lattice)
+transperm = get_orbital_permutations(lattice, translation_symmetry)
 pointperm = get_orbital_permutations(lattice, point_symmetry)
 
 println("# Translation group period lengths")
