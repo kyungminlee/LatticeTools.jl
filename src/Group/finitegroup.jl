@@ -8,6 +8,10 @@ export isabelian
 export minimal_generating_set
 export group_multiplication_table
 
+export group_isomorphism
+
+using Combinatorics
+
 struct FiniteGroup <: AbstractGroup
     multiplication_table::Matrix{Int}
     period_lengths::Vector{Int}
@@ -170,6 +174,11 @@ function minimal_generating_set(group::FiniteGroup)
 end
 
 
+
+
+
+
+
 #=
 function orthogonalize(group::FiniteGroup)
     !isabelian(group) && throw(ArgumentError("orthogonalize only works for abelian groups"))
@@ -184,3 +193,72 @@ function orthogonalize(group::FiniteGroup)
     end
 end
 =#
+
+
+
+
+function group_isomorphism(group1::FiniteGroup, group2::FiniteGroup)
+    group_order(group1) != group_order(group2) && return nothing
+    sort(group1.period_lengths) != sort(group2.period_lengths) && return nothing
+
+    ord_group = group_order(group1)
+    element_groups1 = Dict{Int, Vector{Int}}() # group by period lengths
+    element_groups2 = Dict{Int, Vector{Int}}() # group by period lengths
+
+    for i in 1:group_order(group1)
+        pl = group1.period_lengths[i]
+        if !haskey(element_groups1, pl)
+            element_groups1[pl] = Int[]
+        end
+        push!(element_groups1[pl], i)
+    end
+
+    for i in 1:group_order(group2)
+        pl = group2.period_lengths[i]
+        if !haskey(element_groups2, pl)
+            element_groups2[pl] = Int[]
+        end
+        push!(element_groups2[pl], i)
+    end
+
+    #q = sort([(pl, i) for (pl, els) in element_groups1 for i in els], rev=true)
+    pls = sort(collect(keys(element_groups1)))
+    for perm_set in Iterators.product([
+            permutations(1:length(element_groups1[pl]), length(element_groups1[pl]))
+            for pl in pls
+        ]...)
+        mapping = zeros(Int, ord_group)
+        @assert length(pls) == length(perm_set)
+        for (ipl, (pl, perm)) in enumerate(zip(pls, perm_set))
+
+            elg1 = element_groups1[pl]
+            elg2 = element_groups2[pl]
+
+            for j in 1:length(perm)
+                mapping[ element_groups1[pl][j] ] = element_groups2[pl][perm[j]]
+            end
+        end
+
+        mtab1p = zeros(Int, (ord_group, ord_group))
+
+        for i in 1:ord_group, j in 1:ord_group
+            mtab1p[mapping[i], mapping[j]] = mapping[group1.multiplication_table[i, j]]
+        end
+
+        if mtab1p == group2.multiplication_table
+            return mapping
+        end
+    end
+    return nothing
+end
+
+
+function group_multiplication_table(elements::AbstractVector{ElementType}) where {ElementType}
+    element_lookup = Dict(k=>i for (i, k) in enumerate(elements))
+    ord_group = length(elements)
+    mtab = zeros(Int, (ord_group, ord_group))
+    for i in 1:ord_group, j in 1:ord_group
+        mtab[i,j] = element_lookup[ elements[i] * elements[j] ]
+    end
+    return mtab
+end
