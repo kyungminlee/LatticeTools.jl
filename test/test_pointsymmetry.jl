@@ -26,7 +26,6 @@ using YAML
                                                conjugacy_classes, character_table, irreps,
                                                element_names, matrix_representations, hermann_mauguinn)
     end
-
     let conjugacy_classes = [(name="1", elements=[1]), (name="2", elements=[1,2])]
       @test_throws ArgumentError PointSymmetry(group, generators,
                                                conjugacy_classes, character_table, irreps,
@@ -80,10 +79,7 @@ using YAML
                                                conjugacy_classes, character_table, irreps,
                                                element_names, matrix_representations, hermann_mauguinn)
     end
-
   end
-
-
 
   # D_4
   file_path = abspath(@__DIR__, "..", "data", "PointGroup3D", "PointGroup3D-12.yaml")
@@ -195,10 +191,6 @@ using YAML
       @test findorbitalmap(unitcell, psym.matrix_representations[idx_C4]) == [(2, [0,0]), (1, [-1,0])]
       @test findorbitalmap(unitcell, psym)[idx_C4] == [(2, [0,0]), (1, [-1,0])]
 
-      #lattice = make_lattice(unitcell, [4 0; 0 4])
-      #tsym = TranslationSymmetry(lattice)
-      #tsym_perms = get_orbital_permutations(lattice, tsym)
-
       lattice = make_lattice(unitcell, [2 0; 0 2])
       tsym = TranslationSymmetry(lattice)
 
@@ -240,9 +232,10 @@ using YAML
         k = tsym.hypercube.coordinates[tsym_irrep]
         @test iscompatible(tsym, tsym_irrep, psym) == (k in [[0,0], [2,2]])
         @test iscompatible(tsym, tsym_irrep, psym_little)
+        lg_matrep = psym.matrix_representations[little_group_elements(tsym, tsym_irrep, psym)]
+        @test !isnothing(group_isomorphism(little_group(tsym, tsym_irrep, psym),
+                                           FiniteGroup(group_multiplication_table(lg_matrep))))
       end # for tsym_irrep
     end # testset little_symmetry
   end
-
-
 end # @testset "PointSymmetry"
