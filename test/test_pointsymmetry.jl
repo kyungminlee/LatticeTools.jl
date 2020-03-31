@@ -40,6 +40,8 @@ using YAML
       matrep_mtab[i1, i2] = i3
     end
     @test matrep_mtab == psym.group.multiplication_table
+    @test matrep_mtab == group_multiplication_table(psym)
+    @test matrep_mtab == group_multiplication_table(psym.group)
   end
 
 
