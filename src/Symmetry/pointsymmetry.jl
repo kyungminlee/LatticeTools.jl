@@ -55,7 +55,6 @@ struct PointSymmetry
         if length(matrix_representations) != group_order(group)
             throw(ArgumentError("number of matrix representations different from order of group"))
         end
-
         if generate_subgroup(group, generators) != BitSet(1:group_order(group))
             throw(ArgumentError("Generators $(generators) does not generate the group"))
         end
@@ -76,7 +75,7 @@ struct PointSymmetry
         end
         for rep in irreps
             if length(rep.matrices) != group_order(group)
-                throw(Argument("wrong number of matrices in irrep $rep"))
+                throw(ArgumentError("wrong number of matrices in irrep $rep"))
             end
             d = size(rep.matrices[1], 1)
             if !isapprox(rep.matrices[1], Matrix(I, (d,d)); atol=Base.rtoldefault(Float64))

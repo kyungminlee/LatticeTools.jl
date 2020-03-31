@@ -45,6 +45,14 @@ using YAML
     end
     let irreps = [
           (name="1", matrices=[ones(ComplexF64, 1, 1), ones(ComplexF64, 1, 1)]),
+          (name="2", matrices=[ones(ComplexF64, 1, 1)]),
+      ]
+      @test_throws ArgumentError PointSymmetry(group, generators,
+                                               conjugacy_classes, character_table, irreps,
+                                               element_names, matrix_representations, hermann_mauguinn)
+    end
+    let irreps = [
+          (name="1", matrices=[ones(ComplexF64, 1, 1), ones(ComplexF64, 1, 1)]),
           (name="2", matrices=[ones(ComplexF64, 1, 1), -ones(ComplexF64, 2, 2)]),
       ]
       @test_throws ArgumentError PointSymmetry(group, generators,
