@@ -54,8 +54,9 @@ parse_expr(expr::Number) = expr
 function parse_expr(expr::AbstractString)
   expr2 = Meta.parse(expr)
   eval(quote
-    i = im
-    $expr2
+    let i = im
+      $expr2
+    end
   end)
 end
 parse_expr(expr::AbstractArray) = [parse_expr(elem) for elem in expr]
