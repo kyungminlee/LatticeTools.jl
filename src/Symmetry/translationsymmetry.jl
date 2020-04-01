@@ -114,8 +114,9 @@ irrep_dimension(sym::TranslationSymmetry, idx::Integer) = size(sym.irreps[idx].m
 
 
 function get_orbital_permutations(lattice::Lattice, translation_symmetry::TranslationSymmetry)
-    #translation_symmetry = TranslationSymmetry(lattice)
-    @warn "Check lattice and translation_symmetry"
+    if lattice.hypercube != translation_symmetry.hypercube
+        throw(ArgumentError("lattice and translation symmetry not consistent"))
+    end
 
     n_uc = length(lattice.hypercube.coordinates)
     n_orb = numorbital(lattice.unitcell)
