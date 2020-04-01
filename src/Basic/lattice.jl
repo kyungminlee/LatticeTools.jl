@@ -44,6 +44,11 @@ struct Lattice{O}
   supercell::UnitCell{Tuple{O, Vector{Int}}}
 end
 
+function make_lattice(unitcell::UnitCell, scale::Integer)
+  make_lattice(unitcell, scale*ones(Int, (1,1)))
+end
+
+
 function make_lattice(unitcell::UnitCell{O}, scale_matrix::AbstractMatrix{<:Integer}) where O
   hypercube = orthogonalize(HypercubicLattice(scale_matrix))
   #return make_lattice(unitcell, hypercube)
