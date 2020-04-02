@@ -27,14 +27,10 @@ struct FractCoord
 
     function FractCoord(w ::AbstractVector{<:Integer},
                         f ::AbstractVector{<:AbstractFloat};
-                        tol ::Real=sqrt(eps(Float64)))
-        if length(w) != length(f)
-            throw(ArgumentError("w and f need to be of same the length"))
-        elseif !all(x -> 0 <= x < 1+tol, f)
-            throw(ArgumentError("f must be a list of floating points in [0, 1) (got $f)"))
-        elseif tol < 0
-            throw(ArgumentError("tol must be non-negative"))
-        end
+                        tol ::Real=Base.rtoldefault(Float64))
+        length(w) != length(f) && throw(ArgumentError("w and f need to be of same the length"))
+        tol < 0 && throw(ArgumentError("tol must be non-negative"))
+        !all(x -> 0 <= x < 1+tol, f) && throw(ArgumentError("f must be a list of floating points in [0, 1) (got $f)"))
 
         neww = copy(w)
         newf = copy(f)

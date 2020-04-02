@@ -14,8 +14,10 @@ export dimension,
        whichunitcell,
        momentumgrid
 
+export findorbitalindex
+
 using LinearAlgebra
-import Base.zero
+#import Base.zero
 
 
 """
@@ -43,7 +45,7 @@ mutable struct UnitCell{O}
                          orbitals ::AbstractVector{Tuple{O, FractCoord}},
                          reducedreciprocallatticevectors ::AbstractArray{<:Real, 2},
                          reciprocallatticevectors ::AbstractArray{<:Real, 2},
-                         orbitalindices ::Dict{O, Int}) where {O}
+                         orbitalindices ::AbstractDict{O, Int}) where {O}
         if (O <: Integer)
             throw(ArgumentError("OrbitalType should not be integer to avoid confusion"))
         end
@@ -366,12 +368,12 @@ function whichunitcell(uc ::UnitCell{O},
     return R
 end
 
-
+#=
 function zero(uc::UnitCell; dtype::DataType=ComplexF64)
     norb = numorbital(uc)
     return Base.zeros(dtype, (norb, norb))
 end
-
+=#
 
 """
     momentumgrid
@@ -397,4 +399,20 @@ function (==)(lhs::UnitCell{O}, rhs::UnitCell{O}) where O
     lhs.latticevectors == rhs.latticevectors &&
     lhs.orbitals == rhs.orbitals
   )
+end
+
+
+"""
+    findorbitalindex
+
+Returns (orbital_index, unitcell_vector), or `(-1, [])` if not found.
+"""
+function findorbitalindex(unitcell::UnitCell, fc::FractCoord; tol=Base.rtoldefault(Float64))
+    i = findfirst(x -> isapprox(x, fc.fraction; atol=tol), [orbfc.fraction for (orbname, orbfc) in unitcell.orbitals])
+    if i !== nothing
+        (orbname, orbfc) = unitcell.orbitals[i]
+        return (i, fc.whole - orbfc.whole)
+    else
+        return (-1, Int[])
+    end
 end

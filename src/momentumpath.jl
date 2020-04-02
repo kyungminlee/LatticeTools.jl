@@ -10,7 +10,7 @@ Generate a list of momenta
 * `anchorpoints`
 * (Optional) `nseg` - number of points in each segment
 """
-function linpath(anchorpoints ::Vector{Vector{Float64}}; nseg=64)
+function linpath(anchorpoints ::AbstractVector{<:AbstractVector{<:Number}}; nseg=64)
     n = length(anchorpoints)
     if n <= 1
         throw(ArgumentError("Number of anchor points should be more than one"))
@@ -41,7 +41,7 @@ end
 The anchorpoints are given in units of the reciprocal lattice vectors.
 """
 function momentumpath(unitcell ::UnitCell,
-                      anchorpoints ::Vector{Vector{Float64}})
+                      anchorpoints ::AbstractVector{<:AbstractVector{<:Number}})
     real_anchorpoints = [unitcell.reciprocallatticevectors * ap for ap in anchorpoints]
     return linpath(real_anchorpoints)
 end
