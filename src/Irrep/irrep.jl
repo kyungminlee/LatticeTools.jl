@@ -22,6 +22,11 @@ struct TranslationSymmetryIrrepComponent <:AbstractSymmetryIrrepComponent
 end
 
 
+function group_order(sic::TranslationSymmetryIrrepComponent)
+    return group_order(sic.symmetry)
+end
+
+
 function get_irrep_iterator(lattice::Lattice,
                             sic::TranslationSymmetryIrrepComponent,
                             tol::Real=Base.rtoldefault(Float64))
@@ -33,7 +38,7 @@ function get_irrep_iterator(lattice::Lattice,
                        end
     return (
         (perm, phase) for (perm, phase) in zip(permutations, irrep_components)
-        if !isapprox(phase, 0; atol=tol)
+        #if !isapprox(phase, 0; atol=tol)
     )
 end
 
@@ -54,6 +59,11 @@ struct PointSymmetryIrrepComponent <:AbstractSymmetryIrrepComponent
     end
 end
 
+function group_order(sic::PointSymmetryIrrepComponent)
+    return group_order(sic.symmetry)
+end
+
+
 function get_irrep_iterator(lattice::Lattice,
                             sic::PointSymmetryIrrepComponent,
                             tol::Real=Base.rtoldefault(Float64))
@@ -61,11 +71,11 @@ function get_irrep_iterator(lattice::Lattice,
     permutations = get_orbital_permutations(lattice, sym)
     irrep_components = let irrep = irrep(sym, sic.irrep_index),
                            c = sic.irrep_component
-                           [m[c, c] for m in sym_irrep.matrices]
+                           [m[c, c] for m in irrep.matrices]
                        end
     return (
         (perm, phase) for (perm, phase) in zip(permutations, irrep_components)
-        if !isapprox(phase, 0; atol=tol)
+        #if !isapprox(phase, 0; atol=tol)
     )
 end
 
@@ -86,6 +96,10 @@ struct SymmorphicSpaceSymmetryIrrepComponent <:AbstractSymmetryIrrepComponent
         end
         return new(tsic, psic)
     end
+end
+
+function group_order(sic::SymmorphicSpaceSymmetryIrrepComponent)
+    return group_order(sic.translation) * group_order(sic.point)
 end
 
 
@@ -116,11 +130,11 @@ function get_irrep_iterator(lattice::Lattice,
 
     return (
         (psym_perm * tsym_perm ,  psym_phase * tsym_phase)
-        for (tsym_perm, tsym_phase) in zip(tsym_permutations,
-                                           tsym_irrep_components)
         for (psym_perm, psym_phase) in zip(psym_permutations,
                                            psym_irrep_components)
-        if !isapprox(psym_phase, 0; atol=tol) && !isapprox(psym_phase, 0; atol=tol)
+        for (tsym_perm, tsym_phase) in zip(tsym_permutations,
+                                           tsym_irrep_components)
+        #if !isapprox(psym_phase, 0; atol=tol) && !isapprox(psym_phase, 0; atol=tol)
     )
 end
 
