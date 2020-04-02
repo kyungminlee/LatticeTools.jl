@@ -262,9 +262,7 @@ function iscompatible(tsym::TranslationSymmetry,
                       tsym_irrep::Integer,
                       psym::PointSymmetry)
     ! iscompatible(tsym, psym) && return false
-
     return little_group_elements(tsym, tsym_irrep, psym) == 1:group_order(psym)
-
 end
 
 

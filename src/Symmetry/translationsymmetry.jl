@@ -113,7 +113,8 @@ num_irreps(sym::TranslationSymmetry) = length(sym.irreps)
 irrep_dimension(sym::TranslationSymmetry, idx::Integer) = size(sym.irreps[idx].matrices[1], 2)
 
 
-function get_orbital_permutations(lattice::Lattice, translation_symmetry::TranslationSymmetry)
+function get_orbital_permutations(lattice::Lattice,
+                                  translation_symmetry::TranslationSymmetry)
     if lattice.hypercube != translation_symmetry.hypercube
         throw(ArgumentError("lattice and translation symmetry not consistent"))
     end
@@ -143,10 +144,9 @@ end
 
 
 function get_irrep_iterator(lattice::Lattice,
-    tsym::TranslationSymmetry,
-    tsym_irrep_index::Integer,
-    tsym_irrep_compo::Integer=1,
-    )
+                            tsym::TranslationSymmetry,
+                            tsym_irrep_index::Integer,
+                            tsym_irrep_compo::Integer=1)
 
     tsym_permutations = get_orbital_permutations(lattice, tsym)
     tsym_irrep = irrep(tsym, tsym_irrep_index)
