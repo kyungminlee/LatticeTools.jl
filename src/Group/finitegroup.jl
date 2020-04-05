@@ -230,52 +230,125 @@ function minimal_generating_set(group::FiniteGroup)
 end
 
 
-function group_isomorphism(group1::FiniteGroup, group2::FiniteGroup)
+function group_isomorphism_naive(group1::FiniteGroup, group2::FiniteGroup)
     group_order(group1) != group_order(group2) && return nothing
     sort(group1.period_lengths) != sort(group2.period_lengths) && return nothing
 
     ord_group = group_order(group1)
-    element_groups1 = Dict{Int, Vector{Int}}() # group by period lengths
-    element_groups2 = Dict{Int, Vector{Int}}() # group by period lengths
+    element_groups1 = Dict{Tuple{Int, Int}, Vector{Int}}() # group by period lengths and conjugacy class size
+    element_groups2 = Dict{Tuple{Int, Int}, Vector{Int}}() # group by period lengths
 
     for i in 1:group_order(group1)
         pl = group1.period_lengths[i]
-        if !haskey(element_groups1, pl)
-            element_groups1[pl] = Int[]
+        cc = length(group1.conjugacy_classes[conjugacy_class(group1, i)])
+        if !haskey(element_groups1, (pl, cc))
+            element_groups1[(pl, cc)] = Int[]
         end
-        push!(element_groups1[pl], i)
+        push!(element_groups1[(pl, cc)], i)
     end
 
     for i in 1:group_order(group2)
         pl = group2.period_lengths[i]
-        if !haskey(element_groups2, pl)
-            element_groups2[pl] = Int[]
+        cc = length(group2.conjugacy_classes[conjugacy_class(group2, i)])
+        if !haskey(element_groups2, (pl, cc))
+            element_groups2[(pl, cc)] = Int[]
         end
-        push!(element_groups2[pl], i)
+        push!(element_groups2[(pl, cc)], i)
     end
 
     #q = sort([(pl, i) for (pl, els) in element_groups1 for i in els], rev=true)
-    pls = sort(collect(keys(element_groups1)))
+    plccs = sort(collect(keys(element_groups1)))
+    mapping = zeros(Int, ord_group)
     for perm_set in Iterators.product([
-            permutations(1:length(element_groups1[pl]), length(element_groups1[pl]))
-            for pl in pls
+            permutations(1:length(element_groups1[plcc]), length(element_groups1[plcc]))
+            for plcc in plccs
         ]...)
         #@assert length(pls) == length(perm_set)
-        mapping = zeros(Int, ord_group)
-        for (ipl, (pl, perm)) in enumerate(zip(pls, perm_set))
-            elg1, elg2 = element_groups1[pl], element_groups2[pl]
+        for (ipl, (plcc, perm)) in enumerate(zip(plccs, perm_set))
+            elg1, elg2 = element_groups1[plcc], element_groups2[plcc]
             for j in 1:length(perm)
-                mapping[ element_groups1[pl][j] ] = element_groups2[pl][perm[j]]
+                mapping[ element_groups1[plcc][j] ] = element_groups2[plcc][ perm[j] ]
             end
         end
-        mtab1p = zeros(Int, (ord_group, ord_group))
+        #mtab1p = zeros(Int, (ord_group, ord_group))
+        isiso = true
         for i in 1:ord_group, j in 1:ord_group
-            mtab1p[mapping[i], mapping[j]] = mapping[group1.multiplication_table[i, j]]
+            #mtab1p[mapping[i], mapping[j]] = mapping[group1.multiplication_table[i, j]]
+            if group2.multiplication_table[mapping[i], mapping[j]] != mapping[group1.multiplication_table[i, j]]
+                isiso = false
+                break
+            end
         end
-        mtab1p == group2.multiplication_table && return mapping
+        isiso && return mapping
+        #!isiso && continue
+        #mtab1p == group2.multiplication_table && return mapping
     end
     return nothing
 end
+
+function group_isomorphism(group1::FiniteGroup, group2::FiniteGroup)
+    group_order(group1) != group_order(group2) && return nothing
+    sort(group1.period_lengths) != sort(group2.period_lengths) && return nothing
+    let cl1 = sort(length.(group1.conjugacy_classes)),
+        cl2 = sort(length.(group1.conjugacy_classes))
+        cl1 != cl2 && return nothing
+    end
+    ord_group = group_order(group1)
+
+    pl1_list = group1.period_lengths
+    pl2_list = group2.period_lengths
+    cci1_list = zeros(Int, ord_group)
+    # cci2_list = zeros(Int, ord_group)
+
+    for (cc_index, cc) in enumerate(group1.conjugacy_classes), i in cc
+        cci1_list[i] = cc_index
+    end
+
+    element_map = zeros(Int, ord_group)
+    class_map = zeros(Int, length(group1.conjugacy_classes))
+
+    function suggest(i::Integer)
+        # @assert element_map[i] == 0
+        cci1 = cci1_list[i]
+        cc1 = group1.conjugacy_classes[cci1]
+        if class_map[cci1] != 0
+            return [j for j in group2.conjugacy_classes[class_map[cci1]]
+                    if !(j in element_map) && (pl2_list[j] == pl1_list[i])]
+        else
+            return [j for (icc2, cc2) in enumerate(group2.conjugacy_classes)
+                          if length(cc2) == length(cc1)
+                      for j in cc2
+                          if pl2_list[j] == pl1_list[i]]
+        end
+    end
+
+    function dfs(i::Integer)
+        i > ord_group && return true
+        element_map[i] != 0 && return dfs(i+1)
+        for j in suggest(i)
+            cset = class_map[cci1_list[i]] == 0
+            element_map[i] = j
+            class_map[cci1_list[i]] = conjugacy_class(group2, j)
+            if dfs(i+1)
+                return true
+            else
+                element_map[i] = 0
+                if cset
+                    class_map[cci1_list[i]] = 0
+                end
+            end
+        end
+        return false
+    end
+
+
+    if dfs(1)
+        return element_map
+    else
+        return nothing
+    end
+end
+
 
 
 function group_multiplication_table(elements::AbstractVector{ElementType}) where {ElementType}
