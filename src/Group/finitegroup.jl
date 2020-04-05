@@ -14,7 +14,10 @@ using Combinatorics
 
 struct FiniteGroup <: AbstractGroup
     multiplication_table::Matrix{Int}
+
     period_lengths::Vector{Int}
+    inverses::Vector{Int}
+    conjugacy_classes::Vector{Vector{Int}}
 
     function FiniteGroup(mtab::AbstractMatrix{<:Integer})
         n_elem = size(mtab, 1)
@@ -40,7 +43,38 @@ struct FiniteGroup <: AbstractGroup
                 jdx = mtab[jdx, idx]
             end
         end
-        new(mtab, period_lengths)
+
+        inverses = zeros(Int, n_elem)
+        for i in 1:n_elem
+            for j in i:n_elem
+                if mtab[i,j] == 1
+                    inverses[i] = j
+                    inverses[j] = i
+                    break
+                end
+            end
+        end
+
+        conjugacy_classes = Vector{Int}[]
+        let
+            adjacency = [BitSet() for i in 1:n_elem]
+            for i in 1:n_elem, j in 1:n_elem
+                k = mtab[ mtab[j,i], inverses[j] ]
+                push!(adjacency[i], k)
+                push!(adjacency[k], i)
+            end
+
+            visited = falses(n_elem)
+            for i in 1:n_elem
+                visited[i] && continue
+                for j in adjacency[i]
+                    visited[j] = true
+                end
+                push!(conjugacy_classes, sort(collect(adjacency[i])))
+            end
+        end
+        @assert all(period_lengths[first(cc)] == period_lengths[i] for cc in conjugacy_classes for i in cc)
+        new(mtab, period_lengths, inverses, conjugacy_classes)
     end
 end
 
@@ -74,6 +108,9 @@ isabelian(group::FiniteGroup) = group.multiplication_table == transpose(group.mu
 group_multiplication_table(group::FiniteGroup) = group.multiplication_table
 
 
+group_inverse(group::FiniteGroup, idx::Integer) = group.inverses[idx]
+
+
 """
     group_product(group, lhs, rhs)
 """
@@ -96,6 +133,18 @@ function group_product(group::FiniteGroup,
                        lhs::AbstractSet{<:Integer},
                        rhs::AbstractSet{<:Integer})
     return BitSet([group_product(group, x, y) for x in lhs for y in rhs])
+end
+
+
+"""
+    conjugacy_class(group, i)
+
+Conjugacy class of the element i.
+"""
+function conjugacy_class(group::FiniteGroup, i::Integer)
+    return findfirst(c -> let j = searchsortedfirst(c, i)
+        j <= length(c) && c[j] == i
+    end, group.conjugacy_classes)
 end
 
 
