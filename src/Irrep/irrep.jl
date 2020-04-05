@@ -115,11 +115,6 @@ function get_irrep_iterator(lattice::Lattice,
     psym_irrep_index = ssic.point.irrep_index
     psym_irrep_compo = ssic.point.irrep_component
 
-    if tsym_irrep_compo != 1 || psym_irrep_compo != 1
-        @warn "Currently only supports Gamma point, trivial point irrep"
-    end
-    #@assert iscompatible(tsym, psym)
-
     tsym_permutations = get_orbital_permutations(lattice, tsym)
     tsym_irrep = irrep(tsym, tsym_irrep_index)
     tsym_irrep_components = [m[tsym_irrep_compo, tsym_irrep_compo] for m in tsym_irrep.matrices]
