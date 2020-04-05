@@ -26,7 +26,7 @@ export get_irrep_iterator
 
 export read_point_symmetry
 
-struct PointSymmetry
+struct PointSymmetry <: AbstractSymmetry
     group::FiniteGroup
 
     generators::Vector{Int}
@@ -103,6 +103,7 @@ struct PointSymmetry
     end
 end
 
+
 function read_point_symmetry(data::AbstractDict)
     tol = Base.rtoldefault(Float64)
     multiplication_table = transpose(hcat(parse_expr(data["MultiplicationTable"])...))
@@ -145,7 +146,7 @@ character_table(sym::PointSymmetry) = sym.character_table
 irreps(sym::PointSymmetry) = sym.irreps
 irrep(sym::PointSymmetry, idx::Integer) = sym.irreps[idx]
 num_irreps(sym::PointSymmetry) = length(sym.irreps)
-irrep_dimension(sym::PointSymmetry, idx::Integer) = size(sym.irreps[idx].matrices[1], 2)
+irrep_dimension(sym::PointSymmetry, idx::Integer) = size(irrep(sym, idx).matrices[1], 2)
 
 
 function iscompatible(hypercube::HypercubicLattice, matrix_representation::AbstractMatrix{<:Integer})
@@ -221,11 +222,7 @@ function get_orbital_permutations(lattice::Lattice, point_symmetry::PointSymmetr
             namei = getorbitalname(lattice.unitcell, i)
             namej = getorbitalname(lattice.unitcell, j)
             for Ri in lattice.hypercube.coordinates
-                #_, idx_Rj = supercell.hypercube.torus_wrap(matrep * Ri + dR)
-                #Rj = supercell.hypercube.coordinates[idx_Rj]
                 _, Rj = lattice.hypercube.wrap(matrep * Ri + dR)
-                #Rj = supercell.hypercube.coordinates[idx_Rj]
-
                 i_super = lattice.supercell.orbitalindices[(namei, Ri)]
                 j_super = lattice.supercell.orbitalindices[(namej, Rj)]
                 p[i_super] = j_super
@@ -238,10 +235,10 @@ end
 
 
 function little_group_elements(tsym::TranslationSymmetry,
-                               momentum_index::Integer,
+                               tsym_irrep_index::Integer,
                                psym::PointSymmetry)
 
-    k_o2 = tsym.orthogonal_coordinates[momentum_index]
+    k_o2 = tsym.orthogonal_coordinates[tsym_irrep_index]
     lg = Int[]
     for (i_elem, matrep) in enumerate(psym.matrix_representations)
         k_o1 = tsym.orthogonal_to_coordinate_map[k_o2]
@@ -295,19 +292,21 @@ function little_symmetry(tsym::TranslationSymmetry, tsym_irrep::Integer, psym::P
         (lg_raw, lg_matrep_raw)
     end
     little_symmetry_candidates = Tuple{PointSymmetry, Vector{Int}}[]
+
+    # determinants = Set( ExactLinearAlgebra.determinant.(lg_matrep_raw) )
+    # @show determinants
+
     for i in 1:32
         ps = PointSymmetryDatabase.get(i)
-        ϕ = group_isomorphism(lg_raw, ps.group)
-        if !isnothing(ϕ)
-            push!(little_symmetry_candidates, (ps, ϕ))
-            break
-        end
-    end
 
-    #if length(little_symmetry_candidates) > 1
-    #    @warn ("more than one matching point symmetry: " *
-    #           join([ps.hermann_mauguinn for (ps,ϕ) in little_symmetry_candidates], ", "))
-    #end
+        # dets2 = Set( ExactLinearAlgebra.determinant.(ps.matrix_representations) )
+        # dets2 != determinants && continue
+        ϕ = group_isomorphism(lg_raw, ps.group)
+        isnothing(ϕ) && continue
+
+        push!(little_symmetry_candidates, (ps, ϕ))
+        break
+    end
 
     (psym2, ϕ) = first(little_symmetry_candidates)
 
@@ -325,16 +324,15 @@ function little_symmetry(tsym::TranslationSymmetry, tsym_irrep::Integer, psym::P
 end
 
 
-
 function get_irrep_iterator(lattice::Lattice,
-    tsym::TranslationSymmetry,
-    psym::PointSymmetry,
-    tsym_irrep_index::Integer,
-    psym_irrep_index::Integer,
-    tsym_irrep_compo::Integer=1,
-    psym_irrep_compo::Integer=1,
-    tol::Real=Base.rtoldefault(Float64)
-    )
+                            tsym::TranslationSymmetry,
+                            psym::PointSymmetry,
+                            tsym_irrep_index::Integer,
+                            psym_irrep_index::Integer,
+                            tsym_irrep_compo::Integer=1,
+                            psym_irrep_compo::Integer=1,
+                            tol::Real=Base.rtoldefault(Float64)
+                            )
 
     if tsym_irrep_compo != 1 || psym_irrep_compo != 1
         @warn "Currently only supports Gamma point, trivial point irrep"
@@ -351,12 +349,12 @@ function get_irrep_iterator(lattice::Lattice,
     psym_irrep = irrep(psym, psym_irrep_index)
     psym_irrep_components = [m[psym_irrep_compo, psym_irrep_compo] for m in psym_irrep.matrices]
 
-    return [
+    return (
         (psym_perm * tsym_perm ,  psym_phase * tsym_phase)
         for (tsym_perm, tsym_phase) in zip(tsym_permutations,
                                            tsym_irrep_components)
         for (psym_perm, psym_phase) in zip(psym_permutations,
                                            psym_irrep_components)
-        if abs(tsym_phase)>tol && abs(psym_phase) > tol
-    ]
+        #if abs(tsym_phase)>tol && abs(psym_phase) > tol
+    )
 end
