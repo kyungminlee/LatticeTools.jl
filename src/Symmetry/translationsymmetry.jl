@@ -17,7 +17,7 @@ export iscompatible
 export get_irrep_iterator
 
 
-struct TranslationSymmetry <:AbstractSymmetry
+struct TranslationSymmetry <: AbstractSymmetry
     hypercube::HypercubicLattice
 
     group::FiniteGroup
