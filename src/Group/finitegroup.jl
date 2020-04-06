@@ -318,7 +318,7 @@ function group_isomorphism(group1::FiniteGroup, group2::FiniteGroup)
             return [j for (icc2, cc2) in enumerate(group2.conjugacy_classes)
                           if length(cc2) == length(cc1)
                       for j in cc2
-                          if pl2_list[j] == pl1_list[i]]
+                          if !(j in element_map) && (pl2_list[j] == pl1_list[i])]
         end
     end
 
