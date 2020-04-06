@@ -86,6 +86,9 @@ struct PointSymmetry <: AbstractSymmetry
                     throw(ArgumentError("matrix representation should all have the same dimension"))
                 end
             end
+            if !ishomomorphic(group, rep)
+                throw(ArgumentError("matrix representation not homomorphic to group"))
+            end
         end
         let dim = size(first(matrix_representations), 1)
             if any(size(m) != (dim, dim) for m in matrix_representations)
