@@ -66,7 +66,7 @@ using YAML
     end
 
     @testset "irreps" begin
-      @test tsym.conjugacy_classes == [(name=x, elements=[i]) for (i, x) in enumerate(tsym.element_names)]
+      @test tsym.conjugacy_classes == [[i] for (i, x) in enumerate(tsym.element_names)]
       @test size(character_table(tsym)) == (9, 9)
       @test length(irreps(tsym)) == 9
       @test num_irreps(tsym) == 9
@@ -89,7 +89,7 @@ using YAML
       "[0, 1]", "[1, 2]", "[2, 0]", "[3, 1]",
       "[0, 2]", "[1, 0]", "[2, 1]", "[3, 2]",
     ]
-    @test tsym.conjugacy_classes == [(name=x, elements=[i]) for (i, x) in enumerate(tsym.element_names)]
+    @test tsym.conjugacy_classes == [[i] for (i, x) in enumerate(tsym.element_names)]
 
     @test tsym.orthogonal_shape == [12]
     @test tsym.orthogonal_coordinates == [[0], [1], [2], [3], [4], [5], [6], [7], [8], [9], [10], [11]]
@@ -185,8 +185,8 @@ end # @testset "TranslationSymmetry" begin
 #
 #   @test g.generators == [t1, t2]
 #   @test g.translations == [[0,0], [1,0], [2,0], [0,1], [1,1], [2,1]]
-#   @test Set(g.elements) == Set([t1^d1*t2^d2 for d1 in 0:2 for d2 in 0:1])
-#   @test length(Set(g.elements)) == 2*3
+#   @test Set(g) == Set([t1^d1*t2^d2 for d1 in 0:2 for d2 in 0:1])
+#   @test length(Set(g)) == 2*3
 #   @test g.fractional_momenta == [[0//3, 0//2], [1//3, 0//2], [2//3, 0//2],
 #                                  [0//3, 1//2], [1//3, 1//2], [2//3, 1//2]]
 #   χ = [cis(-2π * (k ⋅ t)) for k in g.fractional_momenta, t in g.translations]

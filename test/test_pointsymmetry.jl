@@ -8,11 +8,11 @@ using YAML
   @testset "constructor failure" begin
     group = FiniteGroup([1 2; 2 1])
     generators = [2]
-    conjugacy_classes = [(name="1", elements=[1]), (name="2", elements=[2])]
+    conjugacy_classes = [[1], [2]]
     character_table = [1 1; 1 -1]
     irreps = [
-        (name="1", matrices=[ones(ComplexF64, 1, 1), ones(ComplexF64, 1, 1)]),
-        (name="2", matrices=[ones(ComplexF64, 1, 1), -ones(ComplexF64, 1, 1)]),
+        [ones(ComplexF64, 1, 1), ones(ComplexF64, 1, 1)],
+        [ones(ComplexF64, 1, 1), -ones(ComplexF64, 1, 1)],
     ]
     element_names = ["1", "-1"]
     matrix_representations = [[1 0; 0 1], [-1 0; 0 -1]]
@@ -26,7 +26,7 @@ using YAML
                                                conjugacy_classes, character_table, irreps,
                                                element_names, matrix_representations, hermann_mauguinn)
     end
-    let conjugacy_classes = [(name="1", elements=[1]), (name="2", elements=[1,2])]
+    let conjugacy_classes = [[1], [1,2]]
       @test_throws ArgumentError PointSymmetry(group, generators,
                                                conjugacy_classes, character_table, irreps,
                                                element_names, matrix_representations, hermann_mauguinn)
@@ -37,31 +37,31 @@ using YAML
                                                element_names, matrix_representations, hermann_mauguinn)
     end
     let irreps = [
-          (name="1", matrices=[ones(ComplexF64, 1, 1), ones(ComplexF64, 1, 1)]),
+          [ones(ComplexF64, 1, 1), ones(ComplexF64, 1, 1)],
       ]
       @test_throws ArgumentError PointSymmetry(group, generators,
                                                conjugacy_classes, character_table, irreps,
                                                element_names, matrix_representations, hermann_mauguinn)
     end
     let irreps = [
-          (name="1", matrices=[ones(ComplexF64, 1, 1), ones(ComplexF64, 1, 1)]),
-          (name="2", matrices=[ones(ComplexF64, 1, 1)]),
+          [ones(ComplexF64, 1, 1), ones(ComplexF64, 1, 1)],
+          [ones(ComplexF64, 1, 1)],
       ]
       @test_throws ArgumentError PointSymmetry(group, generators,
                                                conjugacy_classes, character_table, irreps,
                                                element_names, matrix_representations, hermann_mauguinn)
     end
     let irreps = [
-          (name="1", matrices=[ones(ComplexF64, 1, 1), ones(ComplexF64, 1, 1)]),
-          (name="2", matrices=[ones(ComplexF64, 1, 1), -ones(ComplexF64, 2, 2)]),
+          [ones(ComplexF64, 1, 1), ones(ComplexF64, 1, 1)],
+          [ones(ComplexF64, 1, 1), -ones(ComplexF64, 2, 2)],
       ]
       @test_throws ArgumentError PointSymmetry(group, generators,
                                                conjugacy_classes, character_table, irreps,
                                                element_names, matrix_representations, hermann_mauguinn)
     end
     let irreps = [
-          (name="1", matrices=[ones(ComplexF64, 1, 1), ones(ComplexF64, 1, 1)]),
-          (name="2", matrices=[2*ones(ComplexF64, 1, 1), -ones(ComplexF64, 1, 1)]),
+          [ones(ComplexF64, 1, 1), ones(ComplexF64, 1, 1)],
+          [2*ones(ComplexF64, 1, 1), -ones(ComplexF64, 1, 1)],
       ]
       @test_throws ArgumentError PointSymmetry(group, generators,
                                                conjugacy_classes, character_table, irreps,
@@ -83,6 +83,11 @@ using YAML
                                                element_names, matrix_representations, hermann_mauguinn)
     end
     let matrix_representations = [[1 0 0; 1 0 0]]
+      @test_throws ArgumentError PointSymmetry(group, generators,
+                                               conjugacy_classes, character_table, irreps,
+                                               element_names, matrix_representations, hermann_mauguinn)
+    end
+    let matrix_representations = [[1 0 ; 0 1], [1 0; 0 1]]
       @test_throws ArgumentError PointSymmetry(group, generators,
                                                conjugacy_classes, character_table, irreps,
                                                element_names, matrix_representations, hermann_mauguinn)
@@ -149,14 +154,14 @@ using YAML
     for (idx_irrep, irrep) in enumerate(irreps(psym))
       d = psym.character_table[idx_irrep, 1]
       @test irrep_dimension(psym, idx_irrep) == d
-      for m in irrep.matrices
+      for m in irrep
         @test size(m) == (d, d)
-      end # for irrep.matrices
+      end # for irrep
       for (idx_cc, cc) in enumerate(psym.conjugacy_classes)
         character = character_table(psym)[idx_irrep, idx_cc]
-        for idx_elem in cc.elements
-          @test isapprox(tr(irrep.matrices[idx_elem]), character; atol=Base.rtoldefault(Float64))
-        end # for cc.elements
+        for idx_elem in cc
+          @test isapprox(tr(irrep[idx_elem]), character; atol=Base.rtoldefault(Float64))
+        end # for cc
       end # for enumerate(psym.conjugacy_classes)
     end # for enumerate(irreps(psym))
   end
