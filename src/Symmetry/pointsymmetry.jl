@@ -30,9 +30,9 @@ struct PointSymmetry <: AbstractSymmetry
     group::FiniteGroup
 
     generators::Vector{Int}
-    conjugacy_classes::Vector{ConjugacyClassType}
+    conjugacy_classes::Vector{Vector{Int}}
     character_table::Matrix{ComplexF64}
-    irreps::Vector{IrrepType}
+    irreps::Vector{Vector{Matrix{ComplexF64}}}
     element_names::Vector{String}
 
     matrix_representations::Vector{Matrix{Int}}
@@ -41,9 +41,9 @@ struct PointSymmetry <: AbstractSymmetry
     function PointSymmetry(
             group::FiniteGroup,
             generators::AbstractVector{<:Integer},
-            conjugacy_classes::AbstractVector{ConjugacyClassType},
+            conjugacy_classes::AbstractVector{<:AbstractVector{<:Integer}},
             character_table::AbstractMatrix{<:Number},
-            irreps::AbstractVector{IrrepType},
+            irreps::AbstractVector{<:AbstractVector{<:AbstractMatrix{<:Number}}},
             element_names::AbstractVector{<:AbstractString},
             matrix_representations::AbstractVector{<:AbstractMatrix{<:Integer}},
             hermann_mauguinn::AbstractString)
@@ -59,7 +59,7 @@ struct PointSymmetry <: AbstractSymmetry
             throw(ArgumentError("Generators $(generators) does not generate the group"))
         end
         let prev_set = BitSet()
-            for (name, elements) in conjugacy_classes
+            for elements in conjugacy_classes
                 !isempty(intersect(elements, prev_set)) && throw(ArgumentError("Same element in multiple conjugacy classes"))
                 union!(prev_set, elements)
             end
@@ -74,14 +74,14 @@ struct PointSymmetry <: AbstractSymmetry
             end
         end
         for rep in irreps
-            if length(rep.matrices) != group_order(group)
+            if length(rep) != group_order(group)
                 throw(ArgumentError("wrong number of matrices in irrep $rep"))
             end
-            d = size(rep.matrices[1], 1)
-            if !isapprox(rep.matrices[1], Matrix(I, (d,d)); atol=Base.rtoldefault(Float64))
+            d = size(rep[1], 1)
+            if !isapprox(rep[1], Matrix(I, (d,d)); atol=Base.rtoldefault(Float64))
                 throw(ArgumentError("matrix representation of identity should be identity"))
             end
-            for m in rep.matrices
+            for m in rep
                 if size(m) != (d,d)
                     throw(ArgumentError("matrix representation should all have the same dimension"))
                 end
@@ -113,18 +113,19 @@ function read_point_symmetry(data::AbstractDict)
 
     generators = data["Generators"]
 
-    conjugacy_classes = [(name=item["Name"], elements=item["Elements"]) for item in data["ConjugacyClasses"]]
+    #conjugacy_classes = [(name=item["Name"], elements=item["Elements"]) for item in data["ConjugacyClasses"]]
+    conjugacy_classes = [item["Elements"] for item in data["ConjugacyClasses"]]
 
     character_table = cleanup_number(transpose(hcat(parse_expr(data["CharacterTable"])...)), tol)
     let nc = length(conjugacy_classes)
         size(character_table) != (nc, nc) && throw(ArgumentError("character table has wrong size"))
     end
 
-    irreps = IrrepType[]
+    irreps = Vector{Matrix{ComplexF64}}[]
     for item in data["IrreducibleRepresentations"]
-        matrices = Matrix{Number}[transpose(hcat(parse_expr(elem)...)) for elem in item["Matrices"]]
-        new_item = (name=item["Name"], matrices=cleanup_number(matrices, tol))
-        push!(irreps, new_item)
+        matrices = Matrix{ComplexF64}[transpose(hcat(parse_expr(elem)...)) for elem in item["Matrices"]]
+        #new_item = (name=item["Name"], matrices=cleanup_number(matrices, tol))
+        push!(irreps, matrices)
     end
 
     element_names = data["ElementNames"]
@@ -146,7 +147,7 @@ character_table(sym::PointSymmetry) = sym.character_table
 irreps(sym::PointSymmetry) = sym.irreps
 irrep(sym::PointSymmetry, idx::Integer) = sym.irreps[idx]
 num_irreps(sym::PointSymmetry) = length(sym.irreps)
-irrep_dimension(sym::PointSymmetry, idx::Integer) = size(irrep(sym, idx).matrices[1], 2)
+irrep_dimension(sym::PointSymmetry, idx::Integer) = size(first(irrep(sym, idx)), 2)
 
 
 function iscompatible(hypercube::HypercubicLattice, matrix_representation::AbstractMatrix{<:Integer})
@@ -285,32 +286,40 @@ end
 
 function little_symmetry(tsym::TranslationSymmetry, tsym_irrep::Integer, psym::PointSymmetry)
     tsym_irrep == 1 && return psym
-    (lg_raw, lg_matrep_raw) = let
+    (lg_raw, lg_matrep_raw, lg_element_names_raw) = let
         lg_elements = little_group_elements(tsym, tsym_irrep, psym)
         lg_raw = little_group(tsym, psym, lg_elements)
         lg_matrep_raw = psym.matrix_representations[lg_elements]
-        (lg_raw, lg_matrep_raw)
+        lg_element_names_raw = psym.element_names[lg_elements]
+        (lg_raw, lg_matrep_raw, lg_element_names_raw)
     end
     little_symmetry_candidates = Tuple{PointSymmetry, Vector{Int}}[]
 
     # determinants = Set( ExactLinearAlgebra.determinant.(lg_matrep_raw) )
     # @show determinants
+    #simple_names = sort(simplify_name.(lg_element_names_raw))
 
-    for i in 1:32
+    let
+        i = PointSymmetryDatabase.find(lg_element_names_raw)
+    #for i in 1:32
         ps = PointSymmetryDatabase.get(i)
+        #if sort(simplify_name.(ps.element_names)) != simple_names
+        #    continue
+        #end
 
         # dets2 = Set( ExactLinearAlgebra.determinant.(ps.matrix_representations) )
         # dets2 != determinants && continue
         ϕ = group_isomorphism(lg_raw, ps.group)
-        isnothing(ϕ) && continue
-
+        #isnothing(ϕ) && continue
+        @assert !isnothing(ϕ)
         push!(little_symmetry_candidates, (ps, ϕ))
-        break
+        #break
     end
 
     (psym2, ϕ) = first(little_symmetry_candidates)
 
     lg_matrep = lg_matrep_raw[ϕ]
+    lg_element_names = lg_element_names_raw[ϕ]
 
     # element names may be wrong.
     PointSymmetry(psym2.group,
@@ -318,10 +327,68 @@ function little_symmetry(tsym::TranslationSymmetry, tsym_irrep::Integer, psym::P
                   psym2.conjugacy_classes,
                   psym2.character_table,
                   psym2.irreps,
-                  psym2.element_names,
+                  lg_element_names,
                   lg_matrep,
                   psym2.hermann_mauguinn)
 end
+
+
+
+function little_symmetry_iso(tsym::TranslationSymmetry, tsym_irrep::Integer, psym::PointSymmetry)
+    tsym_irrep == 1 && return psym
+    (lg_irrep, lg_matrep, lg_element_names) = let
+        lg_elements = little_group_elements(tsym, tsym_irrep, psym)
+        lg_raw = little_group(tsym, psym, lg_elements)
+        lg_matrep_raw = psym.matrix_representations[lg_elements]
+        (lg_irrep, ϕ) = IrrepDatabase.find(lg_raw)
+
+        lg_element_names_raw = psym.element_names[lg_elements]
+        lg_matrep = lg_matrep_raw[ϕ]
+        # @show lg_element_names_raw
+        # @show ϕ
+        lg_element_names = lg_element_names_raw[ϕ]
+        (lg_irrep, lg_matrep, lg_element_names)
+    end
+
+    generators = minimal_generating_set(lg_irrep.group)
+    hermann_mauguinn = join(lg_element_names[generators])
+
+    function multiset(items::AbstractVector{<:T}) where T
+        out = Dict{T, Int}()
+        for item in items
+            if haskey(out, item)
+                out[item] += 1
+            else
+                out[item] = 1
+            end
+        end
+        return out
+    end
+
+    simple_element_names = multiset(simplify_name(lg_element_names))
+    for i in 1:32
+        psym = PointSymmetryDatabase.get(i)
+        if ( multiset(simplify_name(psym.element_names)) == simple_element_names )
+             #&& !isnothing(group_isomorphism(lg_irrep.group, psym.group)) )
+            hermann_mauguinn = psym.hermann_mauguinn
+            break
+        end
+    end
+
+    # element names may be wrong.
+    PointSymmetry(lg_irrep.group,
+                  generators,
+                  lg_irrep.conjugacy_classes,
+                  lg_irrep.character_table,
+                  lg_irrep.irreps,
+                  lg_element_names,
+                  lg_matrep,
+                  hermann_mauguinn
+                  # join(simplify_name(lg_element_names[generators])))
+                  )
+end
+
+
 
 
 function get_irrep_iterator(lattice::Lattice,
@@ -341,13 +408,13 @@ function get_irrep_iterator(lattice::Lattice,
 
     tsym_permutations = get_orbital_permutations(lattice, tsym)
     tsym_irrep = irrep(tsym, tsym_irrep_index)
-    tsym_irrep_components = [m[tsym_irrep_compo, tsym_irrep_compo] for m in tsym_irrep.matrices]
+    tsym_irrep_components = [m[tsym_irrep_compo, tsym_irrep_compo] for m in tsym_irrep]
 
     psym_permutations = get_orbital_permutations(lattice, psym)
     #psym_little_group_generators = little_group(tsym, tsym_irrep_index, psym)
 
     psym_irrep = irrep(psym, psym_irrep_index)
-    psym_irrep_components = [m[psym_irrep_compo, psym_irrep_compo] for m in psym_irrep.matrices]
+    psym_irrep_components = [m[psym_irrep_compo, psym_irrep_compo] for m in psym_irrep]
 
     return (
         (psym_perm * tsym_perm ,  psym_phase * tsym_phase)
@@ -358,3 +425,44 @@ function get_irrep_iterator(lattice::Lattice,
         #if abs(tsym_phase)>tol && abs(psym_phase) > tol
     )
 end
+
+
+simplify_name(name::AbstractString) = replace(replace(name, r"<sub>.*?</sub>"=>""), r"<sup>.*?</sup>"=>"")
+simplify_name(names::AbstractVector{<:AbstractString}) = simplify_name.(names)
+
+# function parse_seitz(name::AbstractString)
+#     m = match(r"([12346m])(<sup>([-+])</sup>)?(<sub>(.*)?</sub>)?", name)
+#     main_str, chiral_str, axis_str = m[1], m[3], m[5]
+#     axis = Int[]
+#     while !isempty(axis_str)
+#         m2 = match(r"^(-?\d)(.*)$", axis_str)
+#         push!(axis, parse(Int, m2[1]))
+#         axis_str = m2[2]
+#     end
+#     if !isempty(axis) && first(axis[axis!=0]) < 0
+#         axis[:] = -axis
+#     end
+#     return (main_str, isnothing(chiral_str) ? "" : chiral_str, axis)
+# end
+
+# export get_hermann_mauguinn
+# function get_hermann_mauguinn(group::FiniteGroup,
+#                               element_names::AbstractVector{<:AbstractString})
+#     # 1. find principal
+#     is_rotation = [startswith(name, r"-?[2346]") for name in element_names]
+#     is_reflection = [startswith(name, r"m") for name in element_names]
+#     elements = parse_seitz.(element_names)
+#
+#     if any(is_rotation)
+#         _, principal_rotation_index = minimum((-pl, i) for (i, pl) in enumerate(group.period_lengths) if is_rotation[i])
+#
+#
+#     else
+#         if any(is_reflection)
+#             conjugacy_elements = [x[1] for x in elements[ [first(cc) for cc in group.conjugacy_classes[2:end]] ]]
+#             return join(conjugacy_elements)
+#         else
+#             return "1"
+#         end
+#     end
+# end

@@ -23,9 +23,9 @@ struct TranslationSymmetry <: AbstractSymmetry
     group::FiniteGroup
 
     generators::Vector{Int}
-    conjugacy_classes::Vector{ConjugacyClassType}
+    conjugacy_classes::Vector{Vector{Int}}
     character_table::Matrix{ComplexF64}
-    irreps::Vector{IrrepType}
+    irreps::Vector{Vector{Matrix{ComplexF64}}}
     element_names::Vector{String}
 
     # for quick
@@ -72,7 +72,8 @@ struct TranslationSymmetry <: AbstractSymmetry
 
         # each element of an abelian group is a conjugacy class
         element_names = ["$(orthogonal_to_coordinate_map[t])" for t in orthogonal_coordinates]
-        conjugacy_classes = [(name=x, elements=[i]) for (i,x) in enumerate(element_names)]
+        #conjugacy_classes = [(name=x, elements=[i]) for (i,x) in enumerate(element_names)]
+        conjugacy_classes = [[i] for (i,x) in enumerate(element_names)]
 
         momentum(oc::AbstractVector{<:Integer}) = [2π * x / d for (x, d) in zip(oc, orthogonal_shape)]
         character_table = ComplexF64[cis(-dot(momentum(kd), t))
@@ -82,13 +83,15 @@ struct TranslationSymmetry <: AbstractSymmetry
         character_table = cleanup_number(character_table, Base.rtoldefault(Float64))
 
         # each element forms a conjugacy class
-        irreps = IrrepType[]
+        # irreps = IrrepType[]
+        irreps = Vector{Matrix{ComplexF64}}[]
         for (idx_rep, momentum) in enumerate(orthogonal_coordinates)
             matrices = Matrix{ComplexF64}[]
             for (idx_elem, orthogonal_translation) in enumerate(orthogonal_coordinates)
                 push!(matrices, character_table[idx_rep, idx_elem] * ones(ComplexF64, 1, 1))
             end
-            push!(irreps, (name="$momentum", matrices=matrices))
+            # push!(irreps, (name="$momentum", matrices=matrices))
+            push!(irreps, matrices)
         end
 
         return new(hypercube, group, generators,
