@@ -85,6 +85,12 @@ function myeval(expr::Expr)
     return myeval.(expr.args)
   elseif expr.head == :tuple
     return tuple((myeval.(expr.args))...)
+  elseif expr.head == :hcat
+    return hcat((myeval.(expr.args))...)
+  elseif expr.head == :row
+    return hcat((myeval.(expr.args))...)
+  elseif expr.head == :vcat
+    return vcat((myeval.(expr.args))...)
   else
     error("unsupported expression $expr")
   end
