@@ -31,32 +31,29 @@ for i in 1:32
 end
 (psym2, ϕ) = first(little_symmetry_candidates)
 
-#=
-group::FiniteGroup
-generators::Vector{Int}
-conjugacy_classes::Vector{ConjugacyClassType}
-character_table::Matrix{ComplexF64}
-irreps::Vector{IrrepType}
-element_names::Vector{String}
-matrix_representations::Vector{Matrix{Int}}
-hermann_mauguinn::String
-=#
-
-# lg_matrep[ϕ]
-# for each i: lg_matrep2[i] = lg_matrep[ϕ[i]]
 lg_matrep2 = lg_matrep[ϕ]
 
-import TightBindingLattice.group_multiplication_table
-function group_multiplication_table(elements::AbstractVector{ElementType}) where {ElementType}
-    element_lookup = Dict(k=>i for (i, k) in enumerate(elements))
-    ord_group = length(elements)
-    mtab = zeros(Int, (ord_group, ord_group))
-    for i in 1:ord_group, j in 1:ord_group
-        mtab[i,j] = element_lookup[ elements[i] * elements[j] ]
-    end
-    return mtab
-end
+# import TightBindingLattice.group_multiplication_table
+# function group_multiplication_table(elements::AbstractVector{ElementType}) where {ElementType}
+#     element_lookup = Dict(k=>i for (i, k) in enumerate(elements))
+#     ord_group = length(elements)
+#     mtab = zeros(Int, (ord_group, ord_group))
+#     for i in 1:ord_group, j in 1:ord_group
+#         mtab[i,j] = element_lookup[ elements[i] * elements[j] ]
+#     end
+#     return mtab
+# end
 
 @show group_multiplication_table(psym2)
 @show group_multiplication_table(lg_matrep)
 @show group_multiplication_table(lg_matrep2)
+
+
+for idx in 1:num_irreps(tsym)
+    psym_little = little_symmetry(tsym, idx, psym)
+    @show idx
+    @show tsym.hypercube.coordinates[idx]
+    @show psym_little.hermann_mauguinn, group_order(psym_little)
+    @show iscompatible(tsym, idx, psym)
+    @show iscompatible(tsym, idx, psym_little)
+end
