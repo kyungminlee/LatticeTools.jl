@@ -81,6 +81,8 @@ function myeval(expr::Expr)
   if expr.head == :call
     ftn, args = Iterators.peel(myeval.(expr.args))
     return ftn(args...)
+  elseif expr.head == :vect
+    return myeval.(expr.args)
   else
     throw(ArgumentError("unsupported expression $expr"))
   end
