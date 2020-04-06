@@ -24,8 +24,13 @@ tsym = TranslationSymmetry(lattice)
 for idx in 1:num_irreps(tsym)
     #@show little_symmetry(tsym, idx, psym)
     psym_little = little_symmetry(tsym, idx, psym)
+    psym_little2 = TightBindingLattice.little_symmetry_iso(tsym, idx, psym)
     @show idx
     @show tsym.hypercube.coordinates[idx]
+
+    @show psym_little.hermann_mauguinn, group_order(psym_little)
+    @show psym_little2.hermann_mauguinn, group_order(psym_little2)
     @show iscompatible(tsym, idx, psym)
     @show iscompatible(tsym, idx, psym_little)
+    @show iscompatible(tsym, idx, psym_little2)
 end
