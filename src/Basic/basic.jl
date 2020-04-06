@@ -50,16 +50,50 @@ module ExactLinearAlgebra
 
 end # module ExactLinearAlgebra
 
-parse_expr(expr::Number) = expr
-function parse_expr(expr::AbstractString)
-  expr2 = Meta.parse(expr)
-  eval(quote
-    let i = im
-      $expr2
-    end
-  end)
+module ExprParser
+export parse_expr
+
+SYMBOL_DATABASE = Dict(
+  :i => im,
+  :im => im,
+  :pi => pi,
+  :+ => (+),  :- => (-),  :* => (*),  :/ => (/),  :\ => (\),  :^ => (^),
+  :cos => cos,  :sin => sin,  :tan => tan,
+  :exp => exp,  :cis => cis,
+  :cospi => cospi,  :sinpi => sinpi,
+  :sqrt => sqrt,  :cbrt => cbrt,
+  :log => log,
+  :abs => abs,  :abs2 => abs2,  :sign => sign,
+  :conj => conj, :real => real, :imag => imag,
+  :angle => angle
+)
+
+myeval(expr::Number) = expr
+function myeval(expr::Symbol)
+  if haskey(SYMBOL_DATABASE, expr)
+    return SYMBOL_DATABASE[expr]
+  else
+    throw(ArgumentError("unsupported symbol $expr"))
+  end
 end
+
+function myeval(expr::Expr)
+  if expr.head == :call
+    ftn, args = Iterators.peel(myeval.(expr.args))
+    return ftn(args...)
+  else
+    throw(ArgumentError("unsupported expression $expr"))
+  end
+end
+
+parse_expr(expr::Number) = expr
+parse_expr(expr::AbstractString) = myeval(Meta.parse(expr))
 parse_expr(expr::AbstractArray) = [parse_expr(elem) for elem in expr]
+
+end
+
+
+using .ExprParser: parse_expr
 
 #= # commented for now
 function parse_table(s::AbstractString)
