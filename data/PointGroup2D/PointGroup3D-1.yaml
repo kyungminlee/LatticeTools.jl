@@ -1,0 +1,14 @@
+CharacterTable:
+- [1]
+ConjugacyClasses:
+- [1]
+ElementNames: ['1']
+Generators: [1]
+HermannMauguinn: '1'
+IrreducibleRepresentations:
+- [1]
+MatrixRepresentations:
+- - [1, 0]
+  - [0, 1]
+MultiplicationTable:
+- [1]
