@@ -9,6 +9,7 @@ export minimal_generating_set
 export group_multiplication_table
 
 export group_isomorphism
+export ishomomorphic
 
 using Combinatorics
 
@@ -359,4 +360,20 @@ function group_multiplication_table(elements::AbstractVector{ElementType}) where
         mtab[i,j] = element_lookup[ elements[i] * elements[j] ]
     end
     return mtab
+end
+
+
+function ishomomorphic(group::FiniteGroup, representation::AbstractVector; tol=Base.rtoldefault(Float64))
+    ord_group = group_order(group)
+    if length(representation) != ord_group
+        return false
+    end
+
+    for i in 1:ord_group, j in 1:ord_group
+        if !isapprox( representation[i] * representation[j],
+                      representation[ group_product(group, i, j)] )
+            return false
+        end
+    end
+    return true
 end
