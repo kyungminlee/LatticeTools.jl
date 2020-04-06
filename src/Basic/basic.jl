@@ -73,7 +73,7 @@ function myeval(expr::Symbol)
   if haskey(SYMBOL_DATABASE, expr)
     return SYMBOL_DATABASE[expr]
   else
-    throw(ArgumentError("unsupported symbol $expr"))
+    error("unsupported symbol $expr")
   end
 end
 
@@ -86,7 +86,7 @@ function myeval(expr::Expr)
   elseif expr.tuple == :tuple
     return tuple((myeval.(expr.args))...)
   else
-    throw(ArgumentError("unsupported expression $expr"))
+    error("unsupported expression $expr")
   end
 end
 
