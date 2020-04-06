@@ -83,7 +83,7 @@ function myeval(expr::Expr)
     return ftn(args...)
   elseif expr.head == :vect
     return myeval.(expr.args)
-  elseif expr.tuple == :tuple
+  elseif expr.head == :tuple
     return tuple((myeval.(expr.args))...)
   else
     error("unsupported expression $expr")
