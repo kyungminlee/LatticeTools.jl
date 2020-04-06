@@ -55,6 +55,10 @@ struct PointSymmetry <: AbstractSymmetry
         if length(matrix_representations) != group_order(group)
             throw(ArgumentError("number of matrix representations different from order of group"))
         end
+        if !allunique(matrix_representations)
+            throw(ArgumentError("matrix representations have to be all unique"))
+        end
+        # TODO Test matrix representation for isomorphism
         if generate_subgroup(group, generators) != BitSet(1:group_order(group))
             throw(ArgumentError("Generators $(generators) does not generate the group"))
         end
