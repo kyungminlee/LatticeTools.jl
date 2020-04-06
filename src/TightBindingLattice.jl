@@ -17,8 +17,10 @@ include("Symmetry/pointsymmetry.jl")
 
 export PointSymmetryDatabase
 include("Symmetry/pointsymmetrydatabase.jl")
-
+#
+export IrrepDatabase
 include("Irrep/irrep.jl")
+include("Irrep/irrepdatabase.jl")
 
 #include("enlargement.jl")
 include("momentumpath.jl")
