@@ -70,7 +70,7 @@ using YAML
             # ϕ(x)⋅ϕ(y) = ϕ(x⋅y)
             mtab3[ϕ2[x], ϕ2[y]] = ϕ2[mtab1[x,y]]
         end
-        @test mtab2 == mtab3  # ϕ and ϕ2 are equivalent
+        @test !isnothing(group_isomorphism(group2, FiniteGroup(mtab3)))  # ϕ and ϕ2 are equivalent
 
         #@show mtab2
         #@show group_isomorphism(group, group2) # finds ϕ
