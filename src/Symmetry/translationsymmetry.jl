@@ -113,7 +113,7 @@ character_table(sym::TranslationSymmetry) = sym.character_table
 irreps(sym::TranslationSymmetry) = sym.irreps
 irrep(sym::TranslationSymmetry, idx) = sym.irreps[idx]
 num_irreps(sym::TranslationSymmetry) = length(sym.irreps)
-irrep_dimension(sym::TranslationSymmetry, idx::Integer) = size(sym.irreps[idx].matrices[1], 2)
+irrep_dimension(sym::TranslationSymmetry, idx::Integer) = 1 # size(first(sym.irreps[idx]), 1)
 
 
 function get_orbital_permutations(lattice::Lattice,
@@ -153,7 +153,7 @@ function get_irrep_iterator(lattice::Lattice,
 
     tsym_permutations = get_orbital_permutations(lattice, tsym)
     tsym_irrep = irrep(tsym, tsym_irrep_index)
-    tsym_irrep_components = [m[tsym_irrep_compo, tsym_irrep_compo] for m in tsym_irrep.matrices]
+    tsym_irrep_components = [m[tsym_irrep_compo, tsym_irrep_compo] for m in tsym_irrep]
     return zip(tsym_permutations, tsym_irrep_components)
 end
 
