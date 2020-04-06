@@ -6,35 +6,22 @@ CharacterTable:
 - [2, -1, 0, 2, -1, 0]
 - [2, -1, 0, -2, 1, 0]
 ConjugacyClasses:
-- Elements: [1]
-  Name: C<sub>1</sub>
-- Elements: [2, 3]
-  Name: C<sub>2</sub>
-- Elements: [4, 5, 6]
-  Name: C<sub>3</sub>
-- Elements: [7]
-  Name: C<sub>4</sub>
-- Elements: [8, 9]
-  Name: C<sub>5</sub>
-- Elements: [10, 11, 12]
-  Name: C<sub>6</sub>
-ElementNames: ['1', 3<sup>+</sup><sub>001</sub>, 3<sup>-</sup><sub>001</sub>,
-  2<sub>1-10</sub>, 2<sub>120</sub>, 2<sub>210</sub>, '-1', -3<sup>+</sup><sub>001</sub>,
-  -3<sup>-</sup><sub>001</sub>, m<sub>1-10</sub>, m<sub>120</sub>,
-  m<sub>210</sub>]
+- [1]
+- [2, 3]
+- [4, 5, 6]
+- [7]
+- [8, 9]
+- [10, 11, 12]
+ElementNames: ['1', 3<sup>+</sup><sub>001</sub>, 3<sup>-</sup><sub>001</sub>, 2<sub>1-10</sub>, 2<sub>120</sub>, 2<sub>210</sub>,
+  '-1', -3<sup>+</sup><sub>001</sub>, -3<sup>-</sup><sub>001</sub>, m<sub>1-10</sub>, m<sub>120</sub>, m<sub>210</sub>]
 Generators: [2, 4, 7]
 HermannMauguinn: -3m
 IrreducibleRepresentations:
-- Matrices: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
-  Name: C<sub>1</sub>
-- Matrices: [1, 1, 1, 1, 1, 1, -1, -1, -1, -1, -1, -1]
-  Name: C<sub>2</sub>
-- Matrices: [1, 1, 1, -1, -1, -1, 1, 1, 1, -1, -1, -1]
-  Name: C<sub>3</sub>
-- Matrices: [1, 1, 1, -1, -1, -1, -1, -1, -1, 1, 1, 1]
-  Name: C<sub>4</sub>
-- Matrices:
-  - - [1, 0]
+- [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+- [1, 1, 1, 1, 1, 1, -1, -1, -1, -1, -1, -1]
+- [1, 1, 1, -1, -1, -1, 1, 1, 1, -1, -1, -1]
+- [1, 1, 1, -1, -1, -1, -1, -1, -1, 1, 1, 1]
+- - - [1, 0]
     - [0, 1]
   - - [cis(2pi/3), 0]
     - [0, cis(-2pi/3)]
@@ -58,9 +45,7 @@ IrreducibleRepresentations:
     - [cis(2pi/3), 0]
   - - [0, cis(2pi/3)]
     - [cis(-2pi/3), 0]
-  Name: C<sub>5</sub>
-- Matrices:
-  - - [1, 0]
+- - - [1, 0]
     - [0, 1]
   - - [cis(2pi/3), 0]
     - [0, cis(-2pi/3)]
@@ -84,7 +69,6 @@ IrreducibleRepresentations:
     - [cis(-pi/3), 0]
   - - [0, cis(-pi/3)]
     - [cis(pi/3), 0]
-  Name: C<sub>6</sub>
 MatrixRepresentations:
 - - [1, 0, 0]
   - [0, 1, 0]

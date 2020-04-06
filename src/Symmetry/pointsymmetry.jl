@@ -117,7 +117,7 @@ function read_point_symmetry(data::AbstractDict)
     generators = data["Generators"]
 
     #conjugacy_classes = [(name=item["Name"], elements=item["Elements"]) for item in data["ConjugacyClasses"]]
-    conjugacy_classes = [item["Elements"] for item in data["ConjugacyClasses"]]
+    conjugacy_classes = [item for item in data["ConjugacyClasses"]]
 
     character_table = cleanup_number(transpose(hcat(parse_expr(data["CharacterTable"])...)), tol)
     let nc = length(conjugacy_classes)
@@ -126,7 +126,7 @@ function read_point_symmetry(data::AbstractDict)
 
     irreps = Vector{Matrix{ComplexF64}}[]
     for item in data["IrreducibleRepresentations"]
-        matrices = Matrix{ComplexF64}[transpose(hcat(parse_expr(elem)...)) for elem in item["Matrices"]]
+        matrices = Matrix{ComplexF64}[transpose(hcat(parse_expr(elem)...)) for elem in item]
         #new_item = (name=item["Name"], matrices=cleanup_number(matrices, tol))
         push!(irreps, matrices)
     end
