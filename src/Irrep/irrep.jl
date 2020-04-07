@@ -13,7 +13,6 @@ struct IrrepData
 end
 
 
-
 abstract type AbstractSymmetryIrrepComponent end
 
 struct TranslationSymmetryIrrepComponent <:AbstractSymmetryIrrepComponent

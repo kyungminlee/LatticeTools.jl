@@ -125,10 +125,10 @@ function inverse(perm ::Permutation)
   return Permutation(out)
 end
 
+
 import Base.==
-function ==(p1 ::Permutation, p2::Permutation)
-  return p1.map == p2.map
-end
+==(p1 ::Permutation, p2::Permutation) = p1.map == p2.map
+
 
 import Base.isless
 function isless(p1 ::Permutation, p2::Permutation)
@@ -136,9 +136,7 @@ function isless(p1 ::Permutation, p2::Permutation)
 end
 
 import Base.isequal
-function isequal(p1 ::Permutation, p2::Permutation)
-  return isequal(p1.map, p2.map)
-end
+isequal(p1 ::Permutation, p2::Permutation) = isequal(p1.map, p2.map)
 
 
 import Base.hash

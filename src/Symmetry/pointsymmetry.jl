@@ -1,7 +1,5 @@
 export PointSymmetry
 
-#export PointSymmetryBravaisRepresentation
-#export SymmorphicSpaceSymmetry
 export group_order,
        group_multiplication_table,
        element_names,
@@ -15,24 +13,24 @@ export group_order,
 export iscompatible
 export findorbitalmap
 export project
+
 export little_group_elements
 export little_group
-
 export little_symmetry
 
 export get_orbital_permutations
-
 export get_irrep_iterator
-
 export read_point_symmetry
 
 struct PointSymmetry <: AbstractSymmetry
     group::FiniteGroup
 
     generators::Vector{Int}
+
     conjugacy_classes::Vector{Vector{Int}}
     character_table::Matrix{ComplexF64}
     irreps::Vector{Vector{Matrix{ComplexF64}}}
+
     element_names::Vector{String}
 
     matrix_representations::Vector{Matrix{Int}}
@@ -115,33 +113,25 @@ end
 
 
 function read_point_symmetry(data::AbstractDict)
+    # multiplication_table = transpose(hcat(parse_expr(data["MultiplicationTable"])...))
+    # character_table = cleanup_number(transpose(hcat(parse_expr(data["CharacterTable"])...)), tol)
+    # irreps = [ Matrix{ComplexF64}[transpose(hcat(parse_expr(elem)...)) for elem in item]
+    #             for item in data["IrreducibleRepresentations"] ]
+    # matrix_representations = Matrix{Int}[transpose(hcat(parse_expr(x)...)) for x in data["MatrixRepresentations"]]
     tol = Base.rtoldefault(Float64)
-    multiplication_table = transpose(hcat(parse_expr(data["MultiplicationTable"])...))
+    read_matrix(obj) = collect(transpose(hcat(parse_expr(obj)...)))
 
+    multiplication_table = read_matrix(data["MultiplicationTable"])
     group = FiniteGroup(multiplication_table)
     ord_group = group_order(group)
-
     generators = data["Generators"]
-
-    #conjugacy_classes = [(name=item["Name"], elements=item["Elements"]) for item in data["ConjugacyClasses"]]
     conjugacy_classes = [item for item in data["ConjugacyClasses"]]
-
-    character_table = cleanup_number(transpose(hcat(parse_expr(data["CharacterTable"])...)), tol)
-    let nc = length(conjugacy_classes)
-        size(character_table) != (nc, nc) && throw(ArgumentError("character table has wrong size"))
-    end
-
-    irreps = Vector{Matrix{ComplexF64}}[]
-    for item in data["IrreducibleRepresentations"]
-        matrices = Matrix{ComplexF64}[transpose(hcat(parse_expr(elem)...)) for elem in item]
-        #new_item = (name=item["Name"], matrices=cleanup_number(matrices, tol))
-        push!(irreps, matrices)
-    end
-
+    character_table = cleanup_number(read_matrix(data["CharacterTable"]), tol)
+    irreps = [ Matrix{ComplexF64}[cleanup_number(read_matrix(elem), tol) for elem in item]
+                   for item in data["IrreducibleRepresentations"] ]
     element_names = data["ElementNames"]
-    matrix_representations = [transpose(hcat(parse_expr(x)...)) for x in data["MatrixRepresentations"]]
+    matrix_representations = Matrix{Int}[read_matrix(x) for x in data["MatrixRepresentations"]]
     hermann_mauguinn = data["HermannMauguinn"]
-
     schoenflies = data["Schoenflies"]
     PointSymmetry(group, generators,
                   conjugacy_classes, character_table, irreps,
@@ -162,8 +152,6 @@ irrep_dimension(sym::PointSymmetry, idx::Integer) = size(first(irrep(sym, idx)),
 
 
 function iscompatible(hypercube::HypercubicLattice, matrix_representation::AbstractMatrix{<:Integer})
-    #_, elems = hypercube.torus_wrap(matrix_representation * hypercube.scale_matrix)
-    #all(elems .== 1) # all, since scale_matrix
     _, elems = hypercube.wrap(matrix_representation * hypercube.scale_matrix)
     all(iszero(elems)) # all, since scale_matrix
 end
@@ -182,7 +170,7 @@ function findorbitalmap(unitcell::UnitCell, psym_matrep::AbstractMatrix{<:Intege
     map = Tuple{Int, Vector{Int}}[]
     for (orbname, orbfc) in unitcell.orbitals
         j, Rj = findorbitalindex(unitcell, psym_matrep * orbfc)
-        @assert j > 0
+        j <= 0 && return nothing
         push!(map, (j, Rj))
     end
     return map
@@ -206,7 +194,6 @@ function project(psym::PointSymmetry,
     end
 
     new_matrix_representations = [projection * m * transpose(projection) for m in psym.matrix_representations]
-    !allunique(new_matrix_representations) && @warn "projected matrix representations not unique"
 
     return PointSymmetry(psym.group,
                          psym.generators,
@@ -262,18 +249,17 @@ function little_group_elements(tsym::TranslationSymmetry,
 end
 
 
-function little_group(tsym::TranslationSymmetry, irrep_index::Integer, psym::PointSymmetry)
-    return little_group(tsym, psym, little_group_elements(tsym, irrep_index, psym))
+function little_group(tsym::TranslationSymmetry, tsym_irrep_index::Integer, psym::PointSymmetry)
+    return little_group(tsym, psym, little_group_elements(tsym, tsym_irrep_index, psym))
 end
 
 
 function iscompatible(tsym::TranslationSymmetry,
-                      tsym_irrep::Integer,
+                      tsym_irrep_index::Integer,
                       psym::PointSymmetry)
     ! iscompatible(tsym, psym) && return false
-    return little_group_elements(tsym, tsym_irrep, psym) == 1:group_order(psym)
+    return little_group_elements(tsym, tsym_irrep_index, psym) == 1:group_order(psym)
 end
-
 
 
 """
@@ -293,8 +279,6 @@ function little_group(tsym::TranslationSymmetry,
 end
 
 
-
-
 function little_symmetry(tsym::TranslationSymmetry, tsym_irrep::Integer, psym::PointSymmetry)
     tsym_irrep == 1 && return psym
     (lg_raw, lg_matrep_raw, lg_element_names_raw) = let
@@ -304,35 +288,15 @@ function little_symmetry(tsym::TranslationSymmetry, tsym_irrep::Integer, psym::P
         lg_element_names_raw = psym.element_names[lg_elements]
         (lg_raw, lg_matrep_raw, lg_element_names_raw)
     end
-    little_symmetry_candidates = Tuple{PointSymmetry, Vector{Int}}[]
 
-    # determinants = Set( ExactLinearAlgebra.determinant.(lg_matrep_raw) )
-    # @show determinants
-    #simple_names = sort(simplify_name.(lg_element_names_raw))
-
-    let
-        i = PointSymmetryDatabase.find(lg_element_names_raw)
-    #for i in 1:32
-        ps = PointSymmetryDatabase.get(i)
-        #if sort(simplify_name.(ps.element_names)) != simple_names
-        #    continue
-        #end
-
-        # dets2 = Set( ExactLinearAlgebra.determinant.(ps.matrix_representations) )
-        # dets2 != determinants && continue
-        ϕ = group_isomorphism(lg_raw, ps.group)
-        #isnothing(ϕ) && continue
-        @assert !isnothing(ϕ)
-        push!(little_symmetry_candidates, (ps, ϕ))
-        #break
-    end
-
-    (psym2, ϕ) = first(little_symmetry_candidates)
+    group_index = PointSymmetryDatabase.find(lg_element_names_raw)
+    psym2 = PointSymmetryDatabase.get(group_index)
+    ϕ = group_isomorphism(lg_raw, psym2.group)
+    isnothing(ϕ) && error("Group not isomorphic")
 
     lg_matrep = lg_matrep_raw[ϕ]
     lg_element_names = lg_element_names_raw[ϕ]
 
-    # element names may be wrong.
     PointSymmetry(psym2.group,
                   psym2.generators,
                   psym2.conjugacy_classes,
@@ -410,7 +374,6 @@ function get_irrep_iterator(lattice::Lattice,
     tsym_irrep_components = [m[tsym_irrep_compo, tsym_irrep_compo] for m in tsym_irrep]
 
     psym_permutations = get_orbital_permutations(lattice, psym)
-    #psym_little_group_generators = little_group(tsym, tsym_irrep_index, psym)
 
     psym_irrep = irrep(psym, psym_irrep_index)
     psym_irrep_components = [m[psym_irrep_compo, psym_irrep_compo] for m in psym_irrep]
