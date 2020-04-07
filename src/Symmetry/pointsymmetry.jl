@@ -195,7 +195,7 @@ function project(psym::PointSymmetry,
     end
 
     new_matrix_representations = [projection * m * transpose(projection) for m in psym.matrix_representations]
-
+    
     return PointSymmetry(psym.group,
                          psym.generators,
                          psym.conjugacy_classes,
@@ -310,85 +310,83 @@ function little_symmetry(tsym::TranslationSymmetry, tsym_irrep::Integer, psym::P
 end
 
 
-
-function little_symmetry_iso(tsym::TranslationSymmetry, tsym_irrep::Integer, psym::PointSymmetry)
-    tsym_irrep == 1 && return psym
-    (lg_irrep, lg_matrep, lg_element_names) = let
-        lg_elements = little_group_elements(tsym, tsym_irrep, psym)
-
-        lg_raw = little_group(tsym, psym, lg_elements)
-        lg_matrep_raw = psym.matrix_representations[lg_elements]
-        lg_element_names_raw = psym.element_names[lg_elements]
-
-        (lg_irrep, ϕ) = IrrepDatabase.find(lg_raw)
-
-        lg_matrep = lg_matrep_raw[ϕ]
-        lg_element_names = lg_element_names_raw[ϕ]
-        (lg_irrep, lg_matrep, lg_element_names)
-    end
-
-    generators = minimal_generating_set(lg_irrep.group)
-    hermann_mauguinn = join(lg_element_names[generators])
-    schoenflies = "unknown"
-
-    simple_element_names = sort(simplify_name(lg_element_names))
-    for i in 1:32
-        psym = PointSymmetryDatabase.get(i)
-        if ( sort(simplify_name(psym.element_names)) == simple_element_names )
-             #&& !isnothing(group_isomorphism(lg_irrep.group, psym.group)) )
-            hermann_mauguinn = psym.hermann_mauguinn
-            break
-        end
-    end
-
-    PointSymmetry(lg_irrep.group,
-                  generators,
-                  lg_irrep.conjugacy_classes,
-                  lg_irrep.character_table,
-                  lg_irrep.irreps,
-                  lg_element_names,
-                  lg_matrep,
-                  hermann_mauguinn,
-                  schoenflies)
-end
-
+# function little_symmetry_iso(tsym::TranslationSymmetry, tsym_irrep::Integer, psym::PointSymmetry)
+#     tsym_irrep == 1 && return psym
+#     (lg_irrep, lg_matrep, lg_element_names) = let
+#         lg_elements = little_group_elements(tsym, tsym_irrep, psym)
+#
+#         lg_raw = little_group(tsym, psym, lg_elements)
+#         lg_matrep_raw = psym.matrix_representations[lg_elements]
+#         lg_element_names_raw = psym.element_names[lg_elements]
+#
+#         (lg_irrep, ϕ) = IrrepDatabase.find(lg_raw)
+#
+#         lg_matrep = lg_matrep_raw[ϕ]
+#         lg_element_names = lg_element_names_raw[ϕ]
+#         (lg_irrep, lg_matrep, lg_element_names)
+#     end
+#
+#     generators = minimal_generating_set(lg_irrep.group)
+#     hermann_mauguinn = join(lg_element_names[generators])
+#     schoenflies = "unknown"
+#
+#     simple_element_names = sort(simplify_name(lg_element_names))
+#     for i in 1:32
+#         psym = PointSymmetryDatabase.get(i)
+#         if ( sort(simplify_name(psym.element_names)) == simple_element_names )
+#              #&& !isnothing(group_isomorphism(lg_irrep.group, psym.group)) )
+#             hermann_mauguinn = psym.hermann_mauguinn
+#             break
+#         end
+#     end
+#
+#     PointSymmetry(lg_irrep.group,
+#                   generators,
+#                   lg_irrep.conjugacy_classes,
+#                   lg_irrep.character_table,
+#                   lg_irrep.irreps,
+#                   lg_element_names,
+#                   lg_matrep,
+#                   hermann_mauguinn,
+#                   schoenflies)
+# end
 
 
 
-function get_irrep_iterator(lattice::Lattice,
-                            tsym::TranslationSymmetry,
-                            psym::PointSymmetry,
-                            tsym_irrep_index::Integer,
-                            psym_irrep_index::Integer,
-                            tsym_irrep_compo::Integer=1,
-                            psym_irrep_compo::Integer=1,
-                            tol::Real=Base.rtoldefault(Float64)
-                            )
 
-    if tsym_irrep_compo != 1 || psym_irrep_compo != 1
-        @warn "Currently only supports Gamma point, trivial point irrep"
-    end
-    #@assert iscompatible(tsym, psym)
-
-    tsym_permutations = get_orbital_permutations(lattice, tsym)
-    tsym_irrep = irrep(tsym, tsym_irrep_index)
-    tsym_irrep_components = [m[tsym_irrep_compo, tsym_irrep_compo] for m in tsym_irrep]
-
-    psym_permutations = get_orbital_permutations(lattice, psym)
-
-    psym_irrep = irrep(psym, psym_irrep_index)
-    psym_irrep_components = [m[psym_irrep_compo, psym_irrep_compo] for m in psym_irrep]
-
-    return (
-        (psym_perm * tsym_perm ,  psym_phase * tsym_phase)
-        for (tsym_perm, tsym_phase) in zip(tsym_permutations,
-                                           tsym_irrep_components)
-        for (psym_perm, psym_phase) in zip(psym_permutations,
-                                           psym_irrep_components)
-        #if abs(tsym_phase)>tol && abs(psym_phase) > tol
-    )
-end
-
+# function get_irrep_iterator(lattice::Lattice,
+#                             tsym::TranslationSymmetry,
+#                             psym::PointSymmetry,
+#                             tsym_irrep_index::Integer,
+#                             psym_irrep_index::Integer,
+#                             tsym_irrep_compo::Integer=1,
+#                             psym_irrep_compo::Integer=1,
+#                             tol::Real=Base.rtoldefault(Float64)
+#                             )
+#
+#     if tsym_irrep_compo != 1 || psym_irrep_compo != 1
+#         @warn "Currently only supports Gamma point, trivial point irrep"
+#     end
+#     #@assert iscompatible(tsym, psym)
+#
+#     tsym_permutations = get_orbital_permutations(lattice, tsym)
+#     tsym_irrep = irrep(tsym, tsym_irrep_index)
+#     tsym_irrep_components = [m[tsym_irrep_compo, tsym_irrep_compo] for m in tsym_irrep]
+#
+#     psym_permutations = get_orbital_permutations(lattice, psym)
+#
+#     psym_irrep = irrep(psym, psym_irrep_index)
+#     psym_irrep_components = [m[psym_irrep_compo, psym_irrep_compo] for m in psym_irrep]
+#
+#     return (
+#         (psym_perm * tsym_perm ,  psym_phase * tsym_phase)
+#         for (tsym_perm, tsym_phase) in zip(tsym_permutations,
+#                                            tsym_irrep_components)
+#         for (psym_perm, psym_phase) in zip(psym_permutations,
+#                                            psym_irrep_components)
+#         #if abs(tsym_phase)>tol && abs(psym_phase) > tol
+#     )
+# end
 
 simplify_name(name::AbstractString) = replace(replace(name, r"<sub>.*?</sub>"=>""), r"<sup>.*?</sup>"=>"")
 simplify_name(names::AbstractVector{<:AbstractString}) = simplify_name.(names)
