@@ -13,6 +13,7 @@ function __init__()
     tol = Base.rtoldefault(Float64)
 
     global IRREP_DATABASE
+    
     data_directory = abspath(joinpath(@__DIR__, "..", "..", "data", "Irreps"))
     database_raw = YAML.load_file(joinpath(data_directory, "irrep_database.yaml"))
 
