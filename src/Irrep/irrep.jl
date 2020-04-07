@@ -154,7 +154,25 @@ function get_irrep_iterator(lattice::Lattice,
 end
 
 
+function little_group_elements(tsic::TranslationSymmetryIrrepComponent,
+                               psym::PointSymmetry)
+    return little_group_elements(tsic.symmetry, tsic.irrep_index, psym)
+end
+
+
+function little_group(tsic::TranslationSymmetryIrrepComponent,
+                               psym::PointSymmetry)
+    return little_group(tsic.symmetry, tsic.irrep_index, psym)
+end
+
+
 function little_symmetry(tsic::TranslationSymmetryIrrepComponent,
                          psym::PointSymmetry)
     return little_symmetry(tsic.symmetry, tsic.irrep_index, psym)
+end
+
+
+function iscompatible(tsic::TranslationSymmetryIrrepComponent,
+                      psym::PointSymmetry)
+    return iscompatible(tsic.symmetry, tsic.irrep_index, psym)
 end
