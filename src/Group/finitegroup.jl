@@ -61,24 +61,38 @@ struct FiniteGroup <: AbstractGroup
                 end
             end
         end
-
         # compute conjugacy classes
         conjugacy_classes = Vector{Int}[]
         let
-            adjacency = [BitSet() for i in 1:n_elem]
+            # adjacency = [BitSet() for i in 1:n_elem]
+            # for i in 1:n_elem, j in 1:n_elem
+            #     k = mtab[ mtab[j,i], inverses[j] ]
+            #     push!(adjacency[i], k)
+            #     push!(adjacency[k], i)
+            # end
+            # visited = falses(n_elem)
+            # for i in 1:n_elem
+            #     visited[i] && continue
+            #     for j in adjacency[i]
+            #         visited[j] = true
+            #     end
+            #     push!(conjugacy_classes, sort(collect(adjacency[i])))
+            # end
+            adjacency = [Int[] for i in 1:n_elem]
             for i in 1:n_elem, j in 1:n_elem
                 k = mtab[ mtab[j,i], inverses[j] ]
                 push!(adjacency[i], k)
                 push!(adjacency[k], i)
             end
-
+            for i in eachindex(adjacency)
+                sort!(adjacency[i])
+                unique!(adjacency[i])
+            end
             visited = falses(n_elem)
             for i in 1:n_elem
                 visited[i] && continue
-                for j in adjacency[i]
-                    visited[j] = true
-                end
-                push!(conjugacy_classes, sort(collect(adjacency[i])))
+                visited[adjacency[i]] .= true
+                push!(conjugacy_classes, adjacency[i])
             end
         end
 
