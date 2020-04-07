@@ -1,6 +1,16 @@
 using Test
 using TightBindingLattice
 
+@testset "Lattice1D" begin
+    unitcell = make_unitcell(2.0; OrbitalType=String)
+    addorbital!(unitcell, "Spin", FractCoord([0], [0.0]))
+    lattice = make_lattice(unitcell, 3)
+    scale_matrix = 3 * ones(Int, (1,1))
+    @test lattice.unitcell == unitcell
+    @test lattice.hypercube == HypercubicLattice(scale_matrix)
+    @test numorbital(lattice.supercell) == 3
+end
+
 @testset "Lattice" begin
     unitcell = make_unitcell([1.0 0.0; 0.0 1.0]; OrbitalType=String)
     addorbital!(unitcell, "d", FractCoord([0,0], [0.0, 0.0]))
