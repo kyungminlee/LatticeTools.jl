@@ -56,8 +56,8 @@ using YAML
 
         @test group_multiplication_table([[1 0; 0 1], [1 0; 0 -1]]) == [1 2; 2 1]
 
-        @test ishomomorphic(group, 1:3, gp)
-        @test !ishomomorphic(group, 1:2, gp)
+        @test ishomomorphic(group, 1:3; product=gp)
+        @test !ishomomorphic(group, 1:2; product=gp)
     end
 
     @testset "FiniteGroup-Nonabelian" begin
@@ -83,8 +83,8 @@ using YAML
         end
         group2 = FiniteGroup(mtab2)
 
-        # ϕ: group  ->  group2
-        #       x  |->  ϕ(x)
+        # ϕ: group  →  group2
+        #       x   ↦  ϕ(x)
         ϕ2 = group_isomorphism(group, group2)
         mtab3 = zeros(Int, (6,6))
         for x in 1:6, y in 1:6

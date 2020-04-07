@@ -48,7 +48,7 @@ struct PointSymmetry <: AbstractSymmetry
             matrix_representations::AbstractVector{<:AbstractMatrix{<:Integer}},
             hermann_mauguinn::AbstractString,
             schoenflies::AbstractString)
-
+        tol = Base.rtoldefault(Float64)
         # number counting check
         if length(element_names) != group_order(group)
             throw(ArgumentError("number of elements different from order of group"))
@@ -83,7 +83,7 @@ struct PointSymmetry <: AbstractSymmetry
                 throw(ArgumentError("wrong number of matrices in irrep $rep"))
             end
             d = size(rep[1], 1)
-            if !isapprox(rep[1], Matrix(I, (d,d)); atol=Base.rtoldefault(Float64))
+            if !isapprox(rep[1], Matrix(I, (d,d)); atol=tol)
                 throw(ArgumentError("matrix representation of identity should be identity"))
             end
             for m in rep
@@ -91,7 +91,7 @@ struct PointSymmetry <: AbstractSymmetry
                     throw(ArgumentError("matrix representation should all have the same dimension"))
                 end
             end
-            if !ishomomorphic(group, rep)
+            if !ishomomorphic(group, rep; equal=(x,y) -> isapprox(x,y;atol=tol))
                 throw(ArgumentError("matrix representation not homomorphic to group"))
             end
         end

@@ -414,17 +414,17 @@ end
 
 
 function ishomomorphic(group::FiniteGroup,
-                       representation::AbstractVector,
-                       product::Function=(*);
-                       tol=Base.rtoldefault(Float64))
+                       representation::AbstractVector;
+                       product::Function=(*),
+                       equal::Function=(==))
     ord_group = group_order(group)
     if length(representation) != ord_group
         return false
     end
 
     for i in 1:ord_group, j in 1:ord_group
-        if !isapprox( product(representation[i], representation[j]),
-                      representation[ group_product(group, i, j)] )
+        if !equal( product(representation[i], representation[j]),
+                   representation[ group_product(group, i, j)] )
             return false
         end
     end
