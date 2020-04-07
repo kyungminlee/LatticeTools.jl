@@ -58,7 +58,8 @@ import Base.*
         *(p1 ::Permutation, p2 ::Permutation)
 
 Multiply the two permutation.
-Return `[p2.map[x] for x in p1.map]`.
+NOT THIS: (Return `[p2.map[x] for x in p1.map]`.)
+BUT THIS: Return `[p1.map[x] for x in p2.map]`.
 
 # Examples
 ```jldoctest
@@ -75,7 +76,8 @@ function *(p1 ::Permutation, p2 ::Permutation)
     if length(p1.map) != length(p2.map)
         throw(ArgumentError("permutations of different universes"))
     end
-    return Permutation(Int[p2.map[x] for x in p1.map])
+    #  return Permutation(Int[p2.map[x] for x in p1.map]) original version
+    return Permutation(Int[p1.map[x] for x in p2.map])
 end
 
 #=
