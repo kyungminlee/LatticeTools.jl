@@ -134,13 +134,6 @@ function get_orbital_permutations(lattice::Lattice,
 end
 
 
-function get_irrep_components(lattice::Lattice,
-                              tsym::TranslationSymmetry)
-    return (TranslationSymmetryIrrepComponent(tsym, irrep_index, 1)
-                for irrep_index in 1:num_irreps(tsym))
-end
-
-
 # function get_irrep_iterator(lattice::Lattice,
 #                             tsym::TranslationSymmetry,
 #                             tsym_irrep_index::Integer,

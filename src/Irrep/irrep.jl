@@ -5,6 +5,12 @@ export PointSymmetryIrrepComponent
 export SymmorphicSpaceSymmetryIrrepComponent
 
 
+export group_order
+export get_irrep_components
+export get_irrep_iterator
+export little_symmetry
+
+
 struct IrrepData
     group::FiniteGroup
     conjugacy_classes::Vector{Vector{Int}}
@@ -33,8 +39,13 @@ struct TranslationSymmetryIrrepComponent <:AbstractSymmetryIrrepComponent
 end
 
 
-function group_order(sic::TranslationSymmetryIrrepComponent)
-    return group_order(sic.symmetry)
+group_order(sic::TranslationSymmetryIrrepComponent) = group_order(sic.symmetry)
+
+
+function get_irrep_components(lattice::Lattice,
+                              tsym::TranslationSymmetry)
+    return (TranslationSymmetryIrrepComponent(tsym, irrep_index, 1)
+                for irrep_index in 1:num_irreps(tsym))
 end
 
 
@@ -107,6 +118,7 @@ struct SymmorphicSpaceSymmetryIrrepComponent <:AbstractSymmetryIrrepComponent
         return new(tsic, psic)
     end
 end
+
 
 group_order(sic::SymmorphicSpaceSymmetryIrrepComponent) = group_order(sic.translation) * group_order(sic.point)
 
