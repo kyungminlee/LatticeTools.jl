@@ -9,7 +9,7 @@ abstract type AbstractSymmetryOperation end
 
 
 """
-    Permutation(perms ::AbstractVector{Int}; max_order=2048)
+        Permutation(perms ::AbstractVector{Int}; max_order=2048)
 
 Create a permutation of integers from 1 to n.
 `perms` should be a permutation of `1:n`.
@@ -23,39 +23,39 @@ The convention for the permutation is that map[i] gets mapped to i.
 In other words, map tells you where each element is from.
 """
 struct Permutation <: AbstractSymmetryOperation
-  map ::Vector{Int}
-  order ::Int
-  function Permutation(perms ::AbstractVector{Int}; max_order=2048)
-    n = length(perms)
-    map = Vector{Int}(perms)
-    let # check for duplicates
-      duplicates = Set{Int}()
-      for j in perms
-        (1 <= j <= n) || throw(ArgumentError("argument not a proper permutation (target != universe)"))
-        j in duplicates && throw(ArgumentError("argument not a proper permutation (contains duplicates)"))
-        push!(duplicates, j)
-      end
-    end
+    map ::Vector{Int}
+    order ::Int
+    function Permutation(perms ::AbstractVector{Int}; max_order=2048)
+        n = length(perms)
+        map = Vector{Int}(perms)
+        let # check for duplicates
+            duplicates = Set{Int}()
+            for j in perms
+                (1 <= j <= n) || throw(ArgumentError("argument not a proper permutation (target != universe)"))
+                j in duplicates && throw(ArgumentError("argument not a proper permutation (contains duplicates)"))
+                push!(duplicates, j)
+            end
+        end
 
-    order = 1
-    let # compute cycle length
-      current = Int[map[x] for x in 1:n]
-      while !issorted(current) && order <= max_order
-        current = Int[map[x] for x in current]
-        order += 1
-      end
-      if order > max_order
-        throw(OverflowError("cycle length exceeds maximum value (max = $max_order)"))
-      end
+        order = 1
+        let # compute cycle length
+            current = Int[map[x] for x in 1:n]
+            while !issorted(current) && order <= max_order
+                current = Int[map[x] for x in current]
+                order += 1
+            end
+            if order > max_order
+                throw(OverflowError("cycle length exceeds maximum value (max = $max_order)"))
+            end
+        end
+        return new(map, order)
     end
-    return new(map, order)
-  end
 end
 
 
 import Base.*
 """
-    *(p1 ::Permutation, p2 ::Permutation)
+        *(p1 ::Permutation, p2 ::Permutation)
 
 Multiply the two permutation.
 Return `[p2.map[x] for x in p1.map]`.
@@ -72,30 +72,30 @@ Permutation([3, 1, 2], 3)
 ```
 """
 function *(p1 ::Permutation, p2 ::Permutation)
-  if length(p1.map) != length(p2.map)
-    throw(ArgumentError("permutations of different universes"))
-  end
-  return Permutation(Int[p2.map[x] for x in p1.map])
+    if length(p1.map) != length(p2.map)
+        throw(ArgumentError("permutations of different universes"))
+    end
+    return Permutation(Int[p2.map[x] for x in p1.map])
 end
 
 #=
 import Base.*
 function *(lhs ::AbstractSet{Permutation}, rhs::Permutation)
-    return generate_group(lhs..., rhs)
+        return generate_group(lhs..., rhs)
 end
 
 function *(lhs ::Permutation, rhs::AbstractSet{Permutation})
-    return generate_group(lhs, rhs...)
+        return generate_group(lhs, rhs...)
 end
 
 function *(lhs ::AbstractSet{Permutation}, rhs::AbstractSet{Permutation})
-    return generate_group(lhs..., rhs...)
+        return generate_group(lhs..., rhs...)
 end
 =#
 
 import Base.^
 """
-    ^(perm ::Permutation, pow ::Integer)
+        ^(perm ::Permutation, pow ::Integer)
 
 Exponentiate the permutation.
 
@@ -108,21 +108,21 @@ Permutation([3, 4, 1, 2], 2)
 ```
 """
 function ^(perm ::Permutation, pow ::Integer)
-  p = mod(pow, perm.order)
-  out = collect(1:length(perm.map))
-  for i in 1:p
-    out = collect(perm.map[x] for x in out)
-  end
-  return Permutation(out)
+    p = mod(pow, perm.order)
+    out = collect(1:length(perm.map))
+    for i in 1:p
+        out = collect(perm.map[x] for x in out)
+    end
+    return Permutation(out)
 end
 
 export inverse
 function inverse(perm ::Permutation)
-  out = zeros(Int, length(perm.map))
-  for (i, x) in enumerate(perm.map)
-    out[x] = i
-  end
-  return Permutation(out)
+    out = zeros(Int, length(perm.map))
+    for (i, x) in enumerate(perm.map)
+        out[x] = i
+    end
+    return Permutation(out)
 end
 
 
@@ -132,7 +132,7 @@ import Base.==
 
 import Base.isless
 function isless(p1 ::Permutation, p2::Permutation)
-  return isless(p1.order, p2.order) || (isequal(p1.order, p2.order) && isless(p1.map, p2.map))
+    return isless(p1.order, p2.order) || (isequal(p1.order, p2.order) && isless(p1.map, p2.map))
 end
 
 import Base.isequal
@@ -144,17 +144,17 @@ hash(p ::Permutation) = hash(p.map)
 
 
 function generate_group(generators ::Permutation...)
-  change = true
-  group = Set{Permutation}([generators...])
-  while change
-    change = false
-    for g1 in generators, g2 in group
-      g3 = g1 * g2
-      if !(g3 in group)
-        change = true
-        push!(group, g3)
-      end
+    change = true
+    group = Set{Permutation}([generators...])
+    while change
+        change = false
+        for g1 in generators, g2 in group
+            g3 = g1 * g2
+            if !(g3 in group)
+                change = true
+                push!(group, g3)
+            end
+        end
     end
-  end
-  return group
+    return group
 end
