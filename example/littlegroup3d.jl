@@ -20,6 +20,10 @@ tsym = TranslationSymmetry(lattice)
 
 @show tsym.orthogonal_coordinates
 
+# x = collect(get_irrep_iterator(lattice, tsym, 1, :))
+# y = collect(get_irrep_iterator(lattice, tsym, 1, 1))
+# @show x == y
+# exit()
 
 for idx in 1:num_irreps(tsym)
     #@show little_symmetry(tsym, idx, psym)
@@ -33,4 +37,7 @@ for idx in 1:num_irreps(tsym)
     @show iscompatible(tsym, idx, psym)
     @show iscompatible(tsym, idx, psym_little)
     @show iscompatible(tsym, idx, psym_little2)
+
+
+
 end
