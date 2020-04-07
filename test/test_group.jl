@@ -21,12 +21,30 @@ using YAML
         @test isabelian(group)
         @test group_multiplication_table(group) == mtab
 
+        gp = group_product(group)
         for i in 1:3, j in 1:3
             @test group_product(group, i, j) == mtab[i, j]
+            @test gp(i, j) == mtab[i, j]
         end
         @test group_product(group, 2, BitSet([1,2])) == BitSet([2,3])
         @test group_product(group, BitSet([1,2]), 2) == BitSet([2,3])
         @test group_product(group, BitSet([1,2]), BitSet([1,2])) == BitSet([1,2,3])
+
+        @test gp(2, BitSet([1,2])) == BitSet([2,3])
+        @test gp(BitSet([1,2]), 2) == BitSet([2,3])
+        @test gp(BitSet([1,2]), BitSet([1,2])) == BitSet([1,2,3])
+
+
+        @test group_inverse(group, 1) == 1
+        @test group_inverse(group, 2) == 3
+        @test group_inverse(group, 3) == 2
+        @test group_inverse(group, [1,2]) == [1,3]
+
+        ginv = group_inverse(group)
+        @test ginv(1) == 1
+        @test ginv(2) == 3
+        @test ginv(3) == 2
+        @test ginv([1,2]) == [1,3]
 
         @test generate_subgroup(group, 1) == BitSet([1])
         @test generate_subgroup(group, 2) == BitSet([1,2,3])
@@ -37,6 +55,9 @@ using YAML
         @test minimal_generating_set(group) == [2]
 
         @test group_multiplication_table([[1 0; 0 1], [1 0; 0 -1]]) == [1 2; 2 1]
+
+        @test ishomomorphic(group, 1:3, gp)
+        @test !ishomomorphic(group, 1:2, gp)
     end
 
     @testset "FiniteGroup-Nonabelian" begin
