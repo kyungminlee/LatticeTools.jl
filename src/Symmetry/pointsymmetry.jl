@@ -22,6 +22,7 @@ export get_orbital_permutations
 export get_irrep_iterator
 export read_point_symmetry
 
+
 struct PointSymmetry <: AbstractSymmetry
     group::FiniteGroup
 
@@ -329,7 +330,7 @@ function little_symmetry_iso(tsym::TranslationSymmetry, tsym_irrep::Integer, psy
     generators = minimal_generating_set(lg_irrep.group)
     hermann_mauguinn = join(lg_element_names[generators])
     schoenflies = "unknown"
-    
+
     simple_element_names = sort(simplify_name(lg_element_names))
     for i in 1:32
         psym = PointSymmetryDatabase.get(i)

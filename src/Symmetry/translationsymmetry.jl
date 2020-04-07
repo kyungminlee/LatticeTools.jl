@@ -53,6 +53,7 @@ struct TranslationSymmetry <: AbstractSymmetry
 
         orthogonal_shape = [group.period_lengths[g] for g in generators] # in "generator" coordinates
         orthogonal_coordinates = vec([[x...] for x in Iterators.product([0:(d-1) for d in orthogonal_shape]...)])
+
         @assert prod(orthogonal_shape) == ord_group
         @assert length(orthogonal_coordinates) == ord_group
 
@@ -115,19 +116,14 @@ function get_orbital_permutations(lattice::Lattice,
     if lattice.hypercube != translation_symmetry.hypercube
         throw(ArgumentError("lattice and translation symmetry not consistent"))
     end
-
     n_uc = length(lattice.hypercube.coordinates)
     n_orb = numorbital(lattice.unitcell)
-
     permutations = Permutation[]
     for trans_ortho in translation_symmetry.orthogonal_coordinates
-
         trans_coord = translation_symmetry.orthogonal_to_coordinate_map[trans_ortho]
-
         p = zeros(Int, n_uc * n_orb)
         for (orbital_index1, ((orbital_name1, uc_coord1), _)) in enumerate(lattice.supercell.orbitals)
             _, uc_coord2 = lattice.hypercube.wrap(uc_coord1 + trans_coord)
-
             orbital_index1 = getorbitalindex(lattice.supercell, (orbital_name1, uc_coord1))
             orbital_index2 = getorbitalindex(lattice.supercell, (orbital_name1, uc_coord2))
             p[orbital_index1] = orbital_index2
@@ -141,8 +137,7 @@ end
 function get_irrep_components(lattice::Lattice,
                               tsym::TranslationSymmetry)
     return (TranslationSymmetryIrrepComponent(tsym, irrep_index, 1)
-                for irrep_index in 1:num_irreps(tsym)
-    )
+                for irrep_index in 1:num_irreps(tsym))
 end
 
 
