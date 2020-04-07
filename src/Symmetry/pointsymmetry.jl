@@ -37,6 +37,7 @@ struct PointSymmetry <: AbstractSymmetry
 
     matrix_representations::Vector{Matrix{Int}}
     hermann_mauguinn::String
+    schoenflies::String
 
     function PointSymmetry(
             group::FiniteGroup,
@@ -46,7 +47,8 @@ struct PointSymmetry <: AbstractSymmetry
             irreps::AbstractVector{<:AbstractVector{<:AbstractMatrix{<:Number}}},
             element_names::AbstractVector{<:AbstractString},
             matrix_representations::AbstractVector{<:AbstractMatrix{<:Integer}},
-            hermann_mauguinn::AbstractString)
+            hermann_mauguinn::AbstractString,
+            schoenflies::AbstractString)
 
         # number counting check
         if length(element_names) != group_order(group)
@@ -106,7 +108,8 @@ struct PointSymmetry <: AbstractSymmetry
                    irreps,
                    element_names,
                    matrix_representations,
-                   hermann_mauguinn)
+                   hermann_mauguinn,
+                   schoenflies)
     end
 end
 
@@ -139,9 +142,10 @@ function read_point_symmetry(data::AbstractDict)
     matrix_representations = [transpose(hcat(parse_expr(x)...)) for x in data["MatrixRepresentations"]]
     hermann_mauguinn = data["HermannMauguinn"]
 
+    schoenflies = data["Schoenflies"]
     PointSymmetry(group, generators,
                   conjugacy_classes, character_table, irreps,
-                  element_names, matrix_representations, hermann_mauguinn)
+                  element_names, matrix_representations, hermann_mauguinn, schoenflies)
 end
 
 group_order(psym::PointSymmetry) = group_order(psym.group)
@@ -212,7 +216,7 @@ function project(psym::PointSymmetry,
                          psym.element_names,
                          new_matrix_representations,
                          psym.hermann_mauguinn,
-                         )
+                         psym.schoenflies)
 end
 
 
@@ -336,7 +340,8 @@ function little_symmetry(tsym::TranslationSymmetry, tsym_irrep::Integer, psym::P
                   psym2.irreps,
                   lg_element_names,
                   lg_matrep,
-                  psym2.hermann_mauguinn)
+                  psym2.hermann_mauguinn,
+                  psym2.schoenflies)
 end
 
 
@@ -345,44 +350,32 @@ function little_symmetry_iso(tsym::TranslationSymmetry, tsym_irrep::Integer, psy
     tsym_irrep == 1 && return psym
     (lg_irrep, lg_matrep, lg_element_names) = let
         lg_elements = little_group_elements(tsym, tsym_irrep, psym)
+
         lg_raw = little_group(tsym, psym, lg_elements)
         lg_matrep_raw = psym.matrix_representations[lg_elements]
+        lg_element_names_raw = psym.element_names[lg_elements]
+
         (lg_irrep, ϕ) = IrrepDatabase.find(lg_raw)
 
-        lg_element_names_raw = psym.element_names[lg_elements]
         lg_matrep = lg_matrep_raw[ϕ]
-        # @show lg_element_names_raw
-        # @show ϕ
         lg_element_names = lg_element_names_raw[ϕ]
         (lg_irrep, lg_matrep, lg_element_names)
     end
 
     generators = minimal_generating_set(lg_irrep.group)
     hermann_mauguinn = join(lg_element_names[generators])
-
-    function multiset(items::AbstractVector{<:T}) where T
-        out = Dict{T, Int}()
-        for item in items
-            if haskey(out, item)
-                out[item] += 1
-            else
-                out[item] = 1
-            end
-        end
-        return out
-    end
-
-    simple_element_names = multiset(simplify_name(lg_element_names))
+    schoenflies = "unknown"
+    
+    simple_element_names = sort(simplify_name(lg_element_names))
     for i in 1:32
         psym = PointSymmetryDatabase.get(i)
-        if ( multiset(simplify_name(psym.element_names)) == simple_element_names )
+        if ( sort(simplify_name(psym.element_names)) == simple_element_names )
              #&& !isnothing(group_isomorphism(lg_irrep.group, psym.group)) )
             hermann_mauguinn = psym.hermann_mauguinn
             break
         end
     end
 
-    # element names may be wrong.
     PointSymmetry(lg_irrep.group,
                   generators,
                   lg_irrep.conjugacy_classes,
@@ -390,9 +383,8 @@ function little_symmetry_iso(tsym::TranslationSymmetry, tsym_irrep::Integer, psy
                   lg_irrep.irreps,
                   lg_element_names,
                   lg_matrep,
-                  hermann_mauguinn
-                  # join(simplify_name(lg_element_names[generators])))
-                  )
+                  hermann_mauguinn,
+                  schoenflies)
 end
 
 

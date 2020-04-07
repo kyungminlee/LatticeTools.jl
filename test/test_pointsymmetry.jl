@@ -17,31 +17,32 @@ using YAML
     element_names = ["1", "-1"]
     matrix_representations = [[1 0; 0 1], [-1 0; 0 -1]]
     hermann_mauguinn = "-1"
+    schoenflies = "C<sub>i</sub>"
     PointSymmetry(group, generators,
                   conjugacy_classes, character_table, irreps,
-                  element_names, matrix_representations, hermann_mauguinn)
+                  element_names, matrix_representations, hermann_mauguinn, schoenflies)
 
     let generators = [1]
       @test_throws ArgumentError PointSymmetry(group, generators,
                                                conjugacy_classes, character_table, irreps,
-                                               element_names, matrix_representations, hermann_mauguinn)
+                                               element_names, matrix_representations, hermann_mauguinn, schoenflies)
     end
     let conjugacy_classes = [[1], [1,2]]
       @test_throws ArgumentError PointSymmetry(group, generators,
                                                conjugacy_classes, character_table, irreps,
-                                               element_names, matrix_representations, hermann_mauguinn)
+                                               element_names, matrix_representations, hermann_mauguinn, schoenflies)
     end
     let character_table = [1 2 3; 4 5 6; 7 8 9]
       @test_throws ArgumentError PointSymmetry(group, generators,
                                                conjugacy_classes, character_table, irreps,
-                                               element_names, matrix_representations, hermann_mauguinn)
+                                               element_names, matrix_representations, hermann_mauguinn, schoenflies)
     end
     let irreps = [
           [ones(ComplexF64, 1, 1), ones(ComplexF64, 1, 1)],
       ]
       @test_throws ArgumentError PointSymmetry(group, generators,
                                                conjugacy_classes, character_table, irreps,
-                                               element_names, matrix_representations, hermann_mauguinn)
+                                               element_names, matrix_representations, hermann_mauguinn, schoenflies)
     end
     let irreps = [
           [ones(ComplexF64, 1, 1), ones(ComplexF64, 1, 1)],
@@ -49,7 +50,7 @@ using YAML
       ]
       @test_throws ArgumentError PointSymmetry(group, generators,
                                                conjugacy_classes, character_table, irreps,
-                                               element_names, matrix_representations, hermann_mauguinn)
+                                               element_names, matrix_representations, hermann_mauguinn, schoenflies)
     end
     let irreps = [
           [ones(ComplexF64, 1, 1), ones(ComplexF64, 1, 1)],
@@ -57,7 +58,7 @@ using YAML
       ]
       @test_throws ArgumentError PointSymmetry(group, generators,
                                                conjugacy_classes, character_table, irreps,
-                                               element_names, matrix_representations, hermann_mauguinn)
+                                               element_names, matrix_representations, hermann_mauguinn, schoenflies)
     end
     let irreps = [
           [ones(ComplexF64, 1, 1), ones(ComplexF64, 1, 1)],
@@ -65,32 +66,32 @@ using YAML
       ]
       @test_throws ArgumentError PointSymmetry(group, generators,
                                                conjugacy_classes, character_table, irreps,
-                                               element_names, matrix_representations, hermann_mauguinn)
+                                               element_names, matrix_representations, hermann_mauguinn, schoenflies)
     end
     let element_names = ["1", "2", "3"]
       @test_throws ArgumentError PointSymmetry(group, generators,
                                                conjugacy_classes, character_table, irreps,
-                                               element_names, matrix_representations, hermann_mauguinn)
+                                               element_names, matrix_representations, hermann_mauguinn, schoenflies)
     end
     let matrix_representations = [[1 0; 0 1], [-1 0 0; 0 -1 0]]
       @test_throws ArgumentError PointSymmetry(group, generators,
                                                conjugacy_classes, character_table, irreps,
-                                               element_names, matrix_representations, hermann_mauguinn)
+                                               element_names, matrix_representations, hermann_mauguinn, schoenflies)
     end
     let matrix_representations = [[1 0 0; 1 0 0], [-1 0 0; -1 0 0]]
       @test_throws ArgumentError PointSymmetry(group, generators,
                                                conjugacy_classes, character_table, irreps,
-                                               element_names, matrix_representations, hermann_mauguinn)
+                                               element_names, matrix_representations, hermann_mauguinn, schoenflies)
     end
     let matrix_representations = [[1 0 0; 1 0 0]]
       @test_throws ArgumentError PointSymmetry(group, generators,
                                                conjugacy_classes, character_table, irreps,
-                                               element_names, matrix_representations, hermann_mauguinn)
+                                               element_names, matrix_representations, hermann_mauguinn, schoenflies)
     end
     let matrix_representations = [[1 0 ; 0 1], [1 0; 0 1]]
       @test_throws ArgumentError PointSymmetry(group, generators,
                                                conjugacy_classes, character_table, irreps,
-                                               element_names, matrix_representations, hermann_mauguinn)
+                                               element_names, matrix_representations, hermann_mauguinn, schoenflies)
     end
   end
 
