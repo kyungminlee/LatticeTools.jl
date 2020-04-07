@@ -57,11 +57,12 @@ SYMBOL_DATABASE = Dict(
     :i => im,
     :im => im,
     :pi => pi,
+    :π => π,
     :+ => (+),  :- => (-),  :* => (*),  :/ => (/),  :\ => (\),  :^ => (^),
     :cos => cos,  :sin => sin,  :tan => tan,
     :exp => exp,  :cis => cis,
     :cospi => cospi,  :sinpi => sinpi,
-    :sqrt => sqrt,  :cbrt => cbrt,
+    :sqrt => sqrt,
     :log => log,
     :abs => abs,  :abs2 => abs2,  :sign => sign,
     :conj => conj, :real => real, :imag => imag,
@@ -82,7 +83,7 @@ function myeval(expr::Expr)
         ftn, args = Iterators.peel(myeval.(expr.args))
         return ftn(args...)
     elseif expr.head == :vect
-        return myeval.(expr.args)
+        return [(myeval.(expr.args))...]
     elseif expr.head == :tuple
         return tuple((myeval.(expr.args))...)
     elseif expr.head == :hcat
