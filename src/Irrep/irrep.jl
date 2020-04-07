@@ -1,7 +1,18 @@
+export IrrepData
 export AbstractSymmetryIrrepComponent
 export TranslationSymmetryIrrepComponent
 export PointSymmetryIrrepComponent
 export SymmorphicSpaceSymmetryIrrepComponent
+
+
+struct IrrepData
+    group::FiniteGroup
+    conjugacy_classes::Vector{Vector{Int}}
+    character_table::Matrix
+    irreps::Vector{Vector{Matrix{ComplexF64}}}
+end
+
+
 
 abstract type AbstractSymmetryIrrepComponent end
 
