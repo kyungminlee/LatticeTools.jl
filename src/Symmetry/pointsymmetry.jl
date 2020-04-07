@@ -195,7 +195,7 @@ function project(psym::PointSymmetry,
     end
 
     new_matrix_representations = [projection * m * transpose(projection) for m in psym.matrix_representations]
-    
+
     return PointSymmetry(psym.group,
                          psym.generators,
                          psym.conjugacy_classes,
@@ -389,7 +389,7 @@ end
 # end
 
 simplify_name(name::AbstractString) = replace(replace(name, r"<sub>.*?</sub>"=>""), r"<sup>.*?</sup>"=>"")
-simplify_name(names::AbstractVector{<:AbstractString}) = simplify_name.(names)
+# simplify_name(names::AbstractVector{<:AbstractString}) = simplify_name.(names)
 
 # function parse_seitz(name::AbstractString)
 #     m = match(r"([12346m])(<sup>([-+])</sup>)?(<sub>(.*)?</sub>)?", name)
