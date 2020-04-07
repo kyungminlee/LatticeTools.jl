@@ -272,61 +272,61 @@ function minimal_generating_set(group::FiniteGroup)
 end
 
 
-function group_isomorphism_naive(group1::FiniteGroup, group2::FiniteGroup)
-    group_order(group1) != group_order(group2) && return nothing
-    sort(group1.period_lengths) != sort(group2.period_lengths) && return nothing
-
-    ord_group = group_order(group1)
-    element_groups1 = Dict{Tuple{Int, Int}, Vector{Int}}() # group by period lengths and conjugacy class size
-    element_groups2 = Dict{Tuple{Int, Int}, Vector{Int}}() # group by period lengths
-
-    for i in 1:group_order(group1)
-        pl = group1.period_lengths[i]
-        cc = length(group1.conjugacy_classes[conjugacy_class(group1, i)])
-        if !haskey(element_groups1, (pl, cc))
-            element_groups1[(pl, cc)] = Int[]
-        end
-        push!(element_groups1[(pl, cc)], i)
-    end
-
-    for i in 1:group_order(group2)
-        pl = group2.period_lengths[i]
-        cc = length(group2.conjugacy_classes[conjugacy_class(group2, i)])
-        if !haskey(element_groups2, (pl, cc))
-            element_groups2[(pl, cc)] = Int[]
-        end
-        push!(element_groups2[(pl, cc)], i)
-    end
-
-    #q = sort([(pl, i) for (pl, els) in element_groups1 for i in els], rev=true)
-    plccs = sort(collect(keys(element_groups1)))
-    mapping = zeros(Int, ord_group)
-    for perm_set in Iterators.product([
-            permutations(1:length(element_groups1[plcc]), length(element_groups1[plcc]))
-            for plcc in plccs
-        ]...)
-        #@assert length(pls) == length(perm_set)
-        for (ipl, (plcc, perm)) in enumerate(zip(plccs, perm_set))
-            elg1, elg2 = element_groups1[plcc], element_groups2[plcc]
-            for j in 1:length(perm)
-                mapping[ element_groups1[plcc][j] ] = element_groups2[plcc][ perm[j] ]
-            end
-        end
-        #mtab1p = zeros(Int, (ord_group, ord_group))
-        isiso = true
-        for i in 1:ord_group, j in 1:ord_group
-            #mtab1p[mapping[i], mapping[j]] = mapping[group1.multiplication_table[i, j]]
-            if group2.multiplication_table[mapping[i], mapping[j]] != mapping[group1.multiplication_table[i, j]]
-                isiso = false
-                break
-            end
-        end
-        isiso && return mapping
-        #!isiso && continue
-        #mtab1p == group2.multiplication_table && return mapping
-    end
-    return nothing
-end
+# function group_isomorphism_naive(group1::FiniteGroup, group2::FiniteGroup)
+#     group_order(group1) != group_order(group2) && return nothing
+#     sort(group1.period_lengths) != sort(group2.period_lengths) && return nothing
+#
+#     ord_group = group_order(group1)
+#     element_groups1 = Dict{Tuple{Int, Int}, Vector{Int}}() # group by period lengths and conjugacy class size
+#     element_groups2 = Dict{Tuple{Int, Int}, Vector{Int}}() # group by period lengths
+#
+#     for i in 1:group_order(group1)
+#         pl = group1.period_lengths[i]
+#         cc = length(group1.conjugacy_classes[conjugacy_class(group1, i)])
+#         if !haskey(element_groups1, (pl, cc))
+#             element_groups1[(pl, cc)] = Int[]
+#         end
+#         push!(element_groups1[(pl, cc)], i)
+#     end
+#
+#     for i in 1:group_order(group2)
+#         pl = group2.period_lengths[i]
+#         cc = length(group2.conjugacy_classes[conjugacy_class(group2, i)])
+#         if !haskey(element_groups2, (pl, cc))
+#             element_groups2[(pl, cc)] = Int[]
+#         end
+#         push!(element_groups2[(pl, cc)], i)
+#     end
+#
+#     #q = sort([(pl, i) for (pl, els) in element_groups1 for i in els], rev=true)
+#     plccs = sort(collect(keys(element_groups1)))
+#     mapping = zeros(Int, ord_group)
+#     for perm_set in Iterators.product([
+#             permutations(1:length(element_groups1[plcc]), length(element_groups1[plcc]))
+#             for plcc in plccs
+#         ]...)
+#         #@assert length(pls) == length(perm_set)
+#         for (ipl, (plcc, perm)) in enumerate(zip(plccs, perm_set))
+#             elg1, elg2 = element_groups1[plcc], element_groups2[plcc]
+#             for j in 1:length(perm)
+#                 mapping[ element_groups1[plcc][j] ] = element_groups2[plcc][ perm[j] ]
+#             end
+#         end
+#         #mtab1p = zeros(Int, (ord_group, ord_group))
+#         isiso = true
+#         for i in 1:ord_group, j in 1:ord_group
+#             #mtab1p[mapping[i], mapping[j]] = mapping[group1.multiplication_table[i, j]]
+#             if group2.multiplication_table[mapping[i], mapping[j]] != mapping[group1.multiplication_table[i, j]]
+#                 isiso = false
+#                 break
+#             end
+#         end
+#         isiso && return mapping
+#         #!isiso && continue
+#         #mtab1p == group2.multiplication_table && return mapping
+#     end
+#     return nothing
+# end
 
 
 """
