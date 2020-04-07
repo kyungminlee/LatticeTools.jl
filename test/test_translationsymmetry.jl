@@ -106,9 +106,7 @@ using YAML
     end
   end  # @testset "non-orthogonal lattice" begin
 
-
   @testset "reduction" begin
-
     # Gamma point is always ok
     @test iscompatible([0,0], [3,3], [0,0])
     @test iscompatible([0,0], [3,3], [1,0])
@@ -124,8 +122,6 @@ using YAML
     @test !iscompatible([1,0], [3,3], [[0,0], [1,0], [2,0]])
   end
 
-
-
   @testset "lattice permutation" begin
     unitcell = make_unitcell([1.0 0.0; 0.0 1.0]; OrbitalType=String)
     addorbital!(unitcell, "Ox", FractCoord([0,0], [0.5, 0.0]))
@@ -135,7 +131,6 @@ using YAML
 
     perms = get_orbital_permutations(lattice, tsym)
     @test length(perms) == 16
-    #@test length(perms[1].map) == 32
     @test perms[1].map == 1:32  # identity
 
     for (ir, r) in enumerate(lattice.hypercube.coordinates)
@@ -150,9 +145,10 @@ using YAML
       ]
     end
 
-    @test_throws BoundsError get_irrep_iterator(lattice, tsym, 1, 2)
+    @test_throws ArgumentError get_irrep_iterator(lattice, TranslationSymmetryIrrepComponent(tsym, 1, 2))
     let phases = [cis(-2π * i / 4) for j in 0:3 for i in 0:3]
-      irrep_list1 = collect(get_irrep_iterator(lattice, tsym, 2, 1))
+      tsic = TranslationSymmetryIrrepComponent(tsym, 2, 1)
+      irrep_list1 = collect(get_irrep_iterator(lattice, tsic))
       irrep_list2 = collect(zip(perms, phases))
       @test length(irrep_list1) == length(irrep_list2)
       for (x,y) in zip(irrep_list1, irrep_list2)
@@ -164,7 +160,6 @@ using YAML
     @test iscompatible(lattice, tsym, 1, [1,0]) # Γ point
     @test !iscompatible(lattice, tsym, 2, [1,0]) # Γ point
     @test !iscompatible(lattice, tsym, 2, [[0,0], [1,0]])
-
 
   end # testset lattice permutation
 
