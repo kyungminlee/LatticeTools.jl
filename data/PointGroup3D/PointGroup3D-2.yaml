@@ -7,6 +7,7 @@ ConjugacyClasses:
 ElementNames: ['1', '-1']
 Generators: [2]
 HermannMauguinn: '-1'
+Schoenflies: C<sub>i</sub>
 IrreducibleRepresentations:
 - [1, 1]
 - [1, -1]

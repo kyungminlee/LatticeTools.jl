@@ -9,6 +9,7 @@ ConjugacyClasses:
 ElementNames: ['1', 3<sup>+</sup><sub>001</sub>, 3<sup>-</sup><sub>001</sub>]
 Generators: [2]
 HermannMauguinn: '3'
+Schoenflies: C<sub>3</sub>
 IrreducibleRepresentations:
 - [1, 1, 1]
 - [1, cis(2pi/3), cis(-2pi/3)]

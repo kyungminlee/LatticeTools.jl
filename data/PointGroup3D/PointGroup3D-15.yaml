@@ -25,6 +25,7 @@ ElementNames: ['1', 2<sub>001</sub>, 4<sup>+</sup><sub>001</sub>, 4<sup>-</sup><
   m<sub>100</sub>, m<sub>110</sub>, m<sub>1-10</sub>]
 Generators: [2, 3, 5, 9]
 HermannMauguinn: 4/mmm
+Schoenflies: D<sub>4h</sub>
 IrreducibleRepresentations:
 - [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
 - [1, 1, 1, 1, 1, 1, 1, 1, -1, -1, -1, -1, -1, -1, -1, -1]
