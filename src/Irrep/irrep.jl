@@ -85,6 +85,15 @@ end
 group_order(sic::PointSymmetryIrrepComponent) = group_order(sic.symmetry)
 
 
+
+function get_irrep_components(lattice::Lattice,
+                              psym::PointSymmetry)
+    return (PointSymmetryIrrepComponent(psym, irrep_index, 1)
+                for irrep_index in 1:num_irreps(psym)
+                for irrep_compo in 1:irrep_dimension(psym, irrep_index))
+end
+
+
 function get_irrep_iterator(lattice::Lattice,
                             sic::PointSymmetryIrrepComponent)
                             #tol::Real=Base.rtoldefault(Float64))
