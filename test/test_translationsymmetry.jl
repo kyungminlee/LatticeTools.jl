@@ -129,6 +129,10 @@ using YAML
         lattice = make_lattice(unitcell, [4 0; 0 4])
         tsym = TranslationSymmetry(lattice)
 
+        let
+            lattice_failure = make_lattice(unitcell, [4 0; 0 3])
+            @test_throws ArgumentError get_orbital_permutations(lattice_failure, tsym)
+        end
         perms = get_orbital_permutations(lattice, tsym)
         @test length(perms) == 16
         @test perms[1].map == 1:32  # identity
