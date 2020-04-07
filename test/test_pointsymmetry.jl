@@ -2,8 +2,16 @@ using Test
 using LinearAlgebra
 using YAML
 
+using TightBindingLattice: simplify_name
 
 @testset "PointSymmetry" begin
+    @testset "simplify_name" begin
+        @test simplify_name("1") == "1"
+        @test simplify_name("-1") == "-1"
+        @test simplify_name("2<sub>011</sub>") == "2"
+        @test simplify_name("3<sup>+</sup><sub>011</sub>") == "3"
+        @test simplify_name("m<sub>01</sub>") == "m"
+    end
 
     @testset "constructor failure" begin
         group = FiniteGroup([1 2; 2 1])
@@ -171,8 +179,8 @@ using YAML
         project(psym, [1 0 0; 0 1 0])
         @test_throws ArgumentError project(psym, [1 0; 0 1])
         @test_throws ArgumentError project(psym, [1 1 1; 1 1 1])
+        @test_throws ArgumentError project(psym, [1 0 0;]) # projection not faithful
     end
-
 
     @testset "iscompatible" begin
         hc1 = HypercubicLattice([4 0; 0 4])
