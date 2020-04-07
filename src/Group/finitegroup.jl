@@ -25,11 +25,16 @@ struct FiniteGroup <: AbstractGroup
         size(mtab, 2) != n_elem && throw(ArgumentError("Multiplication table should be a square matrix"))
 
         elements = BitSet(1:n_elem)
+        # check identity and closure
         mtab[:,1] != 1:n_elem && throw(ArgumentError("Element 1 should be identity"))
         mtab[1,:] != 1:n_elem && throw(ArgumentError("Element 1 should be identity"))
+        # check closure and inverse
         for i in 2:n_elem
             BitSet(mtab[:,i]) != elements && throw(ArgumentError("Multiplication not a group"))
             BitSet(mtab[i,:]) != elements && throw(ArgumentError("Multiplication not a group"))
+        end
+        for i in 1:n_elem, j in 1:n_elem, k in 1:n_elem
+            mtab[mtab[i, j], k] != mtab[i, mtab[j, k]] && throw(Argument("Multiplication not associative"))
         end
 
         # compute cycles
@@ -45,6 +50,7 @@ struct FiniteGroup <: AbstractGroup
             end
         end
 
+        # compute inverses
         inverses = zeros(Int, n_elem)
         for i in 1:n_elem
             for j in i:n_elem
@@ -56,6 +62,7 @@ struct FiniteGroup <: AbstractGroup
             end
         end
 
+        # compute conjugacy classes
         conjugacy_classes = Vector{Int}[]
         let
             adjacency = [BitSet() for i in 1:n_elem]
@@ -74,7 +81,9 @@ struct FiniteGroup <: AbstractGroup
                 push!(conjugacy_classes, sort(collect(adjacency[i])))
             end
         end
+
         @assert all(period_lengths[first(cc)] == period_lengths[i] for cc in conjugacy_classes for i in cc)
+
         new(mtab, period_lengths, inverses, conjugacy_classes)
     end
 end
