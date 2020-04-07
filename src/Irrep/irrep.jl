@@ -15,6 +15,7 @@ end
 
 abstract type AbstractSymmetryIrrepComponent end
 
+
 struct TranslationSymmetryIrrepComponent <:AbstractSymmetryIrrepComponent
     symmetry::TranslationSymmetry
     irrep_index::Int
@@ -38,8 +39,8 @@ end
 
 
 function get_irrep_iterator(lattice::Lattice,
-                            sic::TranslationSymmetryIrrepComponent,
-                            tol::Real=Base.rtoldefault(Float64))
+                            sic::TranslationSymmetryIrrepComponent)
+                            #tol::Real=Base.rtoldefault(Float64))
     sym = sic.symmetry
     permutations = get_orbital_permutations(lattice, sym)
     irrep_components = let sym_irrep = irrep(sym, sic.irrep_index),
@@ -69,14 +70,13 @@ struct PointSymmetryIrrepComponent <:AbstractSymmetryIrrepComponent
     end
 end
 
-function group_order(sic::PointSymmetryIrrepComponent)
-    return group_order(sic.symmetry)
-end
+
+group_order(sic::PointSymmetryIrrepComponent) = group_order(sic.symmetry)
 
 
 function get_irrep_iterator(lattice::Lattice,
-                            sic::PointSymmetryIrrepComponent,
-                            tol::Real=Base.rtoldefault(Float64))
+                            sic::PointSymmetryIrrepComponent)
+                            #tol::Real=Base.rtoldefault(Float64))
     sym = sic.symmetry
     permutations = get_orbital_permutations(lattice, sym)
     irrep_components = let irrep = irrep(sym, sic.irrep_index),
@@ -102,20 +102,18 @@ struct SymmorphicSpaceSymmetryIrrepComponent <:AbstractSymmetryIrrepComponent
         tsym_irrep_index = tsic.irrep_index
         psym = psic.symmetry
         if !iscompatible(tsym, tsym_irrep_index, psym)
-            throw(ArgumentError("point symmetry not compatible with translation symmetry"))
+            throw(ArgumentError("point symmetry $(psym.hermann_mauguinn) is not compatible with translation symmetry $(tsym.hypercube.scale_matrix) at irrep $tsym_irrep_index"))
         end
         return new(tsic, psic)
     end
 end
 
-function group_order(sic::SymmorphicSpaceSymmetryIrrepComponent)
-    return group_order(sic.translation) * group_order(sic.point)
-end
+group_order(sic::SymmorphicSpaceSymmetryIrrepComponent) = group_order(sic.translation) * group_order(sic.point)
 
 
 function get_irrep_iterator(lattice::Lattice,
-    ssic::SymmorphicSpaceSymmetryIrrepComponent,
-    tol::Real=Base.rtoldefault(Float64))
+                            ssic::SymmorphicSpaceSymmetryIrrepComponent)
+                            #tol::Real=Base.rtoldefault(Float64))
 
     tsym = ssic.translation.symmetry
     tsym_irrep_index = ssic.translation.irrep_index
