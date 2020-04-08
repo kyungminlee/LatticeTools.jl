@@ -65,10 +65,10 @@ BUT THIS: Return `[p1.map[x] for x in p2.map]`.
 ```jldoctest
 julia> using TightBindingLattice
 
-julia> Permutation([1,3,2]) * Permutation([2,1,3])
+julia> Permutation([2,1,3]) * Permutation([1,3,2])
 Permutation([2, 3, 1], 3)
 
-julia> Permutation([2,1,3]) * Permutation([1,3,2])
+julia> Permutation([1,3,2]) * Permutation([2,1,3])
 Permutation([3, 1, 2], 3)
 ```
 """
