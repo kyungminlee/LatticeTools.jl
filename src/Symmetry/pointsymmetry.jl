@@ -16,7 +16,7 @@ export project
 
 export little_group_elements
 export little_group
-export little_symmetry
+export little_symmetry, little_symmetry_iso
 
 export get_orbital_permutations
 export get_irrep_iterator
