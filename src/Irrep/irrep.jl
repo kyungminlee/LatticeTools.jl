@@ -65,6 +65,14 @@ function get_irrep_iterator(lattice::Lattice,
 end
 
 
+import Base.==
+
+function ==(lhs::TranslationSymmetryIrrepComponent,
+            rhs::TranslationSymmetryIrrepComponent)
+    lhs.symmetry == rhs.symmetry && lhs.irrep_index == rhs.irrep_index
+end
+
+
 struct PointSymmetryIrrepComponent <:AbstractSymmetryIrrepComponent
     symmetry::PointSymmetry
     irrep_index::Int
