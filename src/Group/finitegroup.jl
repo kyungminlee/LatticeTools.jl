@@ -1,6 +1,7 @@
 export FiniteGroup
 
 export group_order
+export period_length
 export group_product
 export group_inverse
 
@@ -106,8 +107,8 @@ group_order(group::FiniteGroup) = size(group.multiplication_table, 1)
 
 Order of group element (i.e. period length)
 """
-group_order(group::FiniteGroup, g::Integer) = group.period_lengths[g]
-
+group_order(group::FiniteGroup, g) = group.period_lengths[g]
+period_length(group::FiniteGroup, g) = group.period_lengths[g]
 
 isabelian(group::FiniteGroup) = group.multiplication_table == transpose(group.multiplication_table)
 
