@@ -1,7 +1,7 @@
 name = "TightBindingLattice"
 uuid = "f0da6d2f-861b-4198-860c-d50f6f65dfeb"
 author = "Kyungmin Lee"
-version = "0.3.0"
+version = "0.3.1"
 
 [deps]
 Combinatorics = "861a8166-3701-5b0c-9a16-15d98fcdc6aa"
