@@ -10,22 +10,21 @@ export group_order,
        element_names,
        element_name
 
-
 export get_orbital_permutations
 export iscompatible
 
 export get_irrep_iterator
 
 
-struct TranslationSymmetry <:AbstractSymmetry
+struct TranslationSymmetry <: AbstractSymmetry
     hypercube::HypercubicLattice
 
     group::FiniteGroup
 
     generators::Vector{Int}
-    conjugacy_classes::Vector{ConjugacyClassType}
+    conjugacy_classes::Vector{Vector{Int}}
     character_table::Matrix{ComplexF64}
-    irreps::Vector{IrrepType}
+    irreps::Vector{Vector{Matrix{ComplexF64}}}
     element_names::Vector{String}
 
     # for quick
@@ -54,6 +53,7 @@ struct TranslationSymmetry <:AbstractSymmetry
 
         orthogonal_shape = [group.period_lengths[g] for g in generators] # in "generator" coordinates
         orthogonal_coordinates = vec([[x...] for x in Iterators.product([0:(d-1) for d in orthogonal_shape]...)])
+
         @assert prod(orthogonal_shape) == ord_group
         @assert length(orthogonal_coordinates) == ord_group
 
@@ -62,8 +62,6 @@ struct TranslationSymmetry <:AbstractSymmetry
 
         let ortho_latvec = hcat(hypercube.coordinates[generators]...)
             for r_ortho in orthogonal_coordinates
-                #_, i = hypercube.torus_wrap(ortho_latvec * r_ortho)
-                #r = hypercube.coordinates[i]
                 _, r = hypercube.wrap(ortho_latvec * r_ortho)
                 orthogonal_to_coordinate_map[r_ortho] = r
                 coordinate_to_orthogonal_map[r] = r_ortho
@@ -72,7 +70,7 @@ struct TranslationSymmetry <:AbstractSymmetry
 
         # each element of an abelian group is a conjugacy class
         element_names = ["$(orthogonal_to_coordinate_map[t])" for t in orthogonal_coordinates]
-        conjugacy_classes = [(name=x, elements=[i]) for (i,x) in enumerate(element_names)]
+        conjugacy_classes = [[i] for (i,x) in enumerate(element_names)]
 
         momentum(oc::AbstractVector{<:Integer}) = [2π * x / d for (x, d) in zip(oc, orthogonal_shape)]
         character_table = ComplexF64[cis(-dot(momentum(kd), t))
@@ -82,13 +80,13 @@ struct TranslationSymmetry <:AbstractSymmetry
         character_table = cleanup_number(character_table, Base.rtoldefault(Float64))
 
         # each element forms a conjugacy class
-        irreps = IrrepType[]
+        irreps = Vector{Matrix{ComplexF64}}[]
         for (idx_rep, momentum) in enumerate(orthogonal_coordinates)
             matrices = Matrix{ComplexF64}[]
             for (idx_elem, orthogonal_translation) in enumerate(orthogonal_coordinates)
                 push!(matrices, character_table[idx_rep, idx_elem] * ones(ComplexF64, 1, 1))
             end
-            push!(irreps, (name="$momentum", matrices=matrices))
+            push!(irreps, matrices)
         end
 
         return new(hypercube, group, generators,
@@ -110,7 +108,7 @@ character_table(sym::TranslationSymmetry) = sym.character_table
 irreps(sym::TranslationSymmetry) = sym.irreps
 irrep(sym::TranslationSymmetry, idx) = sym.irreps[idx]
 num_irreps(sym::TranslationSymmetry) = length(sym.irreps)
-irrep_dimension(sym::TranslationSymmetry, idx::Integer) = size(sym.irreps[idx].matrices[1], 2)
+irrep_dimension(sym::TranslationSymmetry, idx::Integer) = 1 # size(first(sym.irreps[idx]), 1)
 
 
 function get_orbital_permutations(lattice::Lattice,
@@ -118,21 +116,14 @@ function get_orbital_permutations(lattice::Lattice,
     if lattice.hypercube != translation_symmetry.hypercube
         throw(ArgumentError("lattice and translation symmetry not consistent"))
     end
-
     n_uc = length(lattice.hypercube.coordinates)
     n_orb = numorbital(lattice.unitcell)
-
     permutations = Permutation[]
     for trans_ortho in translation_symmetry.orthogonal_coordinates
-
         trans_coord = translation_symmetry.orthogonal_to_coordinate_map[trans_ortho]
-
         p = zeros(Int, n_uc * n_orb)
         for (orbital_index1, ((orbital_name1, uc_coord1), _)) in enumerate(lattice.supercell.orbitals)
-            #_, uc_index2 = lattice.hypercube.torus_wrap(uc_coord1 + trans_coord)
-            #uc_coord2 = lattice.hypercube.coordinates[uc_index2]
             _, uc_coord2 = lattice.hypercube.wrap(uc_coord1 + trans_coord)
-
             orbital_index1 = getorbitalindex(lattice.supercell, (orbital_name1, uc_coord1))
             orbital_index2 = getorbitalindex(lattice.supercell, (orbital_name1, uc_coord2))
             p[orbital_index1] = orbital_index2
@@ -143,16 +134,26 @@ function get_orbital_permutations(lattice::Lattice,
 end
 
 
-function get_irrep_iterator(lattice::Lattice,
-                            tsym::TranslationSymmetry,
-                            tsym_irrep_index::Integer,
-                            tsym_irrep_compo::Integer=1)
-
-    tsym_permutations = get_orbital_permutations(lattice, tsym)
-    tsym_irrep = irrep(tsym, tsym_irrep_index)
-    tsym_irrep_components = [m[tsym_irrep_compo, tsym_irrep_compo] for m in tsym_irrep.matrices]
-    return zip(tsym_permutations, tsym_irrep_components)
-end
+# function get_irrep_iterator(lattice::Lattice,
+#                             tsym::TranslationSymmetry,
+#                             tsym_irrep_index::Integer,
+#                             tsym_irrep_compo::Integer=1)
+#     tsym_permutations = get_orbital_permutations(lattice, tsym)
+#     tsym_irrep = irrep(tsym, tsym_irrep_index)
+#     tsym_irrep_components = (m[tsym_irrep_compo, tsym_irrep_compo] for m in tsym_irrep)
+#     return zip(tsym_permutations, tsym_irrep_components)
+# end
+#
+#
+# function get_irrep_iterator(lattice::Lattice,
+#                             tsym::TranslationSymmetry,
+#                             tsym_irrep_index::Integer,
+#                             ::Colon)
+#     tsym_permutations = get_orbital_permutations(lattice, tsym)
+#     tsym_irrep = irrep(tsym, tsym_irrep_index)
+#     tsym_irrep_components = view(tsym.character_table, tsym_irrep_index, :)
+#     return zip(tsym_permutations, tsym_irrep_components)
+# end
 
 
 function iscompatible(orthogonal_momentum::AbstractVector{<:Integer},

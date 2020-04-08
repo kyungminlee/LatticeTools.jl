@@ -1,14 +1,13 @@
 CharacterTable:
 - [1]
 ConjugacyClasses:
-- Elements: [1]
-  Name: C<sub>1</sub>
+- [1]
 ElementNames: ['1']
 Generators: [1]
 HermannMauguinn: '1'
+Schoenflies: C<sub>1</sub>
 IrreducibleRepresentations:
-- Matrices: [1]
-  Name: C<sub>1</sub>
+- [1]
 MatrixRepresentations:
 - - [1, 0, 0]
   - [0, 1, 0]

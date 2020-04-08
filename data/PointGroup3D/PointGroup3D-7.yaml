@@ -4,26 +4,19 @@ CharacterTable:
 - [1, -1, 1, -1]
 - [1, -1, -1, 1]
 ConjugacyClasses:
-- Elements: [1]
-  Name: C<sub>1</sub>
-- Elements: [2]
-  Name: C<sub>2</sub>
-- Elements: [4]
-  Name: C<sub>3</sub>
-- Elements: [3]
-  Name: C<sub>4</sub>
+- [1]
+- [2]
+- [4]
+- [3]
 ElementNames: ['1', 2<sub>001</sub>, m<sub>010</sub>, m<sub>100</sub>]
 Generators: [2, 3]
 HermannMauguinn: mm2
+Schoenflies: C<sub>2v</sub>
 IrreducibleRepresentations:
-- Matrices: [1, 1, 1, 1]
-  Name: C<sub>1</sub>
-- Matrices: [1, 1, -1, -1]
-  Name: C<sub>2</sub>
-- Matrices: [1, -1, -1, 1]
-  Name: C<sub>3</sub>
-- Matrices: [1, -1, 1, -1]
-  Name: C<sub>4</sub>
+- [1, 1, 1, 1]
+- [1, 1, -1, -1]
+- [1, -1, -1, 1]
+- [1, -1, 1, -1]
 MatrixRepresentations:
 - - [1, 0, 0]
   - [0, 1, 0]

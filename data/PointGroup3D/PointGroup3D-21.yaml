@@ -6,35 +6,24 @@ CharacterTable:
 - [1, 1, cis(2pi/3), cis(-2pi/3), cis(-2pi/3), cis(2pi/3)]
 - [1, -1, cis(2pi/3), cis(-2pi/3), cis(pi/3), cis(-pi/3)]
 ConjugacyClasses:
-- Elements: [1]
-  Name: C<sub>1</sub>
-- Elements: [4]
-  Name: C<sub>2</sub>
-- Elements: [3]
-  Name: C<sub>3</sub>
-- Elements: [2]
-  Name: C<sub>4</sub>
-- Elements: [5]
-  Name: C<sub>5</sub>
-- Elements: [6]
-  Name: C<sub>6</sub>
-ElementNames: ['1', 3<sup>+</sup><sub>001</sub>, 3<sup>-</sup><sub>001</sub>,
-  2<sub>001</sub>, 6<sup>-</sup><sub>001</sub>, 6<sup>+</sup><sub>001</sub>]
+- [1]
+- [4]
+- [3]
+- [2]
+- [5]
+- [6]
+ElementNames: ['1', 3<sup>+</sup><sub>001</sub>, 3<sup>-</sup><sub>001</sub>, 2<sub>001</sub>, 6<sup>-</sup><sub>001</sub>,
+  6<sup>+</sup><sub>001</sub>]
 Generators: [2, 4]
 HermannMauguinn: '6'
+Schoenflies: C<sub>6</sub>
 IrreducibleRepresentations:
-- Matrices: [1, 1, 1, 1, 1, 1]
-  Name: C<sub>1</sub>
-- Matrices: [1, 1, 1, -1, -1, -1]
-  Name: C<sub>2</sub>
-- Matrices: [1, cis(2pi/3), cis(-2pi/3), 1, cis(2pi/3), cis(-2pi/3)]
-  Name: C<sub>3</sub>
-- Matrices: [1, cis(2pi/3), cis(-2pi/3), -1, cis(-pi/3), cis(pi/3)]
-  Name: C<sub>4</sub>
-- Matrices: [1, cis(-2pi/3), cis(2pi/3), 1, cis(-2pi/3), cis(2pi/3)]
-  Name: C<sub>5</sub>
-- Matrices: [1, cis(-2pi/3), cis(2pi/3), -1, cis(pi/3), cis(-pi/3)]
-  Name: C<sub>6</sub>
+- [1, 1, 1, 1, 1, 1]
+- [1, 1, 1, -1, -1, -1]
+- [1, cis(2pi/3), cis(-2pi/3), 1, cis(2pi/3), cis(-2pi/3)]
+- [1, cis(2pi/3), cis(-2pi/3), -1, cis(-pi/3), cis(pi/3)]
+- [1, cis(-2pi/3), cis(2pi/3), 1, cis(-2pi/3), cis(2pi/3)]
+- [1, cis(-2pi/3), cis(2pi/3), -1, cis(pi/3), cis(-pi/3)]
 MatrixRepresentations:
 - - [1, 0, 0]
   - [0, 1, 0]

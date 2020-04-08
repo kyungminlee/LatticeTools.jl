@@ -2,6 +2,7 @@ using TightBindingLattice
 using Test
 
 include("test_basic.jl")
+include("test_parser.jl")
 include("test_coord.jl")
 include("test_unitcell.jl")
 include("test_hypercube.jl")
@@ -11,3 +12,4 @@ include("test_group.jl")
 include("test_translationsymmetry.jl")
 include("test_pointsymmetry.jl")
 include("test_irrep.jl")
+include("test_irrepdatabase.jl")
