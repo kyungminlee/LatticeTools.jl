@@ -20,6 +20,11 @@ using TightBindingLattice
         @test group_order(group, 1) == 1
         @test group_order(group, 2) == 3
         @test group_order(group, 3) == 3
+        @test group_order(group, [1,2,3]) == [1,3,3]
+        @test period_length(group, 1) == 1
+        @test period_length(group, 2) == 3
+        @test period_length(group, 3) == 3
+        @test period_length(group, [1,2,3]) == [1,3,3]
         @test isabelian(group)
         @test group_multiplication_table(group) == mtab
 
@@ -75,7 +80,6 @@ using TightBindingLattice
         @test generators == [2, 4]
         @test generate_subgroup(group, generators) == BitSet(1:6) # completely generates
 
-
         ϕ = [1, 3, 4, 5, 2, 6] # group isomorphism
         mtab1 = group_multiplication_table(group)
         mtab2 = zeros(Int, (6,6))
@@ -95,7 +99,6 @@ using TightBindingLattice
         end
         @test !isnothing(group_isomorphism(group2, FiniteGroup(mtab3)))  # ϕ and ϕ2 are equivalent
 
-
         for ϕ in permutations(2:6)
             ϕ = vcat([1], ϕ)
             mtab1 = group_multiplication_table(group)
@@ -107,11 +110,6 @@ using TightBindingLattice
             group2 = FiniteGroup(mtab2)
             @test !isnothing(group_isomorphism(group, group2))
         end
-
-        #@show mtab2
-        #@show group_isomorphism(group, group2) # finds ϕ
-        #@show group_isomorphism(group2, group) # finds ϕ⁻¹
-
     end
 
     @testset "group isomorphism" begin
@@ -159,4 +157,9 @@ using TightBindingLattice
         tsym2 = TranslationSymmetry([3 1; 0 3])
         @test isnothing(group_isomorphism(tsym1.group, tsym2.group))
     end
+
+    # TODO
+    # Are there two non-isomorphic groups with
+    # - Same conjugacy classes
+    # - Same period lengths
 end
