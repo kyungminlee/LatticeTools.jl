@@ -43,7 +43,7 @@ using TightBindingLattice
             @test iscompatible(tsic, psym_little)
             lg_matrep = psym.matrix_representations[little_group_elements(tsic, psym)]
             @test !isnothing(group_isomorphism(little_group(tsic, psym),
-                               FiniteGroup(group_multiplication_table(lg_matrep))))
+                             FiniteGroup(group_multiplication_table(lg_matrep))))
             let psic = PointSymmetryIrrepComponent(psym, 1, 1)
                 if k in [[0,0], [2,2]]
                     SymmorphicSpaceSymmetryIrrepComponent(tsic, psic)
@@ -86,12 +86,16 @@ using TightBindingLattice
         end
         @test length(ssics1) == length(ssics2)
         for ((tsic, psic), ssic) in zip(ssics1, ssics2)
+            @test group_order(ssic) == group_order(tsic) * group_order(psic)
+
             @test tsic.symmetry.hypercube == ssic.translation.symmetry.hypercube
             @test psic.symmetry.hermann_mauguinn == ssic.point.symmetry.hermann_mauguinn
             @test tsic.irrep_index == ssic.translation.irrep_index
             @test psic.irrep_index == ssic.point.irrep_index
             @test tsic.irrep_component == ssic.translation.irrep_component
             @test psic.irrep_component == ssic.point.irrep_component
+
+            @test sum(1 for x in collect(get_irrep_iterator(lattice, ssic))) == group_order(tsic) * group_order(psic)
         end
     end
 
