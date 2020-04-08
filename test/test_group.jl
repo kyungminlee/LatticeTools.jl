@@ -1,5 +1,6 @@
 using Test
 
+using Combinatorics
 using LinearAlgebra
 using YAML
 
@@ -92,6 +93,19 @@ using YAML
             mtab3[ϕ2[x], ϕ2[y]] = ϕ2[mtab1[x,y]]
         end
         @test !isnothing(group_isomorphism(group2, FiniteGroup(mtab3)))  # ϕ and ϕ2 are equivalent
+
+
+        for ϕ in permutations(2:6)
+            ϕ = vcat([1], ϕ)
+            mtab1 = group_multiplication_table(group)
+            mtab2 = zeros(Int, (6,6))
+            for x in 1:6, y in 1:6
+                # ϕ(x)⋅ϕ(y) = ϕ(x⋅y)
+                mtab2[ϕ[x], ϕ[y]] = ϕ[mtab1[x,y]]
+            end
+            group2 = FiniteGroup(mtab2)
+            @test !isnothing(group_isomorphism(group, group2))
+        end
 
         #@show mtab2
         #@show group_isomorphism(group, group2) # finds ϕ
