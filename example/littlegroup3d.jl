@@ -12,9 +12,11 @@ psym = project(PointSymmetryDatabase.get(15), [1 0 0; 0 1 0; 0 0 1])
 #@show typeof(psym)
 
 lattice = make_lattice(unitcell, [4 0 0; 0 4 0; 0 0 3])
+tsym = TranslationSymmetry(lattice)
+
 perms = get_orbital_permutations(lattice, psym)
 
-tsym = TranslationSymmetry(lattice)
+
 
 @show num_irreps(tsym)
 
@@ -37,7 +39,12 @@ for idx in 1:num_irreps(tsym)
     @show iscompatible(tsym, idx, psym)
     @show iscompatible(tsym, idx, psym_little)
     @show iscompatible(tsym, idx, psym_little2)
-
-
-
 end
+
+
+count = 1
+for ssic in get_irrep_components(lattice, tsym, psym)
+    global count
+    count += 1
+end
+@show count
