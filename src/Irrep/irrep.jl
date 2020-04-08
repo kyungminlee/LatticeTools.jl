@@ -110,6 +110,18 @@ function get_irrep_iterator(lattice::Lattice,
 end
 
 
+
+function get_irrep_components(lattice::Lattice,
+                              tsym::TranslationSymmetry,
+                              psym::PointSymmetry)
+    return (SymmorphicSpaceSymmetryIrrepComponent(tsic, psic)
+                for tsic in get_irrep_components(lattice, tsym)
+                for psic in get_irrep_components(lattice, little_symmetry(tsic, psym)) )
+end
+
+
+
+
 struct SymmorphicSpaceSymmetryIrrepComponent <:AbstractSymmetryIrrepComponent
     translation::TranslationSymmetryIrrepComponent
     point::PointSymmetryIrrepComponent
