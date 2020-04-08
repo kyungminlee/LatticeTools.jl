@@ -3,13 +3,14 @@ export AbstractSymmetryOperation
 export Permutation
 
 export generate_group
+export inverse
 
 
 abstract type AbstractSymmetryOperation end
 
 
 """
-        Permutation(perms ::AbstractVector{Int}; max_order=2048)
+        Permutation(perms; max_order=2048)
 
 Create a permutation of integers from 1 to n.
 `perms` should be a permutation of `1:n`.
@@ -25,7 +26,7 @@ In other words, map tells you where each element is from.
 struct Permutation <: AbstractSymmetryOperation
     map ::Vector{Int}
     order ::Int
-    function Permutation(perms ::AbstractVector{Int}; max_order=2048)
+    function Permutation(perms::AbstractVector{<:Integer}; max_order=2048)
         n = length(perms)
         map = Vector{Int}(perms)
         let # check for duplicates
@@ -97,7 +98,7 @@ end
 
 import Base.^
 """
-        ^(perm ::Permutation, pow ::Integer)
+    ^(perm ::Permutation, pow ::Integer)
 
 Exponentiate the permutation.
 
@@ -118,7 +119,6 @@ function ^(perm ::Permutation, pow ::Integer)
     return Permutation(out)
 end
 
-export inverse
 function inverse(perm ::Permutation)
     out = zeros(Int, length(perm.map))
     for (i, x) in enumerate(perm.map)
@@ -132,20 +132,21 @@ import Base.==
 ==(p1 ::Permutation, p2::Permutation) = p1.map == p2.map
 
 
+import Base.isequal
+isequal(p1 ::Permutation, p2::Permutation) = isequal(p1.map, p2.map)
+
+
 import Base.isless
 function isless(p1 ::Permutation, p2::Permutation)
     return isless(p1.order, p2.order) || (isequal(p1.order, p2.order) && isless(p1.map, p2.map))
 end
-
-import Base.isequal
-isequal(p1 ::Permutation, p2::Permutation) = isequal(p1.map, p2.map)
 
 
 import Base.hash
 hash(p ::Permutation) = hash(p.map)
 
 
-function generate_group(generators ::Permutation...)
+function generate_group(generators::Permutation...)
     change = true
     group = Set{Permutation}([generators...])
     while change
