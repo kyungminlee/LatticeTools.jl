@@ -158,14 +158,24 @@ function group_product(group::FiniteGroup,
 end
 
 
+"""
+    group_inverse(group)
+
+Get a function which gives inverse
+"""
 function group_inverse(group::FiniteGroup)
     inverse(idx::Integer) = group.inverses[idx]
     inverse(idx::AbstractVector{<:Integer}) = group.inverses[idx]
     return inverse
 end
 
-group_inverse(group::FiniteGroup, idx::Integer) = group.inverses[idx]
-group_inverse(group::FiniteGroup, idx::AbstractVector{<:Integer}) = group.inverses[idx]
+"""
+    group_inverse(group, g)
+
+Get inverse of element g
+"""
+group_inverse(group::FiniteGroup, g::Integer) = group.inverses[g]
+group_inverse(group::FiniteGroup, g::AbstractVector{<:Integer}) = group.inverses[g]
 
 
 """
@@ -196,15 +206,6 @@ function generate_subgroup(group::FiniteGroup, idx::Integer)
     end
     @assert jdx == 1
     return out
-    # out = BitSet([1])
-    # jdx = idx
-    # for i in 1:group_order(group)
-    #     jdx == 1 && return out
-    #     push!(out, jdx)
-    #     jdx = group_product(group, jdx, idx)
-    # end
-    # error("algorithm error with generate_subgroup")
-    # return BitSet()
 end
 
 
@@ -422,7 +423,6 @@ function ishomomorphic(group::FiniteGroup,
     if length(representation) != ord_group
         return false
     end
-
     for i in 1:ord_group, j in 1:ord_group
         if !equal( product(representation[i], representation[j]),
                    representation[ group_product(group, i, j)] )
