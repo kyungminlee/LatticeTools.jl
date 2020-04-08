@@ -114,11 +114,6 @@ end
 
 
 function read_point_symmetry(data::AbstractDict)
-    # multiplication_table = transpose(hcat(parse_expr(data["MultiplicationTable"])...))
-    # character_table = cleanup_number(transpose(hcat(parse_expr(data["CharacterTable"])...)), tol)
-    # irreps = [ Matrix{ComplexF64}[transpose(hcat(parse_expr(elem)...)) for elem in item]
-    #             for item in data["IrreducibleRepresentations"] ]
-    # matrix_representations = Matrix{Int}[transpose(hcat(parse_expr(x)...)) for x in data["MatrixRepresentations"]]
     tol = Base.rtoldefault(Float64)
     read_matrix(obj) = collect(transpose(hcat(parse_expr(obj)...)))
 
