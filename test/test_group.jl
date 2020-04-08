@@ -3,6 +3,7 @@ using Test
 using Combinatorics
 using LinearAlgebra
 using YAML
+using TightBindingLattice
 
 @testset "Group" begin
     @testset "FiniteGroup-Abelian" begin
@@ -131,4 +132,31 @@ using YAML
                               4 3 2 1])
         @test isnothing(group_isomorphism(group1, group2))
     end # @testset "group isomorphism" begin
+
+    @testset "group isomorphism 2" begin
+        # D2h
+        group1 = FiniteGroup([1 2 3 4 5 6 7 8;
+                              2 1 4 3 6 5 8 7;
+                              3 4 1 2 7 8 5 6;
+                              4 3 2 1 8 7 6 5;
+                              5 6 7 8 1 2 3 4;
+                              6 5 8 7 2 1 4 3;
+                              7 8 5 6 3 4 1 2;
+                              8 7 6 5 4 3 2 1])
+        group2 = FiniteGroup([1 2 3 4 5 6 7 8;
+                              2 1 4 3 6 5 8 7;
+                              3 4 2 1 7 8 6 5;
+                              4 3 1 2 8 7 5 6;
+                              5 6 7 8 1 2 3 4;
+                              6 5 8 7 2 1 4 3;
+                              7 8 6 5 3 4 2 1;
+                              8 7 5 6 4 3 1 2])
+        @test isnothing(group_isomorphism(group1, group2))
+    end
+
+    @testset "group isomorphism 3" begin
+        tsym1 = TranslationSymmetry([3 0; 0 3])
+        tsym2 = TranslationSymmetry([3 1; 0 3])
+        @test isnothing(group_isomorphism(tsym1.group, tsym2.group))
+    end
 end
