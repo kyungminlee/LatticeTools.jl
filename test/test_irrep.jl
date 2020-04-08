@@ -72,5 +72,28 @@ using TightBindingLattice
         end
     end
 
+    @testset "space" begin
+        ssics1 = []
+        for tsic in get_irrep_components(lattice, tsym)
+            psym_little = little_symmetry(tsic, psym)
+            for psic in get_irrep_components(lattice, psym_little)
+                push!(ssics1, (tsic, psic))
+            end
+        end
+        ssics2 = []
+        for ssic in get_irrep_components(lattice, tsym, psym)
+            push!(ssics2, ssic)
+        end
+        @test length(ssics1) == length(ssics2)
+        for ((tsic, psic), ssic) in zip(ssics1, ssics2)
+            @test tsic.symmetry.hypercube == ssic.translation.symmetry.hypercube
+            @test psic.symmetry.hermann_mauguinn == ssic.point.symmetry.hermann_mauguinn
+            @test tsic.irrep_index == ssic.translation.irrep_index
+            @test psic.irrep_index == ssic.point.irrep_index
+            @test tsic.irrep_component == ssic.translation.irrep_component
+            @test psic.irrep_component == ssic.point.irrep_component
+        end
+    end
+
 
 end # testset little_symmetry
