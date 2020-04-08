@@ -98,6 +98,4 @@ using TightBindingLattice
             @test sum(1 for x in collect(get_irrep_iterator(lattice, ssic))) == group_order(tsic) * group_order(psic)
         end
     end
-
-
 end # testset little_symmetry
