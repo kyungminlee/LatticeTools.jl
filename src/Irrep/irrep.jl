@@ -182,7 +182,7 @@ end
 
 
 function little_group(tsic::TranslationSymmetryIrrepComponent,
-                               psym::PointSymmetry)
+                      psym::PointSymmetry)
     return little_group(tsic.symmetry, tsic.irrep_index, psym)
 end
 
