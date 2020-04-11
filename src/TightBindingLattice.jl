@@ -9,7 +9,6 @@ include("Basic/lattice.jl")
 
 include("Group/abstractgroup.jl")
 include("Group/finitegroup.jl")
-#include("Group/finiteabeliangroup.jl")
 
 include("Symmetry/abstractsymmetry.jl")
 include("Symmetry/translationsymmetry.jl")
@@ -17,12 +16,11 @@ include("Symmetry/pointsymmetry.jl")
 
 export PointSymmetryDatabase
 include("Symmetry/pointsymmetrydatabase.jl")
-#
+
 export IrrepDatabase
 include("Irrep/irrep.jl")
 include("Irrep/irrepdatabase.jl")
 
-#include("enlargement.jl")
 include("momentumpath.jl")
 
 end # module
