@@ -147,7 +147,10 @@ function project(psym::PointSymmetry,
     size(projection, 2) != dim && throw(ArgumentError("projection does not match matrix_representations dimension"))
 
     vals = LinearAlgebra.svdvals(projection)
-    if ! all( isapprox(x, 1; atol=tol) || isapprox(x, 0; atol=tol) for x in vals)
+    # if ! all( isapprox(x, 1; atol=tol) || isapprox(x, 0; atol=tol) for x in vals)
+    #     throw(ArgumentError("projection is not projection"))
+    # end
+    if ! all(isapprox(x, 0; atol=tol) for x in vals)
         throw(ArgumentError("projection is not projection"))
     end
 
