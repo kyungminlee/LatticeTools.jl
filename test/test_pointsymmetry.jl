@@ -224,6 +224,14 @@ using TightBindingLattice: simplify_name
             @test length(perms) == length(psym.element_names)
             @test perms[1] == Permutation(1:8) # identity
 
+            orbital_map = findorbitalmap(unitcell, psym)
+            perms2 = Permutation[]
+            for (mat, map) in zip(psym.matrix_representations, orbital_map)
+                push!(perms2, get_orbital_permutation(lattice, mat, map))
+            end
+            @test perms == perms2
+
+
             # |       |                 |       |
             # 6       8                 3       7
             # |       |         C4      |       |
