@@ -42,8 +42,7 @@ end
 group_order(sic::TranslationSymmetryIrrepComponent) = group_order(sic.symmetry)
 
 
-function get_irrep_components(lattice::Lattice,
-                              tsym::TranslationSymmetry)
+function get_irrep_components(tsym::TranslationSymmetry)
     return (TranslationSymmetryIrrepComponent(tsym, irrep_index, 1)
                 for irrep_index in 1:num_irreps(tsym))
 end
@@ -94,8 +93,7 @@ group_order(sic::PointSymmetryIrrepComponent) = group_order(sic.symmetry)
 
 
 
-function get_irrep_components(lattice::Lattice,
-                              psym::PointSymmetry)
+function get_irrep_components(psym::PointSymmetry)
     return (PointSymmetryIrrepComponent(psym, irrep_index, 1)
                 for irrep_index in 1:num_irreps(psym)
                 for irrep_compo in 1:irrep_dimension(psym, irrep_index))
@@ -119,12 +117,12 @@ end
 
 
 
-function get_irrep_components(lattice::Lattice,
-                              tsym::TranslationSymmetry,
+function get_irrep_components(tsym::TranslationSymmetry,
                               psym::PointSymmetry)
     return (SymmorphicSpaceSymmetryIrrepComponent(tsic, psic)
-                for tsic in get_irrep_components(lattice, tsym)
-                for psic in get_irrep_components(lattice, little_symmetry(tsic, psym)) )
+                for tsic in get_irrep_components(tsym)
+                for psic in get_irrep_components(little_symmetry(tsic, psym)))
+end
 end
 
 

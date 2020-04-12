@@ -35,7 +35,7 @@ using TightBindingLattice
             end
         end # for tsym_irrep
 
-        for tsic in get_irrep_components(lattice, tsym)
+        for tsic in get_irrep_components(tsym)
             k = tsym.hypercube.coordinates[tsic.irrep_index]
             psym_little = little_symmetry(tsic, psym)
 
@@ -57,8 +57,8 @@ using TightBindingLattice
     @testset "point" begin
         @test_throws ArgumentError PointSymmetryIrrepComponent(psym, 99999, 1)
         @test_throws ArgumentError PointSymmetryIrrepComponent(psym, 1, 10)
-        @test length(collect(get_irrep_components(lattice, psym))) == 1 + 1 + 1 + 1 + 2
-        for psic in get_irrep_components(lattice, psym)
+        @test length(collect(get_irrep_components(psym))) == 1 + 1 + 1 + 1 + 2
+        for psic in get_irrep_components(psym)
             @test group_order(psic) == group_order(psym)
 
             permphase = collect(get_irrep_iterator(lattice, psic))
@@ -74,14 +74,14 @@ using TightBindingLattice
 
     @testset "space" begin
         ssics1 = []
-        for tsic in get_irrep_components(lattice, tsym)
+        for tsic in get_irrep_components(tsym)
             psym_little = little_symmetry(tsic, psym)
-            for psic in get_irrep_components(lattice, psym_little)
+            for psic in get_irrep_components(psym_little)
                 push!(ssics1, (tsic, psic))
             end
         end
         ssics2 = []
-        for ssic in get_irrep_components(lattice, tsym, psym)
+        for ssic in get_irrep_components(tsym, psym)
             push!(ssics2, ssic)
         end
         @test length(ssics1) == length(ssics2)
