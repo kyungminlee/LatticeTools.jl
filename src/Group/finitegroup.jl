@@ -244,19 +244,19 @@ end
 """
     minimal_generating_set
 """
-function minimal_generating_set(group::FiniteGroup)
+function minimal_generating_set(group::FiniteGroup, predicate::Function=(x->true))
     ord_group ::Int = group_order(group)
     element_queue ::Vector{Tuple{Int, Int}} = collect(enumerate(group.period_lengths))
     sort!(element_queue, by=item->(-item[2], item[1]))
-
+    
     function factorize(generators::Vector{Int}, span::BitSet, queue_begin::Int)::Bool
         ord_span = length(span)
-        ord_span == ord_group && return true
+        ord_span == ord_group && predicate(generators) && return true
         for i in queue_begin:ord_group
             (g, pl) = element_queue[i]
             if ord_group % (ord_span * pl) == 0
                 new_span = generate_subgroup(group, group_product(group, span, g))
-                if length(new_span) == ord_span * pl
+                if length(new_span) == ord_span * pl # orthogonal
                     push!(generators, g)
                     factorize(generators, new_span, i+1) && return true
                     pop!(generators)
@@ -265,7 +265,6 @@ function minimal_generating_set(group::FiniteGroup)
         end
         return false
     end
-
     generators = Int[]
     sizehint!(generators, ord_group)
     result = factorize(generators, BitSet([1]), 1)
