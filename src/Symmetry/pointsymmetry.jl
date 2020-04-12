@@ -247,7 +247,7 @@ function get_orbital_permutation(
         namei = getorbitalname(lattice.unitcell, i)
         namej = getorbitalname(lattice.unitcell, j)
         for Ri in lattice.hypercube.coordinates
-            _, Rj = lattice.hypercube.wrap(matrep * Ri + dR)
+            _, Rj = lattice.hypercube.wrap(matrix_representation * Ri + dR)
             i_super = lattice.supercell.orbitalindices[(namei, Ri)]
             j_super = lattice.supercell.orbitalindices[(namej, Rj)]
             p[i_super] = j_super
