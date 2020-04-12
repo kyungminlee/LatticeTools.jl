@@ -47,6 +47,10 @@ function get_irrep_components(tsym::TranslationSymmetry)
                 for irrep_index in 1:num_irreps(tsym))
 end
 
+function get_irrep_components(tsym_embed::TranslationSymmetryEmbedding)
+    get_irrep_components(tsym_embed.symmetry)
+end
+
 
 function get_irrep_iterator(lattice::Lattice,
                             sic::TranslationSymmetryIrrepComponent)
@@ -99,6 +103,10 @@ function get_irrep_components(psym::PointSymmetry)
                 for irrep_compo in 1:irrep_dimension(psym, irrep_index))
 end
 
+function get_irrep_components(psym_embed::PointSymmetryEmbedding)
+    get_irrep_components(psym_embed.symmetry)
+end
+
 
 function get_irrep_iterator(lattice::Lattice,
                             sic::PointSymmetryIrrepComponent)
@@ -123,6 +131,10 @@ function get_irrep_components(tsym::TranslationSymmetry,
                 for tsic in get_irrep_components(tsym)
                 for psic in get_irrep_components(little_symmetry(tsic, psym)))
 end
+
+
+function get_irrep_components(ssym_embed::SymmorphicSpaceSymmetryEmbedding)
+    get_irrep_components(ssym_embed.translation_symmetry, ssym_embed.point_symmetry)
 end
 
 
