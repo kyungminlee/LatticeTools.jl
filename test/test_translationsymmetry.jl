@@ -80,19 +80,20 @@ using YAML
     @testset "non-orthogonal lattice" begin
         tsym = TranslationSymmetry([4 0; 0 3])
 
-        @test length(tsym.generators) == 1
-        idx_gen = tsym.generators[1]
-        @test tsym.hypercube.coordinates[idx_gen] == [1, 1]
+        @test length(tsym.generators) == 2
+        # idx_gen = tsym.generators[1]
+        @test tsym.hypercube.coordinates[tsym.generators[1]] == [1, 0]
+        @test tsym.hypercube.coordinates[tsym.generators[2]] == [0, 1]
         # elements ordered according to the "generator" (i.e. orthogonal order)
         @test element_names(tsym) == [
-            "[0, 0]", "[1, 1]", "[2, 2]", "[3, 0]",
-            "[0, 1]", "[1, 2]", "[2, 0]", "[3, 1]",
-            "[0, 2]", "[1, 0]", "[2, 1]", "[3, 2]",
+            "[0, 0]", "[1, 0]", "[2, 0]", "[3, 0]",
+            "[0, 1]", "[1, 1]", "[2, 1]", "[3, 1]",
+            "[0, 2]", "[1, 2]", "[2, 2]", "[3, 2]",
         ]
         @test tsym.conjugacy_classes == [[i] for (i, x) in enumerate(tsym.element_names)]
 
-        @test tsym.orthogonal_shape == [12]
-        @test tsym.orthogonal_coordinates == [[0], [1], [2], [3], [4], [5], [6], [7], [8], [9], [10], [11]]
+        @test tsym.orthogonal_shape == [4,3]
+        @test tsym.orthogonal_coordinates == [[0,0], [1,0], [2,0], [3,0], [0,1], [1,1], [2,1], [3,1], [0,2], [1,2], [2,2], [3,2]]
         for cc in tsym.hypercube.coordinates
             oc = tsym.coordinate_to_orthogonal_map[cc]
             cc2 = tsym.orthogonal_to_coordinate_map[oc]
@@ -116,7 +117,6 @@ using YAML
         @test iscompatible([1,0], [3,3], [0,0]) # zero translation is always identity, so it's always fine
         @test !iscompatible([1,0], [3,3], [1,0]) # these two translations are not compatible
         @test !iscompatible([1,0], [3,3], [2,0]) #   with momentum [1,1]
-
 
         @test iscompatible([0,0], [3,3], [[0,0], [1,0], [2,0]])
         @test !iscompatible([1,0], [3,3], [[0,0], [1,0], [2,0]])
