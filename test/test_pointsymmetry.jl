@@ -2,6 +2,7 @@ using Test
 using LinearAlgebra
 using YAML
 
+using TightBindingLattice
 using TightBindingLattice: simplify_name
 
 @testset "PointSymmetry" begin
@@ -32,74 +33,74 @@ using TightBindingLattice: simplify_name
 
         let generators = [1]
             @test_throws ArgumentError PointSymmetry(group, generators,
-                                                                                              conjugacy_classes, character_table, irreps,
-                                                                                              element_names, matrix_representations, hermann_mauguinn, schoenflies)
+                        conjugacy_classes, character_table, irreps,
+                        element_names, matrix_representations, hermann_mauguinn, schoenflies)
         end
         let conjugacy_classes = [[1], [1,2]]
             @test_throws ArgumentError PointSymmetry(group, generators,
-                                                                                              conjugacy_classes, character_table, irreps,
-                                                                                              element_names, matrix_representations, hermann_mauguinn, schoenflies)
+                        conjugacy_classes, character_table, irreps,
+                        element_names, matrix_representations, hermann_mauguinn, schoenflies)
         end
         let character_table = [1 2 3; 4 5 6; 7 8 9]
             @test_throws ArgumentError PointSymmetry(group, generators,
-                                                                                              conjugacy_classes, character_table, irreps,
-                                                                                              element_names, matrix_representations, hermann_mauguinn, schoenflies)
+                        conjugacy_classes, character_table, irreps,
+                        element_names, matrix_representations, hermann_mauguinn, schoenflies)
         end
         let irreps = [
                     [ones(ComplexF64, 1, 1), ones(ComplexF64, 1, 1)],
             ]
             @test_throws ArgumentError PointSymmetry(group, generators,
-                                                                                              conjugacy_classes, character_table, irreps,
-                                                                                              element_names, matrix_representations, hermann_mauguinn, schoenflies)
+                        conjugacy_classes, character_table, irreps,
+                        element_names, matrix_representations, hermann_mauguinn, schoenflies)
         end
         let irreps = [
                     [ones(ComplexF64, 1, 1), ones(ComplexF64, 1, 1)],
                     [ones(ComplexF64, 1, 1)],
             ]
             @test_throws ArgumentError PointSymmetry(group, generators,
-                                                                                              conjugacy_classes, character_table, irreps,
-                                                                                              element_names, matrix_representations, hermann_mauguinn, schoenflies)
+                        conjugacy_classes, character_table, irreps,
+                        element_names, matrix_representations, hermann_mauguinn, schoenflies)
         end
         let irreps = [
                     [ones(ComplexF64, 1, 1), ones(ComplexF64, 1, 1)],
                     [ones(ComplexF64, 1, 1), -ones(ComplexF64, 2, 2)],
             ]
             @test_throws ArgumentError PointSymmetry(group, generators,
-                                                                                              conjugacy_classes, character_table, irreps,
-                                                                                              element_names, matrix_representations, hermann_mauguinn, schoenflies)
+                        conjugacy_classes, character_table, irreps,
+                        element_names, matrix_representations, hermann_mauguinn, schoenflies)
         end
         let irreps = [
                     [ones(ComplexF64, 1, 1), ones(ComplexF64, 1, 1)],
                     [2*ones(ComplexF64, 1, 1), -ones(ComplexF64, 1, 1)],
             ]
             @test_throws ArgumentError PointSymmetry(group, generators,
-                                                                                              conjugacy_classes, character_table, irreps,
-                                                                                              element_names, matrix_representations, hermann_mauguinn, schoenflies)
+                        conjugacy_classes, character_table, irreps,
+                        element_names, matrix_representations, hermann_mauguinn, schoenflies)
         end
         let element_names = ["1", "2", "3"]
             @test_throws ArgumentError PointSymmetry(group, generators,
-                                                                                              conjugacy_classes, character_table, irreps,
-                                                                                              element_names, matrix_representations, hermann_mauguinn, schoenflies)
+                        conjugacy_classes, character_table, irreps,
+                        element_names, matrix_representations, hermann_mauguinn, schoenflies)
         end
         let matrix_representations = [[1 0; 0 1], [-1 0 0; 0 -1 0]]
             @test_throws ArgumentError PointSymmetry(group, generators,
-                                                                                              conjugacy_classes, character_table, irreps,
-                                                                                              element_names, matrix_representations, hermann_mauguinn, schoenflies)
+                        conjugacy_classes, character_table, irreps,
+                        element_names, matrix_representations, hermann_mauguinn, schoenflies)
         end
         let matrix_representations = [[1 0 0; 1 0 0], [-1 0 0; -1 0 0]]
             @test_throws ArgumentError PointSymmetry(group, generators,
-                                                                                              conjugacy_classes, character_table, irreps,
-                                                                                              element_names, matrix_representations, hermann_mauguinn, schoenflies)
+                        conjugacy_classes, character_table, irreps,
+                        element_names, matrix_representations, hermann_mauguinn, schoenflies)
         end
         let matrix_representations = [[1 0 0; 1 0 0]]
             @test_throws ArgumentError PointSymmetry(group, generators,
-                                                                                              conjugacy_classes, character_table, irreps,
-                                                                                              element_names, matrix_representations, hermann_mauguinn, schoenflies)
+                        conjugacy_classes, character_table, irreps,
+                        element_names, matrix_representations, hermann_mauguinn, schoenflies)
         end
         let matrix_representations = [[1 0 ; 0 1], [1 0; 0 1]]
             @test_throws ArgumentError PointSymmetry(group, generators,
-                                                                                              conjugacy_classes, character_table, irreps,
-                                                                                              element_names, matrix_representations, hermann_mauguinn, schoenflies)
+                        conjugacy_classes, character_table, irreps,
+                        element_names, matrix_representations, hermann_mauguinn, schoenflies)
         end
     end
 
@@ -197,6 +198,9 @@ using TightBindingLattice: simplify_name
         @test !iscompatible(hc2, psym_proj)
         @test iscompatible(tsym1, psym_proj)
         @test !iscompatible(tsym2, psym_proj)
+        @test little_symmetry(tsym1, psym_proj).hermann_mauguinn == "422"
+        @test little_symmetry(tsym2, psym_proj).hermann_mauguinn == "222"
+        @show little_symmetry(TranslationSymmetry([4 1; 0 3]), psym_proj).hermann_mauguinn == "2"
     end
 
 
@@ -257,7 +261,8 @@ using TightBindingLattice: simplify_name
                     @test iscompatible(tsym, tsym_irrep, psym_little)
                     lg_matrep = psym.matrix_representations[little_group_elements(tsym, tsym_irrep, psym)]
                     @test !isnothing(group_isomorphism(little_group(tsym, tsym_irrep, psym),
-                                                                                          FiniteGroup(group_multiplication_table(lg_matrep))))
+                                                       FiniteGroup(group_multiplication_table(lg_matrep))
+                                                       ))
                 end # for tsym_irrep
             end
         end # testset little_symmetry
