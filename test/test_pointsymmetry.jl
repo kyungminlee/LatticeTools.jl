@@ -200,7 +200,7 @@ using TightBindingLattice: simplify_name
         @test !iscompatible(tsym2, psym_proj)
         @test little_symmetry(tsym1, psym_proj).hermann_mauguinn == "422"
         @test little_symmetry(tsym2, psym_proj).hermann_mauguinn == "222"
-        @show little_symmetry(TranslationSymmetry([4 1; 0 3]), psym_proj).hermann_mauguinn == "2"
+        @test little_symmetry(TranslationSymmetry([4 1; 0 3]), psym_proj).hermann_mauguinn == "2"
     end
 
 
