@@ -18,6 +18,7 @@ export little_group_elements
 export little_group
 export little_symmetry, little_symmetry_iso
 
+export get_orbital_permutation
 export get_orbital_permutations
 export get_irrep_iterator
 export read_point_symmetry
@@ -150,7 +151,7 @@ function project(psym::PointSymmetry,
     # if ! all( isapprox(x, 1; atol=tol) || isapprox(x, 0; atol=tol) for x in vals)
     #     throw(ArgumentError("projection is not projection"))
     # end
-    if ! all(isapprox(x, 0; atol=tol) for x in vals)
+    if any(isapprox(x, 0; atol=tol) for x in vals)
         throw(ArgumentError("projection is not projection"))
     end
 
