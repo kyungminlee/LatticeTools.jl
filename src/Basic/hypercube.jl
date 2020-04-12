@@ -25,15 +25,16 @@ struct HypercubicLattice
 
         inverse_scale_matrix = ExactLinearAlgebra.inverse(scale_matrix)
 
-        function wrap(r ::AbstractVector{<:Integer})
-            R = Int.(floor.(inverse_scale_matrix * r))
+        function wrap(r::AbstractArray{<:Integer})
+            rnd = (x) -> floor(Int, x)
+            R = rnd.(inverse_scale_matrix * r)
             r2 = r - scale_matrix * R
             return R, r2
         end
 
-        function wrap(r ::AbstractMatrix{<:Integer})
-            #@warn "Need to be tested"
-            R = Int.(floor.(inverse_scale_matrix * r))
+        function wrap(r::AbstractArray{<:Integer}, mode::RoundingMode)
+            rnd = (x) -> round(Int, x, mode)
+            R = rnd.(inverse_scale_matrix * r)
             r2 = r - scale_matrix * R
             return R, r2
         end
@@ -50,30 +51,30 @@ struct HypercubicLattice
         end
 
         @assert length(coords) == d
+        @assert all(wrap(r) == (zeros(n), r) for (i, r) in enumerate(coords))
+
         coord_indices = Dict(r => i for (i, r) in enumerate(coords))
 
-        function torus_wrap(r ::AbstractVector{<:Integer})
+        function torus_wrap(r::AbstractVector{<:Integer})
             @warn "torus_wrap is deprecated"
             R = Int.(floor.(inverse_scale_matrix * r))
             r2 = r - scale_matrix * R
             return R, coord_indices[r2]
         end
 
-        function torus_wrap(r ::AbstractMatrix{<:Integer})
+        function torus_wrap(r::AbstractMatrix{<:Integer})
             @warn "torus_wrap is deprecated"
             R = Int.(floor.(inverse_scale_matrix * r))
             r2 = r - scale_matrix * R # TODO: need to be tested
             return R, [coord_indices[x] for x in eachcol(r2)]
         end
 
-        @assert all(wrap(r) == (zeros(n), r) for (i, r) in enumerate(coords))
-
         return new(scale_matrix, inverse_scale_matrix, coords, coord_indices, torus_wrap, wrap)
     end
 
 
     function HypercubicLattice(scale_matrix ::AbstractMatrix{<:Integer},
-                                                          coords::AbstractVector{<:AbstractVector{<:Integer}})
+                               coords::AbstractVector{<:AbstractVector{<:Integer}})
         n, m = size(scale_matrix)
         n != m && throw(DimensionMismatch("scale_matrix is not square: dimensions are ($n, $m)"))
         d = ExactLinearAlgebra.determinant(scale_matrix)
