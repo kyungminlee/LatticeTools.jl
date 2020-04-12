@@ -1,3 +1,8 @@
+export TranslationSymmetryEmbedding
+export PointSymmetryEmbedding
+export SymmorphicSpaceSymmetryEmbedding
+
+export embed
 
 
 struct TranslationSymmetryEmbedding
@@ -9,6 +14,10 @@ struct TranslationSymmetryEmbedding
         permutations = get_orbital_permutations(lattice, symmetry)
         new(lattice, symmetry, permutations)
     end
+end
+
+function embed(lattice::Lattice, tsym::TranslationSymmetry)
+    TranslationSymmetryEmbedding(lattice, tsym)
 end
 
 struct PointSymmetryEmbedding
@@ -23,6 +32,10 @@ struct PointSymmetryEmbedding
         permutations = get_orbital_permutations(lattice, symmetry)
         new(lattice, symmetry, permutations)
     end
+end
+
+function embed(lattice::Lattice, psym::PointSymmetry)
+    PointSymmetryEmbedding(lattice, psym)
 end
 
 struct SymmorphicSpaceSymmetryEmbedding
@@ -44,4 +57,8 @@ struct SymmorphicSpaceSymmetryEmbedding
         @assert size(permutations) == (length(tperms), length(pperms))
         new(lattice, translation, point, permutations)
     end
+end
+
+function embed(lattice::Lattice, tsym::TranslationSymmetry, psym::PointSymmetry)
+    SymmorphicSpaceSymmetryEmbedding(lattice, tsym, psym)
 end

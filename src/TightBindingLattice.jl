@@ -13,6 +13,7 @@ include("Group/finitegroup.jl")
 include("Symmetry/abstractsymmetry.jl")
 include("Symmetry/translationsymmetry.jl")
 include("Symmetry/pointsymmetry.jl")
+include("Symmetry/symmetryembedding.jl")
 
 export PointSymmetryDatabase
 include("Symmetry/pointsymmetrydatabase.jl")
@@ -20,6 +21,7 @@ include("Symmetry/pointsymmetrydatabase.jl")
 export IrrepDatabase
 include("Irrep/irrep.jl")
 include("Irrep/irrepdatabase.jl")
+
 
 include("momentumpath.jl")
 
