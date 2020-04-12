@@ -229,6 +229,32 @@ function findorbitalmap(unitcell::UnitCell, psym::PointSymmetry)
 end
 
 
+"""
+    get_orbital_permutation(lattice, matrix_representation, orbital_map)
+
+Get a list of `Permutation` which represents the element of the point group
+specified by the `matrix_representation` and `orbital_map`, which respectively
+contain information about how the Bravais lattice transforms, and how the
+basis sites transforms.
+"""
+function get_orbital_permutation(
+            lattice::Lattice,
+            matrix_representation::AbstractMatrix{<:Integer},
+            orbital_map::AbstractVector{<:Tuple{<:Integer, <:AbstractVector{<:Integer}}})
+    p = zeros(Int, numorbital(lattice.supercell))
+    for (i, (j, dR)) in enumerate(orbital_map)
+        namei = getorbitalname(lattice.unitcell, i)
+        namej = getorbitalname(lattice.unitcell, j)
+        for Ri in lattice.hypercube.coordinates
+            _, Rj = lattice.hypercube.wrap(matrep * Ri + dR)
+            i_super = lattice.supercell.orbitalindices[(namei, Ri)]
+            j_super = lattice.supercell.orbitalindices[(namej, Rj)]
+            p[i_super] = j_super
+        end
+    end
+    return Permutation(p)
+end
+
 function get_orbital_permutations(lattice::Lattice, point_symmetry::PointSymmetry)
     # orbitalmap contains how orbitals of the "unitcell" transform under
     # every point group operations. Uses heuristics
