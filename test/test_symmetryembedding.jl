@@ -3,6 +3,43 @@ using TightBindingLattice
 using LinearAlgebra
 
 @testset "embedding" begin
+
+
+    @testset "two-band" begin
+
+        unitcell = make_unitcell([1.0 0.0; 0.0 1.0]; OrbitalType=String)
+        addorbital!(unitcell, "Ox", FractCoord([0,0], [0.5, 0.0]))
+        addorbital!(unitcell, "Oy", FractCoord([0,0], [0.0, 0.5]))
+        lattice = make_lattice(unitcell, [2 0; 0 2])
+
+        # |       |                 |       |
+        # 6       8                 8       6
+        # |       |         [1,0]   |       |
+        # . - 5 - . - 7 -     =>    . - 7 - . - 5 -
+        # |       |                 |       |
+        # 2       4                 4       2
+        # |       |                 |       |
+        # o - 1 - . - 3 -           o - 3 - . - 1 -
+        tsym = TranslationSymmetry(lattice)
+        tsymbed = embed(lattice, tsym)
+        # @show tsymbed.elements[2]
+        @test tsymbed.elements[2] == SitePermutation([3,4,1,2,7,8,5,6])
+
+        # |       |                 |       |
+        # 6       8                 3       7
+        # |       |         C4      |       |
+        # . - 5 - . - 7 -   =>      . - 8 - . - 4 -
+        # |       |                 |       |
+        # 2       4                 1       5
+        # |       |                 |       |
+        # o - 1 - . - 3 -           o - 6 - . - 2 -
+        psym = project(PointSymmetryDatabase.get(13), [1 0 0; 0 1 0])
+        idx_C4 = 3
+        @test element_name(psym, idx_C4) == "4<sup>+</sup><sub>001</sub>"
+        psymbed = embed(lattice, psym)
+        @test psymbed.elements[idx_C4] == SitePermutation([2,3,6,7,4,1,8,5])
+    end
+
     @testset "kagome" begin
         include("Kagome.jl")
         # TODO: add tests
