@@ -17,39 +17,6 @@ export iscompatible
 export get_irrep_iterator
 
 
-function decompose_lattice_2d(hypercube::HypercubicLattice)
-    dimension(hypercube) != 2 && throw(ArgumentError("shape matrix should be 2x2"))
-    group = FiniteGroup(translation_group_multiplication_table(hypercube))
-    ord_group = group_order(group)
-    allowed_pairs = Vector{Int}[[1,0]]
-    sizehint!(allowed_pairs, ord_group^2*3÷4)
-    for y in 1:ord_group, x in 0:ord_group
-        if gcd(x, y) == 1
-            push!(allowed_pairs, [x, y])
-        end
-    end
-    for r1p in allowed_pairs
-        if r1p[1] == 0
-            continue
-        end
-        r1 = [r1p[1], -r1p[2]]
-        j1 = hypercube.coordinate_indices[ hypercube.wrap(r1)[2] ]
-        n1 = group_order(group, j1)
-        for r2 in allowed_pairs
-            j2 = hypercube.coordinate_indices[ hypercube.wrap(r2)[2] ]
-            # condition 1/2: unimodular
-            if ExactLinearAlgebra.determinant(hcat(r1, r2)) != 1
-                continue
-            end
-            n2 = group_order(group, j2)
-            nprod = length(generate_subgroup(group, [j1, j2]))
-            # condition 2/2: orthogonal generators
-            n1 * n2 == nprod && return hcat(r1, r2)
-        end
-    end
-    error("Failed to find decomposition")
-end
-
 struct TranslationSymmetry <: AbstractSymmetry
     hypercube::HypercubicLattice
     elements::Vector{TranslationOperation{Int}}
