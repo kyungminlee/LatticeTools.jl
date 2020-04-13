@@ -20,8 +20,8 @@ include("Symmetry/abstractsymmetry.jl")
 include("Symmetry/translationsymmetry.jl")
 include("Symmetry/pointsymmetry.jl")
 
-include("SymmetryEmbedding/symmetryembedding.jl")
 include("SymmetryEmbedding/sitepermutation.jl")
+include("SymmetryEmbedding/symmetryembedding.jl")
 
 export PointSymmetryDatabase
 include("Symmetry/pointsymmetrydatabase.jl")

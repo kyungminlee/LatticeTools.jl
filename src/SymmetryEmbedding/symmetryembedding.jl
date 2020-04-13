@@ -7,7 +7,6 @@ export SymmorphicSpaceSymmetryEmbedding
 export embed
 
 abstract type AbstractSymmetryEmbedding end
-abstract type AbstractSymmetryOperationEmbedding <:AbstractSymmetryOperation end
 
 
 struct ProductSymmetry{S1<:AbstractSymmetry, S2<:AbstractSymmetry}
@@ -23,28 +22,28 @@ end
 struct TranslationSymmetryEmbedding<:AbstractSymmetryEmbedding
     lattice::Lattice
     symmetry::TranslationSymmetry
-    operations::Vector{Permutation}
+    elements::Vector{SitePermutation}
 
     function TranslationSymmetryEmbedding(lattice::Lattice, symmetry::TranslationSymmetry)
         if (lattice.hypercube != symmetry.hypercube)
             throw(ArgumentError("lattice and translation symmetry not compatible"))
         end
-        permutations = get_orbital_permutations(lattice, symmetry)
-        new(lattice, symmetry, permutations)
+        elements = [embed(lattice, elem) for elem in symmetry.elements]
+        new(lattice, symmetry, elements)
     end
 end
 
 struct PointSymmetryEmbedding<:AbstractSymmetryEmbedding
     lattice::Lattice
     symmetry::PointSymmetry
-    operations::Vector{Permutation}
+    elements::Vector{SitePermutation}
 
     function PointSymmetryEmbedding(lattice::Lattice, symmetry::PointSymmetry)
         if !iscompatible(lattice.hypercube, symmetry)
             throw(ArgumentError("lattice and point symmetry not compatible"))
         end
-        permutations = get_orbital_permutations(lattice, symmetry)
-        new(lattice, symmetry, permutations)
+        elements = [embed(lattice, elem) for elem in symmetry.elements]
+        new(lattice, symmetry, elements)
     end
 end
 
@@ -53,7 +52,7 @@ struct SymmorphicSpaceSymmetryEmbedding<:AbstractSymmetryEmbedding
     lattice::Lattice
     translation_symmetry::TranslationSymmetry
     point_symmetry::PointSymmetry
-    operations::Matrix{Permutation}
+    elements::Matrix{SitePermutation}
 
     function SymmorphicSpaceSymmetryEmbedding(
                 lattice::Lattice,
@@ -62,11 +61,11 @@ struct SymmorphicSpaceSymmetryEmbedding<:AbstractSymmetryEmbedding
         if !iscompatible(translation, point)
             throw(ArgumentError("translation symmetry and point symmetry not compatible"))
         end
-        tperms = get_orbital_permutations(lattice, translation)
-        pperms = get_orbital_permutations(lattice, point)
-        permutations = [pop * top for top in tperms, pop in pperms]
-        @assert size(permutations) == (length(tperms), length(pperms))
-        new(lattice, translation, point, permutations)
+        tels = [embed(lattice, elem) for elem in translation.elements]
+        pels = [embed(lattice, elem) for elem in point.elements]
+        elements = [pop * top for top in tels, pop in pels]
+        @assert size(elements) == (length(tels), length(pels))
+        new(lattice, translation, point, elements)
     end
 end
 

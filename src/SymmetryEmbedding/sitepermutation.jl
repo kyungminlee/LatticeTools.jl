@@ -2,6 +2,8 @@ export SitePermutation
 export embed
 export inverse
 
+abstract type AbstractSymmetryOperationEmbedding <:AbstractSymmetryOperation end
+
 struct SitePermutation <:AbstractSymmetryOperationEmbedding
     permutation::Permutation
     SitePermutation(p::Permutation) = new(p)
@@ -31,8 +33,12 @@ hash(arg::SitePermutation) = hash(arg.permutation)
 inverse(sp::SitePermutation) = SitePermutation(inverse(sp.permutation))
 
 
+"""
+    embed(lattice, translation_operation)
 
-function embed(lattice::Lattice, top::TranslationOperation)
+Embed the simplest version of integer translation (no mapping between orbitals etc.)
+"""
+function embed(lattice::Lattice, top::TranslationOperation{<:Integer})
     p = zeros(Int, numorbital(lattice.supercell))
     for (orbital_index1, ((orbital_name1, uc_coord1), _)) in enumerate(lattice.supercell.orbitals)
         _, uc_coord2 = lattice.hypercube.wrap( top(uc_coord1) )
@@ -44,8 +50,13 @@ function embed(lattice::Lattice, top::TranslationOperation)
 end
 
 
-function embed(lattice::Lattice, pop::PointOperation,
-               orbital_map::AbstractVector{<:Tuple{<:Integer, <:AbstractVector{<:Integer}}})
+"""
+    embed(lattice, point_operation)
+
+Embed the simplest version of point operation. (no local unitary operation)
+"""
+function embed(lattice::Lattice, pop::PointOperation)
+    orbital_map = findorbitalmap(lattice.unitcell, pop.matrix)
     p = zeros(Int, numorbital(lattice.supercell))
     for (i, (j, dR)) in enumerate(orbital_map)
         namei = getorbitalname(lattice.unitcell, i)
