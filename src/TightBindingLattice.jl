@@ -21,6 +21,7 @@ include("Symmetry/translationsymmetry.jl")
 include("Symmetry/pointsymmetry.jl")
 
 include("SymmetryEmbedding/sitepermutation.jl")
+include("SymmetryEmbedding/localunitary.jl")
 include("SymmetryEmbedding/symmetryembedding.jl")
 
 export PointSymmetryDatabase
