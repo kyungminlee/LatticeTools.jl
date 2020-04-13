@@ -19,7 +19,9 @@ include("SymmetryOperation/productoperation.jl")
 include("Symmetry/abstractsymmetry.jl")
 include("Symmetry/translationsymmetry.jl")
 include("Symmetry/pointsymmetry.jl")
-include("Symmetry/symmetryembedding.jl")
+
+include("SymmetryEmbedding/symmetryembedding.jl")
+include("SymmetryEmbedding/sitepermutation.jl")
 
 export PointSymmetryDatabase
 include("Symmetry/pointsymmetrydatabase.jl")
