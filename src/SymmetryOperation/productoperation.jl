@@ -42,6 +42,16 @@ function (*)(lhs::ProductOperation, rhs::ProductOperation)
     return ProductOperation(lhs.factors..., rhs.factors...)
 end
 
+function (^)(lhs::ProductOperation{T}, rhs::Integer) where {T<:Tuple}
+    if rhs == 0
+        return ProductOperation()
+    elseif rhs > 0
+        return ProductOperation(vcat([collect(lhs.factors) for i in 1:rhs]...)...)
+    else
+        lhs_inv = inverse(lhs)
+        return ProductOperation(vcat([collect(lhs_inv.factors) for i in 1:(-rhs)]...)...)
+    end
+end
 
 function inverse(arg::ProductOperation)
     return ProductOperation(reverse(inverse.(arg.factors))...)
@@ -79,7 +89,7 @@ function canonize(arg::ProductOperation)
         end
     end
 
-    out = prod(factors)
+    out = mapreduce(identity, (*), factors; init=IdentityOperation())
     if !isa(out, ProductOperation)
         return out
     end

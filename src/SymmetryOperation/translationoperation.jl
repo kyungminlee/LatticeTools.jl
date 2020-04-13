@@ -7,7 +7,7 @@ export iscanonical
 
 struct TranslationOperation{S<:Real} <:AbstractSymmetryOperation
     displacement::Vector{S}
-    function TranslationOperation{S}(displacement::AbstractVector{S}) where {S<:Real}
+    function TranslationOperation{S}(displacement::AbstractVector{<:Real}) where {S}
         new{S}(displacement)
     end
     function TranslationOperation(displacement::AbstractVector{S}) where {S<:Real}
@@ -18,21 +18,20 @@ end
 dimension(arg::TranslationOperation) = length(arg.displacement)
 
 import Base.==
-function (==)(lhs::TranslationOperation, rhs::TranslationOperation)
-    return lhs.displacement == rhs.displacement
-end
+(==)(lhs::TranslationOperation, rhs::TranslationOperation) = lhs.displacement == rhs.displacement
 
-function (*)(lhs::TranslationOperation, rhs::TranslationOperation)
-    return TranslationOperation(lhs.displacement .+ rhs.displacement)
-end
+import Base.isequal
+isequal(lhs::TranslationOperation, rhs::TranslationOperation) = isequal(lhs.displacement, rhs.displacement)
 
-function (*)(lhs::TranslationOperation, rhs::Real)
-    return TranslationOperation(lhs.displacement .* rhs)
-end
+import Base.*
+(*)(lhs::TranslationOperation, rhs::TranslationOperation) = TranslationOperation(lhs.displacement .+ rhs.displacement)
 
-function (*)(lhs::Real, rhs::TranslationOperation)
-    return TranslationOperation(lhs * rhs.displacement)
-end
+import Base.^
+(^)(lhs::TranslationOperation, rhs::Real) = TranslationOperation(lhs.displacement .* rhs)
+
+import Base.hash
+hash(arg::TranslationOperation) = hash(arg.displacement)
+
 
 inverse(arg::TranslationOperation) = TranslationOperation(-arg.displacement)
 

@@ -24,13 +24,22 @@ dimension(arg::PointOperation) = size(arg.matrix, 1)
 import Base.==
 (==)(lhs::PointOperation, rhs::PointOperation) = lhs.matrix == rhs.matrix
 
+import Base.isequal
+isequal(lhs::PointOperation, rhs::PointOperation) = isequal(lhs.matrix, rhs.matrix)
+
 import Base.*
 (*)(lhs::PointOperation, rhs::PointOperation) = PointOperation(lhs.matrix * rhs.matrix)
-(*)(lhs::PointOperation, rhs::Real) = PointOperation(lhs.matrix .* rhs)
-(*)(lhs::Real, rhs::PointOperation) = PointOperation(lhs .* rhs.matrix)
+
+import Base.^
+(^)(lhs::PointOperation, rhs::Integer) = PointOperation(lhs.matrix^rhs)
+
+import Base.hash
+hash(arg::PointOperation) = hash(arg.matrix)
 
 
-inverse(lhs::PointOperation{S}) where {S<:Real} = PointOperation{S}(ExactLinearAlgebra.inverse(lhs.matrix))
+function inverse(lhs::PointOperation{S}) where {S<:Real}
+    PointOperation{S}(ExactLinearAlgebra.inverse(lhs.matrix))
+end
 
 
 function apply_symmetry(symop::PointOperation,
