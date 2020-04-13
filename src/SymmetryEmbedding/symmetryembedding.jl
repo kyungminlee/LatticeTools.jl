@@ -1,23 +1,13 @@
 export AbstractSymmetryEmbedding
 
-export TranslationSymmetryEmbedding
-export PointSymmetryEmbedding
+export SymmetryEmbedding
 export SymmorphicSpaceSymmetryEmbedding
 
 export embed
 export element, elements
+export symmetry
 
 abstract type AbstractSymmetryEmbedding <:AbstractSymmetry end
-
-
-# struct ProductSymmetry{S1<:AbstractSymmetry, S2<:AbstractSymmetry}
-#     symmetry1::S1
-#     symmetry2::S2
-
-#     function ProductSymmetry(sym1::S1, sym2::S2) where {S1<:AbstractSymmetry, S2<:AbstractSymmetry}
-#         new{S1, S2}(sym1, sym2)
-#     end
-# end
 
 struct SymmetryEmbedding{SymmetryType} <:AbstractSymmetryEmbedding
     lattice::Lattice
@@ -35,22 +25,21 @@ end
 
 elements(symbed::SymmetryEmbedding) = symbed.elements
 element(symbed::SymmetryEmbedding, g) = symbed.elements[g]
+symmetry(symbed::SymmetryEmbedding) = symbed.symmetry
 
-#= 
-group(symbed::SymmetryEmbedding) = group(symbed.symmetry)
-group_order(symbed::SymmetryEmbedding) = group_order(symbed.symmetry)
-group_multiplication_table(symbed::SymmetryEmbedding) = group_multiplication_table(symbed.symmetry)
-
-element_name(symbed::SymmetryEmbedding, g) = element_name(symbed.symmetry, g)
-element_names(symbed::SymmetryEmbedding) = element_names(symbed.symmetry)
-
-character_table(symbed::SymmetryEmbedding) = character_table(symbed.symmetry)
-irreps(symbed::SymmetryEmbedding) = irreps(symbed.symmetry)
-irrep(symbed::SymmetryEmbedding, idx::Integer) = irrep(symbed.symmetry, idx)
-num_irreps(symbed::SymmetryEmbedding) = num_irreps(symbed.symmetry)
-irrep_dimension(symbed::SymmetryEmbedding, idx::Integer) = irrep_dimension(symbed.symmetry, idx)
-=#
-
+for f in [:group_order,
+          :group_multiplication_table,
+          :element_names,
+          :element_name,
+          :character_table,
+          :irreps,
+          :irrep,
+          :num_irreps,
+          :irrep_dimension]
+    eval(quote
+        ($f)(symbed::SymmetryEmbedding, args...) = ($f)(symbed.symmetry, args...)
+    end)
+end
 
 # struct TranslationSymmetryEmbedding<:AbstractSymmetryEmbedding
 #     lattice::Lattice
@@ -93,11 +82,9 @@ irrep_dimension(symbed::SymmetryEmbedding, idx::Integer) = irrep_dimension(symbe
 function little_symmetry(tsymbed::SymmetryEmbedding{TranslationSymmetry},
                          psymbed::SymmetryEmbedding{PointSymmetry})
     tsymbed.lattice != psymbed.lattice && throw(ArgumentError("lattices do not match"))
-
     psym_little = little_symmetry(tsymbed.symmetry, psymbed.symmetry)
     return SymmetryEmbedding(psymbed.lattice, psym_little)
 end
-
 
 function little_symmetry(tsymbed::SymmetryEmbedding{TranslationSymmetry},
                          tsym_irrep::Integer,
@@ -129,29 +116,8 @@ struct SymmorphicSpaceSymmetryEmbedding<:AbstractSymmetryEmbedding
 end
 
 
-
-for f in [:group_order,
-          :group_multiplication_table,
-          :element_names,
-          :element_name,
-          :character_table,
-          :irreps,
-          :irrep,
-          :num_irreps,
-          :irrep_dimension]
-    eval(quote
-        ($f)(symbed::SymmetryEmbedding, args...) = ($f)(symbed.symmetry, args...)
-    end)
-end
-
-
-function embed(lattice::Lattice, tsym::TranslationSymmetry)
-    SymmetryEmbedding(lattice, tsym)
-end
-
-function embed(lattice::Lattice, psym::PointSymmetry)
-    SymmetryEmbedding(lattice, psym)
-end
+embed(lattice::Lattice, tsym::TranslationSymmetry) = SymmetryEmbedding(lattice, tsym)
+embed(lattice::Lattice, psym::PointSymmetry) = SymmetryEmbedding(lattice, psym)
 
 function embed(lattice::Lattice, tsym::TranslationSymmetry, psym::PointSymmetry)
     SymmorphicSpaceSymmetryEmbedding(lattice, tsym, psym)
