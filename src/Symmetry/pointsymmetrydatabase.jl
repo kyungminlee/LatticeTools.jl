@@ -12,13 +12,6 @@ POINT_SYMMETRY_DATABASE = Vector{PointSymmetry}(undef, NUM_POINT_SYMMETRIES)
 POINT_SYMMETRY_LOOKUP = Dict{Vector{String}, Int}()
 
 function __init__()
-    # data_directory = abspath(joinpath(@__DIR__, "..", "..", "data", "PointGroup3D"))
-    # if isfile(joinpath(data_directory, "PointGroup3D.jld2"))
-    #     cache_database = load(joinpath(data_directory, "PointGroup3D.jld2"), "POINT_SYMMETRY_DATABASE")
-    #     for gn in 1:NUM_POINT_SYMMETRIES
-    #         POINT_SYMMETRY_DATABASE[gn] = cache_database[gn]
-    #     end
-    # end
     for i in 1:NUM_POINT_SYMMETRIES
         psym = get(i)
         POINT_SYMMETRY_LOOKUP[sort(simplify_name.(psym.element_names))] = i
