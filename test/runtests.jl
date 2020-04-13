@@ -19,4 +19,5 @@ include("test_pointsymmetry.jl")
 include("test_irrep.jl")
 include("test_irrepdatabase.jl")
 
+include("test_sitepermutation.jl")
 include("test_symmetryembedding.jl")
