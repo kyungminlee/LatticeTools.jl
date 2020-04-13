@@ -13,6 +13,20 @@ struct ProductOperation{F<:Tuple}
     end
 end
 
+import Base.==
+
+"""
+    ==(lhs::ProductOperation, rhs::ProductOperation)
+
+Test for LITERAL equality.
+"""
+function ==(lhs::ProductOperation, rhs::ProductOperation)
+    if length(lhs.factors) != length(rhs.factors)
+        return false
+    end
+    return all(l == r for (l, r) in zip(lhs.factors, rhs.factors))
+end
+
 
 import Base.*
 function (*)(lhs::AbstractSymmetryOperation, rhs::AbstractSymmetryOperation)
