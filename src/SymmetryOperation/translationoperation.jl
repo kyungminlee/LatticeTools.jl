@@ -4,6 +4,7 @@ export apply_operation
 export canonize
 export iscanonical
 export combinable
+export scalartype
 
 struct TranslationOperation{S<:Real} <:AbstractSymmetryOperation
     displacement::Vector{S}
@@ -16,6 +17,7 @@ struct TranslationOperation{S<:Real} <:AbstractSymmetryOperation
 end
 
 dimension(arg::TranslationOperation) = length(arg.displacement)
+scalartype(arg::TranslationOperation{S}) where S = S
 
 import Base.==
 (==)(lhs::TranslationOperation, rhs::TranslationOperation) = lhs.displacement == rhs.displacement

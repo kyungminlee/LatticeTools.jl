@@ -24,3 +24,6 @@ apply_operation(symop::IdentityOperation, rhs) = rhs
 canonize(arg::IdentityOperation) = arg
 
 iscanonical(arg::IdentityOperation) = true
+
+dimension(arg::IdentityOperation) = 0
+scalartype(arg::IdentityOperation) = Bool

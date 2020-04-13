@@ -5,13 +5,51 @@ export canonize
 export iscanonical
 
 
-struct ProductOperation{F<:Tuple}
+struct ProductOperation{S<:Real, F<:Tuple}
+    dimension::Int
     factors::F
     function ProductOperation(factors::AbstractSymmetryOperation...)
         F = typeof(factors)
-        new{F}(factors)
+        dim = 0
+        S = Bool
+        for f in factors
+            S = promote_type(scalartype(f), S)
+            df = dimension(f)
+            if df != 0
+                if dim == 0
+                    dim = df
+                else
+                    dim != df && throw(ArgumentError("All factors must have the same dimension"))
+                end
+            else
+                # this should not happen since `identity * something` is always `something`
+            end
+        end
+        new{S, F}(dim, factors)
     end
+
+    function ProductOperation{S}(factors::AbstractSymmetryOperation...) where {S<:Real}
+        F = typeof(factors)
+        dim = 0
+        for f in factors
+            df = dimension(f)
+            if df != 0
+                if dim == 0
+                    dim = df
+                else
+                    dim != df && throw(ArgumentError("All factors must have the same dimension"))
+                end
+            else
+                # this should not happen since `identity * something` is always `something`
+            end
+        end
+        new{S, F}(dim, factors)
+    end
+
 end
+
+dimension(arg::ProductOperation) = arg.dimension
+scalartype(arg::ProductOperation{S,F}) where {S,F} = S
 
 import Base.==
 
@@ -21,9 +59,8 @@ import Base.==
 Test for LITERAL equality.
 """
 function ==(lhs::ProductOperation, rhs::ProductOperation)
-    if length(lhs.factors) != length(rhs.factors)
-        return false
-    end
+    dimension(lhs) != dimension(rhs) && return false
+    length(lhs.factors) != length(rhs.factors) && return false
     return all(l == r for (l, r) in zip(lhs.factors, rhs.factors))
 end
 
@@ -50,7 +87,7 @@ function inv(arg::ProductOperation)
     return ProductOperation(reverse(inv.(arg.factors))...)
 end
 
-function (^)(lhs::ProductOperation{T}, rhs::Integer)::ProductOperation where {T<:Tuple}
+function (^)(lhs::ProductOperation{S,F}, rhs::Integer)::ProductOperation where {S,F<:Tuple}
     if rhs == 0
         return ProductOperation()
     elseif rhs > 0
@@ -62,13 +99,12 @@ function (^)(lhs::ProductOperation{T}, rhs::Integer)::ProductOperation where {T<
 end
 
 
-
-function apply_operation(symop::ProductOperation, coord::AbstractVector{<:Real})
+function apply_operation(symop::ProductOperation{S,F}, coord::AbstractVector{S}) where {S<:Real, F}
     return foldr(apply_operation, symop.factors; init=coord)
 end
 
 
-function (symop::ProductOperation)(coord::AbstractVector{<:Real})
+function (symop::ProductOperation{S,F})(coord::AbstractVector{S}) where {S, F}
     return foldr(apply_operation, symop.factors; init=coord)
 end
 
@@ -120,6 +156,8 @@ function canonize(arg::ProductOperation)
 end
 
 iscanonical(pop::ProductOperation) = false
-function iscanonical(pop::ProductOperation{<:Tuple{<:PointOperation, <:TranslationOperation}})
+function iscanonical(
+            pop::ProductOperation{<:Real,
+                                  <:Tuple{<:PointOperation, <:TranslationOperation}})
     return iscanonical(pop.factors[1]) && iscanonical(pop.factors[2])
 end

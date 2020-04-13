@@ -4,6 +4,7 @@ export apply_operation
 export canonize
 export iscanonical
 export combinable
+export scalartype
 
 struct PointOperation{S<:Real} <:AbstractSymmetryOperation
     matrix::Matrix{S}
@@ -20,6 +21,7 @@ struct PointOperation{S<:Real} <:AbstractSymmetryOperation
 end
 
 dimension(arg::PointOperation) = size(arg.matrix, 1)
+scalartype(arg::PointOperation{S}) where S = S
 
 import Base.==
 (==)(lhs::PointOperation, rhs::PointOperation) = lhs.matrix == rhs.matrix
