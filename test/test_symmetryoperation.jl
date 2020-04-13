@@ -7,9 +7,11 @@ using TightBindingLattice
     iden = IdentityOperation()
 
     @testset "identity" begin
+        @test iden * iden == iden
         @test inv(iden) == iden
         @test apply_operation(iden, [3,2,1]) == [3,2,1]
         @test iden([3,2,1]) == [3,2,1]
+        @test combinable(iden, iden)
         @test canonize(iden) == iden
         @test iscanonical(iden)
     end
@@ -38,6 +40,10 @@ using TightBindingLattice
         @test inv(t3) == TranslationOperation([-3, -3])
         @test apply_operation(t3, [5,6]) == [8, 9]
 
+        @test combinable(iden, t1)
+        @test combinable(t1, iden)
+        @test combinable(t1, t1)
+
         @test !iscanonical(t0)
         @test iscanonical(t1)
         @test canonize(t0) == IdentityOperation()
@@ -54,10 +60,11 @@ using TightBindingLattice
         p1 = PointOperation([0 -1; 1 -1])
         p1p = PointOperation{Int}([0 -1; 1 -1])
         p2 = PointOperation([0 1; 1 0])
-    
+
         @test p1 == p1p
         @test p1 !== p1p
         @test isequal(p1, p1p)
+        @test hash(p1) == hash(p1p)
 
         @test dimension(p1) == 2
 
@@ -70,6 +77,23 @@ using TightBindingLattice
         @test p1^(-2) == inv(p1)*inv(p1)
         @test p2^2 == PointOperation([1 0; 0 1])
 
+        n = 3
+        @test p1^n == p1 * p1 * p1
+        n = -1
+        @test p1^n == inv(p1)
+        n = -2
+        @test p1^n == inv(p1)*inv(p1)
+        n = 2
+        @test p2^n == PointOperation([1 0; 0 1])
+
+        @test combinable(iden, p1)
+        @test combinable(p1, iden)
+        @test combinable(p1, p1)
+
+        t1 = TranslationOperation([1,0])
+        @test !combinable(p1, t1)
+        @test !combinable(t1, p1)
+                
         @test canonize(p1*inv(p1)) == IdentityOperation()
         @test apply_operation(p2, [5, 6]) == [6, 5]
         @test p2([5, 6]) == [6, 5]
@@ -112,8 +136,29 @@ using TightBindingLattice
         @test tp([5,0]) == tpc([5,0])
         @test pt([5,0]) == ptc([5,0])
 
+        @test tp^0 == ProductOperation()
+        @test tp^1 == tp
+        @test tp^2 == t * p * t * p
+        @test tp^(-2) == inv(p) * inv(t) * inv(p) * inv(t)
+
+        n = 0
+        @test tp^n == ProductOperation()
+        n = 1
+        @test tp^n == tp
+        n = 2
+        @test tp^n == t * p * t * p
+        n = -2
+        @test tp^n == inv(p) * inv(t) * inv(p) * inv(t)
+
+
         @test canonize(tp^3 * inv(tp^3)) == IdentityOperation()
+        @test iscanonical(pt)
+        @test !iscanonical(tp)
         @test iscanonical(tpc)
         @test iscanonical(ptc)
+
+        pp = ProductOperation(p, p)
+        @test pp != p * p
+        @test canonize(pp) == p*p
     end
 end
