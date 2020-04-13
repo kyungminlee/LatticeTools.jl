@@ -14,6 +14,8 @@ import Base.*
 
 inverse(arg::IdentityOperation) = arg
 apply_symmetry(symop::IdentityOperation, rhs) = rhs
+(symop::IdentityOperation)(coord::AbstractVector{<:Real}) = coord
+
 canonize(arg::IdentityOperation) = arg
 
 iscanonical(arg::IdentityOperation) = true

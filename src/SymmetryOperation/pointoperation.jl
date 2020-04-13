@@ -22,28 +22,26 @@ end
 dimension(arg::PointOperation) = size(arg.matrix, 1)
 
 import Base.==
-function (==)(lhs::PointOperation, rhs::PointOperation)
-    return lhs.matrix == rhs.matrix
-end
+(==)(lhs::PointOperation, rhs::PointOperation) = lhs.matrix == rhs.matrix
 
-function (*)(lhs::PointOperation, rhs::PointOperation)
-    return PointOperation(lhs.matrix * rhs.matrix)
-end
+import Base.*
+(*)(lhs::PointOperation, rhs::PointOperation) = PointOperation(lhs.matrix * rhs.matrix)
+(*)(lhs::PointOperation, rhs::Real) = PointOperation(lhs.matrix .* rhs)
+(*)(lhs::Real, rhs::PointOperation) = PointOperation(lhs .* rhs.matrix)
 
-function (*)(lhs::PointOperation, rhs::Real)
-    return PointOperation(lhs.matrix .* rhs)
-end
-
-function (*)(lhs::Real, rhs::PointOperation)
-    return PointOperation(lhs .* rhs.matrix)
-end
 
 inverse(lhs::PointOperation{S}) where {S<:Real} = PointOperation{S}(ExactLinearAlgebra.inverse(lhs.matrix))
 
 
-function apply_symmetry(symop::PointOperation{S}, coord::AbstractVector{S}) where {S<:Real}
+function apply_symmetry(symop::PointOperation,
+                        coord::AbstractVector{<:Real})
     return symop.matrix * coord
 end
+
+function (symop::PointOperation)(coord::AbstractVector{<:Real})
+    return symop.matrix * coord
+end
+
 
 canonize(arg::PointOperation) = isone(arg.matrix) ? IdentityOperation() : arg
 iscanonical(arg::PointOperation) = !isone(arg.matrix)

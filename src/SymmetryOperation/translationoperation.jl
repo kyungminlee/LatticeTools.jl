@@ -37,7 +37,11 @@ end
 inverse(arg::TranslationOperation) = TranslationOperation(-arg.displacement)
 
 
-function apply_symmetry(symop::TranslationOperation{S}, coord::AbstractVector{S}) where {S<:Real}
+function apply_symmetry(symop::TranslationOperation, coord::AbstractVector{<:Real})
+    return coord + symop.displacement
+end
+
+function (symop::TranslationOperation)(coord::AbstractVector)
     return coord + symop.displacement
 end
 

@@ -53,6 +53,11 @@ function apply_symmetry(symop::ProductOperation, coord::AbstractVector{<:Real})
 end
 
 
+function (symop::ProductOperation)(coord::AbstractVector{<:Real})
+    return foldr(apply_symmetry, symop.factors; init=coord)
+end
+
+
 function canonize(arg::ProductOperation)
     _reorder(lhs::IdentityOperation, rhs::AbstractSymmetryOperation) = (rhs, lhs)
     _reorder(lhs::AbstractSymmetryOperation, rhs::IdentityOperation) = (lhs, rhs)
