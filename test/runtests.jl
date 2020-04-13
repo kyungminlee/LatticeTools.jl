@@ -1,5 +1,5 @@
-using TightBindingLattice
 using Test
+using TightBindingLattice
 
 include("test_basic.jl")
 include("test_parser.jl")
@@ -8,9 +8,15 @@ include("test_unitcell.jl")
 include("test_hypercube.jl")
 include("test_lattice.jl")
 include("test_permutation.jl")
+
 include("test_group.jl")
+
+include("test_symmetryoperation.jl")
+
 include("test_translationsymmetry.jl")
 include("test_pointsymmetry.jl")
+
 include("test_irrep.jl")
 include("test_irrepdatabase.jl")
+
 include("test_symmetryembedding.jl")
