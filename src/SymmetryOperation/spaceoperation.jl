@@ -1,7 +1,7 @@
 export SpaceOperation
 
 export inverse
-export apply_symmetry
+export apply_operation
 export canonize
 export iscanonical
 

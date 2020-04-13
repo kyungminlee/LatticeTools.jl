@@ -1,7 +1,7 @@
 export IdentityOperation
 
 export inverse
-export apply_symmetry
+export apply_operation
 export canonize
 export iscanonical
 export combinable
@@ -16,7 +16,7 @@ combinable(lhs::AbstractSymmetryOperation, rhs::IdentityOperation) = true
 combinable(lhs::IdentityOperation, rhs::AbstractSymmetryOperation) = true
 
 inverse(arg::IdentityOperation) = arg
-apply_symmetry(symop::IdentityOperation, rhs) = rhs
+apply_operation(symop::IdentityOperation, rhs) = rhs
 (symop::IdentityOperation)(coord::AbstractVector{<:Real}) = coord
 
 canonize(arg::IdentityOperation) = arg

@@ -1,7 +1,7 @@
 export TranslationOperation
 
 export inverse
-export apply_symmetry
+export apply_operation
 export canonize
 export iscanonical
 export combinable
@@ -41,7 +41,7 @@ hash(arg::TranslationOperation) = hash(arg.displacement)
 inverse(arg::TranslationOperation) = TranslationOperation(-arg.displacement)
 
 
-function apply_symmetry(symop::TranslationOperation, coord::AbstractVector{<:Real})
+function apply_operation(symop::TranslationOperation, coord::AbstractVector{<:Real})
     return coord + symop.displacement
 end
 

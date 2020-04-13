@@ -1,7 +1,7 @@
 export ProductOperation
 
 export inverse
-export apply_symmetry
+export apply_operation
 export canonize
 export iscanonical
 
@@ -22,29 +22,17 @@ end
 
 function (*)(lhs::ProductOperation, rhs::AbstractSymmetryOperation)
     ProductOperation(lhs.factors..., rhs)
-    # isempty(lhs.factors) && return rhs
-    # if isa(last(lhs.factors), typeof(rhs))
-    #     ProductOperation(lhs.factors[1:end-1]..., lhs.factors[end]*rhs)
-    # else
-    #     ProductOperation(lhs.factors..., rhs)
-    # end
 end
 
 function (*)(lhs::AbstractSymmetryOperation, rhs::ProductOperation)
     ProductOperation(lhs, rhs.factors...)
-    # isempty(rhs.factors) && return lhs
-    # if isa(first(rhs.factors), typeof(lhs))
-    #     ProductOperation(lhs*rhs.factors[1], rhs.factors[2:end]...)
-    # else
-    #     ProductOperation(lhs, rhs.factors...)
-    # end
 end
 
 function (*)(lhs::ProductOperation, rhs::ProductOperation)
     return ProductOperation(lhs.factors..., rhs.factors...)
 end
 
-function (^)(lhs::ProductOperation{T}, rhs::Integer) where {T<:Tuple}
+function (^)(lhs::ProductOperation{T}, rhs::Integer)::ProductOperation where {T<:Tuple}
     if rhs == 0
         return ProductOperation()
     elseif rhs > 0
@@ -60,13 +48,13 @@ function inverse(arg::ProductOperation)
 end
 
 
-function apply_symmetry(symop::ProductOperation, coord::AbstractVector{<:Real})
-    return foldr(apply_symmetry, symop.factors; init=coord)
+function apply_operation(symop::ProductOperation, coord::AbstractVector{<:Real})
+    return foldr(apply_operation, symop.factors; init=coord)
 end
 
 
 function (symop::ProductOperation)(coord::AbstractVector{<:Real})
-    return foldr(apply_symmetry, symop.factors; init=coord)
+    return foldr(apply_operation, symop.factors; init=coord)
 end
 
 
@@ -83,7 +71,7 @@ function canonize(arg::ProductOperation)
 
     factors = collect(arg.factors)
     # first, bubble sort
-    # order: Identity, Point, Translation (implemented in _reorder)
+    # order: Point, Translation, Identity (implemented in _reorder)
     n = length(factors)
     for m in n:-1:2, i in 1:(m-1)
         factors[i], factors[i+1] = _reorder(factors[i], factors[i+1])
@@ -114,26 +102,6 @@ function canonize(arg::ProductOperation)
     else
         return ProductOperation(new_factors...)
     end
-
-    # pop = filter(x->isa(x, PointOperation), factors)
-    # top = filter(x->isa(x, TranslationOperation), factors)
-
-    # if isempty(pop)
-    #     if isempty(top)
-    #         return IdentityOperation()
-    #     else
-    #         @assert length(top) == 1
-    #         return first(top)
-    #     end
-    # else
-    #     @assert length(pop) == 1
-    #     if isempty(top)
-    #         return first(pop)
-    #     else
-    #         @assert length(top) == 1
-    #         return ProductOperation(first(pop), first(top))
-    #     end
-    # end
 end
 
 iscanonical(pop::ProductOperation) = false

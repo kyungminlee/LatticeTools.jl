@@ -8,7 +8,7 @@ using TightBindingLattice
 
     @testset "identity" begin
         @test inverse(iden) == iden
-        @test apply_symmetry(iden, [3,2,1]) == [3,2,1]
+        @test apply_operation(iden, [3,2,1]) == [3,2,1]
         @test iden([3,2,1]) == [3,2,1]
         @test canonize(iden) == iden
         @test iscanonical(iden)
@@ -36,7 +36,7 @@ using TightBindingLattice
         @test t3.displacement == [3, 3]
         @test t3 == TranslationOperation([3, 3])
         @test inverse(t3) == TranslationOperation([-3, -3])
-        @test apply_symmetry(t3, [5,6]) == [8, 9]
+        @test apply_operation(t3, [5,6]) == [8, 9]
 
         @test !iscanonical(t0)
         @test iscanonical(t1)
@@ -45,7 +45,7 @@ using TightBindingLattice
 
         t4 = TranslationOperation([1,2,3,4])
         @test_throws DimensionMismatch t1 * t4
-        @test_throws DimensionMismatch apply_symmetry(t1, [1,2,3])
+        @test_throws DimensionMismatch apply_operation(t1, [1,2,3])
         @test_throws DimensionMismatch t1([1,2,3])
     end
 
@@ -68,13 +68,13 @@ using TightBindingLattice
         @test p2^2 == PointOperation([1 0; 0 1])
 
         @test canonize(p1*inverse(p1)) == IdentityOperation()
-        @test apply_symmetry(p2, [5, 6]) == [6, 5]
+        @test apply_operation(p2, [5, 6]) == [6, 5]
         @test p2([5, 6]) == [6, 5]
         # TODO: Exceptions
 
         p3 = PointOperation([0 1 0; 1 0 0; 0 0 1])
         @test_throws DimensionMismatch p1*p3
-        @test_throws DimensionMismatch apply_symmetry(p1, [1,2,3])
+        @test_throws DimensionMismatch apply_operation(p1, [1,2,3])
 
         @test !iscanonical(p0)
         @test iscanonical(p1)
@@ -104,8 +104,8 @@ using TightBindingLattice
         @test tpc.factors[1] == ptc.factors[1]
         @test isa(tpc.factors[1], PointOperation) && isa(tpc.factors[2], TranslationOperation)
         @test isa(ptc.factors[1], PointOperation) && isa(ptc.factors[2], TranslationOperation)
-        @test apply_symmetry(tp, [5,0]) == apply_symmetry(tpc, [5,0])
-        @test apply_symmetry(pt, [5,0]) == apply_symmetry(ptc, [5,0])
+        @test apply_operation(tp, [5,0]) == apply_operation(tpc, [5,0])
+        @test apply_operation(pt, [5,0]) == apply_operation(ptc, [5,0])
         @test tp([5,0]) == tpc([5,0])
         @test pt([5,0]) == ptc([5,0])
 

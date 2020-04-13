@@ -1,7 +1,7 @@
 export PointOperation
 
 export inverse
-export apply_symmetry
+export apply_operation
 export canonize
 export iscanonical
 export combinable
@@ -47,7 +47,7 @@ function inverse(lhs::PointOperation{S}) where {S<:Real}
 end
 
 
-function apply_symmetry(symop::PointOperation,
+function apply_operation(symop::PointOperation,
                         coord::AbstractVector{<:Real})
     return symop.matrix * coord
 end
