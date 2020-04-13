@@ -83,13 +83,21 @@ using TightBindingLattice
     end
 
     @testset "product" begin
+        r0 = ProductOperation()
+
         t = TranslationOperation([2, 4])
         p = PointOperation([0 -1; 1 -1])
 
-        tp = t * p
-        tpc = canonize(tp)
+        rt = ProductOperation(t)
+        rp = ProductOperation(p)
 
+        @test r0 * t == rt
+        @test t * r0 == rt
+
+        tp = t * p
         pt = p * t
+        
+        tpc = canonize(tp)
         ptc = canonize(pt)
 
         @test tp^3 == t * p * t * p * t * p
