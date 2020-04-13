@@ -19,6 +19,7 @@ export little_symmetry, little_symmetry_iso
 export get_orbital_permutation, get_orbital_permutations
 export get_irrep_iterator
 export read_point_symmetry
+export symmetry_name
 
 simplify_name(name::AbstractString) = replace(replace(name, r"<sub>.*?</sub>"=>""), r"<sup>.*?</sup>"=>"")
 # simplify_name(names::AbstractVector{<:AbstractString}) = simplify_name.(names)
@@ -153,9 +154,9 @@ function project(psym::PointSymmetry,
     # if ! all( isapprox(x, 1; atol=tol) || isapprox(x, 0; atol=tol) for x in vals)
     #     throw(ArgumentError("projection is not projection"))
     # end
-    if any(isapprox(x, 0; atol=tol) for x in vals)
-        throw(ArgumentError("projection is not projection"))
-    end
+    # if any(isapprox(x, 0; atol=tol) for x in vals)
+    #     throw(ArgumentError("projection is not projection"))
+    # end
 
     new_matrix_representations = [projection * m * transpose(projection) for m in psym.matrix_representations]
 
@@ -173,15 +174,15 @@ end
 
 ## Basic properties
 
-group_order(psym::PointSymmetry) = group_order(psym.group)
-group_multiplication_table(psym::PointSymmetry) = group_multiplication_table(psym.group)
-
 element(sym::PointSymmetry, g) = sym.elements[g]
 elements(sym::PointSymmetry) = sym.elements
 
-
 element_name(sym::PointSymmetry, g) = sym.element_names[g]
 element_names(sym::PointSymmetry) = sym.element_names
+
+group(psym::PointSymmetry) = psym.group
+group_order(psym::PointSymmetry) = group_order(psym.group)
+group_multiplication_table(psym::PointSymmetry) = group_multiplication_table(psym.group)
 
 character_table(sym::PointSymmetry) = sym.character_table
 irreps(sym::PointSymmetry) = sym.irreps
@@ -189,6 +190,7 @@ irrep(sym::PointSymmetry, idx::Integer) = sym.irreps[idx]
 num_irreps(sym::PointSymmetry) = length(sym.irreps)
 irrep_dimension(sym::PointSymmetry, idx::Integer) = size(first(irrep(sym, idx)), 2)
 
+symmetry_name(sym::PointSymmetry) = "PointSymmetry[$(sym.hermann_mauguinn)]"
 
 
 ## Is compatible
@@ -202,12 +204,21 @@ function iscompatible(hypercube::HypercubicLattice, psym::PointSymmetry)
     return all(iscompatible(hypercube, m) for m in psym.matrix_representations)
 end
 
-iscompatible(tsym::TranslationSymmetry, psym::PointSymmetry) = iscompatible(tsym.hypercube, psym)
 
-function iscompatible(tsym::TranslationSymmetry, m::AbstractMatrix{<:Integer})
-    all(mod(x,1) == 0 for x in tsym.hypercube.inverse_scale_matrix * m * tsym.hypercube.scale_matrix)
+# TODO: Think about whether to include orbitalmap here.
+function iscompatible(lattice::Lattice, psym::PointSymmetry)
+    return iscompatible(lattice.hypercube, psym)
 end
 
+function iscompatible(tsym::TranslationSymmetry, psym::PointSymmetry) 
+    return iscompatible(tsym.hypercube, psym)
+end
+
+function iscompatible(tsym::TranslationSymmetry, m::AbstractMatrix{<:Integer})
+    sm = tsym.hypercube.scale_matrix
+    smi = tsym.hypercube.inverse_scale_matrix
+    return all(mod(x,1) == 0 for x in smi * m * sm)
+end
 
 function iscompatible(tsym::TranslationSymmetry,
                       tsym_irrep_index::Integer,

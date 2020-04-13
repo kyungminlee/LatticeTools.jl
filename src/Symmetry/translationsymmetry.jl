@@ -1,6 +1,7 @@
 export TranslationSymmetry
 
-export group_order,
+export group,
+       group_order,
        group_multiplication_table,
        character_table,
        irrep, irreps, irrep_dimension, num_irreps,
@@ -12,6 +13,7 @@ export get_orbital_permutation
 export iscompatible
 
 export get_irrep_iterator
+export symmetry_name
 
 
 struct TranslationSymmetry <: AbstractSymmetry
@@ -152,7 +154,7 @@ struct TranslationSymmetry <: AbstractSymmetry
     end
 end
 
-
+group(psym::TranslationSymmetry) = psym.group
 group_order(sym::TranslationSymmetry) = group_order(sym.group)
 group_multiplication_table(psym::TranslationSymmetry) = group_multiplication_table(psym.group)
 
@@ -168,6 +170,14 @@ irreps(sym::TranslationSymmetry) = sym.irreps
 irrep(sym::TranslationSymmetry, idx) = sym.irreps[idx]
 num_irreps(sym::TranslationSymmetry) = length(sym.irreps)
 irrep_dimension(sym::TranslationSymmetry, idx::Integer) = 1 # size(first(sym.irreps[idx]), 1)
+
+function symmetry_name(sym::TranslationSymmetry)
+    n11 = sym.hypercube.scale_matrix[1,1]
+    n12 = sym.hypercube.scale_matrix[1,2]
+    n21 = sym.hypercube.scale_matrix[2,1]
+    n22 = sym.hypercube.scale_matrix[2,2]
+    return "TranslationSymmetry[($n11,$n21)x($n12,$n22)]"
+end
 
 
 function get_orbital_permutations(lattice::Lattice,
@@ -273,6 +283,9 @@ function iscompatible(orthogonal_momentum::AbstractVector{<:Integer},
     return all(iscompatible(orthogonal_momentum, orthogonal_shape, t) for t in identity_translations)
 end
 
+function iscompatible(lattice::Lattice, tsym::TranslationSymmetry)
+    return lattice.hypercube == tsym.hypercube
+end
 
 function iscompatible(lattice::Lattice,
                       tsym::TranslationSymmetry,
