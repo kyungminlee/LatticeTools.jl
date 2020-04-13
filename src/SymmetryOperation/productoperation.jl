@@ -71,11 +71,11 @@ function (*)(lhs::AbstractSymmetryOperation, rhs::AbstractSymmetryOperation)
 end
 
 function (*)(lhs::ProductOperation, rhs::AbstractSymmetryOperation)
-    ProductOperation(lhs.factors..., rhs)
+    return ProductOperation(lhs.factors..., rhs)
 end
 
 function (*)(lhs::AbstractSymmetryOperation, rhs::ProductOperation)
-    ProductOperation(lhs, rhs.factors...)
+    return ProductOperation(lhs, rhs.factors...)
 end
 
 function (*)(lhs::ProductOperation, rhs::ProductOperation)
@@ -135,16 +135,12 @@ function canonize(arg::ProductOperation)
             op *= f
         else
             op = canonize(op)
-            if op != IdentityOperation()
-                push!(new_factors, op)
-            end
+            op != IdentityOperation() && push!(new_factors, op)
             op = f
         end
     end
     op = canonize(op)
-    if op != IdentityOperation()
-        push!(new_factors, op)
-    end
+    op != IdentityOperation() && push!(new_factors, op)
     
     if length(new_factors) == 0
         return IdentityOperation()
