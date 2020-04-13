@@ -5,6 +5,7 @@ export PointSymmetryEmbedding
 export SymmorphicSpaceSymmetryEmbedding
 
 export embed
+export element, elements
 
 abstract type AbstractSymmetryEmbedding end
 
@@ -33,6 +34,11 @@ struct TranslationSymmetryEmbedding<:AbstractSymmetryEmbedding
     end
 end
 
+
+elements(symbed::TranslationSymmetryEmbedding) = symbed.elements
+element(symbed::TranslationSymmetryEmbedding, g) = symbed.elements[g]
+
+
 struct PointSymmetryEmbedding<:AbstractSymmetryEmbedding
     lattice::Lattice
     symmetry::PointSymmetry
@@ -46,6 +52,10 @@ struct PointSymmetryEmbedding<:AbstractSymmetryEmbedding
         new(lattice, symmetry, elements)
     end
 end
+
+
+elements(symbed::PointSymmetryEmbedding) = symbed.elements
+element(symbed::PointSymmetryEmbedding, g) = symbed.elements[g]
 
 
 struct SymmorphicSpaceSymmetryEmbedding<:AbstractSymmetryEmbedding

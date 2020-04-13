@@ -1,14 +1,12 @@
 export PointSymmetry
 
-export group_order,
-       group_multiplication_table,
-       element_names,
-       element_name,
-       character_table,
-       irreps,
-       irrep,
-       num_irreps,
-       irrep_dimension
+export  group_order,
+        element, elements,
+        element_name, element_names,
+        group_multiplication_table,
+        character_table,
+        irrep, irreps, num_irreps, irrep_dimension
+       
 
 export iscompatible
 export findorbitalmap
@@ -18,8 +16,7 @@ export little_group_elements
 export little_group
 export little_symmetry, little_symmetry_iso
 
-export get_orbital_permutation
-export get_orbital_permutations
+export get_orbital_permutation, get_orbital_permutations
 export get_irrep_iterator
 export read_point_symmetry
 
@@ -178,6 +175,10 @@ end
 
 group_order(psym::PointSymmetry) = group_order(psym.group)
 group_multiplication_table(psym::PointSymmetry) = group_multiplication_table(psym.group)
+
+element(sym::PointSymmetry, g) = sym.elements[g]
+elements(sym::PointSymmetry) = sym.elements
+
 
 element_name(sym::PointSymmetry, g) = sym.element_names[g]
 element_names(sym::PointSymmetry) = sym.element_names
