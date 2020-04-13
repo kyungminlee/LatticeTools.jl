@@ -1,6 +1,5 @@
 export SitePermutation
 export embed
-export inverse
 
 abstract type AbstractSymmetryOperationEmbedding <:AbstractSymmetryOperation end
 
@@ -29,8 +28,8 @@ isless(lhs::SitePermutation, rhs::SitePermutation) = isless(lhs.permutation, rhs
 import Base.hash
 hash(arg::SitePermutation) = hash(arg.permutation)
 
-
-inverse(sp::SitePermutation) = SitePermutation(inverse(sp.permutation))
+import Base.inv
+inv(sp::SitePermutation) = SitePermutation(inv(sp.permutation))
 
 
 """

@@ -3,7 +3,6 @@ export AbstractSymmetryOperation
 export Permutation
 
 export generate_group
-export inverse
 
 
 abstract type AbstractSymmetryOperation end
@@ -119,7 +118,8 @@ function ^(perm ::Permutation, pow ::Integer)
     return Permutation(out)
 end
 
-function inverse(perm ::Permutation)
+import Base.inv
+function inv(perm::Permutation)
     out = zeros(Int, length(perm.map))
     for (i, x) in enumerate(perm.map)
         out[x] = i

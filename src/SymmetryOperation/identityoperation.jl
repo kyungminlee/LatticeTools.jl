@@ -1,6 +1,5 @@
 export IdentityOperation
 
-export inverse
 export apply_operation
 export canonize
 export iscanonical
@@ -15,7 +14,8 @@ import Base.*
 combinable(lhs::AbstractSymmetryOperation, rhs::IdentityOperation) = true
 combinable(lhs::IdentityOperation, rhs::AbstractSymmetryOperation) = true
 
-inverse(arg::IdentityOperation) = arg
+import Base.inv
+inv(arg::IdentityOperation) = arg
 apply_operation(symop::IdentityOperation, rhs) = rhs
 (symop::IdentityOperation)(coord::AbstractVector{<:Real}) = coord
 

@@ -1,6 +1,5 @@
 export TranslationOperation
 
-export inverse
 export apply_operation
 export canonize
 export iscanonical
@@ -37,8 +36,8 @@ combinable(lhs::TranslationOperation, rhs::TranslationOperation) = true
 import Base.hash
 hash(arg::TranslationOperation) = hash(arg.displacement)
 
-
-inverse(arg::TranslationOperation) = TranslationOperation(-arg.displacement)
+import Base.inv
+inv(arg::TranslationOperation) = TranslationOperation(-arg.displacement)
 
 
 function apply_operation(symop::TranslationOperation, coord::AbstractVector{<:Real})

@@ -1,6 +1,5 @@
 export SpaceOperation
 
-export inverse
 export apply_operation
 export canonize
 export iscanonical
@@ -28,12 +27,13 @@ end
 
 
 function (*)(lhs::TranslationOperation, rhs::ProductOperation)
-    rhs_inv = inverse(rhs)
+    rhs_inv = inv(rhs)
     SpaceOperation(rhs, TranslationOperation(rhs_inv.matrix * lhs.displacement))
 end
 
 
-function inverse(arg::SpaceOperation)
+import Base.inv
+function inv(arg::SpaceOperation)
     matrix_inv = ExactLinearAlgebra.inverse(arg.matrix)
     return SpaceOperation(matrix_inv, -arg.matrix * arg.displacement)
 end

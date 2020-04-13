@@ -1,6 +1,5 @@
 export ProductOperation
 
-export inverse
 export apply_operation
 export canonize
 export iscanonical
@@ -32,20 +31,22 @@ function (*)(lhs::ProductOperation, rhs::ProductOperation)
     return ProductOperation(lhs.factors..., rhs.factors...)
 end
 
+import Base.inv
+function inv(arg::ProductOperation)
+    return ProductOperation(reverse(inv.(arg.factors))...)
+end
+
 function (^)(lhs::ProductOperation{T}, rhs::Integer)::ProductOperation where {T<:Tuple}
     if rhs == 0
         return ProductOperation()
     elseif rhs > 0
         return ProductOperation(vcat([collect(lhs.factors) for i in 1:rhs]...)...)
     else
-        lhs_inv = inverse(lhs)
+        lhs_inv = inv(lhs)
         return ProductOperation(vcat([collect(lhs_inv.factors) for i in 1:(-rhs)]...)...)
     end
 end
 
-function inverse(arg::ProductOperation)
-    return ProductOperation(reverse(inverse.(arg.factors))...)
-end
 
 
 function apply_operation(symop::ProductOperation, coord::AbstractVector{<:Real})
@@ -65,7 +66,7 @@ function canonize(arg::ProductOperation)
     _reorder(lhs::PointOperation, rhs::PointOperation) = (lhs, rhs)
     _reorder(lhs::PointOperation, rhs::TranslationOperation) = (lhs, rhs)
     function _reorder(lhs::TranslationOperation, rhs::PointOperation)
-        rhs_inv = inverse(rhs)
+        rhs_inv = inv(rhs)
         (rhs, TranslationOperation(rhs_inv.matrix * lhs.displacement))
     end
 

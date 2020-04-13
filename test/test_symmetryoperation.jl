@@ -7,7 +7,7 @@ using TightBindingLattice
     iden = IdentityOperation()
 
     @testset "identity" begin
-        @test inverse(iden) == iden
+        @test inv(iden) == iden
         @test apply_operation(iden, [3,2,1]) == [3,2,1]
         @test iden([3,2,1]) == [3,2,1]
         @test canonize(iden) == iden
@@ -35,7 +35,7 @@ using TightBindingLattice
         t3 = t1*t2
         @test t3.displacement == [3, 3]
         @test t3 == TranslationOperation([3, 3])
-        @test inverse(t3) == TranslationOperation([-3, -3])
+        @test inv(t3) == TranslationOperation([-3, -3])
         @test apply_operation(t3, [5,6]) == [8, 9]
 
         @test !iscanonical(t0)
@@ -62,12 +62,15 @@ using TightBindingLattice
         @test dimension(p1) == 2
 
         @test p1*p2 == PointOperation([0 -1; 1 -1] * [0 1; 1 0])
-        @test inverse(p1) * p1 == PointOperation([1 0; 0 1])
-        @test p1 * inverse(p1) == PointOperation([1 0; 0 1])
-
+        @test inv(p1) * p1 == PointOperation([1 0; 0 1])
+        @test p1 * inv(p1) == PointOperation([1 0; 0 1])
+        
+        @test p1^3 == p1 * p1 * p1
+        @test p1^(-1) == inv(p1)
+        @test p1^(-2) == inv(p1)*inv(p1)
         @test p2^2 == PointOperation([1 0; 0 1])
 
-        @test canonize(p1*inverse(p1)) == IdentityOperation()
+        @test canonize(p1*inv(p1)) == IdentityOperation()
         @test apply_operation(p2, [5, 6]) == [6, 5]
         @test p2([5, 6]) == [6, 5]
         # TODO: Exceptions
@@ -109,7 +112,7 @@ using TightBindingLattice
         @test tp([5,0]) == tpc([5,0])
         @test pt([5,0]) == ptc([5,0])
 
-        @test canonize(tp^3 * inverse(tp^3)) == IdentityOperation()
+        @test canonize(tp^3 * inv(tp^3)) == IdentityOperation()
         @test iscanonical(tpc)
         @test iscanonical(ptc)
     end

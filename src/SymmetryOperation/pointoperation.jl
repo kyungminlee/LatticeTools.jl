@@ -1,6 +1,5 @@
 export PointOperation
 
-export inverse
 export apply_operation
 export canonize
 export iscanonical
@@ -41,8 +40,8 @@ combinable(lhs::PointOperation, rhs::PointOperation) = true
 import Base.hash
 hash(arg::PointOperation) = hash(arg.matrix)
 
-
-function inverse(lhs::PointOperation{S}) where {S<:Real}
+import Base.inv
+function inv(lhs::PointOperation{S}) where {S<:Real}
     PointOperation{S}(ExactLinearAlgebra.inverse(lhs.matrix))
 end
 
