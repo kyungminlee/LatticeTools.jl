@@ -26,6 +26,7 @@ using TightBindingLattice
 
         @test canonize(p1*inverse(p1)) == IdentityOperation()
         @test apply_symmetry(p2, [5, 6]) == [6, 5]
+        @test p2([5, 6]) == [6, 5]
         # TODO: Exceptions
     end
 
@@ -44,8 +45,9 @@ using TightBindingLattice
         @test isa(ptc.factors[1], PointOperation) && isa(ptc.factors[2], TranslationOperation)
         @test apply_symmetry(tp, [5,0]) == apply_symmetry(tpc, [5,0])
         @test apply_symmetry(pt, [5,0]) == apply_symmetry(ptc, [5,0])
+        @test tp([5,0]) == tpc([5,0])
+        @test pt([5,0]) == ptc([5,0])
 
-        @show tpc
         @show inverse(tpc)
         @test iscanonical(tpc)
         @test iscanonical(ptc)
