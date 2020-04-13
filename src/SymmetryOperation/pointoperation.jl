@@ -4,6 +4,7 @@ export inverse
 export apply_symmetry
 export canonize
 export iscanonical
+export combinable
 
 struct PointOperation{S<:Real} <:AbstractSymmetryOperation
     matrix::Matrix{S}
@@ -32,6 +33,10 @@ import Base.*
 
 import Base.^
 (^)(lhs::PointOperation, rhs::Integer) = PointOperation(lhs.matrix^rhs)
+
+
+combinable(lhs::PointOperation, rhs::PointOperation) = true
+
 
 import Base.hash
 hash(arg::PointOperation) = hash(arg.matrix)

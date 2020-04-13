@@ -4,6 +4,7 @@ export inverse
 export apply_symmetry
 export canonize
 export iscanonical
+export combinable
 
 struct TranslationOperation{S<:Real} <:AbstractSymmetryOperation
     displacement::Vector{S}
@@ -28,6 +29,10 @@ import Base.*
 
 import Base.^
 (^)(lhs::TranslationOperation, rhs::Real) = TranslationOperation(lhs.displacement .* rhs)
+
+
+combinable(lhs::TranslationOperation, rhs::TranslationOperation) = true
+
 
 import Base.hash
 hash(arg::TranslationOperation) = hash(arg.displacement)
