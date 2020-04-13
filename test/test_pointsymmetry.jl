@@ -218,16 +218,18 @@ using TightBindingLattice: simplify_name
             @test findorbitalmap(unitcell, psym)[idx_C4] == [(2, [0,0]), (1, [-1,0])]
 
             lattice = make_lattice(unitcell, [2 0; 0 2])
+            psymbed = embed(lattice, psym)
             tsym = TranslationSymmetry(lattice)
+            tsymbed = embed(lattice, tsym)
 
-            perms = get_orbital_permutations(lattice, psym)
+            perms = SitePermutation.(get_orbital_permutations(lattice, psym))
             @test length(perms) == length(psym.element_names)
-            @test perms[1] == Permutation(1:8) # identity
+            @test perms[1] == SitePermutation(1:8) # identity
 
             orbital_map = findorbitalmap(unitcell, psym)
-            perms2 = Permutation[]
+            perms2 = SitePermutation[]
             for (mat, map) in zip(psym.matrix_representations, orbital_map)
-                push!(perms2, get_orbital_permutation(lattice, mat, map))
+                push!(perms2, SitePermutation(get_orbital_permutation(lattice, mat, map)))
             end
             @test perms == perms2
 
@@ -239,7 +241,7 @@ using TightBindingLattice: simplify_name
             # 2       4                 1       5
             # |       |                 |       |
             # o - 1 - . - 3 -           o - 6 - . - 2 -
-            @test perms[idx_C4] == Permutation([2,3,6,7,4,1,8,5])
+            @test perms[idx_C4] == SitePermutation([2,3,6,7,4,1,8,5])
 
         end # testset "lattice permutations"
 

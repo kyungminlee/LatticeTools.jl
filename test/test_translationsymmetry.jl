@@ -133,12 +133,12 @@ using YAML
             lattice_failure = make_lattice(unitcell, [4 0; 0 3])
             @test_throws ArgumentError get_orbital_permutations(lattice_failure, tsym)
         end
-        perms = get_orbital_permutations(lattice, tsym)
+        perms = SitePermutation.(get_orbital_permutations(lattice, tsym))
         @test length(perms) == 16
-        @test perms[1].map == 1:32  # identity
+        @test perms[1].permutation.map == 1:32  # identity
 
         for (ir, r) in enumerate(lattice.hypercube.coordinates)
-            @test perms[ir].map == [
+            @test perms[ir].permutation.map == [
                 let
                     ivec = [(i-1) % 4, (i-1) ÷ 4]
                     jvec = [(x + 16) % 4 for x in (ivec .+ r)]
@@ -149,10 +149,14 @@ using YAML
             ]
         end
 
-        @test_throws ArgumentError get_irrep_iterator(lattice, TranslationSymmetryIrrepComponent(tsym, 1, 2))
+        tsymbed = embed(lattice, tsym)
+        IrrepComponent(tsymbed, 1, 1)
+        get_irrep_iterator(IrrepComponent(tsymbed, 1, 1))
+
+        @test_throws ArgumentError get_irrep_iterator(IrrepComponent(tsymbed, 1, 2))
         let phases = [cis(-2π * i / 4) for j in 0:3 for i in 0:3]
-            tsic = TranslationSymmetryIrrepComponent(tsym, 2, 1)
-            irrep_list1 = collect(get_irrep_iterator(lattice, tsic))
+            tsic = IrrepComponent(tsymbed, 2, 1)
+            irrep_list1 = collect(get_irrep_iterator(tsic))
             irrep_list2 = collect(zip(perms, phases))
             @test length(irrep_list1) == length(irrep_list2)
             for (x,y) in zip(irrep_list1, irrep_list2)
