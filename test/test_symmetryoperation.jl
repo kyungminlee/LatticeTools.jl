@@ -15,10 +15,17 @@ using TightBindingLattice
     end
 
     @testset "translation" begin
-        t1 = TranslationOperation([1,0])
+        t0 = TranslationOperation([0,0])
+        t1 = TranslationOperation([1, -1])
+        t1p = TranslationOperation{Int}([1, -1])
         t2 = TranslationOperation([2,4])
+
         
-        @test t2 == TranslationOperation{Int}([2,4])
+        @test hash(t1) == hash(t1p)
+        @test t1 == t1p
+        @test t1 !== t1p
+        @test isequal(t1, t1p)
+
         @test dimension(t2) == 2
         @test t2^2 == TranslationOperation([4,8])
 
@@ -26,28 +33,53 @@ using TightBindingLattice
         @test iden * t1 == t1
 
         t3 = t1*t2
-        @test t3.displacement == [3,4]
-        @test t3 == TranslationOperation([3, 4])
-        @test inverse(t3) == TranslationOperation([-3, -4])
-        @test apply_symmetry(t3, [5,6]) == [8,10]
-        # TODO: Exceptions
+        @test t3.displacement == [3, 3]
+        @test t3 == TranslationOperation([3, 3])
+        @test inverse(t3) == TranslationOperation([-3, -3])
+        @test apply_symmetry(t3, [5,6]) == [8, 9]
+
+        @test !iscanonical(t0)
+        @test iscanonical(t1)
+        @test canonize(t0) == IdentityOperation()
+        @test canonize(t1) == t1
+
+        t4 = TranslationOperation([1,2,3,4])
+        @test_throws DimensionMismatch t1 * t4
+        @test_throws DimensionMismatch apply_symmetry(t1, [1,2,3])
+        @test_throws DimensionMismatch t1([1,2,3])
     end
 
     @testset "point" begin
+        p0 = PointOperation([1 0; 0 1])
         p1 = PointOperation([0 -1; 1 -1])
+        p1p = PointOperation{Int}([0 -1; 1 -1])
         p2 = PointOperation([0 1; 1 0])
     
+        @test p1 == p1p
+        @test p1 !== p1p
+        @test isequal(p1, p1p)
+
         @test dimension(p1) == 2
-        @test p2^2 == PointOperation([1 0; 0 1])
-        
+
         @test p1*p2 == PointOperation([0 -1; 1 -1] * [0 1; 1 0])
         @test inverse(p1) * p1 == PointOperation([1 0; 0 1])
         @test p1 * inverse(p1) == PointOperation([1 0; 0 1])
+
+        @test p2^2 == PointOperation([1 0; 0 1])
 
         @test canonize(p1*inverse(p1)) == IdentityOperation()
         @test apply_symmetry(p2, [5, 6]) == [6, 5]
         @test p2([5, 6]) == [6, 5]
         # TODO: Exceptions
+
+        p3 = PointOperation([0 1 0; 1 0 0; 0 0 1])
+        @test_throws DimensionMismatch p1*p3
+        @test_throws DimensionMismatch apply_symmetry(p1, [1,2,3])
+
+        @test !iscanonical(p0)
+        @test iscanonical(p1)
+        @test canonize(p0) == IdentityOperation()
+        @test canonize(p1) == p1
     end
 
     @testset "product" begin
