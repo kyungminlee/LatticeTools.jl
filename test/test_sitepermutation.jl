@@ -29,17 +29,17 @@ using TightBindingLattice
 
     let
         n = -2
-        @test op1^-2 == SitePermutation([3,1,2])
+        @test op1^n == SitePermutation([3,1,2])
         n = -1
-        @test op1^-1 == SitePermutation([2,3,1])
+        @test op1^n == SitePermutation([2,3,1])
         n = 0
-        @test op1^0 == SitePermutation([1,2,3])
+        @test op1^n == SitePermutation([1,2,3])
         n = 1
-        @test op1^1 == SitePermutation([3,1,2])
+        @test op1^n == SitePermutation([3,1,2])
         n = 2
-        @test op1^2 == SitePermutation([2,3,1])
+        @test op1^n == SitePermutation([2,3,1])
         n = 3
-        @test op1^3 == SitePermutation([1,2,3])
+        @test op1^n == SitePermutation([1,2,3])
     end
 
     @testset "kagome" begin
