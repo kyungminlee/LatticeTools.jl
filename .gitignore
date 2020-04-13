@@ -4,3 +4,4 @@ Manifest.toml
 
 _research/
 .vscode/
+*.code-workspace
