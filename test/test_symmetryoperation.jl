@@ -49,7 +49,6 @@ using TightBindingLattice
         ptc = canonize(pt)
 
         @test tp^3 == t * p * t * p * t * p
-        @show tp^3
         @test tpc.factors[1] == ptc.factors[1]
         @test isa(tpc.factors[1], PointOperation) && isa(tpc.factors[2], TranslationOperation)
         @test isa(ptc.factors[1], PointOperation) && isa(ptc.factors[2], TranslationOperation)
@@ -58,7 +57,7 @@ using TightBindingLattice
         @test tp([5,0]) == tpc([5,0])
         @test pt([5,0]) == ptc([5,0])
 
-        @show inverse(tpc)
+        @test canonize(tp^3 * inverse(tp^3)) == IdentityOperation()
         @test iscanonical(tpc)
         @test iscanonical(ptc)
     end

@@ -16,13 +16,13 @@ using TightBindingLattice
         t1e = embed(kagome.lattice, t1)
         t2 = TranslationOperation([0, 1])
         t2e = embed(kagome.lattice, t2)
-        @show t1e
-        @show t2e
+        # @show t1e
+        # @show t2e
 
         psym = project(PointSymmetryDatabase.get(25), [1 0 0; 0 1 0])
         p6 = psym.elements[6]
         p6e = embed(kagome.lattice, p6)
-        @show p6e
+        # @show p6e
     end
 
 end
