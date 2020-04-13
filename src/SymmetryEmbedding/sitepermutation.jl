@@ -22,8 +22,8 @@ import Base.*
 import Base.^
 ^(lhs::SitePermutation, rhs::Integer) = SitePermutation(lhs.permutation^rhs)
 
-import Base.isless
-isless(lhs::SitePermutation, rhs::SitePermutation) = isless(lhs.permutation, rhs.permutation)
+# import Base.isless
+# isless(lhs::SitePermutation, rhs::SitePermutation) = isless(lhs.permutation, rhs.permutation)
 
 import Base.hash
 hash(arg::SitePermutation) = hash(arg.permutation)
