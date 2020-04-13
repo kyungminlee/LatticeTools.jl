@@ -32,6 +32,8 @@ module ExactLinearAlgebra
         return determinant_unsafe(mat)
     end
 
+    determinant(mat::AbstractMatrix{<:AbstractFloat}) = LinearAlgebra.det(mat)
+
     function inverse(mat::AbstractMatrix{S}) where {S<:ScalarType}
         n, m = size(mat)
         n != m && throw(ArgumentError("matrix needs to be square"))
@@ -47,6 +49,8 @@ module ExactLinearAlgebra
         D = sum(mat[1,:] .* cofactor[1,:])
         return transpose(cofactor) // D
     end
+
+    inverse(mat::AbstractMatrix{<:AbstractFloat}) = LinearAlgebra.inv(mat)
 
 end # module ExactLinearAlgebra
 
