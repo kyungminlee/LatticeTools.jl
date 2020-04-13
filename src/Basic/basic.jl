@@ -1,7 +1,8 @@
 export ExactLinearAlgebra
-using LinearAlgebra
 
 module ExactLinearAlgebra
+    using LinearAlgebra
+    
     ScalarType = Union{Integer,Complex{<:Integer},<:Rational,Complex{<:Rational}}
     function get_cofactor_matrix_unsafe!(out ::AbstractMatrix{I1}, mat ::AbstractMatrix{I2}, row ::Integer, col ::Integer) where {I1<:ScalarType, I2<:ScalarType}
         out[1:row-1, 1:col-1] = mat[1:row-1, 1:col-1]
