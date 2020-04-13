@@ -16,7 +16,7 @@ export little_group_elements
 export little_group
 export little_symmetry, little_symmetry_iso
 
-export get_orbital_permutation, get_orbital_permutations
+# export get_orbital_permutation, get_orbital_permutations
 export get_irrep_iterator
 export read_point_symmetry
 export symmetry_name
@@ -195,26 +195,26 @@ symmetry_name(sym::PointSymmetry) = "PointSymmetry[$(sym.hermann_mauguinn)]"
 
 ## Is compatible
 
-function iscompatible(hypercube::HypercubicLattice, matrix_representation::AbstractMatrix{<:Integer})
+function iscompatible(hypercube::HypercubicLattice, matrix_representation::AbstractMatrix{<:Integer})::Bool
     _, elems = hypercube.wrap(matrix_representation * hypercube.scale_matrix)
     all(iszero(elems)) # all, since scale_matrix
 end
 
-function iscompatible(hypercube::HypercubicLattice, psym::PointSymmetry)
+function iscompatible(hypercube::HypercubicLattice, psym::PointSymmetry)::Bool
     return all(iscompatible(hypercube, m) for m in psym.matrix_representations)
 end
 
 
 # TODO: Think about whether to include orbitalmap here.
-function iscompatible(lattice::Lattice, psym::PointSymmetry)
+function iscompatible(lattice::Lattice, psym::PointSymmetry)::Bool
     return iscompatible(lattice.hypercube, psym)
 end
 
-function iscompatible(tsym::TranslationSymmetry, psym::PointSymmetry) 
+function iscompatible(tsym::TranslationSymmetry, psym::PointSymmetry)::Bool
     return iscompatible(tsym.hypercube, psym)
 end
 
-function iscompatible(tsym::TranslationSymmetry, m::AbstractMatrix{<:Integer})
+function iscompatible(tsym::TranslationSymmetry, m::AbstractMatrix{<:Integer})::Bool
     sm = tsym.hypercube.scale_matrix
     smi = tsym.hypercube.inverse_scale_matrix
     return all(mod(x,1) == 0 for x in smi * m * sm)
@@ -222,7 +222,7 @@ end
 
 function iscompatible(tsym::TranslationSymmetry,
                       tsym_irrep_index::Integer,
-                      psym::PointSymmetry)
+                      psym::PointSymmetry)::Bool
     ! iscompatible(tsym, psym) && return false
     return little_group_elements(tsym, tsym_irrep_index, psym) == 1:group_order(psym)
 end
@@ -231,7 +231,8 @@ end
 
 ## Lattice mapping
 
-function findorbitalmap(unitcell::UnitCell, psym_matrep::AbstractMatrix{<:Integer})
+function findorbitalmap(unitcell::UnitCell,
+                        psym_matrep::AbstractMatrix{<:Integer})::Vector{Tuple{Int, Vector{Int}}}
     norb = numorbital(unitcell)
     map = Tuple{Int, Vector{Int}}[]
     for (orbname, orbfc) in unitcell.orbitals
@@ -255,48 +256,49 @@ specified by the `matrix_representation` and `orbital_map`, which respectively
 contain information about how the Bravais lattice transforms, and how the
 basis sites transforms.
 """
-function get_orbital_permutation(
-            lattice::Lattice,
-            matrix_representation::AbstractMatrix{<:Integer},
-            orbital_map::AbstractVector{<:Tuple{<:Integer, <:AbstractVector{<:Integer}}})
-    p = zeros(Int, numorbital(lattice.supercell))
-    for (i, (j, dR)) in enumerate(orbital_map)
-        namei = getorbitalname(lattice.unitcell, i)
-        namej = getorbitalname(lattice.unitcell, j)
-        for Ri in lattice.hypercube.coordinates
-            _, Rj = lattice.hypercube.wrap(matrix_representation * Ri + dR)
-            i_super = lattice.supercell.orbitalindices[(namei, Ri)]
-            j_super = lattice.supercell.orbitalindices[(namej, Rj)]
-            p[i_super] = j_super
-        end
-    end
-    return Permutation(p)
-end
+# function get_orbital_permutation(
+#             lattice::Lattice,
+#             matrix_representation::AbstractMatrix{<:Integer},
+#             orbital_map::AbstractVector{<:Tuple{<:Integer, <:AbstractVector{<:Integer}}})
+#     p = zeros(Int, numorbital(lattice.supercell))
+#     for (i, (j, dR)) in enumerate(orbital_map)
+#         namei = getorbitalname(lattice.unitcell, i)
+#         namej = getorbitalname(lattice.unitcell, j)
+#         for Ri in lattice.hypercube.coordinates
+#             _, Rj = lattice.hypercube.wrap(matrix_representation * Ri + dR)
+#             i_super = lattice.supercell.orbitalindices[(namei, Ri)]
+#             j_super = lattice.supercell.orbitalindices[(namej, Rj)]
+#             p[i_super] = j_super
+#         end
+#     end
+#     return Permutation(p)
+# end
 
-function get_orbital_permutations(lattice::Lattice, point_symmetry::PointSymmetry)
-    # orbitalmap contains how orbitals of the "unitcell" transform under
-    # every point group operations. Uses heuristics
-    orbitalmap = findorbitalmap(lattice.unitcell, point_symmetry)
 
-    permutations = Permutation[]
-    sizehint!(permutations, group_order(point_symmetry))
+# function get_orbital_permutations(lattice::Lattice, point_symmetry::PointSymmetry)
+#     # orbitalmap contains how orbitals of the "unitcell" transform under
+#     # every point group operations. Uses heuristics
+#     orbitalmap = findorbitalmap(lattice.unitcell, point_symmetry)
 
-    for (i_elem, (matrep, orbmap)) in enumerate(zip(point_symmetry.matrix_representations, orbitalmap))
-        p = zeros(Int, numorbital(lattice.supercell))
-        for (i, (j, dR)) in enumerate(orbmap)
-            namei = getorbitalname(lattice.unitcell, i)
-            namej = getorbitalname(lattice.unitcell, j)
-            for Ri in lattice.hypercube.coordinates
-                _, Rj = lattice.hypercube.wrap(matrep * Ri + dR)
-                i_super = lattice.supercell.orbitalindices[(namei, Ri)]
-                j_super = lattice.supercell.orbitalindices[(namej, Rj)]
-                p[i_super] = j_super
-            end
-        end
-        push!(permutations, Permutation(p))
-    end
-    return permutations
-end
+#     permutations = Permutation[]
+#     sizehint!(permutations, group_order(point_symmetry))
+
+#     for (i_elem, (matrep, orbmap)) in enumerate(zip(point_symmetry.matrix_representations, orbitalmap))
+#         p = zeros(Int, numorbital(lattice.supercell))
+#         for (i, (j, dR)) in enumerate(orbmap)
+#             namei = getorbitalname(lattice.unitcell, i)
+#             namej = getorbitalname(lattice.unitcell, j)
+#             for Ri in lattice.hypercube.coordinates
+#                 _, Rj = lattice.hypercube.wrap(matrep * Ri + dR)
+#                 i_super = lattice.supercell.orbitalindices[(namei, Ri)]
+#                 j_super = lattice.supercell.orbitalindices[(namej, Rj)]
+#                 p[i_super] = j_super
+#             end
+#         end
+#         push!(permutations, Permutation(p))
+#     end
+#     return permutations
+# end
 
 
 ## Symmetry reduction (little group etc.)
@@ -305,7 +307,8 @@ end
     psym compatible with hypercube
 """
 function little_group_elements(tsym::TranslationSymmetry, psym::PointSymmetry)
-    lg_elements = [i for (i, m) in enumerate(psym.matrix_representations) if iscompatible(tsym, m)]
+    lg_elements = [i for (i, m) in enumerate(psym.matrix_representations)
+                     if iscompatible(tsym, m)]
     return lg_elements
 end
 
@@ -323,26 +326,11 @@ function little_group_elements(tsym::TranslationSymmetry,
 end
 
 
-#=
-function little_group_elements(tsym::TranslationSymmetry,
-                               tsym_irrep_index::Integer,
-                               psym::PointSymmetry)
-
-    k_o2 = tsym.orthogonal_coordinates[tsym_irrep_index]
-    lg = Int[]
-    for (i_elem, matrep) in enumerate(psym.matrix_representations)
-        k_o1 = tsym.orthogonal_to_coordinate_map[k_o2]
-        k_r1 = tsym.hypercube.wrap(matrep * k_o1)[2]
-        k_r2 = tsym.coordinate_to_orthogonal_map[k_r1]
-        k_r2 == k_o2 && push!(lg, i_elem)
-    end
-    return lg
-end
-=#
-
-
-function little_group(tsym::TranslationSymmetry, tsym_irrep_index::Integer, psym::PointSymmetry)
-    return little_group(tsym, psym, little_group_elements(tsym, tsym_irrep_index, psym))
+function little_group(tsym::TranslationSymmetry,
+                      tsym_irrep_index::Integer,
+                      psym::PointSymmetry)
+    lg_elems = little_group_elements(tsym, tsym_irrep_index, psym)
+    return little_group(tsym, psym, lg_elems)
 end
 
 

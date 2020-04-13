@@ -8,8 +8,8 @@ export group,
        element, elements,
        element_name, element_names
 
-export get_orbital_permutations
-export get_orbital_permutation
+# export get_orbital_permutations
+# export get_orbital_permutation
 export iscompatible
 
 export get_irrep_iterator
@@ -180,41 +180,31 @@ function symmetry_name(sym::TranslationSymmetry)
 end
 
 
-function get_orbital_permutations(lattice::Lattice,
-                                  translation_symmetry::TranslationSymmetry)
-    if lattice.hypercube != translation_symmetry.hypercube
-        throw(ArgumentError("lattice and translation symmetry not consistent"))
-    end
-    # n_uc = length(lattice.hypercube.coordinates)
-    # n_orb = numorbital(lattice.unitcell)
-    permutations = Permutation[]
-    for trans_ortho in translation_symmetry.orthogonal_coordinates
-        trans_coord = translation_symmetry.orthogonal_to_coordinate_map[trans_ortho]
-        push!(permutations, get_orbital_permutation(lattice, trans_coord))
-        # p = zeros(Int, n_uc * n_orb)
-        # for (orbital_index1, ((orbital_name1, uc_coord1), _)) in enumerate(lattice.supercell.orbitals)
-        #     _, uc_coord2 = lattice.hypercube.wrap(uc_coord1 + trans_coord)
-        #     orbital_index1 = getorbitalindex(lattice.supercell, (orbital_name1, uc_coord1))
-        #     orbital_index2 = getorbitalindex(lattice.supercell, (orbital_name1, uc_coord2))
-        #     p[orbital_index1] = orbital_index2
-        # end
-        # push!(permutations, Permutation(p))
-    end
-    return permutations
-end
+# function get_orbital_permutations(lattice::Lattice,
+#                                   translation_symmetry::TranslationSymmetry)
+#     if lattice.hypercube != translation_symmetry.hypercube
+#         throw(ArgumentError("lattice and translation symmetry not consistent"))
+#     end
+#     permutations = Permutation[]
+#     for trans_ortho in translation_symmetry.orthogonal_coordinates
+#         trans_coord = translation_symmetry.orthogonal_to_coordinate_map[trans_ortho]
+#         push!(permutations, get_orbital_permutation(lattice, trans_coord))
+#     end
+#     return permutations
+# end
 
 
-function get_orbital_permutation(lattice::Lattice,
-                                 displacement::AbstractVector{<:Integer})
-    p = zeros(Int, numorbital(lattice.supercell))
-    for (orbital_index1, ((orbital_name1, uc_coord1), _)) in enumerate(lattice.supercell.orbitals)
-        _, uc_coord2 = lattice.hypercube.wrap(uc_coord1 + displacement)
-        orbital_index1 = getorbitalindex(lattice.supercell, (orbital_name1, uc_coord1))
-        orbital_index2 = getorbitalindex(lattice.supercell, (orbital_name1, uc_coord2))
-        p[orbital_index1] = orbital_index2
-    end
-    return Permutation(p)
-end
+# function get_orbital_permutation(lattice::Lattice,
+#                                  displacement::AbstractVector{<:Integer})
+#     p = zeros(Int, numorbital(lattice.supercell))
+#     for (orbital_index1, ((orbital_name1, uc_coord1), _)) in enumerate(lattice.supercell.orbitals)
+#         _, uc_coord2 = lattice.hypercube.wrap(uc_coord1 + displacement)
+#         orbital_index1 = getorbitalindex(lattice.supercell, (orbital_name1, uc_coord1))
+#         orbital_index2 = getorbitalindex(lattice.supercell, (orbital_name1, uc_coord2))
+#         p[orbital_index1] = orbital_index2
+#     end
+#     return Permutation(p)
+# end
 
 
 function generators(lattice::Lattice, tsym::TranslationSymmetry)
