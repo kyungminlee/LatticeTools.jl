@@ -1,8 +1,10 @@
 export IrrepData
 export AbstractSymmetryIrrepComponent
-export TranslationSymmetryIrrepComponent
-export PointSymmetryIrrepComponent
-export SymmorphicSpaceSymmetryIrrepComponent
+export IrrepComponent
+export SymmorphicIrrepComponent
+# export TranslationSymmetryIrrepComponent
+# export PointSymmetryIrrepComponent
+# export SymmorphicSpaceSymmetryIrrepComponent
 
 
 export group_order
@@ -21,6 +23,158 @@ end
 
 abstract type AbstractSymmetryIrrepComponent end
 
+
+struct IrrepComponent{SymmetryType}<:AbstractSymmetryIrrepComponent
+    symmetry::SymmetryType
+    irrep_index::Int
+    irrep_component::Int
+    function IrrepComponent(sym::S,
+                            irrep_index::Integer,
+                            irrep_compo::Integer=1) where {S<:AbstractSymmetry}
+        if !(1 <= irrep_index <= num_irreps(sym))
+            throw(ArgumentError("irrep index must be between 1 and $(num_irreps(sym))"))
+        elseif !(1 <= irrep_compo <= irrep_dimension(sym, irrep_index))
+            throw(ArgumentError("irrep component must be between 1 and $(irrep_dimension(sym, irrep_index))"))
+        end
+        return new{S}(sym, irrep_index, irrep_compo)
+    end
+end
+
+import Base.==
+
+function ==(lhs::IrrepComponent, rhs::IrrepComponent)
+    lhs.symmetry == rhs.symmetry &&
+    lhs.irrep_index == rhs.irrep_index &&
+    lhs.irrep_component == rhs.irrep_component
+end
+
+group_order(sic::IrrepComponent) = group_order(sic.symmetry)
+
+function get_irrep_components(sym::AbstractSymmetry)
+    return (IrrepComponent(sym, irrep_index, 1)
+                for irrep_index in 1:num_irreps(sym)
+                for irrep_compo in 1:irrep_dimension(sym, irrep_index))
+end
+
+function get_irrep_iterator(sic::IrrepComponent)
+    sym = sic.symmetry
+    elems = elements(sic.symmetry)
+    irrep_components = let irrep = irrep(sym, sic.irrep_index),
+                           c = sic.irrep_component
+                           [m[c, c] for m in irrep]
+                       end
+    @assert length(elems) == length(irrep_components)
+    return zip(elems, irrep_components)
+end
+
+
+
+
+
+struct SymmorphicIrrepComponent{S1<:AbstractSymmetry, S2<:AbstractSymmetry} <:AbstractSymmetryIrrepComponent
+
+    component1::IrrepComponent{S1} # e.g. Translation
+    component2::IrrepComponent{S2} # e.g. Point
+
+    function SymmorphicIrrepComponent(
+                sic1::IrrepComponent{S1},
+                sic2::IrrepComponent{S2}) where {
+            S1<:Union{TranslationSymmetry, SymmetryEmbedding{TranslationSymmetry}},
+            S2<:Union{PointSymmetry, SymmetryEmbedding{PointSymmetry}}}
+        sym1 = sic1.symmetry
+        sym_irrep_index1 = sic1.irrep_index
+        sym2 = sic2.symmetry
+        if !iscompatible(sym1, sym_irrep_index1, sym2)
+            throw(ArgumentError("symmetry $(symmetry_name(sym2)) is not compatible with "*
+                                "symmetry $(symmetry_name(sym1)) at irrep $sym_irrep_index1"))
+        end
+        return new{S1, S2}(sic1, sic2)
+    end
+end
+
+group_order(sic::SymmorphicIrrepComponent) = group_order(sic.component1) * group_order(sic.component2)
+
+
+function little_group_elements(tsic::IrrepComponent{TranslationSymmetry},
+                               psym::PointSymmetry)
+    return little_group_elements(tsic.symmetry, tsic.irrep_index, psym)
+end
+
+
+function little_group(tsic::IrrepComponent{TranslationSymmetry},
+                      psym::PointSymmetry)
+    return little_group(tsic.symmetry, tsic.irrep_index, psym)
+end
+
+# function little_group(tsic::IrrepComponent{TranslationSymmetryEmbedding},
+#                       psym::PointSymmetry)
+#     return little_group(tsic.symmetry.symmetry, tsic.irrep_index, psym)
+# end
+
+
+function little_symmetry(tsic::IrrepComponent{TranslationSymmetry},
+                         psym::PointSymmetry)
+    return little_symmetry(tsic.symmetry, tsic.irrep_index, psym)
+end
+
+
+# function little_symmetry(tsic::IrrepComponent{TranslationSymmetryEmbedding},
+#                          psym::PointSymmetry)
+#     return little_symmetry(tsic.symmetry.symmetry, tsic.irrep_index, psym)
+# end
+
+
+function iscompatible(tsic::IrrepComponent{TranslationSymmetry},
+                      psym::PointSymmetry)
+    return iscompatible(tsic.symmetry, tsic.irrep_index, psym)
+end
+
+# function iscompatible(tsic::IrrepComponent{TranslationSymmetryEmbedding},
+#                       psym::PointSymmetry)
+#     return iscompatible(tsic.symmetry.symmetry, tsic.irrep_index, psym)
+# end
+
+
+function get_irrep_components(tsym::S1, psym::S2) where {S1<:AbstractSymmetry, S2<:AbstractSymmetry}
+    return (SymmorphicIrrepComponent(tsic, psic)
+                for tsic in get_irrep_components(tsym)
+                for psic in get_irrep_components(little_symmetry(tsic, psym)))
+end
+
+
+function get_irrep_iterator(lattice::Lattice,
+                            ssic::SymmorphicIrrepComponent)
+
+    tsym = ssic.component1.symmetry
+    tsym_irrep_index = ssic.component1.irrep_index
+    tsym_irrep_compo = ssic.component1.irrep_component
+
+    psym = ssic.component2.symmetry
+    psym_irrep_index = ssic.component2.irrep_index
+    psym_irrep_compo = ssic.component2.irrep_component
+
+    tsym_permutations = get_orbital_permutations(lattice, tsym)
+    tsym_irrep = irrep(tsym, tsym_irrep_index)
+    tsym_irrep_components = [m[tsym_irrep_compo, tsym_irrep_compo] for m in tsym_irrep]
+
+    psym_permutations = get_orbital_permutations(lattice, psym)
+    psym_irrep = irrep(psym, psym_irrep_index)
+    psym_irrep_components = [m[psym_irrep_compo, psym_irrep_compo] for m in psym_irrep]
+
+    return (
+        (psym_perm * tsym_perm ,  psym_phase * tsym_phase)
+        for (psym_perm, psym_phase) in zip(psym_permutations,
+                                           psym_irrep_components)
+        for (tsym_perm, tsym_phase) in zip(tsym_permutations,
+                                           tsym_irrep_components)
+        #if !isapprox(psym_phase, 0; atol=tol) && !isapprox(psym_phase, 0; atol=tol)
+    )
+end
+
+
+
+
+#=
 
 struct TranslationSymmetryIrrepComponent <:AbstractSymmetryIrrepComponent
     symmetry::TranslationSymmetry
@@ -215,3 +369,5 @@ function iscompatible(tsic::TranslationSymmetryIrrepComponent,
                       psym::PointSymmetry)
     return iscompatible(tsic.symmetry, tsic.irrep_index, psym)
 end
+
+=#
