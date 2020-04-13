@@ -31,7 +31,14 @@ import Base.*
 (*)(lhs::PointOperation, rhs::PointOperation) = PointOperation(lhs.matrix * rhs.matrix)
 
 import Base.^
-(^)(lhs::PointOperation, rhs::Integer) = PointOperation(lhs.matrix^rhs)
+function (^)(lhs::PointOperation, rhs::Integer)
+    if rhs >= 0
+        PointOperation(lhs.matrix^rhs)
+    else
+        lhs_inv_matrix = ExactLinearAlgebra.inverse(lhs.matrix)
+        PointOperation(lhs_inv_matrix^(-rhs))
+    end
+end
 
 
 combinable(lhs::PointOperation, rhs::PointOperation) = true
