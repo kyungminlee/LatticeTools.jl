@@ -22,6 +22,35 @@ using TightBindingLattice
         @test cleanup_number(0.1234567, 1E-8) == 0.1234567
     end
 
+    @testset "gcd" begin
+        using TightBindingLattice: extended_gcd
+        let x = 3, y = 0
+            r, (a,b) = extended_gcd(x,y)
+            @test r == 3
+            @test a*x + b*y == r
+        end
+        let x = 0, y = -3
+            r, (a,b) = extended_gcd(x,y)
+            @test r == 3
+            @test a*x + b*y == r
+        end
+
+        for sx in [-1,1], sy in [-1,1]
+            let x = 3*sx, y = 4*sy
+                r, (a,b) = extended_gcd(x,y)
+                @test r == 1
+                @test a*x + b*y == r
+            end
+            let x = 6*sx, y = 9*sy
+                r, (a,b) = extended_gcd(x,y)
+                @test r == 3
+                @test a*x + b*y == r
+            end
+        end
+
+
+    end
+
     @testset "ExactLinearAlgebra" begin
         mat = Int[1 2 3;
                   4 5 2;
