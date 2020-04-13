@@ -10,6 +10,12 @@ include("Basic/lattice.jl")
 include("Group/abstractgroup.jl")
 include("Group/finitegroup.jl")
 
+include("SymmetryOperation/abstractoperation.jl")
+include("SymmetryOperation/identityoperation.jl")
+include("SymmetryOperation/translationoperation.jl")
+include("SymmetryOperation/pointoperation.jl")
+include("SymmetryOperation/productoperation.jl")
+
 include("Symmetry/abstractsymmetry.jl")
 include("Symmetry/translationsymmetry.jl")
 include("Symmetry/pointsymmetry.jl")
