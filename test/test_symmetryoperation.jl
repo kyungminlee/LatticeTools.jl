@@ -8,6 +8,11 @@ using TightBindingLattice
     @testset "translation" begin
         t1 = TranslationOperation([1,0])
         t2 = TranslationOperation([2,4])
+
+        @test t2 == TranslationOperation{Int}([2,4])
+        @test dimension(t2) == 2
+        @test t2^2 == TranslationOperation([4,8])
+
         t3 = t1*t2
         @test t3.displacement == [3,4]
         @test t3 == TranslationOperation([3, 4])
@@ -19,6 +24,9 @@ using TightBindingLattice
     @testset "point" begin
         p1 = PointOperation([0 -1; 1 -1])
         p2 = PointOperation([0 1; 1 0])
+    
+        @test dimension(p1) == 2
+        @test p2^2 == PointOperation([1 0; 0 1])
         
         @test p1*p2 == PointOperation([0 -1; 1 -1] * [0 1; 1 0])
         @test inverse(p1) * p1 == PointOperation([1 0; 0 1])
@@ -40,6 +48,8 @@ using TightBindingLattice
         pt = p * t
         ptc = canonize(pt)
 
+        @test tp^3 == t * p * t * p * t * p
+        @show tp^3
         @test tpc.factors[1] == ptc.factors[1]
         @test isa(tpc.factors[1], PointOperation) && isa(tpc.factors[2], TranslationOperation)
         @test isa(ptc.factors[1], PointOperation) && isa(ptc.factors[2], TranslationOperation)
