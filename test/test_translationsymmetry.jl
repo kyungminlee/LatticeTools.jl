@@ -131,9 +131,11 @@ using YAML
 
         let
             lattice_failure = make_lattice(unitcell, [4 0; 0 3])
-            @test_throws ArgumentError get_orbital_permutations(lattice_failure, tsym)
+            #@test_throws ArgumentError get_orbital_permutations(lattice_failure, tsym)
+            @test_throws ArgumentError embed(lattice_failure, tsym)
         end
-        perms = SitePermutation.(get_orbital_permutations(lattice, tsym))
+        perms = [embed(lattice, op) for op in tsym.elements]
+        #tsymbed = embed(lattice, tsym)
         @test length(perms) == 16
         @test perms[1].permutation.map == 1:32  # identity
 
@@ -150,9 +152,6 @@ using YAML
         end
 
         tsymbed = embed(lattice, tsym)
-        IrrepComponent(tsymbed, 1, 1)
-        get_irrep_iterator(IrrepComponent(tsymbed, 1, 1))
-
         @test_throws ArgumentError get_irrep_iterator(IrrepComponent(tsymbed, 1, 2))
         let phases = [cis(-2π * i / 4) for j in 0:3 for i in 0:3]
             tsic = IrrepComponent(tsymbed, 2, 1)

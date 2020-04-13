@@ -148,10 +148,10 @@ using TightBindingLattice: simplify_name
     @testset "irreps" begin
         @test num_irreps(psym) == 5
         let χ = [1  1  1  1  1;
-                          1  1  1 -1 -1;
-                          1  1 -1 -1  1;
-                          1  1 -1  1 -1;
-                          2 -2  0  0  0]
+                 1  1  1 -1 -1;
+                 1  1 -1 -1  1;
+                 1  1 -1  1 -1;
+                 2 -2  0  0  0]
             @test character_table(psym) ≈ χ
             @test size(character_table(psym)) == (5, 5)
         end
@@ -222,14 +222,14 @@ using TightBindingLattice: simplify_name
             tsym = TranslationSymmetry(lattice)
             tsymbed = embed(lattice, tsym)
 
-            perms = SitePermutation.(get_orbital_permutations(lattice, psym))
+            perms = [embed(lattice, op) for op in elements(psym)]
             @test length(perms) == length(psym.element_names)
             @test perms[1] == SitePermutation(1:8) # identity
 
-            orbital_map = findorbitalmap(unitcell, psym)
             perms2 = SitePermutation[]
-            for (mat, map) in zip(psym.matrix_representations, orbital_map)
-                push!(perms2, SitePermutation(get_orbital_permutation(lattice, mat, map)))
+            for pop in elements(psym)
+                push!(perms2, embed(lattice, pop))
+                #push!(perms2, SitePermutation(get_orbital_permutation(lattice, mat, map)))
             end
             @test perms == perms2
 
