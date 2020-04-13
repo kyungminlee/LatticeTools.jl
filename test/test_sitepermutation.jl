@@ -4,9 +4,43 @@ using TightBindingLattice
 
 @testset "sitepermutation" begin
     op1 = SitePermutation([3,1,2]) # 1=>3, 2=>1, 3=>2
+    op1p = SitePermutation([3,1,2])
     op2 = SitePermutation([2,1,3]) # 1=>2, 2=>1, 3=>3
     @test op2 * op1 != SitePermutation([1,2,3])
     @test op2 * op1 == SitePermutation([3,2,1])
+
+    @test op1 !== op1p
+    @test op1 == op1p
+    @test hash(op1) == hash(op1p)
+    @test isequal(op1, op1p)
+
+    @test op1 != op2
+    @test hash(op1) != hash(op2)
+    @test !isequal(op1, op2)
+
+    @test inv(op1) == SitePermutation([2,3,1])
+
+    @test op1^-2 == SitePermutation([3,1,2])
+    @test op1^-1 == SitePermutation([2,3,1])
+    @test op1^0 == SitePermutation([1,2,3])
+    @test op1^1 == SitePermutation([3,1,2])
+    @test op1^2 == SitePermutation([2,3,1])
+    @test op1^3 == SitePermutation([1,2,3])
+
+    let
+        n = -2
+        @test op1^-2 == SitePermutation([3,1,2])
+        n = -1
+        @test op1^-1 == SitePermutation([2,3,1])
+        n = 0
+        @test op1^0 == SitePermutation([1,2,3])
+        n = 1
+        @test op1^1 == SitePermutation([3,1,2])
+        n = 2
+        @test op1^2 == SitePermutation([2,3,1])
+        n = 3
+        @test op1^3 == SitePermutation([1,2,3])
+    end
 
 
     @testset "kagome" begin
