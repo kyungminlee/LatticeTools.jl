@@ -21,21 +21,23 @@ function (*)(lhs::AbstractSymmetryOperation, rhs::AbstractSymmetryOperation)
 end
 
 function (*)(lhs::ProductOperation, rhs::AbstractSymmetryOperation)
-    isempty(lhs.factors) && return rhs
-    if isa(last(lhs.factors), typeof(rhs))
-        ProductOperation(lhs.factors[1:end-1]..., lhs.factors[end]*rhs)
-    else
-        ProductOperation(lhs.factors..., rhs)
-    end
+    ProductOperation(lhs.factors..., rhs)
+    # isempty(lhs.factors) && return rhs
+    # if isa(last(lhs.factors), typeof(rhs))
+    #     ProductOperation(lhs.factors[1:end-1]..., lhs.factors[end]*rhs)
+    # else
+    #     ProductOperation(lhs.factors..., rhs)
+    # end
 end
 
 function (*)(lhs::AbstractSymmetryOperation, rhs::ProductOperation)
-    isempty(rhs.factors) && return lhs
-    if isa(first(rhs.factors), typeof(lhs))
-        ProductOperation(lhs*rhs.factors[1], rhs.factors[2:end]...)
-    else
-        ProductOperation(lhs, rhs.factors...)
-    end
+    ProductOperation(lhs, rhs.factors...)
+    # isempty(rhs.factors) && return lhs
+    # if isa(first(rhs.factors), typeof(lhs))
+    #     ProductOperation(lhs*rhs.factors[1], rhs.factors[2:end]...)
+    # else
+    #     ProductOperation(lhs, rhs.factors...)
+    # end
 end
 
 function (*)(lhs::ProductOperation, rhs::ProductOperation)
@@ -83,39 +85,55 @@ function canonize(arg::ProductOperation)
     # first, bubble sort
     # order: Identity, Point, Translation (implemented in _reorder)
     n = length(factors)
-    for m in n:-1:2
-        for i in 1:(m-1)
-            factors[i], factors[i+1] = _reorder(factors[i], factors[i+1])
+    for m in n:-1:2, i in 1:(m-1)
+        factors[i], factors[i+1] = _reorder(factors[i], factors[i+1])
+    end
+
+    new_factors = AbstractSymmetryOperation[]
+    op = IdentityOperation()
+    for f in factors
+        if combinable(op, f)
+            op *= f
+        else
+            op = canonize(op)
+            if op != IdentityOperation()
+                push!(new_factors, op)
+            end
+            op = f
         end
     end
-
-    out = mapreduce(identity, (*), factors; init=IdentityOperation())
-    if !isa(out, ProductOperation)
-        return out
+    op = canonize(op)
+    if op != IdentityOperation()
+        push!(new_factors, op)
     end
-
-    factors = [canonize(f) for f in out.factors]
     
-    filter!(x->!isa(x, IdentityOperation), factors)
-    pop = filter(x->isa(x, PointOperation), factors)
-    top = filter(x->isa(x, TranslationOperation), factors)
-
-    if isempty(pop)
-        if isempty(top)
-            return IdentityOperation()
-        else
-            @assert length(top) == 1
-            return first(top)
-        end
+    if length(new_factors) == 0
+        return IdentityOperation()
+    elseif length(new_factors) == 1
+        return first(new_factors)
     else
-        @assert length(pop) == 1
-        if isempty(top)
-            return first(pop)
-        else
-            @assert length(top) == 1
-            return ProductOperation(first(pop), first(top))
-        end
+        return ProductOperation(new_factors...)
     end
+
+    # pop = filter(x->isa(x, PointOperation), factors)
+    # top = filter(x->isa(x, TranslationOperation), factors)
+
+    # if isempty(pop)
+    #     if isempty(top)
+    #         return IdentityOperation()
+    #     else
+    #         @assert length(top) == 1
+    #         return first(top)
+    #     end
+    # else
+    #     @assert length(pop) == 1
+    #     if isempty(top)
+    #         return first(pop)
+    #     else
+    #         @assert length(top) == 1
+    #         return ProductOperation(first(pop), first(top))
+    #     end
+    # end
 end
 
 iscanonical(pop::ProductOperation) = false
