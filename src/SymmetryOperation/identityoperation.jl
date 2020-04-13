@@ -8,9 +8,11 @@ export combinable
 struct IdentityOperation <:AbstractSymmetryOperation end
 
 import Base.*
+(*)(lhs::IdentityOperation, rhs::IdentityOperation) = lhs
 (*)(lhs::AbstractSymmetryOperation, rhs::IdentityOperation) = lhs
 (*)(lhs::IdentityOperation, rhs::AbstractSymmetryOperation) = rhs
 
+combinable(lhs::IdentityOperation, rhs::IdentityOperation) = true
 combinable(lhs::AbstractSymmetryOperation, rhs::IdentityOperation) = true
 combinable(lhs::IdentityOperation, rhs::AbstractSymmetryOperation) = true
 
