@@ -52,7 +52,7 @@ end
 
 struct TranslationSymmetry <: AbstractSymmetry
     hypercube::HypercubicLattice
-
+    elements::Vector{TranslationOperation{Int}}
     group::FiniteGroup
 
     generators::Vector{Int}
@@ -107,6 +107,8 @@ struct TranslationSymmetry <: AbstractSymmetry
 
         @assert isabelian(group)
         @assert ord_group == length(hypercube.coordinates)
+
+        elements = [TranslationOperation(v) for v in hypercube.coordinates]
 
         generators = Int[ hypercube.coordinate_indices[ hypercube.wrap(v)[2] ]
                              for v in eachcol(generator_translations) ]
@@ -176,7 +178,7 @@ struct TranslationSymmetry <: AbstractSymmetry
             push!(irreps, matrices)
         end
 
-        return new(hypercube, group, generators,
+        return new(hypercube, elements, group, generators,
                    conjugacy_classes, character_table, irreps, element_names,
                    generator_translations,
                    orthogonal_shape, orthogonal_coordinates,

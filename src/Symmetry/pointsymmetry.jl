@@ -30,6 +30,7 @@ simplify_name(name::AbstractString) = replace(replace(name, r"<sub>.*?</sub>"=>"
 ## PointSymmetry, constructor and related functions
 
 struct PointSymmetry <: AbstractSymmetry
+    elements::Vector{PointOperation}
     group::FiniteGroup
 
     generators::Vector{Int}
@@ -106,7 +107,11 @@ struct PointSymmetry <: AbstractSymmetry
                 throw(ArgumentError("matrix representations should be square matrices of the same dimension"))
             end
         end
-        return new(group,
+
+        elements = PointOperation.(matrix_representations)
+
+        return new(elements,
+                   group,
                    generators,
                    conjugacy_classes,
                    character_table,
