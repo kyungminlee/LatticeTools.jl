@@ -14,6 +14,8 @@ using TightBindingLattice
         @test combinable(iden, iden)
         @test canonize(iden) == iden
         @test iscanonical(iden)
+        @test scalartype(iden) == Bool
+        @test dimension(iden) == 0
     end
 
     @testset "translation" begin
@@ -48,6 +50,9 @@ using TightBindingLattice
         @test iscanonical(t1)
         @test canonize(t0) == IdentityOperation()
         @test canonize(t1) == t1
+
+        @test scalartype(t1) == Int
+        @test dimension(t1) == 2
 
         t4 = TranslationOperation([1,2,3,4])
         @test_throws DimensionMismatch t1 * t4
@@ -107,6 +112,9 @@ using TightBindingLattice
         @test iscanonical(p1)
         @test canonize(p0) == IdentityOperation()
         @test canonize(p1) == p1
+
+        @test scalartype(p0) == Int
+        @test dimension(p0) == 2
     end
 
     @testset "product" begin
@@ -116,7 +124,7 @@ using TightBindingLattice
         p = PointOperation([0 -1; 1 -1])
 
         rt = ProductOperation(t)
-        rp = ProductOperation(p)
+        rp = ProductOperation{Int}(p)
 
         @test r0 * t == rt
         @test t * r0 == rt
@@ -160,5 +168,8 @@ using TightBindingLattice
         pp = ProductOperation(p, p)
         @test pp != p * p
         @test canonize(pp) == p*p
+
+        @test scalartype(pp) == Int
+        @test dimension(pp) == 2
     end
 end
