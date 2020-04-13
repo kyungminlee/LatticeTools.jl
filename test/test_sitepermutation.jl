@@ -42,7 +42,6 @@ using TightBindingLattice
         @test op1^3 == SitePermutation([1,2,3])
     end
 
-
     @testset "kagome" begin
         include("Kagome.jl")
         kagome = make_kagome_lattice([3 0; 0 3])

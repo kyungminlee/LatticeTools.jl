@@ -231,7 +231,6 @@ using TightBindingLattice: simplify_name
             end
             @test perms == perms2
 
-
             # |       |                 |       |
             # 6       8                 3       7
             # |       |         C4      |       |
