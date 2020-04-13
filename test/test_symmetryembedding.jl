@@ -23,7 +23,8 @@ using LinearAlgebra
         tsym = TranslationSymmetry(lattice)
         tsymbed = embed(lattice, tsym)
         # @show tsymbed.elements[2]
-        @test tsymbed.elements[2] == SitePermutation([3,4,1,2,7,8,5,6])
+        @test length(elements(tsymbed)) == 4
+        @test element(tsymbed, 2) == SitePermutation([3,4,1,2,7,8,5,6])
 
         # |       |                 |       |
         # 6       8                 3       7
@@ -37,7 +38,8 @@ using LinearAlgebra
         idx_C4 = 3
         @test element_name(psym, idx_C4) == "4<sup>+</sup><sub>001</sub>"
         psymbed = embed(lattice, psym)
-        @test psymbed.elements[idx_C4] == SitePermutation([2,3,6,7,4,1,8,5])
+        @test length(elements(psymbed)) == 8
+        @test element(psymbed, idx_C4) == SitePermutation([2,3,6,7,4,1,8,5])
     end
 
     @testset "kagome" begin
