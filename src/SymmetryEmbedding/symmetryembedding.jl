@@ -89,3 +89,42 @@ embed(lattice::Lattice, psym::PointSymmetry) = SymmetryEmbedding(lattice, psym)
 function embed(lattice::Lattice, tsym::TranslationSymmetry, psym::PointSymmetry)
     SymmorphicSpaceSymmetryEmbedding(lattice, tsym, psym)
 end
+
+
+
+function iscompatible(tsymbed::SymmetryEmbedding{TranslationSymmetry},
+                      psymbed::SymmetryEmbedding{PointSymmetry})::Bool
+    return tsymbed.lattice == psymbed.lattice
+end
+
+
+function iscompatible(tsymbed::SymmetryEmbedding{TranslationSymmetry},
+                      tsym_irrep_index::Integer,
+                      psymbed::SymmetryEmbedding{PointSymmetry})::Bool
+    # TODO: Check lattice?
+    ! iscompatible(tsymbed, psymbed) && return false
+    return little_group_elements(tsymbed, tsym_irrep_index, psymbed) == 1:group_order(psymbed)
+end
+
+
+function little_group_elements(tsymbed::SymmetryEmbedding{TranslationSymmetry},
+                               psymbed::SymmetryEmbedding{PointSymmetry})
+    return little_group_elements(symmetry(tsymbed), symmetry(psymbed))
+end
+
+function little_group_elements(tsymbed::SymmetryEmbedding{TranslationSymmetry},
+                                tsym_irrep_index::Integer,
+                                psymbed::SymmetryEmbedding{PointSymmetry})
+    return little_group_elements(symmetry(tsymbed), tsym_irrep_index, symmetry(psymbed))
+end
+
+
+function symmetry_name(arg::SymmetryEmbedding)
+    return "Embed[$(symmetry_name(symmetry(arg))) on $(arg.lattice.hypercube.scale_matrix)]"
+end
+
+function symmetry_name(arg::SymmorphicSpaceSymmetryEmbedding)
+    name1 = symmetry_name(symmetry(arg.component1))
+    name2 = symmetry_name(symmetry(arg.component2))
+    return "Embed[$name1 ⋊ $name2 on $(arg.lattice.hypercube.scale_matrix)]"
+end
