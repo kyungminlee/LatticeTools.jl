@@ -34,8 +34,8 @@ struct IrrepComponent{SymmetryType}<:AbstractSymmetryIrrepComponent
     end
 end
 
-import Base.==
 
+import Base.==
 function ==(lhs::IrrepComponent, rhs::IrrepComponent)
     lhs.symmetry == rhs.symmetry &&
     lhs.irrep_index == rhs.irrep_index &&

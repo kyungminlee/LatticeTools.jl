@@ -4,6 +4,7 @@ export apply_operation
 export canonize
 export iscanonical
 export combinable
+export domaintype
 
 
 struct TranslationOperation{S<:Real} <:AbstractSymmetryOperation
@@ -17,7 +18,7 @@ struct TranslationOperation{S<:Real} <:AbstractSymmetryOperation
 end
 
 dimension(arg::TranslationOperation) = length(arg.displacement)
-scalartype(arg::TranslationOperation{S}) where S = S
+domaintype(arg::TranslationOperation{S}) where S = S
 
 import Base.==
 (==)(lhs::TranslationOperation, rhs::TranslationOperation) = lhs.displacement == rhs.displacement
@@ -42,7 +43,8 @@ import Base.inv
 inv(arg::TranslationOperation) = TranslationOperation(-arg.displacement)
 
 
-function apply_operation(symop::TranslationOperation, coord::AbstractVector{<:Real})
+function apply_operation(symop::TranslationOperation,
+                         coord::AbstractVector{<:Real})
     return coord + symop.displacement
 end
 
@@ -54,3 +56,5 @@ end
 canonize(arg::TranslationOperation) = iszero(arg.displacement) ? IdentityOperation() : arg
 
 iscanonical(arg::TranslationOperation) = !iszero(arg.displacement)
+
+

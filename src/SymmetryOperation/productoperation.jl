@@ -3,7 +3,7 @@ export ProductOperation
 export apply_operation
 export canonize
 export iscanonical
-
+export domaintype
 
 struct ProductOperation{S<:Real, F<:Tuple}
     dimension::Int
@@ -13,7 +13,7 @@ struct ProductOperation{S<:Real, F<:Tuple}
         dim = 0
         S = Bool
         for f in factors
-            S = promote_type(scalartype(f), S)
+            S = promote_type(domaintype(f), S)
             df = dimension(f)
             if df != 0
                 if dim == 0
@@ -49,7 +49,7 @@ struct ProductOperation{S<:Real, F<:Tuple}
 end
 
 dimension(arg::ProductOperation) = arg.dimension
-scalartype(arg::ProductOperation{S,F}) where {S,F} = S
+domaintype(arg::ProductOperation{S,F}) where {S,F} = S
 
 import Base.==
 

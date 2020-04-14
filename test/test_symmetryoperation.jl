@@ -14,7 +14,7 @@ using TightBindingLattice
         @test combinable(iden, iden)
         @test canonize(iden) == iden
         @test iscanonical(iden)
-        @test scalartype(iden) == Bool
+        @test domaintype(iden) == Bool
         @test dimension(iden) == 0
     end
 
@@ -51,7 +51,7 @@ using TightBindingLattice
         @test canonize(t0) == IdentityOperation()
         @test canonize(t1) == t1
 
-        @test scalartype(t1) == Int
+        @test domaintype(t1) == Int
         @test dimension(t1) == 2
 
         t4 = TranslationOperation([1,2,3,4])
@@ -113,7 +113,7 @@ using TightBindingLattice
         @test canonize(p0) == IdentityOperation()
         @test canonize(p1) == p1
 
-        @test scalartype(p0) == Int
+        @test domaintype(p0) == Int
         @test dimension(p0) == 2
     end
 
@@ -169,7 +169,7 @@ using TightBindingLattice
         @test pp != p * p
         @test canonize(pp) == p*p
 
-        @test scalartype(pp) == Int
+        @test domaintype(pp) == Int
         @test dimension(pp) == 2
     end
 end

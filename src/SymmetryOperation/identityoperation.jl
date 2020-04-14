@@ -4,6 +4,7 @@ export apply_operation
 export canonize
 export iscanonical
 export combinable
+export domaintype
 
 struct IdentityOperation <:AbstractSymmetryOperation end
 
@@ -26,4 +27,4 @@ canonize(arg::IdentityOperation) = arg
 iscanonical(arg::IdentityOperation) = true
 
 dimension(arg::IdentityOperation) = 0
-scalartype(arg::IdentityOperation) = Bool
+domaintype(arg::IdentityOperation) = Bool

@@ -32,6 +32,7 @@ import Base.inv
 inv(sp::SitePermutation) = SitePermutation(inv(sp.permutation))
 
 
+
 """
     embed(lattice, translation_operation)
 
