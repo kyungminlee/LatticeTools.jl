@@ -9,7 +9,6 @@ export  group_order,
        
 
 export iscompatible
-export findorbitalmap
 export project
 
 export little_group_elements

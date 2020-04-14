@@ -4,7 +4,7 @@ export apply_operation
 export canonize
 export iscanonical
 export combinable
-export scalartype
+
 
 struct TranslationOperation{S<:Real} <:AbstractSymmetryOperation
     displacement::Vector{S}

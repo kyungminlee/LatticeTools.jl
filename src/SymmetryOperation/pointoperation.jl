@@ -4,7 +4,6 @@ export apply_operation
 export canonize
 export iscanonical
 export combinable
-export scalartype
 
 struct PointOperation{S<:Real} <:AbstractSymmetryOperation
     matrix::Matrix{S}

@@ -45,7 +45,7 @@ end
 group_order(sic::IrrepComponent) = group_order(sic.symmetry)
 
 function get_irrep_components(sym::AbstractSymmetry)
-    return (IrrepComponent(sym, irrep_index, 1)
+    return (IrrepComponent(sym, irrep_index, irrep_compo)
                 for irrep_index in 1:num_irreps(sym)
                 for irrep_compo in 1:irrep_dimension(sym, irrep_index))
 end
@@ -149,8 +149,7 @@ function get_irrep_components(tsym::S1,
 end
 
 
-function get_irrep_iterator(lattice::Lattice,
-                            ssic::SymmorphicIrrepComponent)
+function get_irrep_iterator(ssic::SymmorphicIrrepComponent)
 
     tsym = ssic.component1.symmetry
     tsym_irrep_index = ssic.component1.irrep_index
