@@ -1,8 +1,44 @@
 using Test
 using LinearAlgebra
 using YAML
+using TightBindingLattice
 
 @testset "TranslationSymmetry" begin
+    @testset "constructors" begin
+        TranslationSymmetry(4*ones(Int, (1, 1)))
+        TranslationSymmetry([4 0; 0 4])
+        @test_throws ErrorException TranslationSymmetry([4 0 0; 0 4 0; 0 0 4])  # <- Temporary
+        @test_throws ArgumentError TranslationSymmetry(HypercubicLattice([2 0; 0 2]), [2 0; 0 1])
+    end
+
+    @testset "properties" begin
+        tsym = TranslationSymmetry([3 0; 0 1])
+        mtab = [1 2 3; 2 3 1; 3 1 2]
+        @test group(tsym) == FiniteGroup(mtab)
+        @test group_order(tsym) == 3
+        @test group_order(tsym, 1) == 1
+        @test group_order(tsym, 2) == 3
+        @test group_order(tsym, 3) == 3
+        @test group_multiplication_table(tsym) == mtab
+        @test element(tsym, 1) == TranslationOperation([0,0])
+        @test element(tsym, 2) == TranslationOperation([1,0])
+        @test element(tsym, 3) == TranslationOperation([2,0])
+        @test elements(tsym) == TranslationOperation.([[0,0], [1,0], [2,0]])
+        @test [element_name(tsym, i) for i in 1:3] == element_names(tsym)
+        let ω = cis(2π/3)
+            @test character_table(tsym) ≈ [1 1 1; 1 ω^2 ω; 1 ω ω^2]
+        end
+        @test length(irreps(tsym)) == 3
+        @test num_irreps(tsym) == 3
+        @test irrep(tsym, 1) == irreps(tsym)[1]
+        @test irrep(tsym, 2) == irreps(tsym)[2]
+        @test irrep(tsym, 3) == irreps(tsym)[3]
+        @test all(irrep_dimension(tsym, i) == 1 for i in 1:3)
+
+
+
+    end
+
 
     @testset "orthogonal lattice" begin
         tsym = TranslationSymmetry([3 0; 0 3])
