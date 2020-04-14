@@ -94,7 +94,9 @@ end
 
 function little_group_elements(tsic::IrrepComponent{SymmetryEmbedding{TranslationSymmetry}},
                                psymbed::SymmetryEmbedding{PointSymmetry}) ::Vector{Int}
-    return little_group_elements(symmetry(tsic.symmetry), tsic.irrep_index, symmetry(psym))
+    return little_group_elements(symmetry(tsic.symmetry),
+                                 tsic.irrep_index,
+                                 symmetry(psymbed))
 end
 
 function little_group(tsic::IrrepComponent{TranslationSymmetry},
@@ -118,7 +120,7 @@ function little_symmetry(tsic::IrrepComponent{SymmetryEmbedding{TranslationSymme
                          psymbed::SymmetryEmbedding{PointSymmetry})::SymmetryEmbedding{PointSymmetry}
     psym_little = little_symmetry(symmetry(tsic.symmetry),
                                   tsic.irrep_index,
-                                  symmetry(psymbed.symmetry))
+                                  symmetry(psymbed))
     return embed(psymbed.lattice, psym_little)
 end
 
