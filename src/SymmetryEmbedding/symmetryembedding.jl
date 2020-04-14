@@ -44,9 +44,13 @@ end
 
 function little_symmetry(tsymbed::SymmetryEmbedding{TranslationSymmetry},
                          psymbed::SymmetryEmbedding{PointSymmetry})
+    @warn "Read TODO"
     tsymbed.lattice != psymbed.lattice && throw(ArgumentError("lattices do not match"))
     psym_little = little_symmetry(tsymbed.symmetry, psymbed.symmetry)
     return SymmetryEmbedding(psymbed.lattice, psym_little)
+    # TODO: maybe the lattice is too small that psymbed elements become identity.
+    # Deal with those. In fact, it is the only thing that needs to be dealt with.
+    # Lattice incompatibility with point symmetry is already dealt with at the level of embedding.
 end
 
 function little_symmetry(tsymbed::SymmetryEmbedding{TranslationSymmetry},
