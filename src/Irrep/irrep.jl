@@ -125,12 +125,6 @@ function little_symmetry(tsic::IrrepComponent{SymmetryEmbedding{TranslationSymme
 end
 
 
-# function little_symmetry(tsic::IrrepComponent{TranslationSymmetryEmbedding},
-#                          psym::PointSymmetry)
-#     return little_symmetry(tsic.symmetry.symmetry, tsic.irrep_index, psym)
-# end
-
-
 function iscompatible(tsic::IrrepComponent{TranslationSymmetry},
                       psym::PointSymmetry)::Bool
     return iscompatible(tsic.symmetry, tsic.irrep_index, psym)
@@ -145,10 +139,6 @@ function iscompatible(tsic::IrrepComponent{SymmetryEmbedding{TranslationSymmetry
                         symmetry(psymbed))
 end
 
-# function iscompatible(tsic::IrrepComponent{TranslationSymmetryEmbedding},
-#                       psym::PointSymmetry)
-#     return iscompatible(tsic.symmetry.symmetry, tsic.irrep_index, psym)
-# end
 
 function get_irrep_components(tsym::S1,
                               psym::S2) where {S1<:AbstractSymmetry,
