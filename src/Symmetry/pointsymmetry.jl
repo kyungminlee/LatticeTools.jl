@@ -22,7 +22,6 @@ export read_point_symmetry
 export symmetry_name
 
 simplify_name(name::AbstractString) = replace(replace(name, r"<sub>.*?</sub>"=>""), r"<sup>.*?</sup>"=>"")
-# simplify_name(names::AbstractVector{<:AbstractString}) = simplify_name.(names)
 
 
 ## PointSymmetry, constructor and related functions
@@ -228,24 +227,6 @@ function iscompatible(tsym::TranslationSymmetry,
 end
 
 
-
-## Lattice mapping
-
-function findorbitalmap(unitcell::UnitCell,
-                        psym_matrep::AbstractMatrix{<:Integer})::Vector{Tuple{Int, Vector{Int}}}
-    norb = numorbital(unitcell)
-    map = Tuple{Int, Vector{Int}}[]
-    for (orbname, orbfc) in unitcell.orbitals
-        j, Rj = findorbitalindex(unitcell, psym_matrep * orbfc)
-        j <= 0 && return nothing
-        push!(map, (j, Rj))
-    end
-    return map
-end
-
-function findorbitalmap(unitcell::UnitCell, psym::PointSymmetry)
-    return [findorbitalmap(unitcell, m) for m in psym.matrix_representations]
-end
 
 
 """
