@@ -11,23 +11,40 @@ using TightBindingLattice
     tsym = TranslationSymmetry(lattice)
     psym = project(PointSymmetryDatabase.get(13), [1 0 0; 0 1 0])
 
+    tsymbed = embed(lattice, tsym)
     psymbed = embed(lattice, psym)
 
     @testset "translation" begin
         @test_throws ArgumentError IrrepComponent(tsym, 99999)
         @test_throws ArgumentError IrrepComponent(tsym, 1, 2)
+        @test IrrepComponent(tsym, 1, 1) == IrrepComponent(tsym, 1, 1)
+        @test IrrepComponent(tsym, 1, 1) != IrrepComponent(tsym, 2, 1)
 
         for tsym_irrep in 1:num_irreps(tsym)
             tsic = IrrepComponent(tsym, tsym_irrep)
+            tsicbed = IrrepComponent(tsymbed, tsym_irrep)
+            
             @test group_order(tsic) == group_order(tsym)
             psym_little = little_symmetry(tsic, psym)
+            psymbed_little = little_symmetry(tsicbed, psymbed)
+            @test psym_little.group == symmetry(psymbed_little).group
 
             k = tsym.hypercube.coordinates[tsym_irrep]
             @test iscompatible(tsym, tsym_irrep, psym) == (k in [[0,0], [2,2]])
             @test iscompatible(tsym, tsym_irrep, psym_little)
-            lg_matrep = psym.matrix_representations[little_group_elements(tsym, tsym_irrep, psym)]
+
+            @test iscompatible(tsic, psym) == (k in [[0,0], [2,2]])
+            @test iscompatible(tsic, psym_little)
+
+            @test iscompatible(tsicbed, psymbed) == (k in [[0,0], [2,2]])
+            @test iscompatible(tsicbed, psymbed_little)
+
+            lge1 = little_group_elements(tsic, psym)
+            lge2 = little_group_elements(tsicbed, psymbed)
+            @test lge1 == lge2
+            lg_matrep = psym.matrix_representations[lge1]
             @test !isnothing(group_isomorphism(little_group(tsym, tsym_irrep, psym),
-                                                                                  FiniteGroup(group_multiplication_table(lg_matrep))))
+                                  FiniteGroup(group_multiplication_table(lg_matrep))))
             let psic = IrrepComponent(psym, 1, 1)
                 if k in [[0,0], [2,2]]
                     SymmorphicIrrepComponent(tsic, psic)
@@ -61,6 +78,9 @@ using TightBindingLattice
         @test_throws ArgumentError IrrepComponent(psym, 99999, 1)
         @test_throws ArgumentError IrrepComponent(psym, 1, 10)
         @test length(collect(get_irrep_components(psym))) == 1 + 1 + 1 + 1 + 2
+        @test IrrepComponent(psym, 1, 1) == IrrepComponent(psym, 1, 1)
+        @test IrrepComponent(psym, 1, 1) != IrrepComponent(psym, 2, 1)
+
         for psic in get_irrep_components(psym)
             @test group_order(psic) == group_order(psym)
 
