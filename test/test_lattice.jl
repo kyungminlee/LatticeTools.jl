@@ -22,4 +22,11 @@ end
     @test lattice.hypercube.scale_matrix == [2 0; 0 2]
     @test numorbital(lattice.supercell) == 3 * 2 * 2
     @test lattice.supercell.latticevectors == [2.0 0.0; 0.0 2.0]
+
+    @test lattice == make_lattice(unitcell, [2 0; 0 2])
+    @test lattice != make_lattice(unitcell, [3 0; 0 2])
+    let unitcell2 = make_unitcell([1.0 0.0; 0.0 1.0]; OrbitalType=String)
+        addorbital!(unitcell2, "d", FractCoord([0,0], [0.0, 0.0]))
+        @test lattice != make_lattice(unitcell2, [2 0; 0 2])
+    end
 end
