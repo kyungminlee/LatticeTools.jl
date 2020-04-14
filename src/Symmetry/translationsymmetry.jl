@@ -8,8 +8,6 @@ export group,
        element, elements,
        element_name, element_names
 
-# export get_orbital_permutations
-# export get_orbital_permutation
 export iscompatible
 
 export get_irrep_iterator
@@ -79,23 +77,6 @@ struct TranslationSymmetry <: AbstractSymmetry
         generators = Int[ hypercube.coordinate_indices[ hypercube.wrap(v)[2] ]
                              for v in eachcol(generator_translations) ]
 
-        # if length(generators) < dimension(hypercube)
-        #     @assert (length(generators) == 1 && dimension(hypercube) == 2) "Currently only supports 2D"
-        #     ρ1 = hypercube.coordinates[first(generators)]
-        #     R, r = hypercube.wrap(ρ1 * group_order(group, first(generators)))
-        #     @assert iszero(r)
-        #     gcd_val, R2p = extended_gcd(R...)
-        #     @assert gcd_val == 1
-        #     R2 = [-R2p[2], R2p[1]]
-        #     ρ2 = hypercube.scale_matrix * R2
-        #     # a x + b y = 1   =>  | x -b | = 1
-        #     #                     | y  a |
-        #     push!(generators, 1)
-        #     generator_translations = hcat(ρ1, ρ2)
-        # else
-        #     generator_translations = hcat(hypercube.coordinates[generators]...)
-        # end
-
         orthogonal_shape = [group.period_lengths[g] for g in generators] # in "generator" coordinates
         orthogonal_coordinates = vec([[x...] for x in Iterators.product([0:(d-1) for d in orthogonal_shape]...)])
 
@@ -154,8 +135,8 @@ struct TranslationSymmetry <: AbstractSymmetry
     end
 end
 
-group(psym::TranslationSymmetry) = psym.group
-group_order(sym::TranslationSymmetry) = group_order(sym.group)
+group(sym::TranslationSymmetry) = sym.group
+group_order(sym::TranslationSymmetry, g...) = group_order(sym.group, g...)
 group_multiplication_table(psym::TranslationSymmetry) = group_multiplication_table(psym.group)
 
 element(sym::TranslationSymmetry, g) = sym.elements[g]
@@ -178,33 +159,6 @@ function symmetry_name(sym::TranslationSymmetry)
     n22 = sym.hypercube.scale_matrix[2,2]
     return "TranslationSymmetry[($n11,$n21)x($n12,$n22)]"
 end
-
-
-# function get_orbital_permutations(lattice::Lattice,
-#                                   translation_symmetry::TranslationSymmetry)
-#     if lattice.hypercube != translation_symmetry.hypercube
-#         throw(ArgumentError("lattice and translation symmetry not consistent"))
-#     end
-#     permutations = Permutation[]
-#     for trans_ortho in translation_symmetry.orthogonal_coordinates
-#         trans_coord = translation_symmetry.orthogonal_to_coordinate_map[trans_ortho]
-#         push!(permutations, get_orbital_permutation(lattice, trans_coord))
-#     end
-#     return permutations
-# end
-
-
-# function get_orbital_permutation(lattice::Lattice,
-#                                  displacement::AbstractVector{<:Integer})
-#     p = zeros(Int, numorbital(lattice.supercell))
-#     for (orbital_index1, ((orbital_name1, uc_coord1), _)) in enumerate(lattice.supercell.orbitals)
-#         _, uc_coord2 = lattice.hypercube.wrap(uc_coord1 + displacement)
-#         orbital_index1 = getorbitalindex(lattice.supercell, (orbital_name1, uc_coord1))
-#         orbital_index2 = getorbitalindex(lattice.supercell, (orbital_name1, uc_coord2))
-#         p[orbital_index1] = orbital_index2
-#     end
-#     return Permutation(p)
-# end
 
 
 function generators(lattice::Lattice, tsym::TranslationSymmetry)
@@ -231,29 +185,6 @@ function generators(lattice::Lattice, tsym::TranslationSymmetry)
     end
     return permutations
 end
-
-
-
-# function get_irrep_iterator(lattice::Lattice,
-#                             tsym::TranslationSymmetry,
-#                             tsym_irrep_index::Integer,
-#                             tsym_irrep_compo::Integer=1)
-#     tsym_permutations = get_orbital_permutations(lattice, tsym)
-#     tsym_irrep = irrep(tsym, tsym_irrep_index)
-#     tsym_irrep_components = (m[tsym_irrep_compo, tsym_irrep_compo] for m in tsym_irrep)
-#     return zip(tsym_permutations, tsym_irrep_components)
-# end
-#
-#
-# function get_irrep_iterator(lattice::Lattice,
-#                             tsym::TranslationSymmetry,
-#                             tsym_irrep_index::Integer,
-#                             ::Colon)
-#     tsym_permutations = get_orbital_permutations(lattice, tsym)
-#     tsym_irrep = irrep(tsym, tsym_irrep_index)
-#     tsym_irrep_components = view(tsym.character_table, tsym_irrep_index, :)
-#     return zip(tsym_permutations, tsym_irrep_components)
-# end
 
 
 function iscompatible(orthogonal_momentum::AbstractVector{<:Integer},
