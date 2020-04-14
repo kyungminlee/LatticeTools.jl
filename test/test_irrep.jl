@@ -39,6 +39,8 @@ using TightBindingLattice
             @test iscompatible(tsicbed, psymbed) == (k in [[0,0], [2,2]])
             @test iscompatible(tsicbed, psymbed_little)
 
+            @test little_group(tsic, psym) == little_group(tsicbed, psymbed)
+            
             lge1 = little_group_elements(tsic, psym)
             lge2 = little_group_elements(tsicbed, psymbed)
             @test lge1 == lge2
