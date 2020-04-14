@@ -41,43 +41,6 @@ for f in [:group_order,
     end)
 end
 
-# struct TranslationSymmetryEmbedding<:AbstractSymmetryEmbedding
-#     lattice::Lattice
-#     symmetry::TranslationSymmetry
-#     elements::Vector{SitePermutation}
-
-#     function TranslationSymmetryEmbedding(lattice::Lattice, symmetry::TranslationSymmetry)
-#         if (lattice.hypercube != symmetry.hypercube)
-#             throw(ArgumentError("lattice and translation symmetry not compatible"))
-#         end
-#         elements = [embed(lattice, elem) for elem in symmetry.elements]
-#         new(lattice, symmetry, elements)
-#     end
-# end
-
-
-# elements(symbed::TranslationSymmetryEmbedding) = symbed.elements
-# element(symbed::TranslationSymmetryEmbedding, g) = symbed.elements[g]
-
-
-# struct PointSymmetryEmbedding<:AbstractSymmetryEmbedding
-#     lattice::Lattice
-#     symmetry::PointSymmetry
-#     elements::Vector{SitePermutation}
-
-#     function PointSymmetryEmbedding(lattice::Lattice, symmetry::PointSymmetry)
-#         if !iscompatible(lattice.hypercube, symmetry)
-#             throw(ArgumentError("lattice and point symmetry not compatible"))
-#         end
-#         elements = [embed(lattice, elem) for elem in symmetry.elements]
-#         new(lattice, symmetry, elements)
-#     end
-# end
-
-
-# elements(symbed::PointSymmetryEmbedding) = symbed.elements
-# element(symbed::PointSymmetryEmbedding, g) = symbed.elements[g]
-
 
 function little_symmetry(tsymbed::SymmetryEmbedding{TranslationSymmetry},
                          psymbed::SymmetryEmbedding{PointSymmetry})
