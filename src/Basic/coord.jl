@@ -21,7 +21,7 @@ Fractional coordinates.
 * `whole ::Vector{Int}`: Integer part of fractional coordinates
 * `fraction ::Vector{Float64}`: [0,1) part of fractional coordinates
 """
-struct FractCoord
+struct FractCoord  # TODO: Type parameter for integer and float
     whole ::Vector{Int}
     fraction ::Vector{Float64}
 

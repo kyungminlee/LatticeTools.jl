@@ -1,14 +1,12 @@
 export PointSymmetry
 
-export group_order,
-       group_multiplication_table,
-       element_names,
-       element_name,
-       character_table,
-       irreps,
-       irrep,
-       num_irreps,
-       irrep_dimension
+export  group_order,
+        element, elements,
+        element_name, element_names,
+        group_multiplication_table,
+        character_table,
+        irrep, irreps, num_irreps, irrep_dimension
+       
 
 export iscompatible
 export findorbitalmap
@@ -18,12 +16,18 @@ export little_group_elements
 export little_group
 export little_symmetry, little_symmetry_iso
 
-export get_orbital_permutations
+# export get_orbital_permutation, get_orbital_permutations
 export get_irrep_iterator
 export read_point_symmetry
+export symmetry_name
 
+simplify_name(name::AbstractString) = replace(replace(name, r"<sub>.*?</sub>"=>""), r"<sup>.*?</sup>"=>"")
+
+
+## PointSymmetry, constructor and related functions
 
 struct PointSymmetry <: AbstractSymmetry
+    elements::Vector{PointOperation}
     group::FiniteGroup
 
     generators::Vector{Int}
@@ -100,7 +104,11 @@ struct PointSymmetry <: AbstractSymmetry
                 throw(ArgumentError("matrix representations should be square matrices of the same dimension"))
             end
         end
-        return new(group,
+
+        elements = PointOperation.(matrix_representations)
+
+        return new(elements,
+                   group,
                    generators,
                    conjugacy_classes,
                    character_table,
@@ -134,49 +142,6 @@ function read_point_symmetry(data::AbstractDict)
                   element_names, matrix_representations, hermann_mauguinn, schoenflies)
 end
 
-group_order(psym::PointSymmetry) = group_order(psym.group)
-group_multiplication_table(psym::PointSymmetry) = group_multiplication_table(psym.group)
-
-element_name(sym::PointSymmetry, g) = sym.element_names[g]
-element_names(sym::PointSymmetry) = sym.element_names
-
-character_table(sym::PointSymmetry) = sym.character_table
-irreps(sym::PointSymmetry) = sym.irreps
-irrep(sym::PointSymmetry, idx::Integer) = sym.irreps[idx]
-num_irreps(sym::PointSymmetry) = length(sym.irreps)
-irrep_dimension(sym::PointSymmetry, idx::Integer) = size(first(irrep(sym, idx)), 2)
-
-
-function iscompatible(hypercube::HypercubicLattice, matrix_representation::AbstractMatrix{<:Integer})
-    _, elems = hypercube.wrap(matrix_representation * hypercube.scale_matrix)
-    all(iszero(elems)) # all, since scale_matrix
-end
-
-
-function iscompatible(hypercube::HypercubicLattice, psym::PointSymmetry)
-    return all(iscompatible(hypercube, m) for m in psym.matrix_representations)
-end
-
-
-iscompatible(tsym::TranslationSymmetry, psym::PointSymmetry) = iscompatible(tsym.hypercube, psym)
-
-
-function findorbitalmap(unitcell::UnitCell, psym_matrep::AbstractMatrix{<:Integer})
-    norb = numorbital(unitcell)
-    map = Tuple{Int, Vector{Int}}[]
-    for (orbname, orbfc) in unitcell.orbitals
-        j, Rj = findorbitalindex(unitcell, psym_matrep * orbfc)
-        j <= 0 && return nothing
-        push!(map, (j, Rj))
-    end
-    return map
-end
-
-
-function findorbitalmap(unitcell::UnitCell, psym::PointSymmetry)
-    return [findorbitalmap(unitcell, m) for m in psym.matrix_representations]
-end
-
 
 function project(psym::PointSymmetry,
                  projection::AbstractMatrix{<:Integer};
@@ -185,9 +150,12 @@ function project(psym::PointSymmetry,
     size(projection, 2) != dim && throw(ArgumentError("projection does not match matrix_representations dimension"))
 
     vals = LinearAlgebra.svdvals(projection)
-    if ! all( isapprox(x, 1; atol=tol) || isapprox(x, 0; atol=tol) for x in vals)
-        throw(ArgumentError("projection is not projection"))
-    end
+    # if ! all( isapprox(x, 1; atol=tol) || isapprox(x, 0; atol=tol) for x in vals)
+    #     throw(ArgumentError("projection is not projection"))
+    # end
+    # if any(isapprox(x, 0; atol=tol) for x in vals)
+    #     throw(ArgumentError("projection is not projection"))
+    # end
 
     new_matrix_representations = [projection * m * transpose(projection) for m in psym.matrix_representations]
 
@@ -203,58 +171,147 @@ function project(psym::PointSymmetry,
 end
 
 
-function get_orbital_permutations(lattice::Lattice, point_symmetry::PointSymmetry)
-    # orbitalmap contains how orbitals of the "unitcell" transform under
-    # every point group operations. Uses heuristics
-    orbitalmap = findorbitalmap(lattice.unitcell, point_symmetry)
+## Basic properties
 
-    permutations = Permutation[]
-    sizehint!(permutations, group_order(point_symmetry))
+element(sym::PointSymmetry, g) = sym.elements[g]
+elements(sym::PointSymmetry) = sym.elements
 
-    for (i_elem, (matrep, orbmap)) in enumerate(zip(point_symmetry.matrix_representations, orbitalmap))
-        p = zeros(Int, numorbital(lattice.supercell))
-        for (i, (j, dR)) in enumerate(orbmap)
-            namei = getorbitalname(lattice.unitcell, i)
-            namej = getorbitalname(lattice.unitcell, j)
-            for Ri in lattice.hypercube.coordinates
-                _, Rj = lattice.hypercube.wrap(matrep * Ri + dR)
-                i_super = lattice.supercell.orbitalindices[(namei, Ri)]
-                j_super = lattice.supercell.orbitalindices[(namej, Rj)]
-                p[i_super] = j_super
-            end
-        end
-        push!(permutations, Permutation(p))
-    end
-    return permutations
+element_name(sym::PointSymmetry, g) = sym.element_names[g]
+element_names(sym::PointSymmetry) = sym.element_names
+
+group(psym::PointSymmetry) = psym.group
+group_order(psym::PointSymmetry) = group_order(psym.group)
+group_multiplication_table(psym::PointSymmetry) = group_multiplication_table(psym.group)
+
+character_table(sym::PointSymmetry) = sym.character_table
+irreps(sym::PointSymmetry) = sym.irreps
+irrep(sym::PointSymmetry, idx::Integer) = sym.irreps[idx]
+num_irreps(sym::PointSymmetry) = length(sym.irreps)
+irrep_dimension(sym::PointSymmetry, idx::Integer) = size(first(irrep(sym, idx)), 2)
+
+symmetry_name(sym::PointSymmetry) = "PointSymmetry[$(sym.hermann_mauguinn)]"
+
+
+## Is compatible
+
+function iscompatible(hypercube::HypercubicLattice, matrix_representation::AbstractMatrix{<:Integer})::Bool
+    _, elems = hypercube.wrap(matrix_representation * hypercube.scale_matrix)
+    all(iszero(elems)) # all, since scale_matrix
+end
+
+function iscompatible(hypercube::HypercubicLattice, psym::PointSymmetry)::Bool
+    return all(iscompatible(hypercube, m) for m in psym.matrix_representations)
+end
+
+
+# TODO: Think about whether to include orbitalmap here.
+function iscompatible(lattice::Lattice, psym::PointSymmetry)::Bool
+    return iscompatible(lattice.hypercube, psym)
+end
+
+function iscompatible(tsym::TranslationSymmetry, psym::PointSymmetry)::Bool
+    return iscompatible(tsym.hypercube, psym)
+end
+
+function iscompatible(tsym::TranslationSymmetry, m::AbstractMatrix{<:Integer})::Bool
+    sm = tsym.hypercube.scale_matrix
+    smi = tsym.hypercube.inverse_scale_matrix
+    return all(mod(x,1) == 0 for x in smi * m * sm)
+end
+
+function iscompatible(tsym::TranslationSymmetry,
+                      tsym_irrep_index::Integer,
+                      psym::PointSymmetry)::Bool
+    ! iscompatible(tsym, psym) && return false
+    return little_group_elements(tsym, tsym_irrep_index, psym) == 1:group_order(psym)
+end
+
+
+
+
+"""
+    get_orbital_permutation(lattice, matrix_representation, orbital_map)
+
+Get a list of `Permutation` which represents the element of the point group
+specified by the `matrix_representation` and `orbital_map`, which respectively
+contain information about how the Bravais lattice transforms, and how the
+basis sites transforms.
+"""
+# function get_orbital_permutation(
+#             lattice::Lattice,
+#             matrix_representation::AbstractMatrix{<:Integer},
+#             orbital_map::AbstractVector{<:Tuple{<:Integer, <:AbstractVector{<:Integer}}})
+#     p = zeros(Int, numorbital(lattice.supercell))
+#     for (i, (j, dR)) in enumerate(orbital_map)
+#         namei = getorbitalname(lattice.unitcell, i)
+#         namej = getorbitalname(lattice.unitcell, j)
+#         for Ri in lattice.hypercube.coordinates
+#             _, Rj = lattice.hypercube.wrap(matrix_representation * Ri + dR)
+#             i_super = lattice.supercell.orbitalindices[(namei, Ri)]
+#             j_super = lattice.supercell.orbitalindices[(namej, Rj)]
+#             p[i_super] = j_super
+#         end
+#     end
+#     return Permutation(p)
+# end
+
+
+# function get_orbital_permutations(lattice::Lattice, point_symmetry::PointSymmetry)
+#     # orbitalmap contains how orbitals of the "unitcell" transform under
+#     # every point group operations. Uses heuristics
+#     orbitalmap = findorbitalmap(lattice.unitcell, point_symmetry)
+
+#     permutations = Permutation[]
+#     sizehint!(permutations, group_order(point_symmetry))
+
+#     for (i_elem, (matrep, orbmap)) in enumerate(zip(point_symmetry.matrix_representations, orbitalmap))
+#         p = zeros(Int, numorbital(lattice.supercell))
+#         for (i, (j, dR)) in enumerate(orbmap)
+#             namei = getorbitalname(lattice.unitcell, i)
+#             namej = getorbitalname(lattice.unitcell, j)
+#             for Ri in lattice.hypercube.coordinates
+#                 _, Rj = lattice.hypercube.wrap(matrep * Ri + dR)
+#                 i_super = lattice.supercell.orbitalindices[(namei, Ri)]
+#                 j_super = lattice.supercell.orbitalindices[(namej, Rj)]
+#                 p[i_super] = j_super
+#             end
+#         end
+#         push!(permutations, Permutation(p))
+#     end
+#     return permutations
+# end
+
+
+## Symmetry reduction (little group etc.)
+
+"""
+    psym compatible with hypercube
+"""
+function little_group_elements(tsym::TranslationSymmetry, psym::PointSymmetry)
+    lg_elements = [i for (i, m) in enumerate(psym.matrix_representations)
+                     if iscompatible(tsym, m)]
+    return lg_elements
 end
 
 
 function little_group_elements(tsym::TranslationSymmetry,
                                tsym_irrep_index::Integer,
                                psym::PointSymmetry)
-
-    k_o2 = tsym.orthogonal_coordinates[tsym_irrep_index]
+    k1 = tsym.fractional_momenta[tsym_irrep_index]
     lg = Int[]
     for (i_elem, matrep) in enumerate(psym.matrix_representations)
-        k_o1 = tsym.orthogonal_to_coordinate_map[k_o2]
-        k_r1 = tsym.hypercube.wrap(matrep * k_o1)[2]
-        k_r2 = tsym.coordinate_to_orthogonal_map[k_r1]
-        k_r2 == k_o2 && push!(lg, i_elem)
+        k2 = (x->mod(x,1)).(ExactLinearAlgebra.inverse(transpose(matrep)) * k1)
+        k2 == k1 && push!(lg, i_elem)
     end
     return lg
 end
 
 
-function little_group(tsym::TranslationSymmetry, tsym_irrep_index::Integer, psym::PointSymmetry)
-    return little_group(tsym, psym, little_group_elements(tsym, tsym_irrep_index, psym))
-end
-
-
-function iscompatible(tsym::TranslationSymmetry,
+function little_group(tsym::TranslationSymmetry,
                       tsym_irrep_index::Integer,
                       psym::PointSymmetry)
-    ! iscompatible(tsym, psym) && return false
-    return little_group_elements(tsym, tsym_irrep_index, psym) == 1:group_order(psym)
+    lg_elems = little_group_elements(tsym, tsym_irrep_index, psym)
+    return little_group(tsym, psym, lg_elems)
 end
 
 
@@ -272,6 +329,37 @@ function little_group(tsym::TranslationSymmetry,
         mtab[i,j] = element_lookup[ group_product(psym.group, elements[i], elements[j]) ]
     end
     return FiniteGroup(mtab)
+end
+
+
+
+
+function little_symmetry(tsym::TranslationSymmetry, psym::PointSymmetry)
+    (lg_raw, lg_matrep_raw, lg_element_names_raw) = let
+        lg_elements = little_group_elements(tsym, psym)
+        lg_raw = little_group(tsym, psym, lg_elements)
+        lg_matrep_raw = psym.matrix_representations[lg_elements]
+        lg_element_names_raw = psym.element_names[lg_elements]
+        (lg_raw, lg_matrep_raw, lg_element_names_raw)
+    end
+
+    group_index = PointSymmetryDatabase.find(lg_element_names_raw)
+    psym2 = PointSymmetryDatabase.get(group_index)
+    ϕ = group_isomorphism(lg_raw, psym2.group)
+    isnothing(ϕ) && error("Group not isomorphic")
+
+    lg_matrep = lg_matrep_raw[ϕ]
+    lg_element_names = lg_element_names_raw[ϕ]
+
+    PointSymmetry(psym2.group,
+                  psym2.generators,
+                  psym2.conjugacy_classes,
+                  psym2.character_table,
+                  psym2.irreps,
+                  lg_element_names,
+                  lg_matrep,
+                  psym2.hermann_mauguinn,
+                  psym2.schoenflies)
 end
 
 
@@ -389,8 +477,6 @@ end
 #     )
 # end
 
-simplify_name(name::AbstractString) = replace(replace(name, r"<sub>.*?</sub>"=>""), r"<sup>.*?</sup>"=>"")
-# simplify_name(names::AbstractVector{<:AbstractString}) = simplify_name.(names)
 
 # function parse_seitz(name::AbstractString)
 #     m = match(r"([12346m])(<sup>([-+])</sup>)?(<sub>(.*)?</sub>)?", name)

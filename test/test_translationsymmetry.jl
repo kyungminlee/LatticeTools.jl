@@ -1,8 +1,44 @@
 using Test
 using LinearAlgebra
 using YAML
+using TightBindingLattice
 
 @testset "TranslationSymmetry" begin
+    @testset "constructors" begin
+        TranslationSymmetry(4*ones(Int, (1, 1)))
+        TranslationSymmetry([4 0; 0 4])
+        @test_throws ErrorException TranslationSymmetry([4 0 0; 0 4 0; 0 0 4])  # <- Temporary
+        @test_throws ArgumentError TranslationSymmetry(HypercubicLattice([2 0; 0 2]), [2 0; 0 1])
+    end
+
+    @testset "properties" begin
+        tsym = TranslationSymmetry([3 0; 0 1])
+        mtab = [1 2 3; 2 3 1; 3 1 2]
+        @test group(tsym) == FiniteGroup(mtab)
+        @test group_order(tsym) == 3
+        @test group_order(tsym, 1) == 1
+        @test group_order(tsym, 2) == 3
+        @test group_order(tsym, 3) == 3
+        @test group_multiplication_table(tsym) == mtab
+        @test element(tsym, 1) == TranslationOperation([0,0])
+        @test element(tsym, 2) == TranslationOperation([1,0])
+        @test element(tsym, 3) == TranslationOperation([2,0])
+        @test elements(tsym) == TranslationOperation.([[0,0], [1,0], [2,0]])
+        @test [element_name(tsym, i) for i in 1:3] == element_names(tsym)
+        let ω = cis(2π/3)
+            @test character_table(tsym) ≈ [1 1 1; 1 ω^2 ω; 1 ω ω^2]
+        end
+        @test length(irreps(tsym)) == 3
+        @test num_irreps(tsym) == 3
+        @test irrep(tsym, 1) == irreps(tsym)[1]
+        @test irrep(tsym, 2) == irreps(tsym)[2]
+        @test irrep(tsym, 3) == irreps(tsym)[3]
+        @test all(irrep_dimension(tsym, i) == 1 for i in 1:3)
+
+
+
+    end
+
 
     @testset "orthogonal lattice" begin
         tsym = TranslationSymmetry([3 0; 0 3])
@@ -80,19 +116,20 @@ using YAML
     @testset "non-orthogonal lattice" begin
         tsym = TranslationSymmetry([4 0; 0 3])
 
-        @test length(tsym.generators) == 1
-        idx_gen = tsym.generators[1]
-        @test tsym.hypercube.coordinates[idx_gen] == [1, 1]
+        @test length(tsym.generators) == 2
+        # idx_gen = tsym.generators[1]
+        @test tsym.hypercube.coordinates[tsym.generators[1]] == [1, 0]
+        @test tsym.hypercube.coordinates[tsym.generators[2]] == [0, 1]
         # elements ordered according to the "generator" (i.e. orthogonal order)
         @test element_names(tsym) == [
-            "[0, 0]", "[1, 1]", "[2, 2]", "[3, 0]",
-            "[0, 1]", "[1, 2]", "[2, 0]", "[3, 1]",
-            "[0, 2]", "[1, 0]", "[2, 1]", "[3, 2]",
+            "[0, 0]", "[1, 0]", "[2, 0]", "[3, 0]",
+            "[0, 1]", "[1, 1]", "[2, 1]", "[3, 1]",
+            "[0, 2]", "[1, 2]", "[2, 2]", "[3, 2]",
         ]
         @test tsym.conjugacy_classes == [[i] for (i, x) in enumerate(tsym.element_names)]
 
-        @test tsym.orthogonal_shape == [12]
-        @test tsym.orthogonal_coordinates == [[0], [1], [2], [3], [4], [5], [6], [7], [8], [9], [10], [11]]
+        @test tsym.orthogonal_shape == [4,3]
+        @test tsym.orthogonal_coordinates == [[0,0], [1,0], [2,0], [3,0], [0,1], [1,1], [2,1], [3,1], [0,2], [1,2], [2,2], [3,2]]
         for cc in tsym.hypercube.coordinates
             oc = tsym.coordinate_to_orthogonal_map[cc]
             cc2 = tsym.orthogonal_to_coordinate_map[oc]
@@ -117,7 +154,6 @@ using YAML
         @test !iscompatible([1,0], [3,3], [1,0]) # these two translations are not compatible
         @test !iscompatible([1,0], [3,3], [2,0]) #   with momentum [1,1]
 
-
         @test iscompatible([0,0], [3,3], [[0,0], [1,0], [2,0]])
         @test !iscompatible([1,0], [3,3], [[0,0], [1,0], [2,0]])
     end
@@ -131,14 +167,16 @@ using YAML
 
         let
             lattice_failure = make_lattice(unitcell, [4 0; 0 3])
-            @test_throws ArgumentError get_orbital_permutations(lattice_failure, tsym)
+            #@test_throws ArgumentError get_orbital_permutations(lattice_failure, tsym)
+            @test_throws ArgumentError embed(lattice_failure, tsym)
         end
-        perms = get_orbital_permutations(lattice, tsym)
+        perms = [embed(lattice, op) for op in tsym.elements]
+        #tsymbed = embed(lattice, tsym)
         @test length(perms) == 16
-        @test perms[1].map == 1:32  # identity
+        @test perms[1].permutation.map == 1:32  # identity
 
         for (ir, r) in enumerate(lattice.hypercube.coordinates)
-            @test perms[ir].map == [
+            @test perms[ir].permutation.map == [
                 let
                     ivec = [(i-1) % 4, (i-1) ÷ 4]
                     jvec = [(x + 16) % 4 for x in (ivec .+ r)]
@@ -149,10 +187,11 @@ using YAML
             ]
         end
 
-        @test_throws ArgumentError get_irrep_iterator(lattice, TranslationSymmetryIrrepComponent(tsym, 1, 2))
+        tsymbed = embed(lattice, tsym)
+        @test_throws ArgumentError get_irrep_iterator(IrrepComponent(tsymbed, 1, 2))
         let phases = [cis(-2π * i / 4) for j in 0:3 for i in 0:3]
-            tsic = TranslationSymmetryIrrepComponent(tsym, 2, 1)
-            irrep_list1 = collect(get_irrep_iterator(lattice, tsic))
+            tsic = IrrepComponent(tsymbed, 2, 1)
+            irrep_list1 = collect(get_irrep_iterator(tsic))
             irrep_list2 = collect(zip(perms, phases))
             @test length(irrep_list1) == length(irrep_list2)
             for (x,y) in zip(irrep_list1, irrep_list2)

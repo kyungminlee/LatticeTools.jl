@@ -1,9 +1,10 @@
 export ExactLinearAlgebra
-using LinearAlgebra
 
 module ExactLinearAlgebra
-
-    function get_cofactor_matrix_unsafe!(out ::AbstractMatrix{I}, mat ::AbstractMatrix{I}, row ::Integer, col ::Integer) where {I<:Number}
+    using LinearAlgebra
+    
+    ScalarType = Union{Integer,Complex{<:Integer},<:Rational,Complex{<:Rational}}
+    function get_cofactor_matrix_unsafe!(out ::AbstractMatrix{I1}, mat ::AbstractMatrix{I2}, row ::Integer, col ::Integer) where {I1<:ScalarType, I2<:ScalarType}
         out[1:row-1, 1:col-1] = mat[1:row-1, 1:col-1]
         out[1:row-1, col:end] = mat[1:row-1, col+1:end]
         out[row:end, 1:col-1] = mat[row+1:end, 1:col-1]
@@ -11,7 +12,7 @@ module ExactLinearAlgebra
         out
     end
 
-    function determinant_unsafe(mat ::AbstractMatrix{S}) where {S<:Union{Integer,Complex{<:Integer}}}
+    function determinant_unsafe(mat ::AbstractMatrix{S}) where {S<:ScalarType}
         n = size(mat)[1]
         n == 1 && return mat[1]
         out = Matrix{S}(undef, (n-1, n-1))
@@ -25,14 +26,16 @@ module ExactLinearAlgebra
         return D
     end
 
-    function determinant(mat::AbstractMatrix{S}) where {S<:Union{Integer,Complex{<:Integer}}}
+    function determinant(mat::AbstractMatrix{S}) where {S<:ScalarType}
         n, m = size(mat)
         n != m && throw(ArgumentError("matrix needs to be square"))
         n <= 0 && throw(ArgumentError("matrix empty"))
         return determinant_unsafe(mat)
     end
 
-    function inverse(mat::AbstractMatrix{S}) where {S<:Union{Integer,Complex{<:Integer}}}
+    determinant(mat::AbstractMatrix{<:AbstractFloat}) = LinearAlgebra.det(mat)
+
+    function inverse(mat::AbstractMatrix{S}) where {S<:ScalarType}
         n, m = size(mat)
         n != m && throw(ArgumentError("matrix needs to be square"))
         n <= 0 && throw(ArgumentError("matrix empty"))
@@ -47,6 +50,8 @@ module ExactLinearAlgebra
         D = sum(mat[1,:] .* cofactor[1,:])
         return transpose(cofactor) // D
     end
+
+    inverse(mat::AbstractMatrix{<:AbstractFloat}) = LinearAlgebra.inv(mat)
 
 end # module ExactLinearAlgebra
 
@@ -133,3 +138,21 @@ end
 cleanup_number(x::Integer, tol::Real) = x
 cleanup_number(x::Complex, tol::Real) = cleanup_number(real(x), tol) + im * cleanup_number(imag(x), tol)
 cleanup_number(x::AbstractArray, tol::Real) = [cleanup_number(y, tol) for y in x]
+
+
+function extended_gcd(a::Integer, b::Integer)
+    sign_a, sign_b = sign(a), sign(b)
+    s, old_s = 0, 1
+    r, old_r = abs(b), abs(a)
+    while r != 0
+        quotient = old_r ÷ r
+        (old_r, r) = (r, old_r - quotient * r)
+        (old_s, s) = (s, old_s - quotient * s)
+    end
+    if b != 0
+        bezout_t = (old_r - old_s * abs(a)) ÷ abs(b)
+    else
+        bezout_t = 0
+    end
+    return (old_r, [sign_a * old_s, sign_b * bezout_t])
+end

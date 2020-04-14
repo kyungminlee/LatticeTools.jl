@@ -10,10 +10,15 @@ struct Lattice{O}
     supercell::UnitCell{Tuple{O, Vector{Int}}}
 end
 
+import Base.==
+function ==(lhs::Lattice{O}, rhs::Lattice{O}) where O
+    return lhs.unitcell == rhs.unitcell && lhs.hypercube == rhs.hypercube
+end
+
+
 function make_lattice(unitcell::UnitCell, scale::Integer)
     make_lattice(unitcell, scale*ones(Int, (1,1)))
 end
-
 
 function make_lattice(unitcell::UnitCell{O}, scale_matrix::AbstractMatrix{<:Integer}) where O
     hypercube = orthogonalize(HypercubicLattice(scale_matrix))

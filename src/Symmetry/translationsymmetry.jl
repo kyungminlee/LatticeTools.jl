@@ -1,24 +1,22 @@
 export TranslationSymmetry
 
-export group_order,
+export group,
+       group_order,
        group_multiplication_table,
        character_table,
-       irreps,
-       irrep,
-       irrep_dimension,
-       num_irreps,
-       element_names,
-       element_name
+       irrep, irreps, irrep_dimension, num_irreps,
+       element, elements,
+       element_name, element_names
 
-export get_orbital_permutations
 export iscompatible
 
 export get_irrep_iterator
+export symmetry_name
 
 
 struct TranslationSymmetry <: AbstractSymmetry
     hypercube::HypercubicLattice
-
+    elements::Vector{TranslationOperation{Int}}
     group::FiniteGroup
 
     generators::Vector{Int}
@@ -28,11 +26,16 @@ struct TranslationSymmetry <: AbstractSymmetry
     element_names::Vector{String}
 
     # for quick
+    generator_translations ::Matrix{Int}
     orthogonal_shape::Vector{Int}
     orthogonal_coordinates::Vector{Vector{Int}}
 
     orthogonal_to_coordinate_map ::Dict{Vector{Int}, Vector{Int}}
     coordinate_to_orthogonal_map ::Dict{Vector{Int}, Vector{Int}}
+
+    orthogonal_scale_matrix::Matrix{Int}
+    orthogonal_reduced_reciprocal_scale_matrix::Matrix{Rational{Int}}
+    fractional_momenta::Vector{Vector{Rational{Int}}}
 
     function TranslationSymmetry(shape::Matrix{<:Integer}; tol::Real=Base.rtoldefault(Float64))
         return TranslationSymmetry(HypercubicLattice(shape))
@@ -42,14 +45,37 @@ struct TranslationSymmetry <: AbstractSymmetry
         return TranslationSymmetry(lattice.hypercube)
     end
 
+
     function TranslationSymmetry(hypercube::HypercubicLattice; tol::Real=Base.rtoldefault(Float64))
+        if dimension(hypercube) == 1
+            generator_translations = ones(Int, (1,1))
+            return TranslationSymmetry(hypercube, generator_translations; tol=tol)
+        elseif dimension(hypercube) == 2
+            generator_translations = decompose_lattice_2d(hypercube)
+            return TranslationSymmetry(hypercube, generator_translations; tol=tol)
+        else
+            error("Currenly only supports 1D and 2D")
+        end
+    end
+
+    function TranslationSymmetry(hypercube::HypercubicLattice,
+                                 generator_translations::AbstractMatrix{<:Integer};
+                                 tol::Real=Base.rtoldefault(Float64))
+
+        if ExactLinearAlgebra.determinant(generator_translations) != 1
+            throw(ArgumentError("generator translation is not unimodular"))
+        end
+
         group = FiniteGroup(translation_group_multiplication_table(hypercube))
         ord_group = group_order(group)
 
         @assert isabelian(group)
         @assert ord_group == length(hypercube.coordinates)
 
-        generators = minimal_generating_set(group)
+        elements = [TranslationOperation(v) for v in hypercube.coordinates]
+
+        generators = Int[ hypercube.coordinate_indices[ hypercube.wrap(v)[2] ]
+                             for v in eachcol(generator_translations) ]
 
         orthogonal_shape = [group.period_lengths[g] for g in generators] # in "generator" coordinates
         orthogonal_coordinates = vec([[x...] for x in Iterators.product([0:(d-1) for d in orthogonal_shape]...)])
@@ -60,12 +86,22 @@ struct TranslationSymmetry <: AbstractSymmetry
         orthogonal_to_coordinate_map = Dict{Vector{Int}, Vector{Int}}()
         coordinate_to_orthogonal_map = Dict{Vector{Int}, Vector{Int}}()
 
-        let ortho_latvec = hcat(hypercube.coordinates[generators]...)
+        let ortho_latvec = generator_translations #hcat(hypercube.coordinates[generators]...)
             for r_ortho in orthogonal_coordinates
                 _, r = hypercube.wrap(ortho_latvec * r_ortho)
                 orthogonal_to_coordinate_map[r_ortho] = r
                 coordinate_to_orthogonal_map[r] = r_ortho
             end
+        end
+        orthogonal_scale_matrix = hcat(
+                    [group_order(group, g) * v
+                        for (g, v) in zip(generators, eachcol(generator_translations))]...
+                )
+        orthogonal_reduced_reciprocal_scale_matrix = ExactLinearAlgebra.inverse(transpose(orthogonal_scale_matrix))
+
+        fractional_momenta = let mo = x -> mod(x, 1)
+            [mo.( orthogonal_reduced_reciprocal_scale_matrix * orthogonal_integer_momentum )
+                 for orthogonal_integer_momentum in orthogonal_coordinates]
         end
 
         # each element of an abelian group is a conjugacy class
@@ -77,7 +113,7 @@ struct TranslationSymmetry <: AbstractSymmetry
                                      for kd in orthogonal_coordinates,
                                           t in orthogonal_coordinates]
 
-        character_table = cleanup_number(character_table, Base.rtoldefault(Float64))
+        character_table = cleanup_number(character_table, tol)
 
         # each element forms a conjugacy class
         irreps = Vector{Matrix{ComplexF64}}[]
@@ -89,19 +125,25 @@ struct TranslationSymmetry <: AbstractSymmetry
             push!(irreps, matrices)
         end
 
-        return new(hypercube, group, generators,
+        return new(hypercube, elements, group, generators,
                    conjugacy_classes, character_table, irreps, element_names,
+                   generator_translations,
                    orthogonal_shape, orthogonal_coordinates,
-                   orthogonal_to_coordinate_map, coordinate_to_orthogonal_map)
+                   orthogonal_to_coordinate_map, coordinate_to_orthogonal_map,
+                   orthogonal_scale_matrix, orthogonal_reduced_reciprocal_scale_matrix,
+                   fractional_momenta)
     end
 end
 
-
-group_order(sym::TranslationSymmetry) = group_order(sym.group)
+group(sym::TranslationSymmetry) = sym.group
+group_order(sym::TranslationSymmetry, g...) = group_order(sym.group, g...)
 group_multiplication_table(psym::TranslationSymmetry) = group_multiplication_table(psym.group)
 
+element(sym::TranslationSymmetry, g) = sym.elements[g]
+elements(sym::TranslationSymmetry) = sym.elements
+
 element_names(sym::TranslationSymmetry) = sym.element_names
-element_name(tsym::TranslationSymmetry, g) = tsym.element_names[g]
+element_name(sym::TranslationSymmetry, g) = sym.element_names[g]
 
 character_table(sym::TranslationSymmetry) = sym.character_table
 
@@ -110,49 +152,38 @@ irrep(sym::TranslationSymmetry, idx) = sym.irreps[idx]
 num_irreps(sym::TranslationSymmetry) = length(sym.irreps)
 irrep_dimension(sym::TranslationSymmetry, idx::Integer) = 1 # size(first(sym.irreps[idx]), 1)
 
-
-function get_orbital_permutations(lattice::Lattice,
-                                  translation_symmetry::TranslationSymmetry)
-    if lattice.hypercube != translation_symmetry.hypercube
-        throw(ArgumentError("lattice and translation symmetry not consistent"))
-    end
-    n_uc = length(lattice.hypercube.coordinates)
-    n_orb = numorbital(lattice.unitcell)
-    permutations = Permutation[]
-    for trans_ortho in translation_symmetry.orthogonal_coordinates
-        trans_coord = translation_symmetry.orthogonal_to_coordinate_map[trans_ortho]
-        p = zeros(Int, n_uc * n_orb)
-        for (orbital_index1, ((orbital_name1, uc_coord1), _)) in enumerate(lattice.supercell.orbitals)
-            _, uc_coord2 = lattice.hypercube.wrap(uc_coord1 + trans_coord)
-            orbital_index1 = getorbitalindex(lattice.supercell, (orbital_name1, uc_coord1))
-            orbital_index2 = getorbitalindex(lattice.supercell, (orbital_name1, uc_coord2))
-            p[orbital_index1] = orbital_index2
-        end
-        push!(permutations, Permutation(p))
-    end
-    return permutations
+function symmetry_name(sym::TranslationSymmetry)
+    n11 = sym.hypercube.scale_matrix[1,1]
+    n12 = sym.hypercube.scale_matrix[1,2]
+    n21 = sym.hypercube.scale_matrix[2,1]
+    n22 = sym.hypercube.scale_matrix[2,2]
+    return "TranslationSymmetry[($n11,$n21)x($n12,$n22)]"
 end
 
 
-# function get_irrep_iterator(lattice::Lattice,
-#                             tsym::TranslationSymmetry,
-#                             tsym_irrep_index::Integer,
-#                             tsym_irrep_compo::Integer=1)
-#     tsym_permutations = get_orbital_permutations(lattice, tsym)
-#     tsym_irrep = irrep(tsym, tsym_irrep_index)
-#     tsym_irrep_components = (m[tsym_irrep_compo, tsym_irrep_compo] for m in tsym_irrep)
-#     return zip(tsym_permutations, tsym_irrep_components)
-# end
-#
-#
-# function get_irrep_iterator(lattice::Lattice,
-#                             tsym::TranslationSymmetry,
-#                             tsym_irrep_index::Integer,
-#                             ::Colon)
-#     tsym_permutations = get_orbital_permutations(lattice, tsym)
-#     tsym_irrep = irrep(tsym, tsym_irrep_index)
-#     tsym_irrep_components = view(tsym.character_table, tsym_irrep_index, :)
-#     return zip(tsym_permutations, tsym_irrep_components)
+# function generators(lattice::Lattice, tsym::TranslationSymmetry)
+#     if lattice.hypercube != tsym.hypercube
+#         throw(ArgumentError("lattice and translation symmetry not consistent"))
+#     end
+#     n_uc = length(lattice.hypercube.coordinates)
+#     n_orb = numorbital(lattice.unitcell)
+#     dim = dimension(lattice)
+#     permutations = Permutation[]
+#     trans_ortho = zeros(Int, dim)
+#     for d in 1:dimension
+#         trans_ortho[:] = 0
+#         trans_ortho[d] = 1
+#         trans_coord = tsym.orthogonal_to_coordinate_map[trans_ortho]
+#         p = zeros(Int, n_uc * n_orb)
+#         for (orbital_index1, ((orbital_name1, uc_coord1), _)) in enumerate(lattice.supercell.orbitals)
+#             _, uc_coord2 = lattice.hypercube.wrap(uc_coord1 + trans_coord)
+#             orbital_index1 = getorbitalindex(lattice.supercell, (orbital_name1, uc_coord1))
+#             orbital_index2 = getorbitalindex(lattice.supercell, (orbital_name1, uc_coord2))
+#             p[orbital_index1] = orbital_index2
+#         end
+#         push!(permutations, Permutation(p))
+#     end
+#     return permutations
 # end
 
 
@@ -173,6 +204,9 @@ function iscompatible(orthogonal_momentum::AbstractVector{<:Integer},
     return all(iscompatible(orthogonal_momentum, orthogonal_shape, t) for t in identity_translations)
 end
 
+function iscompatible(lattice::Lattice, tsym::TranslationSymmetry)
+    return lattice.hypercube == tsym.hypercube
+end
 
 function iscompatible(lattice::Lattice,
                       tsym::TranslationSymmetry,

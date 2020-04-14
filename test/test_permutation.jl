@@ -21,10 +21,10 @@ using TightBindingLattice
     @test p2.order == 2
     @test p3.order == 4
 
-    @test inverse(p0) == p0
-    @test inverse(p1) == p3
-    @test inverse(p2) == p2
-    @test inverse(p3) == p1
+    @test inv(p0) == p0
+    @test inv(p1) == p3
+    @test inv(p2) == p2
+    @test inv(p3) == p1
 
     @test isequal(p0, Permutation([1,2,3,4]))
     @test isless(p0, p1)

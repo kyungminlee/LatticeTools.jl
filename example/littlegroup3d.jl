@@ -43,7 +43,7 @@ end
 
 
 count = 1
-for ssic in get_irrep_components(lattice, tsym, psym)
+for ssic in get_irrep_components(tsym, psym)
     global count
     count += 1
 end

@@ -3,3 +3,5 @@ Manifest.toml
 /dev/
 
 _research/
+.vscode/
+*.code-workspace
