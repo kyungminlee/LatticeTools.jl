@@ -27,9 +27,25 @@ using TightBindingLattice: simplify_name
         matrix_representations = [[1 0; 0 1], [-1 0; 0 -1]]
         hermann_mauguinn = "-1"
         schoenflies = "C<sub>i</sub>"
-        PointSymmetry(group, generators,
-                      conjugacy_classes, character_table, irreps,
-                      element_names, matrix_representations, hermann_mauguinn, schoenflies)
+        psym = PointSymmetry(group, generators,
+                             conjugacy_classes, character_table, irreps,
+                             element_names, matrix_representations,
+                             hermann_mauguinn, schoenflies)
+
+        let TBL = TightBindingLattice
+            @test all(TBL.element(psym, i) == PointOperation(matrix_representations[i]) for i in 1:2)
+            @test TBL.elements(psym) == PointOperation.(matrix_representations)
+            @test all(TBL.element_name(psym, i) == element_names[i] for i in 1:2)
+            @test TBL.element_names(psym) == element_names
+            @test TBL.group(psym) == group
+            @test TBL.group_order(psym) == group_order(group)
+            @test TBL.group_multiplication_table(psym) == group.multiplication_table
+            @test TBL.character_table(psym) == character_table
+            @test TBL.irreps(psym) == irreps
+            @test all(TBL.irrep(psym, i) == irreps[i] for i in 1:2)
+            @test num_irreps(psym) == 2
+            @test all(TBL.irrep_dimension(psym, i) == 1 for i in 1:2)
+        end
 
         let generators = [1]
             @test_throws ArgumentError PointSymmetry(group, generators,
@@ -214,7 +230,7 @@ using TightBindingLattice: simplify_name
         @testset "lattice permutations" begin
             idx_C4 = 3
             @test element_name(psym, idx_C4) == "4<sup>+</sup><sub>001</sub>"
-            @test findorbitalmap(unitcell, psym.matrix_representations[idx_C4]) == [(2, [0,0]), (1, [-1,0])]
+            @test findorbitalmap(unitcell, element(psym,idx_C4)) == [(2, [0,0]), (1, [-1,0])]
             @test findorbitalmap(unitcell, psym)[idx_C4] == [(2, [0,0]), (1, [-1,0])]
 
             lattice = make_lattice(unitcell, [2 0; 0 2])
