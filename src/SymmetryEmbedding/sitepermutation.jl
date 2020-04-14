@@ -55,7 +55,7 @@ end
 Embed the simplest version of point operation. (no local unitary operation)
 """
 function embed(lattice::Lattice, pop::PointOperation)
-    orbital_map = findorbitalmap(lattice.unitcell, pop.matrix)
+    orbital_map = findorbitalmap(lattice.unitcell, pop)
     if isnothing(orbital_map)
         throw(ArgumentError("lattice not compatible with $pop"))
     end
