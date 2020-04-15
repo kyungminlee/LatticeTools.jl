@@ -13,7 +13,6 @@ using TightBindingLattice
         n=-3; @test iden^n == iden
         @test inv(iden) == iden
         @test isidentity(iden)
-        # @test combinable(iden, iden)
         @test domaintype(iden) == Int
         @test dimension(iden) == 2
         
@@ -31,42 +30,58 @@ using TightBindingLattice
         t1p = TranslationOperation{Int}([1, -1])
         t2  = TranslationOperation([2,4])
 
-        @test hash(t1) == hash(t1p)
-        @test t1 == t1p
-        @test t1 !== t1p
-        @test isequal(t1, t1p)
+        @testset "properties" begin
+            @test domaintype(t1) == Int
+            @test dimension(t1) == 2
+            @test dimension(t2) == 2
+            @test isidentity(t0)
+            @test !isidentity(t1)
+        end
 
-        @test dimension(t2) == 2
-        @test t2^2 == TranslationOperation([4,8])
+        @testset "equality" begin
+            @test hash(t1) == hash(t1p)
+            @test t1 == t1p
+            @test t1 !== t1p
+            @test isequal(t1, t1p)
+        end
 
-        @test t0 == IdentityOperation(Int, 2)
-        @test IdentityOperation(Int, 2) == t0
-        @test isidentity(t0)
-        @test !isidentity(t1)
+        @testset "equality-heterotype" begin
+            @test t0 == IdentityOperation(Int, 2)
+            @test IdentityOperation(Int, 2) == t0
+        end
         
-        @test t1 * iden == t1
-        @test iden * t1 == t1
+        @testset "operator" begin
+            @test t1 * iden == t1
+            @test iden * t1 == t1
 
-        @test_throws DimensionMismatch t1 * IdentityOperation(Int, 5)
-        @test_throws DimensionMismatch IdentityOperation(Int, 5) * t1
+            @test_throws DimensionMismatch t1 * IdentityOperation(Int, 5)
+            @test_throws DimensionMismatch IdentityOperation(Int, 5) * t1
 
-        t3 = t1*t2
-        @test t3.displacement == [3, 3]
-        @test t3 == TranslationOperation([3, 3])
-        @test inv(t3) == TranslationOperation([-3, -3])
-        @test apply_operation(t3, [5,6]) == [8, 9]
+            @test t2^2 == TranslationOperation([4,8])
 
-        # @test combinable(iden, t1)
-        # @test combinable(t1, iden)
-        # @test combinable(t1, t1)
+            t3 = t1*t2
+            @test t3.displacement == [3, 3]
+            @test t3 == TranslationOperation([3, 3])
+            @test inv(t3) == TranslationOperation([-3, -3])
 
-        @test domaintype(t1) == Int
-        @test dimension(t1) == 2
+            t4 = TranslationOperation([1,2,3,4])
+            @test_throws DimensionMismatch t1 * t4
+            @test_throws DimensionMismatch apply_operation(t1, [1,2,3])
+            @test_throws DimensionMismatch t1([1,2,3])
+        end
 
-        t4 = TranslationOperation([1,2,3,4])
-        @test_throws DimensionMismatch t1 * t4
-        @test_throws DimensionMismatch apply_operation(t1, [1,2,3])
-        @test_throws DimensionMismatch t1([1,2,3])
+        @testset "apply" begin
+            @test apply_operation(t1, [5,6]) == [6, 5]
+            @test t1([5,6]) == [6, 5]
+        end
+
+        @testset "promotion" begin
+            @test promote_type(typeof(t1), typeof(iden)) == TranslationOperation{Int}
+            arr = TranslationOperation{Int}[]
+            push!(arr, IdentityOperation(Int, 2))
+            @test isa(arr[1], TranslationOperation{Int})
+            @test arr[1].displacement == [0,0]
+        end
     end
 
     @testset "PointOperation" begin
@@ -75,66 +90,64 @@ using TightBindingLattice
         p1p = PointOperation{Int}([0 -1; 1 -1])
         p2 = PointOperation([0 1; 1 0])
 
-        @test p1 == p1p
-        @test p1 !== p1p
-        @test isequal(p1, p1p)
-        @test hash(p1) == hash(p1p)
+        @testset "properties" begin
+            @test domaintype(p0) == Int
+            @test dimension(p0) == 2
+            @test isidentity(p0)
+            @test !isidentity(p1)
+            @test dimension(p1) == 2
+        end
 
-        @test isidentity(p0)
-        @test !isidentity(p1)
-        @test dimension(p1) == 2
-        @test p0 == iden
-        @test iden == p0
-        @test p1 != iden
-        @test iden != p1
-        @test p1 != TranslationOperation([1,0])
-        @test p0 == TranslationOperation([0,0])
-        @test TranslationOperation([1,0]) != p1
-        @test TranslationOperation([0,0]) == p0
+        @testset "equality" begin
+            @test p1 == p1p
+            @test p1 !== p1p
+            @test isequal(p1, p1p)
+            @test hash(p1) == hash(p1p)
+        end
 
-        @test p1*p2 == PointOperation([0 -1; 1 -1] * [0 1; 1 0])
-        @test inv(p1) * p1 == PointOperation([1 0; 0 1])
-        @test p1 * inv(p1) == PointOperation([1 0; 0 1])
-        
-        @test p1^3 == p1 * p1 * p1
-        @test p1^(-1) == inv(p1)
-        @test p1^(-2) == inv(p1)*inv(p1)
-        @test p2^2 == PointOperation([1 0; 0 1])
+        @testset "equality-heterotype" begin
+            @test p0 == iden
+            @test iden == p0
+            @test p1 != iden
+            @test iden != p1
+            @test p1 != TranslationOperation([1,0])
+            @test p0 == TranslationOperation([0,0])
+            @test TranslationOperation([1,0]) != p1
+            @test TranslationOperation([0,0]) == p0
+        end
 
-        n =  3;  @test p1^n == p1 * p1 * p1
-        n = -1;  @test p1^n == inv(p1)
-        n = -2;  @test p1^n == inv(p1)*inv(p1)
-        n =  2;  @test p2^n == PointOperation([1 0; 0 1])
+        @testset "operator" begin
+            @test p1*p2 == PointOperation([0 -1; 1 -1] * [0 1; 1 0])
+            @test inv(p1) * p1 == PointOperation([1 0; 0 1])
+            @test p1 * inv(p1) == PointOperation([1 0; 0 1])
+            
+            @test p1^3 == p1 * p1 * p1
+            @test p1^(-1) == inv(p1)
+            @test p1^(-2) == inv(p1)*inv(p1)
+            @test p2^2 == PointOperation([1 0; 0 1])
 
-        # @test combinable(iden, p1)
-        # @test combinable(p1, iden)
-        # @test combinable(p1, p1)
+            n =  3;  @test p1^n == p1 * p1 * p1
+            n = -1;  @test p1^n == inv(p1)
+            n = -2;  @test p1^n == inv(p1)*inv(p1)
+            n =  2;  @test p2^n == PointOperation([1 0; 0 1])
+        end
 
-        t1 = TranslationOperation([1,0])
-        # @test !combinable(p1, t1)
-        # @test !combinable(t1, p1)
-                
-        # @test canonize(p1*inv(p1)) == IdentityOperation{Int}(2)
-        @test apply_operation(p2, [5, 6]) == [6, 5]
-        @test p2([5, 6]) == [6, 5]
-        # TODO: Exceptions
+        @testset "apply" begin
+            @test apply_operation(p2, [5, 6]) == [6, 5]
+            @test p2([5, 6]) == [6, 5]
 
-        p3 = PointOperation([0 1 0; 1 0 0; 0 0 1])
-        @test_throws DimensionMismatch p1*p3
-        @test_throws DimensionMismatch apply_operation(p1, [1,2,3])
-
-        @test domaintype(p0) == Int
-        @test dimension(p0) == 2
+            p3 = PointOperation([0 1 0; 1 0 0; 0 0 1])
+            @test_throws DimensionMismatch p1*p3
+            @test_throws DimensionMismatch apply_operation(p1, [1,2,3])
+        end
 
         @testset "promotion" begin
+            @test promote_type(typeof(p1), typeof(iden)) == PointOperation{Int}
             arr = PointOperation{Int}[]
             push!(arr, IdentityOperation(Int, 2))
-
             @test isa(arr[1], PointOperation{Int})
             @test arr[1].matrix == [1 0; 0 1]
         end
-    end
-
     end
 
     @testset "SpaceOperation" begin
@@ -195,7 +208,6 @@ using TightBindingLattice
             @test SpaceOperation(c4p * c4m) == IdentityOperation(Int, 2)
             @test IdentityOperation(Int, 2) == SpaceOperation(c4p * c4m)
 
-
             @test m10 * m10 * t10 == t10
             @test c4p * t10 * c4m == TranslationOperation([0, 1])
             @test TranslationOperation([0, 1]) == c4p * t10 * c4m
@@ -204,6 +216,10 @@ using TightBindingLattice
         end
 
         @testset "promotion" begin
+            @test promote_type(IdentityOperation{Int}, SpaceOperation{Int}) == SpaceOperation{Int}
+            @test promote_type(TranslationOperation{Int}, SpaceOperation{Int}) == SpaceOperation{Int}
+            @test promote_type(PointOperation{Int}, SpaceOperation{Int}) == SpaceOperation{Int}
+
             arr = SpaceOperation{Int}[]
             push!(arr, PointOperation([0 1; 1 0]))
             push!(arr, TranslationOperation([1, 0]))
