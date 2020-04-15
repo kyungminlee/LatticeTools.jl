@@ -9,8 +9,12 @@ export isidentity
 
 struct IdentityOperation{S<:Real} <: AbstractSymmetryOperation{S}
     dimension::Int
-    IdentityOperation{S}(dim::Integer) where {S<:Real} = new{S}(dim)
-    IdentityOperation(::Type{S}, dim::Integer) where {S<:Real} = new{S}(dim)
+    function IdentityOperation{S}(dim::Integer) where {S<:Real} 
+        new{S}(dim)
+    end
+    function IdentityOperation(::Type{S}, dim::Integer) where {S<:Real} 
+        new{S}(dim)
+    end
 end
 
 import Base.==
