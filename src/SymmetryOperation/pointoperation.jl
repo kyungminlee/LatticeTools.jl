@@ -25,7 +25,7 @@ end
 import Base.convert
 function convert(::Type{PointOperation{S}}, obj::IdentityOperation{S}) where S
     dim = dimension(obj)
-    return PointOperation{S}(zeros(S, dim, dim))
+    return PointOperation{S}(Matrix(I, dim, dim))
 end
 
 
