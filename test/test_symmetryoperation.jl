@@ -14,8 +14,6 @@ using TightBindingLattice
         @test apply_operation(iden, [3,2,1]) == [3,2,1]
         @test iden([3,2,1]) == [3,2,1]
         @test combinable(iden, iden)
-        # @test canonize(iden) == iden
-        # @test iscanonical(iden)
         @test domaintype(iden) == Int
         @test dimension(iden) == 2
     end
@@ -46,11 +44,6 @@ using TightBindingLattice
         @test combinable(iden, t1)
         @test combinable(t1, iden)
         @test combinable(t1, t1)
-
-        # @test !iscanonical(t0)
-        # @test iscanonical(t1)
-        # @test canonize(t0) == IdentityOperation{Int}(2)
-        # @test canonize(t1) == t1
 
         @test domaintype(t1) == Int
         @test dimension(t1) == 2
@@ -104,11 +97,6 @@ using TightBindingLattice
         p3 = PointOperation([0 1 0; 1 0 0; 0 0 1])
         @test_throws DimensionMismatch p1*p3
         @test_throws DimensionMismatch apply_operation(p1, [1,2,3])
-
-        # @test !iscanonical(p0)
-        # @test iscanonical(p1)
-        # @test canonize(p0) == IdentityOperation{Int}(2)
-        # @test canonize(p1) == p1
 
         @test domaintype(p0) == Int
         @test dimension(p0) == 2
