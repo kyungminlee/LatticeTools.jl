@@ -54,8 +54,19 @@ inv(arg::IdentityOperation) = arg
 # combinable(lhs::AbstractSymmetryOperation{S}, rhs::IdentityOperation{S}) where {S<:Real} = dimension(lhs) == dimension(rhs)
 # combinable(lhs::IdentityOperation{S}, rhs::AbstractSymmetryOperation{S}) where {S<:Real} = dimension(lhs) == dimension(rhs)
 
-apply_operation(symop::IdentityOperation{S}, arg::AbstractArray{S}) where {S<:Real} = arg
-(symop::IdentityOperation{S})(arg::AbstractArray{S}) where {S<:Real} = arg
+function apply_operation(symop::IdentityOperation{S}, arg::AbstractArray{S}) where {S<:Real}
+    if dimension(symop) != size(arg, 1)
+        throw(DimensionMismatch("dimension mismatch"))
+    end
+    return arg
+end
+
+function (symop::IdentityOperation{S})(arg::AbstractArray{S}) where {S<:Real} 
+    if dimension(symop) != size(arg, 1)
+        throw(DimensionMismatch("dimension mismatch"))
+    end
+    return arg
+end
 
 isidentity(arg::IdentityOperation) = true
 
