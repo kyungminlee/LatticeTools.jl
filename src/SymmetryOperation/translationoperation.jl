@@ -18,7 +18,7 @@ struct TranslationOperation{S<:Real} <:AbstractSymmetryOperation{S}
 end
 
 dimension(arg::TranslationOperation) = length(arg.displacement)
-domaintype(arg::TranslationOperation{S}) where S = S
+# domaintype(arg::TranslationOperation{S}) where S = S
 
 import Base.==
 function (==)(lhs::TranslationOperation{S}, rhs::TranslationOperation{S}) where S

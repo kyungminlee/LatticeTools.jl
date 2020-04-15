@@ -24,7 +24,7 @@ end
 
 ## properties
 dimension(arg::PointOperation) = size(arg.matrix, 1)
-domaintype(arg::PointOperation{S}) where S = S
+# domaintype(arg::PointOperation{S}) where S = S
 combinable(lhs::PointOperation, rhs::PointOperation) = true
 isidentity(arg::PointOperation) = isone(arg.matrix)
 

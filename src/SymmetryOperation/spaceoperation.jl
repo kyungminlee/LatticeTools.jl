@@ -80,7 +80,8 @@ function convert(::Type{SpaceOperation{S}}, op::TranslationOperation{S}) where S
     return SpaceOperation(op)
 end
 
-
+dimension(op::SpaceOperation) = length(op.displacement)
+# domaintype(op::SpaceOperation{S}) where S = S
 
 import Base.==
 function (==)(lhs::SpaceOperation{S}, rhs::SpaceOperation{S}) where S
@@ -164,3 +165,22 @@ function inv(arg::SpaceOperation{S}) where S
     return SpaceOperation(matrix_inv, -arg.matrix * arg.displacement)
 end
 
+import Base.^
+function (^)(op::SpaceOperation{S}, power::Integer) where S
+    if power == 0
+        return SpaceOperation(S, dimension(op))
+    elseif power < 0
+        op_inv = inv(op)
+        return op_inv^(-power)
+    else
+        return op * op^(power-1)
+    end
+end
+
+function apply_operation(op::SpaceOperation{S}, coord::AbstractArray{S}) where {S<:Real}
+    return op.matrix * (coord .+ op.displacement)
+end
+
+function (op::SpaceOperation{S})(coord::AbstractArray{S}) where {S<:Real}
+    return op.matrix * (coord .+ op.displacement)
+end
