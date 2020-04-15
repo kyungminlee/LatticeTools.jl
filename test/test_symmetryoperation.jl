@@ -5,10 +5,10 @@ using TightBindingLattice
 
     latticevectors = [1.0 -0.5; 0.0 sqrt(3.0)*0.5]
     iden = IdentityOperation(Int, 2)
-    @test iden == IdentityOperation{Int}(2)
-    @test iden != IdentityOperation(Int, 3)
 
     @testset "identity" begin
+        @test iden == IdentityOperation{Int}(2)
+        @test iden != IdentityOperation(Int, 3)
         @test iden * iden == iden
         @test inv(iden) == iden
         @test apply_operation(iden, [3,2,1]) == [3,2,1]
@@ -171,6 +171,30 @@ using TightBindingLattice
             @test arr[2].matrix == [1 0; 0 1] && arr[2].displacement == [1,0]
             @test isa(arr[3], SpaceOperation{Int})
             @test arr[3].matrix == [1 0; 0 1] && arr[3].displacement == [0,0]
+        end
+
+        @testset "apply" begin
+            t = TranslationOperation([1, 0])
+            p = PointOperation([0 1; 1 0])
+            tp = t * p
+            pt = p * t
+
+            @test tp^3 == t * p * t * p * t * p
+            @test apply_operation(tp, [5,0]) == [1, 5]
+            @test apply_operation(pt, [5,0]) == [0, 6]
+            @test tp([5,0]) == [1, 5]
+            @test pt([5,0]) == [0, 6]
+            # @test tp([5,0]) == tpc([5,0])
+            # @test pt([5,0]) == ptc([5,0])
+            @test tp^0 == IdentityOperation(Int, 2)
+            @test tp^1 == tp
+            @test tp^2 == t * p * t * p
+            @test tp^(-2) == inv(p) * inv(t) * inv(p) * inv(t)
+
+            n = 0;   @test tp^n == IdentityOperation(Int, 2)
+            n = 1;   @test tp^n == tp
+            n = 2;   @test tp^n == t * p * t * p
+            n = -2;  @test tp^n == inv(p) * inv(t) * inv(p) * inv(t)
         end
     end
 
