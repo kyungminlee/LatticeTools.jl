@@ -5,26 +5,42 @@ export canonize
 export iscanonical
 export combinable
 export domaintype
+export isidentity
 
-struct IdentityOperation <:AbstractSymmetryOperation end
+struct IdentityOperation{S<:Real} <: AbstractSymmetryOperation{S}
+    dimension::Int
+    IdentityOperation{S}(dim::Integer) where {S<:Real} = new{S}(dim)
+    IdentityOperation(::Type{S}, dim::Integer) where {S<:Real} = new{S}(dim)
+end
+
+import Base.==
+function (==)(lhs::IdentityOperation{S}, rhs::IdentityOperation{S}) where S 
+    lhs.dimension == rhs.dimension
+end
 
 import Base.*
-(*)(lhs::IdentityOperation, rhs::IdentityOperation) = lhs
-(*)(lhs::AbstractSymmetryOperation, rhs::IdentityOperation) = lhs
-(*)(lhs::IdentityOperation, rhs::AbstractSymmetryOperation) = rhs
+(*)(lhs::IdentityOperation{S}, rhs::IdentityOperation{S}) where S = lhs
+(*)(lhs::AbstractSymmetryOperation{S}, rhs::IdentityOperation{S}) where S = lhs
+(*)(lhs::IdentityOperation{S}, rhs::AbstractSymmetryOperation{S}) where S = rhs
 
-combinable(lhs::IdentityOperation, rhs::IdentityOperation) = true
-combinable(lhs::AbstractSymmetryOperation, rhs::IdentityOperation) = true
-combinable(lhs::IdentityOperation, rhs::AbstractSymmetryOperation) = true
+import Base.^
+(^)(lhs::IdentityOperation, rhs::Integer) = lhs
 
 import Base.inv
 inv(arg::IdentityOperation) = arg
-apply_operation(symop::IdentityOperation, rhs) = rhs
-(symop::IdentityOperation)(coord::AbstractVector{<:Real}) = coord
 
-canonize(arg::IdentityOperation) = arg
+combinable(lhs::IdentityOperation{S}, rhs::IdentityOperation{S}) where {S<:Real} = true
+combinable(lhs::AbstractSymmetryOperation{S}, rhs::IdentityOperation{S}) where {S<:Real} = true
+combinable(lhs::IdentityOperation{S}, rhs::AbstractSymmetryOperation{S}) where {S<:Real} = true
 
-iscanonical(arg::IdentityOperation) = true
+apply_operation(symop::IdentityOperation{S}, rhs::AbstractArray{S}) where {S<:Real} = rhs
+(symop::IdentityOperation{S})(arg::AbstractArray{S}) where {S<:Real} = arg
 
-dimension(arg::IdentityOperation) = 0
-domaintype(arg::IdentityOperation) = Bool
+isidentity(arg::IdentityOperation) = true
+
+# canonize(arg::IdentityOperation) = arg
+# iscanonical(arg::IdentityOperation) = true
+
+dimension(arg::IdentityOperation) = arg.dimension
+domaintype(arg::IdentityOperation{S}) where {S<:Real} = S
+

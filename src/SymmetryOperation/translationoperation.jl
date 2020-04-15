@@ -5,9 +5,9 @@ export canonize
 export iscanonical
 export combinable
 export domaintype
+export isidentity
 
-
-struct TranslationOperation{S<:Real} <:AbstractSymmetryOperation
+struct TranslationOperation{S<:Real} <:AbstractSymmetryOperation{S}
     displacement::Vector{S}
     function TranslationOperation{S}(displacement::AbstractVector{<:Real}) where {S}
         new{S}(displacement)
@@ -21,40 +21,61 @@ dimension(arg::TranslationOperation) = length(arg.displacement)
 domaintype(arg::TranslationOperation{S}) where S = S
 
 import Base.==
-(==)(lhs::TranslationOperation, rhs::TranslationOperation) = lhs.displacement == rhs.displacement
+function (==)(lhs::TranslationOperation{S}, rhs::TranslationOperation{S}) where S
+    lhs.displacement == rhs.displacement
+end
+function (==)(top::TranslationOperation{S}, iden::IdentityOperation{S}) where S
+    iszero(top.displacement)
+end
+function (==)(iden::IdentityOperation{S}, top::TranslationOperation{S}) where S
+    iszero(top.displacement)
+end
 
 import Base.isequal
-isequal(lhs::TranslationOperation, rhs::TranslationOperation) = isequal(lhs.displacement, rhs.displacement)
+function isequal(lhs::TranslationOperation{S}, rhs::TranslationOperation{S}) where S
+    isequal(lhs.displacement, rhs.displacement)
+end
 
 import Base.*
-(*)(lhs::TranslationOperation, rhs::TranslationOperation) = TranslationOperation(lhs.displacement .+ rhs.displacement)
+function (*)(lhs::TranslationOperation{S}, rhs::TranslationOperation{S}) where S
+    TranslationOperation{S}(lhs.displacement .+ rhs.displacement)
+end
 
 import Base.^
-(^)(lhs::TranslationOperation, rhs::Real) = TranslationOperation(lhs.displacement .* rhs)
+function (^)(lhs::TranslationOperation{S}, rhs::Real) where S
+    TranslationOperation{S}(lhs.displacement .* rhs)
+end
 
+import Base.inv
+function inv(arg::TranslationOperation{S}) where S
+    TranslationOperation{S}(-arg.displacement)
+end
 
-combinable(lhs::TranslationOperation, rhs::TranslationOperation) = true
+combinable(lhs::TranslationOperation{S}, rhs::TranslationOperation{S}) where S = true
 
 
 import Base.hash
 hash(arg::TranslationOperation) = hash(arg.displacement)
 
-import Base.inv
-inv(arg::TranslationOperation) = TranslationOperation(-arg.displacement)
 
-
-function apply_operation(symop::TranslationOperation,
-                         coord::AbstractVector{<:Real})
-    return coord + symop.displacement
+function apply_operation(symop::TranslationOperation{S},
+                         coord::AbstractArray{S}) where {S<:Real}
+    return coord .+ symop.displacement
 end
 
-function (symop::TranslationOperation)(coord::AbstractVector)
-    return coord + symop.displacement
+function (symop::TranslationOperation{S})(coord::AbstractVector{S}) where S
+    return coord .+ symop.displacement
 end
 
 
-canonize(arg::TranslationOperation) = iszero(arg.displacement) ? IdentityOperation() : arg
+# function canonize(arg::TranslationOperation{S}) where S
+#     if iszero(arg.displacement) 
+#         IdentityOperation{S}(dimension(arg))
+#     else
+#         arg
+#     end
+# end
 
-iscanonical(arg::TranslationOperation) = !iszero(arg.displacement)
+# iscanonical(arg::TranslationOperation) = !iszero(arg.displacement)
 
-
+isidentity(arg::TranslationOperation) = iszero(arg.displacement)
