@@ -179,9 +179,13 @@ using TightBindingLattice
         end
 
         @testset "comparison with other types" begin
-            @test SpaceOperation(Int, 2) == IdentityOperation(Int, 2)
             @test SpaceOperation(c4p) == c4p
+            @test c4p == SpaceOperation(c4p)
+            @test isidentity(SpaceOperation(c4p * c4m))
             @test SpaceOperation(c4p * c4m) == IdentityOperation(Int, 2)
+            @test IdentityOperation(Int, 2) == SpaceOperation(c4p * c4m)
+
+
             @test m10 * m10 * t10 == t10
             @test c4p * t10 * c4m == TranslationOperation([0, 1])
             @test TranslationOperation([0, 1]) == c4p * t10 * c4m
