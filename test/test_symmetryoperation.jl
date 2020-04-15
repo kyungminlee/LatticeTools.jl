@@ -17,8 +17,12 @@ using TightBindingLattice
         @test domaintype(iden) == Int
         @test dimension(iden) == 2
         
-        @test apply_operation(iden, [3,2,1]) == [3,2,1]
-        @test iden([3,2,1]) == [3,2,1]
+        @test apply_operation(iden, [3,2]) == [3,2]
+        @test iden([3,2]) == [3,2]
+
+        @test_throws DimensionMismatch iden * IdentityOperation(Int, 3)
+        @test_throws DimensionMismatch iden([3,2,1])
+        @test_throws DimensionMismatch apply_operation(iden, [3,2,1])
     end
 
     @testset "TranslationOperation" begin
@@ -42,6 +46,9 @@ using TightBindingLattice
         
         @test t1 * iden == t1
         @test iden * t1 == t1
+
+        @test_throws DimensionMismatch t1 * IdentityOperation(Int, 5)
+        @test_throws DimensionMismatch IdentityOperation(Int, 5) * t1
 
         t3 = t1*t2
         @test t3.displacement == [3, 3]
@@ -121,6 +128,9 @@ using TightBindingLattice
     end
 
     @testset "SpaceOperation" begin
+    @test_throws DimensionMismatch SpaceOperation([1 0 0; 0 1 0], [1,2,3])
+    @test_throws DimensionMismatch SpaceOperation([1 0; 0 1], [1,2,3])
+
         let sop = SpaceOperation{Int}(2)
             @test sop.matrix == [1 0; 0 1]
             @test sop.displacement == [0, 0]
@@ -174,7 +184,9 @@ using TightBindingLattice
             @test SpaceOperation(c4p * c4m) == IdentityOperation(Int, 2)
             @test m10 * m10 * t10 == t10
             @test c4p * t10 * c4m == TranslationOperation([0, 1])
+            @test TranslationOperation([0, 1]) == c4p * t10 * c4m
             @test t10 * c4p * c4p * t10 == PointOperation([-1 0; 0 -1])
+            @test PointOperation([-1 0; 0 -1]) == t10 * c4p * c4p * t10
         end
 
         @testset "promotion" begin
