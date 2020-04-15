@@ -1,24 +1,27 @@
 using Test
 using TightBindingLattice
 
-@testset "symmetryoperations" begin
-
-    latticevectors = [1.0 -0.5; 0.0 sqrt(3.0)*0.5]
+@testset "symmetryoperation" begin
     iden = IdentityOperation(Int, 2)
 
-    @testset "identity" begin
+    @testset "IdentityOperation" begin
         @test iden == IdentityOperation{Int}(2)
         @test iden != IdentityOperation(Int, 3)
         @test iden * iden == iden
+        n=0;  @test iden^n == iden
+        n=4;  @test iden^n == iden
+        n=-3; @test iden^n == iden
         @test inv(iden) == iden
-        @test apply_operation(iden, [3,2,1]) == [3,2,1]
-        @test iden([3,2,1]) == [3,2,1]
+        @test isidentity(iden)
         @test combinable(iden, iden)
         @test domaintype(iden) == Int
         @test dimension(iden) == 2
+        
+        @test apply_operation(iden, [3,2,1]) == [3,2,1]
+        @test iden([3,2,1]) == [3,2,1]
     end
 
-    @testset "translation" begin
+    @testset "TranslationOperation" begin
         t0  = TranslationOperation([0,0])
         t1  = TranslationOperation([1, -1])
         t1p = TranslationOperation{Int}([1, -1])
@@ -32,6 +35,11 @@ using TightBindingLattice
         @test dimension(t2) == 2
         @test t2^2 == TranslationOperation([4,8])
 
+        @test t0 == IdentityOperation(Int, 2)
+        @test IdentityOperation(Int, 2) == t0
+        @test isidentity(t0)
+        @test !isidentity(t1)
+        
         @test t1 * iden == t1
         @test iden * t1 == t1
 
@@ -54,7 +62,7 @@ using TightBindingLattice
         @test_throws DimensionMismatch t1([1,2,3])
     end
 
-    @testset "point" begin
+    @testset "PointOperation" begin
         p0 = PointOperation([1 0; 0 1])
         p1 = PointOperation([0 -1; 1 -1])
         p1p = PointOperation{Int}([0 -1; 1 -1])
@@ -65,7 +73,17 @@ using TightBindingLattice
         @test isequal(p1, p1p)
         @test hash(p1) == hash(p1p)
 
+        @test isidentity(p0)
+        @test !isidentity(p1)
         @test dimension(p1) == 2
+        @test p0 == iden
+        @test iden == p0
+        @test p1 != iden
+        @test iden != p1
+        @test p1 != TranslationOperation([1,0])
+        @test p0 == TranslationOperation([0,0])
+        @test TranslationOperation([1,0]) != p1
+        @test TranslationOperation([0,0]) == p0
 
         @test p1*p2 == PointOperation([0 -1; 1 -1] * [0 1; 1 0])
         @test inv(p1) * p1 == PointOperation([1 0; 0 1])
@@ -102,7 +120,7 @@ using TightBindingLattice
         @test dimension(p0) == 2
     end
 
-    @testset "space" begin
+    @testset "SpaceOperation" begin
         let sop = SpaceOperation{Int}(2)
             @test sop.matrix == [1 0; 0 1]
             @test sop.displacement == [0, 0]
