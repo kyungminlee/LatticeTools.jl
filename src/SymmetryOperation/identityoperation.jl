@@ -23,9 +23,26 @@ function (==)(lhs::IdentityOperation{S}, rhs::IdentityOperation{S}) where S
 end
 
 import Base.*
-(*)(lhs::IdentityOperation{S}, rhs::IdentityOperation{S}) where S = lhs
-(*)(lhs::AbstractSymmetryOperation{S}, rhs::IdentityOperation{S}) where S = lhs
-(*)(lhs::IdentityOperation{S}, rhs::AbstractSymmetryOperation{S}) where S = rhs
+function (*)(lhs::IdentityOperation{S}, rhs::IdentityOperation{S}) where S
+    if dimension(lhs) != dimension(rhs) 
+        throw(DimensionMismatch("dimensions mismatch"))
+    end
+    return lhs
+end
+
+function (*)(lhs::AbstractSymmetryOperation{S}, rhs::IdentityOperation{S}) where S
+    if dimension(lhs) != dimension(rhs) 
+        throw(DimensionMismatch("dimensions mismatch"))
+    end
+    return lhs
+end
+
+function (*)(lhs::IdentityOperation{S}, rhs::AbstractSymmetryOperation{S}) where S
+    if dimension(lhs) != dimension(rhs) 
+        throw(DimensionMismatch("dimensions mismatch"))
+    end
+    return rhs
+end
 
 import Base.^
 (^)(lhs::IdentityOperation, rhs::Integer) = lhs
@@ -47,4 +64,3 @@ isidentity(arg::IdentityOperation) = true
 
 dimension(arg::IdentityOperation) = arg.dimension
 domaintype(arg::IdentityOperation{S}) where {S<:Real} = S
-
