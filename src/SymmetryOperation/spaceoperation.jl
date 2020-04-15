@@ -1,7 +1,9 @@
 export SpaceOperation
 export apply_operation
-export canonize
-export iscanonical
+export dimension
+export isidentity
+# export canonize
+# export iscanonical
 
 using LinearAlgebra
 
@@ -81,6 +83,7 @@ function convert(::Type{SpaceOperation{S}}, op::TranslationOperation{S}) where S
 end
 
 dimension(op::SpaceOperation) = length(op.displacement)
+isidentity(op::SpaceOperation) = isone(op.matrix) && iszero(op.displacement)
 # domaintype(op::SpaceOperation{S}) where S = S
 
 import Base.==
