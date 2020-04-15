@@ -122,12 +122,12 @@ function (==)(lhs::PointOperation{S}, rhs::SpaceOperation{S}) where S
     return iszero(rhs.displacement) && lhs.matrix == rhs.matrix
 end
 
-function (==)(sop::SpaceOperation{S}, iden::IdentityOperation) where S
-    return iszero(sop.displacement) && isone(sop.matrix)
+function (==)(sop::SpaceOperation{S}, iden::IdentityOperation{S}) where S
+    return dimension(sop) == dimension(iden) && iszero(sop.displacement) && isone(sop.matrix)
 end
 
-function (==)(iden::IdentityOperation, sop::SpaceOperation{S}) where S
-    return iszero(sop.displacement) && isone(sop.matrix)
+function (==)(iden::IdentityOperation{S}, sop::SpaceOperation{S}) where S
+    return dimension(sop) == dimension(iden) && iszero(sop.displacement) && isone(sop.matrix)
 end
 
 
