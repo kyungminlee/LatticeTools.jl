@@ -16,7 +16,7 @@ struct PointOperation{S<:Real} <:AbstractSymmetryOperation{S}
 
     function PointOperation{S}(matrix::AbstractMatrix{S2}) where {S<:Real, S2<:Real}
         dim = size(matrix, 1)
-        size(matrix, 2) != dim && throw(ArgumentError("matrix not square"))
+        size(matrix, 2) != dim && throw(DimensionMismatch("matrix not square"))
         new{S}(matrix)
     end
 end
