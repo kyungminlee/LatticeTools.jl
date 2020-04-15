@@ -4,7 +4,9 @@ using TightBindingLattice
 @testset "symmetryoperations" begin
 
     latticevectors = [1.0 -0.5; 0.0 sqrt(3.0)*0.5]
-    iden = IdentityOperation()
+    iden = IdentityOperation(Int, 2)
+    @test iden == IdentityOperation{Int}(2)
+    @test iden != IdentityOperation(Int, 3)
 
     @testset "identity" begin
         @test iden * iden == iden
@@ -12,19 +14,18 @@ using TightBindingLattice
         @test apply_operation(iden, [3,2,1]) == [3,2,1]
         @test iden([3,2,1]) == [3,2,1]
         @test combinable(iden, iden)
-        @test canonize(iden) == iden
-        @test iscanonical(iden)
-        @test domaintype(iden) == Bool
-        @test dimension(iden) == 0
+        # @test canonize(iden) == iden
+        # @test iscanonical(iden)
+        @test domaintype(iden) == Int
+        @test dimension(iden) == 2
     end
 
     @testset "translation" begin
-        t0 = TranslationOperation([0,0])
-        t1 = TranslationOperation([1, -1])
+        t0  = TranslationOperation([0,0])
+        t1  = TranslationOperation([1, -1])
         t1p = TranslationOperation{Int}([1, -1])
-        t2 = TranslationOperation([2,4])
+        t2  = TranslationOperation([2,4])
 
-        
         @test hash(t1) == hash(t1p)
         @test t1 == t1p
         @test t1 !== t1p
@@ -46,10 +47,10 @@ using TightBindingLattice
         @test combinable(t1, iden)
         @test combinable(t1, t1)
 
-        @test !iscanonical(t0)
-        @test iscanonical(t1)
-        @test canonize(t0) == IdentityOperation()
-        @test canonize(t1) == t1
+        # @test !iscanonical(t0)
+        # @test iscanonical(t1)
+        # @test canonize(t0) == IdentityOperation{Int}(2)
+        # @test canonize(t1) == t1
 
         @test domaintype(t1) == Int
         @test dimension(t1) == 2
@@ -82,14 +83,10 @@ using TightBindingLattice
         @test p1^(-2) == inv(p1)*inv(p1)
         @test p2^2 == PointOperation([1 0; 0 1])
 
-        n = 3
-        @test p1^n == p1 * p1 * p1
-        n = -1
-        @test p1^n == inv(p1)
-        n = -2
-        @test p1^n == inv(p1)*inv(p1)
-        n = 2
-        @test p2^n == PointOperation([1 0; 0 1])
+        n =  3;  @test p1^n == p1 * p1 * p1
+        n = -1;  @test p1^n == inv(p1)
+        n = -2;  @test p1^n == inv(p1)*inv(p1)
+        n =  2;  @test p2^n == PointOperation([1 0; 0 1])
 
         @test combinable(iden, p1)
         @test combinable(p1, iden)
@@ -99,7 +96,7 @@ using TightBindingLattice
         @test !combinable(p1, t1)
         @test !combinable(t1, p1)
                 
-        @test canonize(p1*inv(p1)) == IdentityOperation()
+        # @test canonize(p1*inv(p1)) == IdentityOperation{Int}(2)
         @test apply_operation(p2, [5, 6]) == [6, 5]
         @test p2([5, 6]) == [6, 5]
         # TODO: Exceptions
@@ -108,68 +105,140 @@ using TightBindingLattice
         @test_throws DimensionMismatch p1*p3
         @test_throws DimensionMismatch apply_operation(p1, [1,2,3])
 
-        @test !iscanonical(p0)
-        @test iscanonical(p1)
-        @test canonize(p0) == IdentityOperation()
-        @test canonize(p1) == p1
+        # @test !iscanonical(p0)
+        # @test iscanonical(p1)
+        # @test canonize(p0) == IdentityOperation{Int}(2)
+        # @test canonize(p1) == p1
 
         @test domaintype(p0) == Int
         @test dimension(p0) == 2
     end
 
-    @testset "product" begin
-        r0 = ProductOperation()
+    @testset "space" begin
+        let sop = SpaceOperation{Int}(2)
+            @test sop.matrix == [1 0; 0 1]
+            @test sop.displacement == [0, 0]
+        end
 
-        t = TranslationOperation([2, 4])
-        p = PointOperation([0 -1; 1 -1])
+        c4p = PointOperation([ 0 -1;  1  0])
+        c4m = PointOperation([ 0  1; -1  0])
+        m10 = PointOperation([-1  0;  0  1])
+        t10 = TranslationOperation([ 1,  0])
 
-        rt = ProductOperation(t)
-        rp = ProductOperation{Int}(p)
+        let sop = SpaceOperation(c4p)
+            @test sop.matrix == [0 -1; 1 0] && sop.displacement == [0,0]
+        end
+        let sop = SpaceOperation(t10)
+            @test sop.matrix == [1 0; 0 1] && sop.displacement == [1,0]
+        end
+        let sop = SpaceOperation(c4p, t10)
+            @test sop.matrix == [0 -1; 1 0] && sop.displacement == [1, 0]
+            @test sop == SpaceOperation([0 -1; 1 0], [1, 0])
+            @test sop != SpaceOperation([0 -1; 1 0], [0, 1])
+            @test sop != SpaceOperation([0  1; 1 0], [0, 1])
+        end
 
-        @test r0 * t == rt
-        @test t * r0 == rt
+        @testset "product" begin
+            c4p_t10 = c4p*t10
+            t10_c4p = t10*c4p
 
-        tp = t * p
-        pt = p * t
-        
-        tpc = canonize(tp)
-        ptc = canonize(pt)
+            @test c4p_t10 == SpaceOperation([0 -1; 1 0], [1,  0])
+            @test t10_c4p == SpaceOperation([0 -1; 1 0], [0, -1])
+            
+            @test c4p * c4p_t10 == SpaceOperation([-1 0; 0 -1], [ 1,  0])
+            @test c4p * t10_c4p == SpaceOperation([-1 0; 0 -1], [ 0, -1])
+            @test c4p_t10 * c4p == SpaceOperation([-1 0; 0 -1], [ 0, -1])
+            @test t10_c4p * c4p == SpaceOperation([-1 0; 0 -1], [-1,  0])
 
-        @test tp^3 == t * p * t * p * t * p
-        @test tpc.factors[1] == ptc.factors[1]
-        @test isa(tpc.factors[1], PointOperation) && isa(tpc.factors[2], TranslationOperation)
-        @test isa(ptc.factors[1], PointOperation) && isa(ptc.factors[2], TranslationOperation)
-        @test apply_operation(tp, [5,0]) == apply_operation(tpc, [5,0])
-        @test apply_operation(pt, [5,0]) == apply_operation(ptc, [5,0])
-        @test tp([5,0]) == tpc([5,0])
-        @test pt([5,0]) == ptc([5,0])
+            # associativity
+            for A in [t10, m10, c4p, c4m],
+                B in [t10, m10, c4p, c4m],
+                C in [t10, m10, c4p, c4m]
+                @test (A * B) * C == A * (B * C)
+            end
+            # inverse
+            for A in [t10, m10, c4p, c4m], B in [t10, m10, c4p, c4m]
+                @test inv(A * B) == inv(B) * inv(A)
+            end
+        end
 
-        @test tp^0 == ProductOperation()
-        @test tp^1 == tp
-        @test tp^2 == t * p * t * p
-        @test tp^(-2) == inv(p) * inv(t) * inv(p) * inv(t)
+        @testset "comparison with other types" begin
+            @test SpaceOperation(Int, 2) == IdentityOperation(Int, 2)
+            @test SpaceOperation(c4p) == c4p
+            @test SpaceOperation(c4p * c4m) == IdentityOperation(Int, 2)
+            @test m10 * m10 * t10 == t10
+            @test c4p * t10 * c4m == TranslationOperation([0, 1])
+            @test t10 * c4p * c4p * t10 == PointOperation([-1 0; 0 -1])
+        end
 
-        n = 0
-        @test tp^n == ProductOperation()
-        n = 1
-        @test tp^n == tp
-        n = 2
-        @test tp^n == t * p * t * p
-        n = -2
-        @test tp^n == inv(p) * inv(t) * inv(p) * inv(t)
+        @testset "promotion" begin
+            arr = SpaceOperation{Int}[]
+            push!(arr, PointOperation([0 1; 1 0]))
+            push!(arr, TranslationOperation([1, 0]))
+            push!(arr, IdentityOperation(Int, 2))
 
-
-        @test canonize(tp^3 * inv(tp^3)) == IdentityOperation()
-        @test iscanonical(pt)
-        @test !iscanonical(tp)
-        @test iscanonical(tpc)
-        @test iscanonical(ptc)
-
-        pp = ProductOperation(p, p)
-        @test pp != p * p
-        @test canonize(pp) == p*p
-
-        @test domaintype(pp) == Int
-        @test dimension(pp) == 2
+            @test isa(arr[1], SpaceOperation{Int})
+            @test arr[1].matrix == [0 1; 1 0] && arr[1].displacement == [0,0]
+            @test isa(arr[2], SpaceOperation{Int})
+            @test arr[2].matrix == [1 0; 0 1] && arr[2].displacement == [1,0]
+            @test isa(arr[3], SpaceOperation{Int})
+            @test arr[3].matrix == [1 0; 0 1] && arr[3].displacement == [0,0]
+        end
     end
+
+    # @testset "product" begin
+    #     r0 = ProductOperation()
+
+    #     t = TranslationOperation([2, 4])
+    #     p = PointOperation([0 -1; 1 -1])
+
+    #     rt = ProductOperation(t)
+    #     rp = ProductOperation{Int}(p)
+
+    #     @test r0 * t == rt
+    #     @test t * r0 == rt
+
+    #     tp = t * p
+    #     pt = p * t
+        
+    #     tpc = canonize(tp)
+    #     ptc = canonize(pt)
+
+    #     @test tp^3 == t * p * t * p * t * p
+    #     @test tpc.factors[1] == ptc.factors[1]
+    #     @test isa(tpc.factors[1], PointOperation) && isa(tpc.factors[2], TranslationOperation)
+    #     @test isa(ptc.factors[1], PointOperation) && isa(ptc.factors[2], TranslationOperation)
+    #     @test apply_operation(tp, [5,0]) == apply_operation(tpc, [5,0])
+    #     @test apply_operation(pt, [5,0]) == apply_operation(ptc, [5,0])
+    #     @test tp([5,0]) == tpc([5,0])
+    #     @test pt([5,0]) == ptc([5,0])
+
+    #     @test tp^0 == ProductOperation()
+    #     @test tp^1 == tp
+    #     @test tp^2 == t * p * t * p
+    #     @test tp^(-2) == inv(p) * inv(t) * inv(p) * inv(t)
+
+    #     n = 0
+    #     @test tp^n == ProductOperation()
+    #     n = 1
+    #     @test tp^n == tp
+    #     n = 2
+    #     @test tp^n == t * p * t * p
+    #     n = -2
+    #     @test tp^n == inv(p) * inv(t) * inv(p) * inv(t)
+
+
+    #     @test canonize(tp^3 * inv(tp^3)) == IdentityOperation()
+    #     @test iscanonical(pt)
+    #     @test !iscanonical(tp)
+    #     @test iscanonical(tpc)
+    #     @test iscanonical(ptc)
+
+    #     pp = ProductOperation(p, p)
+    #     @test pp != p * p
+    #     @test canonize(pp) == p*p
+
+    #     @test domaintype(pp) == Int
+    #     @test dimension(pp) == 2
+    # end
 end
