@@ -51,7 +51,7 @@ function inv(arg::TranslationOperation{S}) where S
     TranslationOperation{S}(-arg.displacement)
 end
 
-combinable(lhs::TranslationOperation{S}, rhs::TranslationOperation{S}) where S = true
+combinable(lhs::TranslationOperation{S}, rhs::TranslationOperation{S}) where S = dimension(lhs) == dimension(rhs)
 
 
 import Base.hash

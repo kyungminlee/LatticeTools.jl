@@ -25,7 +25,7 @@ end
 ## properties
 dimension(arg::PointOperation) = size(arg.matrix, 1)
 # domaintype(arg::PointOperation{S}) where S = S
-combinable(lhs::PointOperation, rhs::PointOperation) = true
+combinable(lhs::PointOperation{S}, rhs::PointOperation{S}) where S = dimension(lhs) == dimension(rhs)
 isidentity(arg::PointOperation) = isone(arg.matrix)
 
 import Base.hash
