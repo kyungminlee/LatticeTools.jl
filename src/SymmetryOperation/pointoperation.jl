@@ -22,6 +22,19 @@ struct PointOperation{S<:Real} <:AbstractSymmetryOperation{S}
 end
 
 
+import Base.convert
+function convert(::Type{PointOperation{S}}, obj::IdentityOperation{S}) where S
+    dim = dimension(obj)
+    return PointOperation{S}(zeros(S, dim, dim))
+end
+
+
+import Base.promote_rule
+function promote_rule(::Type{PointOperation{S}}, ::Type{IdentityOperation{S}}) where S
+    return PointOperation{S}
+end
+
+
 ## properties
 dimension(arg::PointOperation) = size(arg.matrix, 1)
 # domaintype(arg::PointOperation{S}) where S = S

@@ -17,6 +17,18 @@ struct TranslationOperation{S<:Real} <:AbstractSymmetryOperation{S}
     end
 end
 
+import Base.convert
+function convert(::Type{TranslationOperation{S}}, obj::IdentityOperation{S}) where S
+    dim = dimension(obj)
+    return TranslationOperation{S}(zeros(S, dim))
+end
+
+import Base.promote_rule
+function promote_rule(::Type{TranslationOperation{S}}, ::Type{IdentityOperation{S}}) where S
+    return TranslationOperation{S}
+end
+
+
 dimension(arg::TranslationOperation) = length(arg.displacement)
 # domaintype(arg::TranslationOperation{S}) where S = S
 

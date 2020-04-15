@@ -69,9 +69,8 @@ end
 
 
 import Base.convert
-
 function convert(::Type{SpaceOperation{S}}, op::IdentityOperation{S}) where S
-    return SpaceOperation{Int}(dimension(op))
+    return SpaceOperation(S, dimension(op))
 end
 
 function convert(::Type{SpaceOperation{S}}, op::PointOperation{S}) where S
@@ -81,6 +80,22 @@ end
 function convert(::Type{SpaceOperation{S}}, op::TranslationOperation{S}) where S
     return SpaceOperation(op)
 end
+
+
+
+import Base.promote_rule
+function promote_rule(::Type{SpaceOperation{S}}, ::Type{IdentityOperation{S}}) where S
+    return SpaceOperation{S}
+end
+function promote_rule(::Type{SpaceOperation{S}}, ::Type{TranslationOperation{S}}) where S
+    return SpaceOperation{S}
+end
+function promote_rule(::Type{SpaceOperation{S}}, ::Type{PointOperation{S}}) where S
+    return SpaceOperation{S}
+end
+
+
+
 
 dimension(op::SpaceOperation) = length(op.displacement)
 isidentity(op::SpaceOperation) = isone(op.matrix) && iszero(op.displacement)
