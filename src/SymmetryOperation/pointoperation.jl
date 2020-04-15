@@ -1,9 +1,9 @@
 export PointOperation
 
 export apply_operation
-export canonize
-export iscanonical
-export combinable
+# export canonize
+# export iscanonical
+# export combinable
 export domaintype
 export isidentity
 
@@ -25,7 +25,7 @@ end
 ## properties
 dimension(arg::PointOperation) = size(arg.matrix, 1)
 # domaintype(arg::PointOperation{S}) where S = S
-combinable(lhs::PointOperation{S}, rhs::PointOperation{S}) where S = dimension(lhs) == dimension(rhs)
+# combinable(lhs::PointOperation{S}, rhs::PointOperation{S}) where S = dimension(lhs) == dimension(rhs)
 isidentity(arg::PointOperation) = isone(arg.matrix)
 
 import Base.hash

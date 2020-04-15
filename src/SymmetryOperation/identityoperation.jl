@@ -33,11 +33,11 @@ import Base.^
 import Base.inv
 inv(arg::IdentityOperation) = arg
 
-combinable(lhs::IdentityOperation{S}, rhs::IdentityOperation{S}) where {S<:Real} = true
-combinable(lhs::AbstractSymmetryOperation{S}, rhs::IdentityOperation{S}) where {S<:Real} = true
-combinable(lhs::IdentityOperation{S}, rhs::AbstractSymmetryOperation{S}) where {S<:Real} = true
+# combinable(lhs::IdentityOperation{S}, rhs::IdentityOperation{S}) where {S<:Real} = dimension(lhs) == dimension(rhs)
+# combinable(lhs::AbstractSymmetryOperation{S}, rhs::IdentityOperation{S}) where {S<:Real} = dimension(lhs) == dimension(rhs)
+# combinable(lhs::IdentityOperation{S}, rhs::AbstractSymmetryOperation{S}) where {S<:Real} = dimension(lhs) == dimension(rhs)
 
-apply_operation(symop::IdentityOperation{S}, rhs::AbstractArray{S}) where {S<:Real} = rhs
+apply_operation(symop::IdentityOperation{S}, arg::AbstractArray{S}) where {S<:Real} = arg
 (symop::IdentityOperation{S})(arg::AbstractArray{S}) where {S<:Real} = arg
 
 isidentity(arg::IdentityOperation) = true

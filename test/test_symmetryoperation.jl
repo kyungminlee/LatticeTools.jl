@@ -13,7 +13,7 @@ using TightBindingLattice
         n=-3; @test iden^n == iden
         @test inv(iden) == iden
         @test isidentity(iden)
-        @test combinable(iden, iden)
+        # @test combinable(iden, iden)
         @test domaintype(iden) == Int
         @test dimension(iden) == 2
         
@@ -49,9 +49,9 @@ using TightBindingLattice
         @test inv(t3) == TranslationOperation([-3, -3])
         @test apply_operation(t3, [5,6]) == [8, 9]
 
-        @test combinable(iden, t1)
-        @test combinable(t1, iden)
-        @test combinable(t1, t1)
+        # @test combinable(iden, t1)
+        # @test combinable(t1, iden)
+        # @test combinable(t1, t1)
 
         @test domaintype(t1) == Int
         @test dimension(t1) == 2
@@ -99,13 +99,13 @@ using TightBindingLattice
         n = -2;  @test p1^n == inv(p1)*inv(p1)
         n =  2;  @test p2^n == PointOperation([1 0; 0 1])
 
-        @test combinable(iden, p1)
-        @test combinable(p1, iden)
-        @test combinable(p1, p1)
+        # @test combinable(iden, p1)
+        # @test combinable(p1, iden)
+        # @test combinable(p1, p1)
 
         t1 = TranslationOperation([1,0])
-        @test !combinable(p1, t1)
-        @test !combinable(t1, p1)
+        # @test !combinable(p1, t1)
+        # @test !combinable(t1, p1)
                 
         # @test canonize(p1*inv(p1)) == IdentityOperation{Int}(2)
         @test apply_operation(p2, [5, 6]) == [6, 5]

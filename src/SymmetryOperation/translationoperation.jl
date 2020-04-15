@@ -1,9 +1,9 @@
 export TranslationOperation
 
 export apply_operation
-export canonize
-export iscanonical
-export combinable
+# export canonize
+# export iscanonical
+# export combinable
 export domaintype
 export isidentity
 
@@ -51,7 +51,7 @@ function inv(arg::TranslationOperation{S}) where S
     TranslationOperation{S}(-arg.displacement)
 end
 
-combinable(lhs::TranslationOperation{S}, rhs::TranslationOperation{S}) where S = dimension(lhs) == dimension(rhs)
+# combinable(lhs::TranslationOperation{S}, rhs::TranslationOperation{S}) where S = dimension(lhs) == dimension(rhs)
 
 
 import Base.hash
