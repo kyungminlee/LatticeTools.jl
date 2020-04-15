@@ -125,11 +125,21 @@ using TightBindingLattice
 
         @test domaintype(p0) == Int
         @test dimension(p0) == 2
+
+        @testset "promotion" begin
+            arr = PointOperation{Int}[]
+            push!(arr, IdentityOperation(Int, 2))
+
+            @test isa(arr[1], PointOperation{Int})
+            @test arr[1].matrix == [1 0; 0 1]
+        end
+    end
+
     end
 
     @testset "SpaceOperation" begin
-    @test_throws DimensionMismatch SpaceOperation([1 0 0; 0 1 0], [1,2,3])
-    @test_throws DimensionMismatch SpaceOperation([1 0; 0 1], [1,2,3])
+        @test_throws DimensionMismatch SpaceOperation([1 0 0; 0 1 0], [1,2,3])
+        @test_throws DimensionMismatch SpaceOperation([1 0; 0 1], [1,2,3])
 
         let sop = SpaceOperation{Int}(2)
             @test sop.matrix == [1 0; 0 1]
