@@ -34,11 +34,21 @@ hash(arg::PointOperation) = hash(arg.matrix)
 
 ## operators
 import Base.==
-(==)(lhs::PointOperation, rhs::PointOperation) = lhs.matrix == rhs.matrix
-(==)(pop::PointOperation, iden::IdentityOperation) = isone(pop.matrix)
-(==)(iden::IdentityOperation, pop::PointOperation) = isone(pop.matrix)
-(==)(pop::PointOperation, top::TranslationOperation) = isone(pop.matrix) && iszero(top.displacement)
-(==)(top::TranslationOperation, pop::PointOperation) = isone(pop.matrix) && iszero(top.displacement)
+function (==)(lhs::PointOperation{S}, rhs::PointOperation{S}) where S
+    lhs.matrix == rhs.matrix
+end
+function (==)(pop::PointOperation{S}, iden::IdentityOperation{S}) where S
+    isone(pop.matrix)
+end
+function (==)(iden::IdentityOperation{S}, pop::PointOperation{S}) where S
+    isone(pop.matrix)
+end
+function (==)(pop::PointOperation{S}, top::TranslationOperation{S}) where S
+    isone(pop.matrix) && iszero(top.displacement)
+end
+function (==)(top::TranslationOperation{S}, pop::PointOperation{S}) where S
+    isone(pop.matrix) && iszero(top.displacement)
+end
 
 import Base.isequal
 isequal(lhs::PointOperation, rhs::PointOperation) = isequal(lhs.matrix, rhs.matrix)
@@ -47,12 +57,12 @@ import Base.*
 (*)(lhs::PointOperation, rhs::PointOperation) = PointOperation(lhs.matrix * rhs.matrix)
 
 import Base.^
-function (^)(lhs::PointOperation, rhs::Integer)
+function (^)(lhs::PointOperation{S}, rhs::Integer) where S
     if rhs >= 0
         PointOperation(lhs.matrix^rhs)
     else
-        lhs_inv_matrix = ExactLinearAlgebra.inverse(lhs.matrix)
-        PointOperation(lhs_inv_matrix^(-rhs))
+        lhs_inv_matrix = Matrix{S}(ExactLinearAlgebra.inverse(lhs.matrix))
+        PointOperation{S}(lhs_inv_matrix^(-rhs))
     end
 end
 
