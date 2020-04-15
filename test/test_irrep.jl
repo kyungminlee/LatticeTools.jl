@@ -120,7 +120,7 @@ using TightBindingLattice
             @test tsic.irrep_component == ssic.component1.irrep_component
             @test psic.irrep_component == ssic.component2.irrep_component
 
-            @test sum(1 for x in collect(get_irrep_iterator(lattice, ssic))) == group_order(tsic) * group_order(psic)
+            @test sum(1 for x in collect(get_irrep_iterator(ssic))) == group_order(tsic) * group_order(psic)
         end
     end
 
@@ -178,7 +178,7 @@ using TightBindingLattice
         for psic in get_irrep_components(psym)
             @test group_order(psic) == group_order(psym)
 
-            permphase = collect(get_irrep_iterator(lattice, psic))
+            permphase = collect(get_irrep_iterator(psic))
             @test length(permphase) == group_order(psym)
 
             perms = [p for (p, ϕ) in permphase]
@@ -212,7 +212,7 @@ using TightBindingLattice
             @test tsic.irrep_component == ssic.translation.irrep_component
             @test psic.irrep_component == ssic.point.irrep_component
 
-            @test sum(1 for x in collect(get_irrep_iterator(lattice, ssic))) == group_order(tsic) * group_order(psic)
+            @test sum(1 for x in collect(get_irrep_iterator(ssic))) == group_order(tsic) * group_order(psic)
         end
     end
 
