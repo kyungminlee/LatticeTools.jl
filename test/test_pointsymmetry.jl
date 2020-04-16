@@ -45,6 +45,8 @@ using TightBindingLattice: simplify_name
             @test all(TBL.irrep(psym, i) == irreps[i] for i in 1:2)
             @test num_irreps(psym) == 2
             @test all(TBL.irrep_dimension(psym, i) == 1 for i in 1:2)
+            @test generator_indices(psym) == [2]
+            @test generator_elements(psym) == [PointOperation([-1 0; 0 -1])]
         end
 
         let generators = [1]

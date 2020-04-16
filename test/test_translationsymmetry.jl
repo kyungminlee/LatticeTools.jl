@@ -34,6 +34,8 @@ using TightBindingLattice
         @test irrep(tsym, 2) == irreps(tsym)[2]
         @test irrep(tsym, 3) == irreps(tsym)[3]
         @test all(irrep_dimension(tsym, i) == 1 for i in 1:3)
+        @test generator_indices(tsym) == [2, 1]
+        @test generator_elements(tsym) == [TranslationOperation([1,0]), TranslationOperation([0,0])]
     end
 
     @testset "orthogonal lattice" begin
