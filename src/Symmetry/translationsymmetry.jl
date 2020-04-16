@@ -15,6 +15,8 @@ export iscompatible2
 
 export symmetry_name
 
+export translation_symmetry_embedding
+
 
 struct TranslationSymmetry <: AbstractSymmetry
     hypercube::HypercubicLattice
@@ -100,8 +102,8 @@ struct TranslationSymmetry <: AbstractSymmetry
                 )
         orthogonal_reduced_reciprocal_scale_matrix = ExactLinearAlgebra.inverse(transpose(orthogonal_scale_matrix))
 
-        fractional_momenta = let mo = x -> mod(x, 1)
-            [mo.( orthogonal_reduced_reciprocal_scale_matrix * orthogonal_integer_momentum )
+        fractional_momenta = let modunit = x -> mod(x, 1)
+            [modunit.( orthogonal_reduced_reciprocal_scale_matrix * orthogonal_integer_momentum )
                  for orthogonal_integer_momentum in orthogonal_coordinates]
         end
 
