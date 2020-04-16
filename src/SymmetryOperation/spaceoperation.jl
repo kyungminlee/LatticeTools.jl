@@ -62,6 +62,15 @@ function convert(::Type{SpaceOperation{S}}, op::TranslationOperation{S}) where S
     return SpaceOperation(op)
 end
 
+function convert(::Type{SpaceOperation{S}}, arg::AbstractVector{S}) where S
+    dim = length(arg)
+    return SpaceOperation(Matrix{S}(LinearAlgebra.I, dim, dim), arg)
+end
+
+function convert(::Type{SpaceOperation{S}}, arg::AbstractMatrix{S}) where S
+    dim = size(arg, 1)
+    return SpaceOperation(arg, zeros(S, dim))
+end
 
 
 import Base.promote_rule
