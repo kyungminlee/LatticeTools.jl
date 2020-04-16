@@ -83,8 +83,11 @@ using TightBindingLattice
             @test promote_type(typeof(t1), typeof(iden)) == TranslationOperation{Int}
             arr = TranslationOperation{Int}[]
             push!(arr, IdentityOperation(Int, 2))
+            push!(arr, [3, 4])
             @test isa(arr[1], TranslationOperation{Int})
+            @test isa(arr[2], TranslationOperation{Int})
             @test arr[1].displacement == [0,0]
+            @test arr[2].displacement == [3,4]
         end
     end
 
@@ -150,8 +153,11 @@ using TightBindingLattice
             @test promote_type(typeof(p1), typeof(iden)) == PointOperation{Int}
             arr = PointOperation{Int}[]
             push!(arr, IdentityOperation(Int, 2))
+            push!(arr, [0 1; 1 0])
             @test isa(arr[1], PointOperation{Int})
             @test arr[1].matrix == [1 0; 0 1]
+            @test isa(arr[2], PointOperation{Int})
+            @test arr[2].matrix == [0 1; 1 0]
         end
     end
 
@@ -197,7 +203,7 @@ using TightBindingLattice
             @test hash(sop) != hash(SpaceOperation([0 -1; 1 0], [0,0]))
         end
 
-        @testset "product" begin
+        @testset "space" begin
             c4p_t10 = c4p*t10
             t10_c4p = t10*c4p
 
@@ -244,13 +250,15 @@ using TightBindingLattice
             push!(arr, PointOperation([0 1; 1 0]))
             push!(arr, TranslationOperation([1, 0]))
             push!(arr, IdentityOperation(Int, 2))
+            push!(arr, [1,0])
+            push!(arr, [0 1; 1 0])
 
-            @test isa(arr[1], SpaceOperation{Int})
             @test arr[1].matrix == [0 1; 1 0] && arr[1].displacement == [0,0]
-            @test isa(arr[2], SpaceOperation{Int})
             @test arr[2].matrix == [1 0; 0 1] && arr[2].displacement == [1,0]
-            @test isa(arr[3], SpaceOperation{Int})
             @test arr[3].matrix == [1 0; 0 1] && arr[3].displacement == [0,0]
+            @test arr[4].matrix == [1 0; 0 1] && arr[4].displacement == [1,0]
+            @test arr[5].matrix == [0 1; 1 0] && arr[5].displacement == [0,0]
+
         end
 
         @testset "apply" begin
