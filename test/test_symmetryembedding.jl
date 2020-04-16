@@ -10,7 +10,7 @@ using LinearAlgebra
         addorbital!(unitcell, "Oy", FractCoord([0,0], [0.0, 0.5]))
         @testset "square" begin
             lattice = make_lattice(unitcell, [2 0; 0 2])
-
+            
             # |       |                 |       |
             # 6       8                 8       6
             # |       |         [1,0]   |       |
@@ -21,9 +21,15 @@ using LinearAlgebra
             # o - 1 - . - 3 -           o - 3 - . - 1 -
             tsym = TranslationSymmetry(lattice)
             tsymbed = embed(lattice, tsym)
-            # @show tsymbed.elements[2]
+            translation_symmetry_embedding(lattice)
+
             @test length(elements(tsymbed)) == 4
+            @test elements(tsymbed)[1] == SitePermutation([1,2,3,4,5,6,7,8])
+            @test elements(tsymbed)[2] == SitePermutation([3,4,1,2,7,8,5,6])
             @test element(tsymbed, 2) == SitePermutation([3,4,1,2,7,8,5,6])
+            @test element(tsymbed, [1,2]) == [SitePermutation([1,2,3,4,5,6,7,8]), SitePermutation([3,4,1,2,7,8,5,6])]
+            @test generator_indices(tsymbed) == [2, 3]
+            @test generator_elements(tsymbed) == [element(tsymbed, 2) , element(tsymbed, 3)]
 
             # |       |                 |       |
             # 6       8                 3       7
@@ -41,10 +47,33 @@ using LinearAlgebra
             @test length(elements(psymbed)) == 8
             @test element(psymbed, idx_C4) == SitePermutation([2,3,6,7,4,1,8,5])
 
+            @test iscompatible(tsymbed, psymbed)
+
             @test little_symmetry(tsymbed, 1, psymbed).symmetry.hermann_mauguinn == "4mm"
             @test little_symmetry(tsymbed, 2, psymbed).symmetry.hermann_mauguinn == "mm2"
             @test little_symmetry(tsymbed, 3, psymbed).symmetry.hermann_mauguinn == "mm2"
             @test little_symmetry(tsymbed, 4, psymbed).symmetry.hermann_mauguinn == "4mm"
+
+            @test little_group_elements(tsymbed, psymbed) == 1:group_order(psymbed)
+            @test little_group_elements(tsymbed, 1, psymbed) == 1:group_order(psymbed)
+            @test length(little_group_elements(tsymbed, 2, psymbed)) < group_order(psymbed)
+            
+            @test iscompatible(tsymbed, 1, psymbed)
+            @test !iscompatible(tsymbed, 2, psymbed)
+            @test !iscompatible(tsymbed, 3, psymbed)
+            @test iscompatible(tsymbed, 4, psymbed)
+
+            let lattice_large = make_lattice(unitcell, [4 0; 0 4])
+                tsymbed_large = translation_symmetry_embedding(lattice_large)
+                @test !iscompatible(tsymbed_large, psymbed)
+                for irrep_index in 1:num_irreps(tsymbed_large)
+                    @test !iscompatible(tsymbed_large, irrep_index, psymbed)
+                end
+                @test_throws ArgumentError little_group_elements(tsymbed_large, psymbed)
+                @test_throws ArgumentError little_group_elements(tsymbed_large, 1, psymbed)
+                @test_throws ArgumentError little_symmetry(tsymbed_large, psymbed)
+                @test_throws ArgumentError little_symmetry(tsymbed_large, 1, psymbed)
+            end
         end
 
         @testset "rectangular" begin
