@@ -144,18 +144,22 @@ using TightBindingLattice
     end  # @testset "non-orthogonal lattice" begin
 
     @testset "reduction" begin
+        t00 = TranslationOperation([0,0])
+        t10 = TranslationOperation([1,0])
+        t20 = TranslationOperation([2,0])
+
         # Gamma point is always ok
-        @test iscompatible([0,0], [3,3], [0,0])
-        @test iscompatible([0,0], [3,3], [1,0])
-        @test iscompatible([0,0], [3,3], [2,0])
+        @test iscompatible([0,0], [3,3], t00)
+        @test iscompatible([0,0], [3,3], t10)
+        @test iscompatible([0,0], [3,3], t20)
 
         # non-zero momentum depends on what the identity translation is
-        @test iscompatible([1,0], [3,3], [0,0]) # zero translation is always identity, so it's always fine
-        @test !iscompatible([1,0], [3,3], [1,0]) # these two translations are not compatible
-        @test !iscompatible([1,0], [3,3], [2,0]) #   with momentum [1,1]
+        @test iscompatible([1,0], [3,3], t00) # zero translation is always identity, so it's always fine
+        @test !iscompatible([1,0], [3,3], t10) # these two translations are not compatible
+        @test !iscompatible([1,0], [3,3], t20) #   with momentum [1,1]
 
-        @test iscompatible([0,0], [3,3], [[0,0], [1,0], [2,0]])
-        @test !iscompatible([1,0], [3,3], [[0,0], [1,0], [2,0]])
+        @test iscompatible([0,0], [3,3], [t00, t10, t20])
+        @test !iscompatible([1,0], [3,3], [t00, t10, t20])
     end
 
     @testset "lattice permutation" begin
@@ -200,9 +204,9 @@ using TightBindingLattice
             end
         end
 
-        @test iscompatible(lattice, tsym, 1, [1,0]) # Γ point
-        @test !iscompatible(lattice, tsym, 2, [1,0]) # Γ point
-        @test !iscompatible(lattice, tsym, 2, [[0,0], [1,0]])
+        @test iscompatible(lattice, tsym, 1, TranslationOperation([1,0])) # Γ point
+        @test !iscompatible(lattice, tsym, 2, TranslationOperation([1,0])) # Γ point
+        @test !iscompatible(lattice, tsym, 2, TranslationOperation.([[0,0], [1,0]]))
 
     end # testset lattice permutation
 

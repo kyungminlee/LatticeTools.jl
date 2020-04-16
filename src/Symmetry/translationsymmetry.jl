@@ -45,7 +45,6 @@ struct TranslationSymmetry <: AbstractSymmetry
         return TranslationSymmetry(lattice.hypercube)
     end
 
-
     function TranslationSymmetry(hypercube::HypercubicLattice; tol::Real=Base.rtoldefault(Float64))
         if dimension(hypercube) == 1
             generator_translations = ones(Int, (1,1))
@@ -187,41 +186,125 @@ end
 # end
 
 
+# function iscompatible(orthogonal_momentum::AbstractVector{<:Integer},
+#                       orthogonal_shape::AbstractVector{<:Integer},
+#                       identity_translation::AbstractVector{<:Integer})
+#     value = Rational{Int}(0)
+#     for (i, j, k) in zip(orthogonal_momentum, identity_translation, orthogonal_shape)
+#         value += i * j // k
+#     end
+#     return mod(value, 1) == 0
+# end
+
+
+# function iscompatible(orthogonal_momentum::AbstractVector{<:Integer},
+#                       orthogonal_shape::AbstractVector{<:Integer},
+#                       identity_translations::AbstractVector{<:AbstractVector{<:Integer}})
+#     return all(iscompatible(orthogonal_momentum, orthogonal_shape, t) for t in identity_translations)
+# end
+
+
+function iscompatible(# lattice::Lattice,
+                      tsym::TranslationSymmetry,
+                      tsym_irrep_index::Integer,
+                      identity_translation::AbstractVector{<:Integer})
+    # !iscompatible(lattice, tsym) && return false
+    orthogonal_momentum = tsym.orthogonal_coordinates[tsym_irrep_index]
+    orthogonal_shape = tsym.orthogonal_shape
+    return iscompatible(orthogonal_momentum, orthogonal_shape, identity_translation)
+end
+
+
+function iscompatible(# lattice::Lattice,
+                      tsym::TranslationSymmetry,
+                      tsym_irrep_index::Integer,
+                      identity_translations::AbstractVector{<:AbstractVector{<:Integer}})
+    orthogonal_momentum = tsym.orthogonal_coordinates[tsym_irrep_index]
+    orthogonal_shape = tsym.orthogonal_shape
+    return all(iscompatible(orthogonal_momentum, orthogonal_shape, t) for t in identity_translations)
+end
+
+
+raw"""
+    iscompatible(orthogonal_momentum, orthogonal_shape, identity_translation)
+
+Test whether the given orthogonal momentum is compatible with the given identity translation. Since identity translation can only be in the trivial representation
+(otherwise the phases cancel), this function tests whether the phase is unity.
+The orthogonal momentum is given as an integer vector.
+
+```math
+  t(\rho) \vert \psi(k) \rangle
+    = exp(i k \cdot \rho ) \vert \psi(k) \rangle
+    = \vert \psi(k) \rangle
+```
+
+When the orthogonal shape is [n₁, n₂, ...], orthogonal momentum is chosen from
+{0, 1, ..., n₁-1} × {0,1, ..., n₂-1} × ....
+"""
 function iscompatible(orthogonal_momentum::AbstractVector{<:Integer},
                       orthogonal_shape::AbstractVector{<:Integer},
-                      identity_translation::AbstractVector{<:Integer})
+                      identity_translation::TranslationOperation{<:Integer})
     value = Rational{Int}(0)
-    for (i, j, k) in zip(orthogonal_momentum, identity_translation, orthogonal_shape)
+    for (i, j, k) in zip(orthogonal_momentum, identity_translation.displacement, orthogonal_shape)
         value += i * j // k
     end
     return mod(value, 1) == 0
 end
 
 
+"""
+    iscompatible(orthogonal_momentum, orthogonal_shape, identity_translations)
+
+Test whether the given momentum is compatible with *all* the identity translations.
+"""
 function iscompatible(orthogonal_momentum::AbstractVector{<:Integer},
                       orthogonal_shape::AbstractVector{<:Integer},
-                      identity_translations::AbstractVector{<:AbstractVector{<:Integer}})
+                      identity_translations::AbstractVector{<:TranslationOperation{<:Integer}})
     return all(iscompatible(orthogonal_momentum, orthogonal_shape, t) for t in identity_translations)
 end
 
+
+"""
+    iscompatible(lattice, translation_symmetry)
+
+Test whether lattice and the symmetry are compatible.
+For translation symmetry, this means that the hypercubic lattice for both are the same.
+"""
 function iscompatible(lattice::Lattice, tsym::TranslationSymmetry)
     return lattice.hypercube == tsym.hypercube
 end
 
+
+"""
+    iscompatible(lattice, tsym, tsym_irrep_index, identity_translation)
+
+Test whether the identity translation is compatible with the irreducible representation
+of the translation symmetry, i.e. (1) lattice is compatible with translation symmetry, 
+and (2) 
+"""
 function iscompatible(lattice::Lattice,
                       tsym::TranslationSymmetry,
                       tsym_irrep_index::Integer,
-                      identity_translation::AbstractVector{<:Integer})
+                      identity_translation::TranslationOperation{<:Integer})
+    !iscompatible(lattice, tsym) && return false
     orthogonal_momentum = tsym.orthogonal_coordinates[tsym_irrep_index]
     orthogonal_shape = tsym.orthogonal_shape
     return iscompatible(orthogonal_momentum, orthogonal_shape, identity_translation)
 end
 
+
 function iscompatible(lattice::Lattice,
                       tsym::TranslationSymmetry,
                       tsym_irrep_index::Integer,
-                      identity_translations::AbstractVector{<:AbstractVector{<:Integer}})
+                      identity_translations::AbstractVector{<:TranslationOperation{<:Integer}})
     orthogonal_momentum = tsym.orthogonal_coordinates[tsym_irrep_index]
     orthogonal_shape = tsym.orthogonal_shape
-    return all(iscompatible(orthogonal_momentum, orthogonal_shape, t) for t in identity_translations)
+    return all(iscompatible(orthogonal_momentum, orthogonal_shape, t)
+                   for t in identity_translations)
+end
+
+
+function translation_symmetry_embedding(lattice::Lattice)
+    tsym = TranslationSymmetry(lattice)
+    return embed(lattice, tsym)
 end

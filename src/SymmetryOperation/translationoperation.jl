@@ -23,6 +23,10 @@ function convert(::Type{TranslationOperation{S}}, obj::IdentityOperation{S}) whe
     return TranslationOperation{S}(zeros(S, dim))
 end
 
+function convert(::Type{TranslationOperation{S}}, displacement::AbstractVector{S}) where S
+    return TranslationOperation{S}(displacement)
+end
+
 import Base.promote_rule
 function promote_rule(::Type{TranslationOperation{S}}, ::Type{IdentityOperation{S}}) where S
     return TranslationOperation{S}
@@ -30,7 +34,7 @@ end
 
 
 dimension(arg::TranslationOperation) = length(arg.displacement)
-# domaintype(arg::TranslationOperation{S}) where S = S
+
 
 import Base.==
 function (==)(lhs::TranslationOperation{S}, rhs::TranslationOperation{S}) where S
