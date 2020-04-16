@@ -6,6 +6,7 @@ using TightBindingLattice
 
     @testset "IdentityOperation" begin
         @test iden == IdentityOperation{Int}(2)
+       
         @test iden != IdentityOperation(Int, 3)
         @test iden * iden == iden
         n=0;  @test iden^n == iden
@@ -15,6 +16,8 @@ using TightBindingLattice
         @test isidentity(iden)
         @test domaintype(iden) == Int
         @test dimension(iden) == 2
+        @test hash(iden) == hash(IdentityOperation(Int, 2))
+        @test hash(iden) != hash(IdentityOperation(Int, 3))
         
         @test apply_operation(iden, [3,2]) == [3,2]
         @test iden([3,2]) == [3,2]
@@ -39,10 +42,11 @@ using TightBindingLattice
         end
 
         @testset "equality" begin
-            @test hash(t1) == hash(t1p)
             @test t1 == t1p
             @test t1 !== t1p
             @test isequal(t1, t1p)
+            @test hash(t1) == hash(t1p)
+            @test hash(t1) != hash(t2)
         end
 
         @testset "equality-heterotype" begin
@@ -103,6 +107,7 @@ using TightBindingLattice
             @test p1 !== p1p
             @test isequal(p1, p1p)
             @test hash(p1) == hash(p1p)
+            @test hash(p1) != hash(p2)
         end
 
         @testset "equality-heterotype" begin
@@ -164,17 +169,32 @@ using TightBindingLattice
         m10 = PointOperation([-1  0;  0  1])
         t10 = TranslationOperation([ 1,  0])
 
-        let sop = SpaceOperation(c4p)
+        @testset "properties" begin
+            s0 = SpaceOperation(Int, 2)
+            s1 = SpaceOperation(c4p, t10)
+            @test domaintype(s0) == Int
+            @test dimension(s0) == 2
+            @test isidentity(s0)
+            @test !isidentity(s1)
+            @test dimension(s1) == 2
+        end
+
+        @testset "equality" begin
+            sop = SpaceOperation(c4p)
             @test sop.matrix == [0 -1; 1 0] && sop.displacement == [0,0]
-        end
-        let sop = SpaceOperation(t10)
+            
+            sop = SpaceOperation(t10)
             @test sop.matrix == [1 0; 0 1] && sop.displacement == [1,0]
-        end
-        let sop = SpaceOperation(c4p, t10)
+            
+            sop = SpaceOperation(c4p, t10)
             @test sop.matrix == [0 -1; 1 0] && sop.displacement == [1, 0]
             @test sop == SpaceOperation([0 -1; 1 0], [1, 0])
             @test sop != SpaceOperation([0 -1; 1 0], [0, 1])
             @test sop != SpaceOperation([0  1; 1 0], [0, 1])
+
+            @test hash(sop) == hash(SpaceOperation([0 -1; 1 0], [1,0]))
+            @test hash(sop) != hash(SpaceOperation([0  1; 1 0], [1,0]))
+            @test hash(sop) != hash(SpaceOperation([0 -1; 1 0], [0,0]))
         end
 
         @testset "product" begin
