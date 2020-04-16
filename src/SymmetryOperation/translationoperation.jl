@@ -37,7 +37,7 @@ dimension(arg::TranslationOperation) = length(arg.displacement)
 isidentity(arg::TranslationOperation) = iszero(arg.displacement)
 
 import Base.hash
-hash(arg::TranslationOperation) = hash(arg.displacement)
+hash(arg::TranslationOperation{S}) where S = hash(arg.displacement, hash(TranslationOperation{S}))
 
 
 ## operators

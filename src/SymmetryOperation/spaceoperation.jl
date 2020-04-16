@@ -5,7 +5,7 @@ export isidentity
 # export canonize
 # export iscanonical
 
-using LinearAlgebra
+import LinearAlgebra
 
 
 # S(r) = M ⋅ ( r + R )
@@ -14,11 +14,11 @@ struct SpaceOperation{S<:Real} <:AbstractSymmetryOperation{S}
     displacement::Vector{S}
 
     function SpaceOperation{S}(dim::Integer) where {S<:Real}
-        new{S}(Matrix(I, dim, dim), zeros(Bool, dim))
+        new{S}(Matrix(LinearAlgebra.I, dim, dim), zeros(Bool, dim))
     end
 
     function SpaceOperation(::Type{S}, dim::Integer) where {S<:Real}
-        new{S}(Matrix(I, dim, dim), zeros(Bool, dim))
+        new{S}(Matrix(LinearAlgebra.I, dim, dim), zeros(Bool, dim))
     end
 
     function SpaceOperation(matrix::AbstractMatrix{S},
@@ -44,27 +44,8 @@ struct SpaceOperation{S<:Real} <:AbstractSymmetryOperation{S}
 
     function SpaceOperation(translation::TranslationOperation{S}) where S
         dim = dimension(translation)
-        return new{S}(Matrix(I, dim, dim), translation.displacement)
+        return new{S}(Matrix(LinearAlgebra.I, dim, dim), translation.displacement)
     end
-
-    # function SpaceOperation(arg::ProductOperation{S, F}) where {S, F}
-    #     dim = dimension(arg)
-    #     if dim == 0
-    #         throw(ArgumentError("Cannot create space operation out of an identity (dimension undetermined)"))
-    #     end
-        
-    #     canon = canonize(arg)
-    #     if isa(canon, IdentityOperation)
-    #         return SpaceOperation(Matrix(I, dim, dim), zeros(S, dim))
-    #     elseif isa(canon, TranslationOperation)
-    #         return SpaceOperation(Matrix(I, dim, dim), canon.displacement)
-    #     elseif isa(canon, PointOperation)
-    #         return SpaceOperation(canon.matrix, zeros(S, dim))
-    #     else
-    #         @assert length(canon.factors) == 2
-    #         return SpaceOperation(canon.factors[1], canon.factors[2])
-    #     end
-    # end
 end
 
 
@@ -95,12 +76,19 @@ function promote_rule(::Type{SpaceOperation{S}}, ::Type{PointOperation{S}}) wher
 end
 
 
-
-
+## properties
 dimension(op::SpaceOperation) = length(op.displacement)
 isidentity(op::SpaceOperation) = isone(op.matrix) && iszero(op.displacement)
-# domaintype(op::SpaceOperation{S}) where S = S
 
+function hash(op::SpaceOperation{S}) where S
+    h = hash(SpaceOperation{S})
+    h = hash(op.matrix, h)
+    h = hash(op.displacement, h)
+    return h
+end
+
+
+## operators
 import Base.==
 function (==)(lhs::SpaceOperation{S}, rhs::SpaceOperation{S}) where S
     return lhs.matrix == rhs.matrix && lhs.displacement == rhs.displacement
@@ -195,6 +183,8 @@ function (^)(op::SpaceOperation{S}, power::Integer) where S
     end
 end
 
+
+## apply
 function apply_operation(op::SpaceOperation{S}, coord::AbstractArray{S}) where {S<:Real}
     return op.matrix * (coord .+ op.displacement)
 end

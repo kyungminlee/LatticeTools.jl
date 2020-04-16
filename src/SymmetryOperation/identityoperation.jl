@@ -18,7 +18,8 @@ end
 ## properties
 isidentity(arg::IdentityOperation) = true
 dimension(arg::IdentityOperation) = arg.dimension
-domaintype(arg::IdentityOperation{S}) where {S<:Real} = S
+
+hash(arg::IdentityOperation{S}) where S = hash(arg.dimension, hash(IdentityOperation{S}))
 
 
 ## operators

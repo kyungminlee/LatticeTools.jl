@@ -39,7 +39,7 @@ dimension(arg::PointOperation) = size(arg.matrix, 1)
 isidentity(arg::PointOperation) = isone(arg.matrix)
 
 import Base.hash
-hash(arg::PointOperation) = hash(arg.matrix)
+hash(arg::PointOperation{S}) where S = hash(arg.matrix, hash(PointOperation{S}))
 
 
 ## operators
