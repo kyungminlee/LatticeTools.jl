@@ -55,6 +55,7 @@ end
 
 
 function little_symmetry(tsym::TranslationSymmetry, psym::PointSymmetry)
+
     (lg_raw, lg_matrep_raw, lg_element_names_raw) = let
         lg_elements = little_group_elements(tsym, psym)
         lg_raw = little_group(tsym, psym, lg_elements)
@@ -84,7 +85,12 @@ end
 
 
 function little_symmetry(tsym::TranslationSymmetry, tsym_irrep::Integer, psym::PointSymmetry)
-    tsym_irrep == 1 && return psym
+    if !iscompatible(tsym, psym)
+        throw(ArgumentError("translation and point symmetries are not compatible"))
+    end
+
+    tsym_irrep == 1 && return little_symmetry(tsym, psym)
+
     (lg_raw, lg_matrep_raw, lg_element_names_raw) = let
         lg_elements = little_group_elements(tsym, tsym_irrep, psym)
         lg_raw = little_group(tsym, psym, lg_elements)

@@ -8,9 +8,9 @@ export element, elements
 export symmetry
 export generator_elements, generator_indices
 
-abstract type AbstractSymmetryEmbedding <:AbstractSymmetry end
+abstract type AbstractSymmetryEmbedding<:AbstractSymmetry end
 
-struct SymmetryEmbedding{SymmetryType} <:AbstractSymmetryEmbedding
+struct SymmetryEmbedding{SymmetryType}<:AbstractSymmetryEmbedding
     lattice::Lattice
     symmetry::SymmetryType
     elements::Vector{SitePermutation}
@@ -46,22 +46,64 @@ for f in [:group_order,
 end
 
 
+function iscompatible(tsymbed::SymmetryEmbedding{TranslationSymmetry},
+                      psymbed::SymmetryEmbedding{PointSymmetry})::Bool
+    return tsymbed.lattice == psymbed.lattice
+end
+
+
+function iscompatible(tsymbed::SymmetryEmbedding{TranslationSymmetry},
+                      tsym_irrep_index::Integer,
+                      psymbed::SymmetryEmbedding{PointSymmetry})::Bool
+    # TODO: Check lattice?
+    ! iscompatible(tsymbed, psymbed) && return false
+    return little_group_elements(tsymbed, tsym_irrep_index, psymbed) == 1:group_order(psymbed)
+end
+
+
+function little_group_elements(tsymbed::SymmetryEmbedding{TranslationSymmetry},
+                               psymbed::SymmetryEmbedding{PointSymmetry})
+    if !iscompatible(tsymbed, psymbed)
+        throw(ArgumentError("translation and point symmetry-embeddings not compatible"))
+    end
+    return little_group_elements(symmetry(tsymbed), symmetry(psymbed))
+end
+
+
+function little_group_elements(tsymbed::SymmetryEmbedding{TranslationSymmetry},
+                                tsym_irrep_index::Integer,
+                                psymbed::SymmetryEmbedding{PointSymmetry})
+    if !iscompatible(tsymbed, psymbed)
+        throw(ArgumentError("translation and point symmetry-embeddings not compatible"))
+    end
+    return little_group_elements(symmetry(tsymbed), tsym_irrep_index, symmetry(psymbed))
+end
+
+
 function little_symmetry(tsymbed::SymmetryEmbedding{TranslationSymmetry},
                          psymbed::SymmetryEmbedding{PointSymmetry})
-    @warn "Read TODO"
-    tsymbed.lattice != psymbed.lattice && throw(ArgumentError("lattices do not match"))
+    if !iscompatible(tsymbed, psymbed)
+        throw(ArgumentError("translation and point symmetry-embeddings not compatible"))
+    end
     psym_little = little_symmetry(tsymbed.symmetry, psymbed.symmetry)
     return SymmetryEmbedding(psymbed.lattice, psym_little)
-    # TODO: maybe the lattice is too small that psymbed elements become identity.
-    # Deal with those. In fact, it is the only thing that needs to be dealt with.
-    # Lattice incompatibility with point symmetry is already dealt with at the level of embedding.
+    # TODO: maybe the lattice is too small that psymbed elements become identity. Deal with those.
 end
+
 
 function little_symmetry(tsymbed::SymmetryEmbedding{TranslationSymmetry},
                          tsym_irrep::Integer,
                          psymbed::SymmetryEmbedding{PointSymmetry})
+    if !iscompatible(tsymbed, psymbed)
+        throw(ArgumentError("translation and point symmetry-embeddings not compatible"))
+    end
     psym_little = little_symmetry(tsymbed.symmetry, tsym_irrep, psymbed.symmetry)
     return SymmetryEmbedding(psymbed.lattice, psym_little)
+end
+
+
+function symmetry_name(arg::SymmetryEmbedding)
+    return "Embed[$(symmetry_name(symmetry(arg))) on $(arg.lattice.hypercube.scale_matrix)]"
 end
 
 
@@ -94,37 +136,6 @@ function embed(lattice::Lattice, tsym::TranslationSymmetry, psym::PointSymmetry)
     SymmorphicSpaceSymmetryEmbedding(lattice, tsym, psym)
 end
 
-
-function iscompatible(tsymbed::SymmetryEmbedding{TranslationSymmetry},
-                      psymbed::SymmetryEmbedding{PointSymmetry})::Bool
-    return tsymbed.lattice == psymbed.lattice
-end
-
-
-function iscompatible(tsymbed::SymmetryEmbedding{TranslationSymmetry},
-                      tsym_irrep_index::Integer,
-                      psymbed::SymmetryEmbedding{PointSymmetry})::Bool
-    # TODO: Check lattice?
-    ! iscompatible(tsymbed, psymbed) && return false
-    return little_group_elements(tsymbed, tsym_irrep_index, psymbed) == 1:group_order(psymbed)
-end
-
-
-function little_group_elements(tsymbed::SymmetryEmbedding{TranslationSymmetry},
-                               psymbed::SymmetryEmbedding{PointSymmetry})
-    return little_group_elements(symmetry(tsymbed), symmetry(psymbed))
-end
-
-function little_group_elements(tsymbed::SymmetryEmbedding{TranslationSymmetry},
-                                tsym_irrep_index::Integer,
-                                psymbed::SymmetryEmbedding{PointSymmetry})
-    return little_group_elements(symmetry(tsymbed), tsym_irrep_index, symmetry(psymbed))
-end
-
-
-function symmetry_name(arg::SymmetryEmbedding)
-    return "Embed[$(symmetry_name(symmetry(arg))) on $(arg.lattice.hypercube.scale_matrix)]"
-end
 
 function symmetry_name(arg::SymmorphicSpaceSymmetryEmbedding)
     name1 = symmetry_name(symmetry(arg.component1))
