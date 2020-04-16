@@ -1,9 +1,6 @@
 export IdentityOperation
 
 export apply_operation
-export canonize
-export iscanonical
-export combinable
 export domaintype
 export isidentity
 
@@ -17,6 +14,14 @@ struct IdentityOperation{S<:Real} <: AbstractSymmetryOperation{S}
     end
 end
 
+
+## properties
+isidentity(arg::IdentityOperation) = true
+dimension(arg::IdentityOperation) = arg.dimension
+domaintype(arg::IdentityOperation{S}) where {S<:Real} = S
+
+
+## operators
 import Base.==
 function (==)(lhs::IdentityOperation{S}, rhs::IdentityOperation{S}) where S 
     lhs.dimension == rhs.dimension
@@ -50,10 +55,8 @@ import Base.^
 import Base.inv
 inv(arg::IdentityOperation) = arg
 
-# combinable(lhs::IdentityOperation{S}, rhs::IdentityOperation{S}) where {S<:Real} = dimension(lhs) == dimension(rhs)
-# combinable(lhs::AbstractSymmetryOperation{S}, rhs::IdentityOperation{S}) where {S<:Real} = dimension(lhs) == dimension(rhs)
-# combinable(lhs::IdentityOperation{S}, rhs::AbstractSymmetryOperation{S}) where {S<:Real} = dimension(lhs) == dimension(rhs)
 
+## apply
 function apply_operation(symop::IdentityOperation{S}, arg::AbstractArray{S}) where {S<:Real}
     if dimension(symop) != size(arg, 1)
         throw(DimensionMismatch("dimension mismatch"))
@@ -68,10 +71,3 @@ function (symop::IdentityOperation{S})(arg::AbstractArray{S}) where {S<:Real}
     return arg
 end
 
-isidentity(arg::IdentityOperation) = true
-
-# canonize(arg::IdentityOperation) = arg
-# iscanonical(arg::IdentityOperation) = true
-
-dimension(arg::IdentityOperation) = arg.dimension
-domaintype(arg::IdentityOperation{S}) where {S<:Real} = S

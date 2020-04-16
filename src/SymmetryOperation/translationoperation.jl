@@ -1,9 +1,6 @@
 export TranslationOperation
 
 export apply_operation
-# export canonize
-# export iscanonical
-# export combinable
 export domaintype
 export isidentity
 
@@ -17,6 +14,7 @@ struct TranslationOperation{S<:Real} <:AbstractSymmetryOperation{S}
     end
 end
 
+
 import Base.convert
 function convert(::Type{TranslationOperation{S}}, obj::IdentityOperation{S}) where S
     dim = dimension(obj)
@@ -27,15 +25,22 @@ function convert(::Type{TranslationOperation{S}}, displacement::AbstractVector{S
     return TranslationOperation{S}(displacement)
 end
 
+
 import Base.promote_rule
 function promote_rule(::Type{TranslationOperation{S}}, ::Type{IdentityOperation{S}}) where S
     return TranslationOperation{S}
 end
 
 
+## properties
 dimension(arg::TranslationOperation) = length(arg.displacement)
+isidentity(arg::TranslationOperation) = iszero(arg.displacement)
+
+import Base.hash
+hash(arg::TranslationOperation) = hash(arg.displacement)
 
 
+## operators
 import Base.==
 function (==)(lhs::TranslationOperation{S}, rhs::TranslationOperation{S}) where S
     lhs.displacement == rhs.displacement
@@ -67,13 +72,8 @@ function inv(arg::TranslationOperation{S}) where S
     TranslationOperation{S}(-arg.displacement)
 end
 
-# combinable(lhs::TranslationOperation{S}, rhs::TranslationOperation{S}) where S = dimension(lhs) == dimension(rhs)
 
-
-import Base.hash
-hash(arg::TranslationOperation) = hash(arg.displacement)
-
-
+## apply
 function apply_operation(symop::TranslationOperation{S},
                          coord::AbstractArray{S}) where {S<:Real}
     return coord .+ symop.displacement
@@ -83,15 +83,3 @@ function (symop::TranslationOperation{S})(coord::AbstractVector{S}) where S
     return coord .+ symop.displacement
 end
 
-
-# function canonize(arg::TranslationOperation{S}) where S
-#     if iszero(arg.displacement) 
-#         IdentityOperation{S}(dimension(arg))
-#     else
-#         arg
-#     end
-# end
-
-# iscanonical(arg::TranslationOperation) = !iszero(arg.displacement)
-
-isidentity(arg::TranslationOperation) = iszero(arg.displacement)

@@ -1,19 +1,14 @@
 export PointOperation
 
 export apply_operation
-# export canonize
-# export iscanonical
-# export combinable
 export domaintype
 export isidentity
 
 struct PointOperation{S<:Real} <:AbstractSymmetryOperation{S}
     matrix::Matrix{S}
-
     function PointOperation(matrix::AbstractMatrix{S}) where {S<:Real}
         return PointOperation{S}(matrix)
     end
-
     function PointOperation{S}(matrix::AbstractMatrix{S2}) where {S<:Real, S2<:Real}
         dim = size(matrix, 1)
         size(matrix, 2) != dim && throw(DimensionMismatch("matrix not square"))
@@ -41,8 +36,6 @@ end
 
 ## properties
 dimension(arg::PointOperation) = size(arg.matrix, 1)
-# domaintype(arg::PointOperation{S}) where S = S
-# combinable(lhs::PointOperation{S}, rhs::PointOperation{S}) where S = dimension(lhs) == dimension(rhs)
 isidentity(arg::PointOperation) = isone(arg.matrix)
 
 import Base.hash
@@ -55,16 +48,16 @@ function (==)(lhs::PointOperation{S}, rhs::PointOperation{S}) where S
     lhs.matrix == rhs.matrix
 end
 function (==)(pop::PointOperation{S}, iden::IdentityOperation{S}) where S
-    isone(pop.matrix)
+    isidentity(pop)
 end
 function (==)(iden::IdentityOperation{S}, pop::PointOperation{S}) where S
-    isone(pop.matrix)
+    isidentity(pop)
 end
 function (==)(pop::PointOperation{S}, top::TranslationOperation{S}) where S
-    isone(pop.matrix) && iszero(top.displacement)
+    isidentity(pop) && isidentity(top)
 end
 function (==)(top::TranslationOperation{S}, pop::PointOperation{S}) where S
-    isone(pop.matrix) && iszero(top.displacement)
+    isidentity(pop) && isidentity(top)
 end
 
 import Base.isequal
@@ -88,11 +81,13 @@ function inv(lhs::PointOperation{S}) where {S<:Real}
     PointOperation{S}(ExactLinearAlgebra.inverse(lhs.matrix))
 end
 
-## apply
-apply_operation(symop::PointOperation, coord::AbstractVector{<:Real}) = symop.matrix * coord
-(symop::PointOperation)(coord::AbstractVector{<:Real}) = symop.matrix * coord
 
-# ## canonical
-# canonize(arg::PointOperation) = isone(arg.matrix) ? IdentityOperation() : arg
-# iscanonical(arg::PointOperation) = !isone(arg.matrix)
+## apply
+function apply_operation(symop::PointOperation{S}, coord::AbstractVector{S}) where S
+    symop.matrix * coord
+end
+
+function (symop::PointOperation{S})(coord::AbstractVector{S}) where S
+    symop.matrix * coord
+end
 
