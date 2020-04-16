@@ -26,7 +26,10 @@ import Base.^
 # isless(lhs::SitePermutation, rhs::SitePermutation) = isless(lhs.permutation, rhs.permutation)
 
 import Base.hash
-hash(arg::SitePermutation) = hash(arg.permutation)
+
+function hash(arg::SitePermutation, h::UInt=UInt(0x0))
+    return hash(arg.permutation, hash(SitePermutation, h))
+end
 
 import Base.inv
 inv(sp::SitePermutation) = SitePermutation(inv(sp.permutation))

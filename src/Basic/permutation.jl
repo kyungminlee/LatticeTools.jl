@@ -140,8 +140,9 @@ end
 
 
 import Base.hash
-hash(p ::Permutation) = hash(p.map)
-
+function hash(p::Permutation, h::UInt=UInt(0x0))
+    return hash(p.map, hash(Permutation, h))
+end
 
 function generate_group(generators::Permutation...)
     change = true
