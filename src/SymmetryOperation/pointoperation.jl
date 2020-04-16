@@ -23,8 +23,8 @@ function convert(::Type{PointOperation{S}}, obj::IdentityOperation{S}) where S
     return PointOperation{S}(Matrix(I, dim, dim))
 end
 
-function convert(::Type{TranslationOperation{S}}, matrix::AbstractMatrix{S}) where S
-    return TranslationOperation{S}(matrix)
+function convert(::Type{PointOperation{S}}, matrix::AbstractMatrix{S}) where S
+    return PointOperation{S}(matrix)
 end
 
 
