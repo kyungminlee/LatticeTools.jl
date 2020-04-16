@@ -7,13 +7,12 @@ export group,
        irrep, irreps, irrep_dimension, num_irreps,
        element, elements,
        element_name, element_names,
-       generators, generator_indices
+       generator_elements, generator_indices
 
 export isbragg
 export iscompatible
 export iscompatible2
 
-export get_irrep_iterator
 export symmetry_name
 
 
@@ -155,7 +154,7 @@ num_irreps(sym::TranslationSymmetry) = length(sym.irreps)
 irrep_dimension(sym::TranslationSymmetry, idx::Integer) = 1 # size(first(sym.irreps[idx]), 1)
 
 generator_indices(sym::TranslationSymmetry) = sym.generators
-generators(sym::TranslationSymmetry) = elements(sym, sym.generators)
+generator_elements(sym::TranslationSymmetry) = element(sym, sym.generators)
 
 
 function symmetry_name(sym::TranslationSymmetry)
