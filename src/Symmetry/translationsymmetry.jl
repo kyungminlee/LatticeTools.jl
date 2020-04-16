@@ -29,12 +29,12 @@ struct TranslationSymmetry <: AbstractSymmetry
     element_names::Vector{String}
 
     # for quick
-    generator_translations ::Matrix{Int}
+    generator_translations::Matrix{Int}
     orthogonal_shape::Vector{Int}
     orthogonal_coordinates::Vector{Vector{Int}}
 
-    orthogonal_to_coordinate_map ::Dict{Vector{Int}, Vector{Int}}
-    coordinate_to_orthogonal_map ::Dict{Vector{Int}, Vector{Int}}
+    orthogonal_to_coordinate_map::Dict{Vector{Int}, Vector{Int}}
+    coordinate_to_orthogonal_map::Dict{Vector{Int}, Vector{Int}}
 
     orthogonal_scale_matrix::Matrix{Int}
     orthogonal_reduced_reciprocal_scale_matrix::Matrix{Rational{Int}}
