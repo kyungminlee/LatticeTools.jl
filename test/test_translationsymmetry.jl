@@ -34,11 +34,7 @@ using TightBindingLattice
         @test irrep(tsym, 2) == irreps(tsym)[2]
         @test irrep(tsym, 3) == irreps(tsym)[3]
         @test all(irrep_dimension(tsym, i) == 1 for i in 1:3)
-
-
-
     end
-
 
     @testset "orthogonal lattice" begin
         tsym = TranslationSymmetry([3 0; 0 3])
