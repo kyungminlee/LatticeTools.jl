@@ -149,17 +149,17 @@ using TightBindingLattice
         t20 = TranslationOperation([2,0])
 
         # Gamma point is always ok
-        @test iscompatible2([3,3], [0,0], t00)
-        @test iscompatible2([3,3], [0,0], t10)
-        @test iscompatible2([3,3], [0,0], t20)
+        @test isbragg([3,3], [0,0], [0,0])
+        @test isbragg([3,3], [0,0], [1,0])
+        @test isbragg([3,3], [0,0], [2,0])
 
         # non-zero momentum depends on what the identity translation is
-        @test iscompatible2([3,3], [1,0], t00) # zero translation is always identity, so it's always fine
-        @test !iscompatible2([3,3], [1,0], t10) # these two translations are not compatible
-        @test !iscompatible2([3,3], [1,0], t20) #   with momentum [1,1]
+        @test isbragg([3,3], [1,0], [0,0]) # zero translation is always identity, so it's always fine
+        @test !isbragg([3,3], [1,0], [1,0]) # these two translations are not compatible
+        @test !isbragg([3,3], [1,0], [2,0]) #   with momentum [1,1]
 
-        @test iscompatible2([3,3], [0,0], [t00, t10, t20])
-        @test !iscompatible2([3,3], [1,0], [t00, t10, t20])
+        @test isbragg([3,3], [0,0], [[0,0], [1,0], [2,0]])
+        @test !isbragg([3,3], [1,0], [[0,0], [1,0], [2,0]])
     end
 
     @testset "lattice permutation" begin

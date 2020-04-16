@@ -11,7 +11,6 @@ export group,
 
 export isbragg
 export iscompatible
-export iscompatible2
 
 export symmetry_name
 
@@ -194,6 +193,22 @@ end
 # end
 
 
+raw"""
+    isbragg(orthogonal_shape, orthogonal_momentum, identity_translation)
+
+Test whether the given orthogonal momentum is compatible with the given identity translation. Since identity translation can only be in the trivial representation
+(otherwise the phases cancel), this function tests whether the phase is unity.
+The orthogonal momentum is given as an integer vector.
+
+```math
+  t(\rho) \vert \psi(k) \rangle
+    = exp(i k \cdot \rho ) \vert \psi(k) \rangle
+    = \vert \psi(k) \rangle
+```
+
+When the orthogonal shape is [n₁, n₂, ...], orthogonal momentum is chosen from
+{0, 1, ..., n₁-1} × {0,1, ..., n₂-1} × ....
+"""
 function isbragg(shape::AbstractVector{<:Integer},
                  integer_momentum::AbstractVector{<:Integer},
                  identity_translation::AbstractVector{<:Integer})
@@ -210,11 +225,14 @@ function isbragg(shape::AbstractVector{<:Integer},
 end
 
 
-# function iscompatible(orthogonal_momentum::AbstractVector{<:Integer},
-#                       orthogonal_shape::AbstractVector{<:Integer},
-#                       identity_translations::AbstractVector{<:AbstractVector{<:Integer}})
-#     return all(iscompatible(orthogonal_momentum, orthogonal_shape, t) for t in identity_translations)
-# end
+raw"""
+    isbragg(orthogonal_shape, orthogonal_momentum, identity_translations)
+"""
+function isbragg(shape::AbstractVector{<:Integer},
+                 integer_momentum::AbstractVector{<:Integer},
+                 identity_translations::AbstractVector{<:AbstractVector{<:Integer}})
+    return all(isbragg(shape, integer_momentum, t) for t in identity_translations)
+end
 
 
 # function iscompatible(# lattice::Lattice,
@@ -238,43 +256,27 @@ end
 # end
 
 
-raw"""
-    iscompatible(orthogonal_momentum, orthogonal_shape, identity_translation)
-
-Test whether the given orthogonal momentum is compatible with the given identity translation. Since identity translation can only be in the trivial representation
-(otherwise the phases cancel), this function tests whether the phase is unity.
-The orthogonal momentum is given as an integer vector.
-
-```math
-  t(\rho) \vert \psi(k) \rangle
-    = exp(i k \cdot \rho ) \vert \psi(k) \rangle
-    = \vert \psi(k) \rangle
-```
-
-When the orthogonal shape is [n₁, n₂, ...], orthogonal momentum is chosen from
-{0, 1, ..., n₁-1} × {0,1, ..., n₂-1} × ....
-"""
-function iscompatible2(orthogonal_shape::AbstractVector{<:Integer},
-                      orthogonal_momentum::AbstractVector{<:Integer},
-                      identity_translation::TranslationOperation{<:Integer})
-    value = Rational{Int}(0)
-    for (n, i, j) in zip(orthogonal_shape, orthogonal_momentum, identity_translation.displacement)
-        value += i * j // n
-    end
-    return mod(value, 1) == 0
-end
+# function iscompatible(orthogonal_shape::AbstractVector{<:Integer},
+#                       orthogonal_momentum::AbstractVector{<:Integer},
+#                       identity_translation::TranslationOperation{<:Integer})
+#     value = Rational{Int}(0)
+#     for (n, i, j) in zip(orthogonal_shape, orthogonal_momentum, identity_translation.displacement)
+#         value += i * j // n
+#     end
+#     return mod(value, 1) == 0
+# end
 
 
-"""
-    iscompatible(orthogonal_momentum, orthogonal_shape, identity_translations)
+# """
+#     iscompatible(orthogonal_momentum, orthogonal_shape, identity_translations)
 
-Test whether the given momentum is compatible with *all* the identity translations.
-"""
-function iscompatible2(orthogonal_shape::AbstractVector{<:Integer},
-                      orthogonal_momentum::AbstractVector{<:Integer},
-                      identity_translations::AbstractVector{<:TranslationOperation{<:Integer}})
-    return all(iscompatible2(orthogonal_shape, orthogonal_momentum, t) for t in identity_translations)
-end
+# Test whether the given momentum is compatible with *all* the identity translations.
+# """
+# function iscompatible(orthogonal_shape::AbstractVector{<:Integer},
+#                       orthogonal_momentum::AbstractVector{<:Integer},
+#                       identity_translations::AbstractVector{<:TranslationOperation{<:Integer}})
+#     return all(iscompatible(orthogonal_shape, orthogonal_momentum, t) for t in identity_translations)
+# end
 
 
 """

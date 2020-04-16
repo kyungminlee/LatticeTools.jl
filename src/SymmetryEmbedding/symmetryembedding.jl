@@ -95,7 +95,6 @@ function embed(lattice::Lattice, tsym::TranslationSymmetry, psym::PointSymmetry)
 end
 
 
-
 function iscompatible(tsymbed::SymmetryEmbedding{TranslationSymmetry},
                       psymbed::SymmetryEmbedding{PointSymmetry})::Bool
     return tsymbed.lattice == psymbed.lattice
