@@ -63,6 +63,8 @@ using LinearAlgebra
             @test !iscompatible(tsymbed, 3, psymbed)
             @test iscompatible(tsymbed, 4, psymbed)
 
+            @test_throws ArgumentError embed(make_lattice(unitcell, [1 0; 0 1]), psym)
+
             let lattice_large = make_lattice(unitcell, [4 0; 0 4])
                 tsymbed_large = translation_symmetry_embedding(lattice_large)
                 @test !iscompatible(tsymbed_large, psymbed)
@@ -98,10 +100,11 @@ using LinearAlgebra
         @test_throws ArgumentError embed(kagome.lattice, kagome.point_symmetry)
         @test_throws ArgumentError embed(kagome.lattice, kagome.translation_symmetry, kagome.point_symmetry)
 
+        # lattice too small for faithful embedding
         kagome = make_kagome_lattice([1 0; 0 1])
         tsym_embed = embed(kagome.lattice, kagome.translation_symmetry)
-        psym_embed = embed(kagome.lattice, kagome.point_symmetry)
-        ssym_embed = embed(kagome.lattice, kagome.translation_symmetry, kagome.point_symmetry)
+        @test_throws ArgumentError embed(kagome.lattice, kagome.point_symmetry)
+        @test_throws ArgumentError embed(kagome.lattice, kagome.translation_symmetry, kagome.point_symmetry)
 
         kagome = make_kagome_lattice([2 0; 0 2])
         tsym_embed = embed(kagome.lattice, kagome.translation_symmetry)
@@ -111,7 +114,6 @@ using LinearAlgebra
         @test group_order(tsym_embed) == group_order(kagome.translation_symmetry)
         @test group_order(psym_embed) == group_order(kagome.point_symmetry)
         #@test group_order(ssym_embed) == group_order(kagome.translation_symmetry) * group_order(kagome.point_symmetry)
-
 
         kagome = make_kagome_lattice([4 -2; 2 2])
         tsym_embed = embed(kagome.lattice, kagome.translation_symmetry)
