@@ -93,6 +93,14 @@ using TightBindingLattice: simplify_name
                         conjugacy_classes, character_table, irreps,
                         element_names, matrix_representations, hermann_mauguinn, schoenflies)
         end
+        let irreps = [
+                    [ones(ComplexF64, 1, 1), ones(ComplexF64, 1, 1)],
+                    [ones(ComplexF64, 1, 1), 2*ones(ComplexF64, 1, 1)],
+            ]
+            @test_throws ArgumentError PointSymmetry(group, generators,
+                        conjugacy_classes, character_table, irreps,
+                        element_names, matrix_representations, hermann_mauguinn, schoenflies)
+        end
         let element_names = ["1", "2", "3"]
             @test_throws ArgumentError PointSymmetry(group, generators,
                         conjugacy_classes, character_table, irreps,
