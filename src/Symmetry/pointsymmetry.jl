@@ -5,8 +5,8 @@ export  group_order,
         element_name, element_names,
         group_multiplication_table,
         character_table,
-        irrep, irreps, num_irreps, irrep_dimension
-       
+        irrep, irreps, num_irreps, irrep_dimension,
+        generators, generator_indices
 
 export iscompatible
 export project
@@ -187,6 +187,9 @@ irreps(sym::PointSymmetry) = sym.irreps
 irrep(sym::PointSymmetry, idx::Integer) = sym.irreps[idx]
 num_irreps(sym::PointSymmetry) = length(sym.irreps)
 irrep_dimension(sym::PointSymmetry, idx::Integer) = size(first(irrep(sym, idx)), 2)
+
+generator_indices(sym::PointSymmetry) = sym.generators
+generators(sym::PointSymmetry) = elements(sym, sym.generators)
 
 symmetry_name(sym::PointSymmetry) = "PointSymmetry[$(sym.hermann_mauguinn)]"
 

@@ -6,6 +6,7 @@ export SymmorphicSpaceSymmetryEmbedding
 export embed
 export element, elements
 export symmetry
+export generators, generator_indices
 
 abstract type AbstractSymmetryEmbedding <:AbstractSymmetry end
 
@@ -26,6 +27,8 @@ end
 elements(symbed::SymmetryEmbedding) = symbed.elements
 element(symbed::SymmetryEmbedding, g) = symbed.elements[g]
 symmetry(symbed::SymmetryEmbedding) = symbed.symmetry
+generators(symbed::SymmetryEmbedding) = element(symbed, generator_indices(symbed.symmetry))
+generator_indices(symbed::SymmetryEmbedding) = generator_indices(symbed.symmetry)
 
 for f in [:group_order,
           :group_multiplication_table,

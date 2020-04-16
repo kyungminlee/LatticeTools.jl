@@ -6,7 +6,8 @@ export group,
        character_table,
        irrep, irreps, irrep_dimension, num_irreps,
        element, elements,
-       element_name, element_names
+       element_name, element_names,
+       generators, generator_indices
 
 export isbragg
 export iscompatible
@@ -152,6 +153,10 @@ irreps(sym::TranslationSymmetry) = sym.irreps
 irrep(sym::TranslationSymmetry, idx) = sym.irreps[idx]
 num_irreps(sym::TranslationSymmetry) = length(sym.irreps)
 irrep_dimension(sym::TranslationSymmetry, idx::Integer) = 1 # size(first(sym.irreps[idx]), 1)
+
+generator_indices(sym::TranslationSymmetry) = sym.generators
+generators(sym::TranslationSymmetry) = elements(sym, sym.generators)
+
 
 function symmetry_name(sym::TranslationSymmetry)
     n11 = sym.hypercube.scale_matrix[1,1]
@@ -304,9 +309,9 @@ function iscompatible(#lattice::Lattice,
                       tsym::TranslationSymmetry,
                       tsym_irrep_index::Integer,
                       identity_translations::AbstractVector{<:TranslationOperation{<:Integer}})
-    orthogonal_momentum = tsym.orthogonal_coordinates[tsym_irrep_index]
     orthogonal_shape = tsym.orthogonal_shape
-    return all(iscompatible2(orthogonal_shape, orthogonal_momentum, t)
+    orthogonal_momentum = tsym.orthogonal_coordinates[tsym_irrep_index]
+    return all(isbragg(orthogonal_shape, orthogonal_momentum, t.displacement)
                    for t in identity_translations)
 end
 
