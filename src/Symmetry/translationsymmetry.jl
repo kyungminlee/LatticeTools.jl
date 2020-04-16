@@ -8,7 +8,9 @@ export group,
        element, elements,
        element_name, element_names
 
+export isbragg
 export iscompatible
+export iscompatible2
 
 export get_irrep_iterator
 export symmetry_name
@@ -186,15 +188,20 @@ end
 # end
 
 
-# function iscompatible(orthogonal_momentum::AbstractVector{<:Integer},
-#                       orthogonal_shape::AbstractVector{<:Integer},
-#                       identity_translation::AbstractVector{<:Integer})
-#     value = Rational{Int}(0)
-#     for (i, j, k) in zip(orthogonal_momentum, identity_translation, orthogonal_shape)
-#         value += i * j // k
-#     end
-#     return mod(value, 1) == 0
-# end
+function isbragg(shape::AbstractVector{<:Integer},
+                 integer_momentum::AbstractVector{<:Integer},
+                 identity_translation::AbstractVector{<:Integer})
+    if length(integer_momentum) != length(shape)
+        throw(DimensionMismatch("lengths of momentum and shape do not match"))
+    elseif length(shape) != length(identity_translation)
+        throw(DimensionMismatch("lengths of shape and translation do not match"))
+    end
+    value = Rational{Int}(0)
+    for (i, j, k) in zip(integer_momentum, identity_translation, shape)
+        value += i * j // k
+    end
+    return mod(value, 1) == 0
+end
 
 
 # function iscompatible(orthogonal_momentum::AbstractVector{<:Integer},
@@ -204,25 +211,25 @@ end
 # end
 
 
-function iscompatible(# lattice::Lattice,
-                      tsym::TranslationSymmetry,
-                      tsym_irrep_index::Integer,
-                      identity_translation::AbstractVector{<:Integer})
-    # !iscompatible(lattice, tsym) && return false
-    orthogonal_momentum = tsym.orthogonal_coordinates[tsym_irrep_index]
-    orthogonal_shape = tsym.orthogonal_shape
-    return iscompatible(orthogonal_momentum, orthogonal_shape, identity_translation)
-end
+# function iscompatible(# lattice::Lattice,
+#                       tsym::TranslationSymmetry,
+#                       tsym_irrep_index::Integer,
+#                       identity_translation::AbstractVector{<:Integer})
+#     # !iscompatible(lattice, tsym) && return false
+#     orthogonal_momentum = tsym.orthogonal_coordinates[tsym_irrep_index]
+#     orthogonal_shape = tsym.orthogonal_shape
+#     return iscompatible(orthogonal_momentum, orthogonal_shape, identity_translation)
+# end
 
 
-function iscompatible(# lattice::Lattice,
-                      tsym::TranslationSymmetry,
-                      tsym_irrep_index::Integer,
-                      identity_translations::AbstractVector{<:AbstractVector{<:Integer}})
-    orthogonal_momentum = tsym.orthogonal_coordinates[tsym_irrep_index]
-    orthogonal_shape = tsym.orthogonal_shape
-    return all(iscompatible(orthogonal_momentum, orthogonal_shape, t) for t in identity_translations)
-end
+# function iscompatible(# lattice::Lattice,
+#                       tsym::TranslationSymmetry,
+#                       tsym_irrep_index::Integer,
+#                       identity_translations::AbstractVector{<:AbstractVector{<:Integer}})
+#     orthogonal_momentum = tsym.orthogonal_coordinates[tsym_irrep_index]
+#     orthogonal_shape = tsym.orthogonal_shape
+#     return all(iscompatible(orthogonal_momentum, orthogonal_shape, t) for t in identity_translations)
+# end
 
 
 raw"""
@@ -241,12 +248,12 @@ The orthogonal momentum is given as an integer vector.
 When the orthogonal shape is [n₁, n₂, ...], orthogonal momentum is chosen from
 {0, 1, ..., n₁-1} × {0,1, ..., n₂-1} × ....
 """
-function iscompatible(orthogonal_momentum::AbstractVector{<:Integer},
-                      orthogonal_shape::AbstractVector{<:Integer},
+function iscompatible2(orthogonal_shape::AbstractVector{<:Integer},
+                      orthogonal_momentum::AbstractVector{<:Integer},
                       identity_translation::TranslationOperation{<:Integer})
     value = Rational{Int}(0)
-    for (i, j, k) in zip(orthogonal_momentum, identity_translation.displacement, orthogonal_shape)
-        value += i * j // k
+    for (n, i, j) in zip(orthogonal_shape, orthogonal_momentum, identity_translation.displacement)
+        value += i * j // n
     end
     return mod(value, 1) == 0
 end
@@ -257,10 +264,10 @@ end
 
 Test whether the given momentum is compatible with *all* the identity translations.
 """
-function iscompatible(orthogonal_momentum::AbstractVector{<:Integer},
-                      orthogonal_shape::AbstractVector{<:Integer},
+function iscompatible2(orthogonal_shape::AbstractVector{<:Integer},
+                      orthogonal_momentum::AbstractVector{<:Integer},
                       identity_translations::AbstractVector{<:TranslationOperation{<:Integer}})
-    return all(iscompatible(orthogonal_momentum, orthogonal_shape, t) for t in identity_translations)
+    return all(iscompatible2(orthogonal_shape, orthogonal_momentum, t) for t in identity_translations)
 end
 
 
@@ -282,24 +289,24 @@ Test whether the identity translation is compatible with the irreducible represe
 of the translation symmetry, i.e. (1) lattice is compatible with translation symmetry, 
 and (2) 
 """
-function iscompatible(lattice::Lattice,
+function iscompatible(#lattice::Lattice,
                       tsym::TranslationSymmetry,
                       tsym_irrep_index::Integer,
                       identity_translation::TranslationOperation{<:Integer})
-    !iscompatible(lattice, tsym) && return false
+    #!iscompatible(lattice, tsym) && return false
     orthogonal_momentum = tsym.orthogonal_coordinates[tsym_irrep_index]
     orthogonal_shape = tsym.orthogonal_shape
-    return iscompatible(orthogonal_momentum, orthogonal_shape, identity_translation)
+    return isbragg(orthogonal_shape, orthogonal_momentum, identity_translation.displacement)
 end
 
 
-function iscompatible(lattice::Lattice,
+function iscompatible(#lattice::Lattice,
                       tsym::TranslationSymmetry,
                       tsym_irrep_index::Integer,
                       identity_translations::AbstractVector{<:TranslationOperation{<:Integer}})
     orthogonal_momentum = tsym.orthogonal_coordinates[tsym_irrep_index]
     orthogonal_shape = tsym.orthogonal_shape
-    return all(iscompatible(orthogonal_momentum, orthogonal_shape, t)
+    return all(iscompatible2(orthogonal_shape, orthogonal_momentum, t)
                    for t in identity_translations)
 end
 
