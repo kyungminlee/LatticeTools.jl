@@ -19,8 +19,15 @@ struct SymmetryEmbedding{SymmetryType}<:AbstractSymmetryEmbedding
         if !iscompatible(lattice, symmetry)
             throw(ArgumentError("lattice and symmetry are not compatible"))
         end
-        elements = [embed(lattice, elem) for elem in symmetry.elements]
-        new{SymmetryType}(lattice, symmetry, elements)
+        elems = [embed(lattice, elem) for elem in elements(symmetry)]
+        # @show symmetry
+        # @show elems
+        # @show hash.(elems)
+        # @show allunique(elems)
+        if !allunique(elems)
+            throw(ArgumentError("lattice too small for the symmetry operation (not faithful)"))
+        end
+        new{SymmetryType}(lattice, symmetry, elems)
     end
 end
 
@@ -71,8 +78,8 @@ end
 
 
 function little_group_elements(tsymbed::SymmetryEmbedding{TranslationSymmetry},
-                                tsym_irrep_index::Integer,
-                                psymbed::SymmetryEmbedding{PointSymmetry})
+                               tsym_irrep_index::Integer,
+                               psymbed::SymmetryEmbedding{PointSymmetry})
     if !iscompatible(tsymbed, psymbed)
         throw(ArgumentError("translation and point symmetry-embeddings not compatible"))
     end
@@ -97,7 +104,7 @@ function little_symmetry(tsymbed::SymmetryEmbedding{TranslationSymmetry},
     if !iscompatible(tsymbed, psymbed)
         throw(ArgumentError("translation and point symmetry-embeddings not compatible"))
     end
-    psym_little = little_symmetry(tsymbed.symmetry, tsym_irrep, psymbed.symmetry)
+    psym_little = little_symmetry(symmetry(tsymbed), tsym_irrep, symmetry(psymbed))
     return SymmetryEmbedding(psymbed.lattice, psym_little)
 end
 
@@ -122,6 +129,11 @@ struct SymmorphicSpaceSymmetryEmbedding<:AbstractSymmetryEmbedding
         end
         tels = [embed(lattice, elem) for elem in translation.elements]
         pels = [embed(lattice, elem) for elem in point.elements]
+
+        if !allunique(pels)
+            throw(ArgumentError("lattice too small for the point symmetry operation (not faithful)"))
+        end
+
         elements = [pop * top for top in tels, pop in pels]
         @assert size(elements) == (length(tels), length(pels))
         new(lattice, translation, point, elements)
