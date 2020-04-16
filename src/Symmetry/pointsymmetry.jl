@@ -11,7 +11,7 @@ export  group_order,
 export iscompatible
 export project
 
-export little_group_elements
+export little_group_element_indices
 export little_group
 export little_symmetry, little_symmetry_iso
 
@@ -242,7 +242,7 @@ function iscompatible(tsym::TranslationSymmetry,
                       tsym_irrep_index::Integer,
                       psym::PointSymmetry)::Bool
     ! iscompatible(tsym, psym) && return false
-    return little_group_elements(tsym, tsym_irrep_index, psym) == 1:group_order(psym)
+    return little_group_element_indices(tsym, tsym_irrep_index, psym) == 1:group_order(psym)
 end
 
 

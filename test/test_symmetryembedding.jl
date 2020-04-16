@@ -54,9 +54,9 @@ using LinearAlgebra
             @test little_symmetry(tsymbed, 3, psymbed).symmetry.hermann_mauguinn == "mm2"
             @test little_symmetry(tsymbed, 4, psymbed).symmetry.hermann_mauguinn == "4mm"
 
-            @test little_group_elements(tsymbed, psymbed) == 1:group_order(psymbed)
-            @test little_group_elements(tsymbed, 1, psymbed) == 1:group_order(psymbed)
-            @test length(little_group_elements(tsymbed, 2, psymbed)) < group_order(psymbed)
+            @test little_group_element_indices(tsymbed, psymbed) == 1:group_order(psymbed)
+            @test little_group_element_indices(tsymbed, 1, psymbed) == 1:group_order(psymbed)
+            @test length(little_group_element_indices(tsymbed, 2, psymbed)) < group_order(psymbed)
             
             @test iscompatible(tsymbed, 1, psymbed)
             @test !iscompatible(tsymbed, 2, psymbed)
@@ -71,8 +71,8 @@ using LinearAlgebra
                 for irrep_index in 1:num_irreps(tsymbed_large)
                     @test !iscompatible(tsymbed_large, irrep_index, psymbed)
                 end
-                @test_throws ArgumentError little_group_elements(tsymbed_large, psymbed)
-                @test_throws ArgumentError little_group_elements(tsymbed_large, 1, psymbed)
+                @test_throws ArgumentError little_group_element_indices(tsymbed_large, psymbed)
+                @test_throws ArgumentError little_group_element_indices(tsymbed_large, 1, psymbed)
                 @test_throws ArgumentError little_symmetry(tsymbed_large, psymbed)
                 @test_throws ArgumentError little_symmetry(tsymbed_large, 1, psymbed)
             end

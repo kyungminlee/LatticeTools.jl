@@ -49,36 +49,55 @@ for f in [:group_order,
 end
 
 
+"""
+    iscompatible(tsymbed, psymbed)
+
+Check whether the point symmetry embedding `psymbed` is compatible with
+the translation symmetry embedding `tsymbed`, i.e. whether they have
+the same "lattice".
+"""
 function iscompatible(tsymbed::SymmetryEmbedding{TranslationSymmetry},
                       psymbed::SymmetryEmbedding{PointSymmetry})::Bool
     return tsymbed.lattice == psymbed.lattice
 end
 
 
+"""
+    iscompatible(tsymbed, tsym_irrep_index, psymbed)
+
+Check whether the point symmetry embedding `psymbed` is compatible with
+the translation symmetry irrep defined by `tsym_irrep_index` and `symmetry(tsymbed)`.
+In other words, the little group elements 
+"""
 function iscompatible(tsymbed::SymmetryEmbedding{TranslationSymmetry},
                       tsym_irrep_index::Integer,
                       psymbed::SymmetryEmbedding{PointSymmetry})::Bool
     ! iscompatible(tsymbed, psymbed) && return false
-    return little_group_elements(tsymbed, tsym_irrep_index, psymbed) == 1:group_order(psymbed)
+    return little_group_element_indices(tsymbed, tsym_irrep_index, psymbed) == 1:group_order(psymbed)
 end
 
 
-function little_group_elements(tsymbed::SymmetryEmbedding{TranslationSymmetry},
+"""
+    little_group_element_indices(tsymbed, psymbed)
+
+
+"""
+function little_group_element_indices(tsymbed::SymmetryEmbedding{TranslationSymmetry},
                                psymbed::SymmetryEmbedding{PointSymmetry})
     if !iscompatible(tsymbed, psymbed)
         throw(ArgumentError("translation and point symmetry-embeddings not compatible"))
     end
-    return little_group_elements(symmetry(tsymbed), symmetry(psymbed))
+    return little_group_element_indices(symmetry(tsymbed), symmetry(psymbed))
 end
 
 
-function little_group_elements(tsymbed::SymmetryEmbedding{TranslationSymmetry},
+function little_group_element_indices(tsymbed::SymmetryEmbedding{TranslationSymmetry},
                                tsym_irrep_index::Integer,
                                psymbed::SymmetryEmbedding{PointSymmetry})
     if !iscompatible(tsymbed, psymbed)
         throw(ArgumentError("translation and point symmetry-embeddings not compatible"))
     end
-    return little_group_elements(symmetry(tsymbed), tsym_irrep_index, symmetry(psymbed))
+    return little_group_element_indices(symmetry(tsymbed), tsym_irrep_index, symmetry(psymbed))
 end
 
 

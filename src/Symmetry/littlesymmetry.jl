@@ -1,4 +1,4 @@
-export little_group_elements
+export little_group_element_indices
 export little_group
 export little_symmetry
 export little_symmetry_iso
@@ -9,14 +9,14 @@ export little_symmetry_iso
 """
     psym compatible with hypercube
 """
-function little_group_elements(tsym::TranslationSymmetry, psym::PointSymmetry)
+function little_group_element_indices(tsym::TranslationSymmetry, psym::PointSymmetry)
     lg_elements = [i for (i, elem) in enumerate(elements(psym))
                      if iscompatible(tsym, elem)]
     return lg_elements
 end
 
 
-function little_group_elements(tsym::TranslationSymmetry,
+function little_group_element_indices(tsym::TranslationSymmetry,
                                tsym_irrep_index::Integer,
                                psym::PointSymmetry)
     k1 = tsym.fractional_momenta[tsym_irrep_index]
@@ -32,7 +32,7 @@ end
 function little_group(tsym::TranslationSymmetry,
                       tsym_irrep_index::Integer,
                       psym::PointSymmetry)
-    lg_elems = little_group_elements(tsym, tsym_irrep_index, psym)
+    lg_elems = little_group_element_indices(tsym, tsym_irrep_index, psym)
     return little_group(tsym, psym, lg_elems)
 end
 
@@ -57,7 +57,7 @@ end
 function little_symmetry(tsym::TranslationSymmetry, psym::PointSymmetry)
 
     (lg_raw, lg_matrep_raw, lg_element_names_raw) = let
-        lg_elements = little_group_elements(tsym, psym)
+        lg_elements = little_group_element_indices(tsym, psym)
         lg_raw = little_group(tsym, psym, lg_elements)
         lg_matrep_raw = psym.matrix_representations[lg_elements]
         lg_element_names_raw = psym.element_names[lg_elements]
@@ -92,7 +92,7 @@ function little_symmetry(tsym::TranslationSymmetry, tsym_irrep::Integer, psym::P
     tsym_irrep == 1 && return little_symmetry(tsym, psym)
 
     (lg_raw, lg_matrep_raw, lg_element_names_raw) = let
-        lg_elements = little_group_elements(tsym, tsym_irrep, psym)
+        lg_elements = little_group_element_indices(tsym, tsym_irrep, psym)
         lg_raw = little_group(tsym, psym, lg_elements)
         lg_matrep_raw = psym.matrix_representations[lg_elements]
         lg_element_names_raw = psym.element_names[lg_elements]
@@ -127,7 +127,7 @@ Find little symmetry using group isomorphism
 function little_symmetry_iso(tsym::TranslationSymmetry, tsym_irrep_index::Integer, psym::PointSymmetry)
     tsym_irrep_index == 1 && return psym
     (lg_irrep, lg_matrep, lg_element_names) = let
-        lg_elements = little_group_elements(tsym, tsym_irrep_index, psym)
+        lg_elements = little_group_element_indices(tsym, tsym_irrep_index, psym)
 
         lg_raw = little_group(tsym, psym, lg_elements)
         lg_matrep_raw = psym.matrix_representations[lg_elements]

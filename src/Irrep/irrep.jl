@@ -87,14 +87,14 @@ end
 group_order(sic::SymmorphicIrrepComponent) = group_order(sic.component1) * group_order(sic.component2)
 
 
-function little_group_elements(tsic::IrrepComponent{TranslationSymmetry},
+function little_group_element_indices(tsic::IrrepComponent{TranslationSymmetry},
                                psym::PointSymmetry) ::Vector{Int}
-    return little_group_elements(tsic.symmetry, tsic.irrep_index, psym)
+    return little_group_element_indices(tsic.symmetry, tsic.irrep_index, psym)
 end
 
-function little_group_elements(tsic::IrrepComponent{SymmetryEmbedding{TranslationSymmetry}},
+function little_group_element_indices(tsic::IrrepComponent{SymmetryEmbedding{TranslationSymmetry}},
                                psymbed::SymmetryEmbedding{PointSymmetry}) ::Vector{Int}
-    return little_group_elements(symmetry(tsic.symmetry),
+    return little_group_element_indices(symmetry(tsic.symmetry),
                                  tsic.irrep_index,
                                  symmetry(psymbed))
 end
@@ -348,9 +348,9 @@ function get_irrep_iterator(lattice::Lattice,
 end
 
 
-function little_group_elements(tsic::TranslationSymmetryIrrepComponent,
+function little_group_element_indices(tsic::TranslationSymmetryIrrepComponent,
                                psym::PointSymmetry)
-    return little_group_elements(tsic.symmetry, tsic.irrep_index, psym)
+    return little_group_element_indices(tsic.symmetry, tsic.irrep_index, psym)
 end
 
 
