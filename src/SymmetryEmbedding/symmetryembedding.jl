@@ -20,10 +20,6 @@ struct SymmetryEmbedding{SymmetryType}<:AbstractSymmetryEmbedding
             throw(ArgumentError("lattice and symmetry are not compatible"))
         end
         elems = [embed(lattice, elem) for elem in elements(symmetry)]
-        # @show symmetry
-        # @show elems
-        # @show hash.(elems)
-        # @show allunique(elems)
         if !allunique(elems)
             throw(ArgumentError("lattice too small for the symmetry operation (not faithful)"))
         end
@@ -62,7 +58,6 @@ end
 function iscompatible(tsymbed::SymmetryEmbedding{TranslationSymmetry},
                       tsym_irrep_index::Integer,
                       psymbed::SymmetryEmbedding{PointSymmetry})::Bool
-    # TODO: Check lattice?
     ! iscompatible(tsymbed, psymbed) && return false
     return little_group_elements(tsymbed, tsym_irrep_index, psymbed) == 1:group_order(psymbed)
 end
@@ -92,9 +87,8 @@ function little_symmetry(tsymbed::SymmetryEmbedding{TranslationSymmetry},
     if !iscompatible(tsymbed, psymbed)
         throw(ArgumentError("translation and point symmetry-embeddings not compatible"))
     end
-    psym_little = little_symmetry(tsymbed.symmetry, psymbed.symmetry)
+    psym_little = little_symmetry(symmetry(tsymbed.symmetry), symmetry(psymbed))
     return SymmetryEmbedding(psymbed.lattice, psym_little)
-    # TODO: maybe the lattice is too small that psymbed elements become identity. Deal with those.
 end
 
 
