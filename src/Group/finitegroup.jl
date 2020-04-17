@@ -258,48 +258,35 @@ end
 """
     minimal_generating_set
 """
-function minimal_generating_set(group::FiniteGroup, predicate::Function=(x->true))
-    ord_group ::Int = group_order(group)
-    element_queue ::Vector{Tuple{Int, Int}} = collect(enumerate(group.period_lengths))
+function minimal_generating_set(group::FiniteGroup)
+    ord_group::Int = group_order(group)
+    element_queue::Vector{Tuple{Int, Int}} = collect(enumerate(group.period_lengths))
     sort!(element_queue, by=item->(-item[2], item[1]))
     
     function factorize(generators::Vector{Int}, span::BitSet, queue_begin::Int)::Bool
-        ord_span = length(span)
-        ord_span == ord_group && predicate(generators) && return true
+        length(span) == ord_group && return true
+        @assert(queue_begin <= ord_group)
 
-        for i in queue_begin:ord_group
-            (g, pl) = element_queue[i]
-            if ord_group % (ord_span * pl) == 0
-                new_span = generate_subgroup(group, group_product(group, span, g))
-                if length(new_span) == ord_span * pl # orthogonal
-                    push!(generators, g)
-                    factorize(generators, new_span, i+1) && return true
-                    pop!(generators)
-                end
-            end
-        end
-        # if failed to find orthogonal element, try other things
-        ord_prod_elem = Tuple{Int, Int}[]
-        for i in queue_begin:ord_group
-            new_span = generate_subgroup(group, group_product(group, span, g))
-            push!(ord_prod_elem, (-length(new_span), i))
-        end
-        sort!(ord_prod_elem)
-
-        #for i in queue_begin:ord_group
-        for (_, i) in ord_prod_elem
+        next_index = queue_begin
+        next_elem = element_queue[queue_begin][1]
+        next_span = generate_subgroup(group, group_product(group, span, next_elem))
+        
+        for i in (queue_begin+1):ord_group
             (g, _) = element_queue[i]
             new_span = generate_subgroup(group, group_product(group, span, g))
-            push!(generators, g)
-            factorize(generators, new_span, i+1) && return true
-            pop!(generators)
+            # @show queue_begin, i, new_span
+            if length(new_span) > length(next_span)
+                next_index = i
+                next_elem = g
+                next_span = new_span
+            end
         end
-        return false
+        # @show generators, queue_begin, next_elem, next_span
+        push!(generators, next_elem)
+        factorize(generators, next_span, next_index+1)
     end
     generators = Int[]
-    sizehint!(generators, ord_group)
-    result = factorize(generators, BitSet([1]), 1)
-    (!result) && error("factorization failed")
+    factorize(generators, BitSet([1]), 1)
     return generators
 end
 
