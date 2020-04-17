@@ -1,5 +1,40 @@
 export ExactLinearAlgebra
 
+import Base._round_rational
+
+if !applicable(_round_rational, Int, 1//2, RoundToZero)
+    function _round_rational(::Type{T}, x::Rational{Tr}, ::RoundingMode{:ToZero}) where {T,Tr}
+        if denominator(x) == zero(Tr) && T <: Integer
+            throw(DivideError())
+        elseif denominator(x) == zero(Tr)
+            return convert(T, copysign(one(Tr)//zero(Tr), numerator(x)))
+        end
+        convert(T,div(x.num,x.den))
+    end
+end
+
+if !applicable(_round_rational, Int, 1//2, RoundDown)
+    function _round_rational(::Type{T}, x::Rational{Tr}, ::RoundingMode{:Down}) where {T,Tr}
+        if denominator(x) == zero(Tr) && T <: Integer
+            throw(DivideError())
+        elseif denominator(x) == zero(Tr)
+            return convert(T, copysign(one(Tr)//zero(Tr), numerator(x)))
+        end
+        convert(T,fld(x.num,x.den))
+    end
+end
+
+if !applicable(_round_rational, Int, 1//2, RoundUp)
+    function _round_rational(::Type{T}, x::Rational{Tr}, ::RoundingMode{:Up}) where {T,Tr}
+        if denominator(x) == zero(Tr) && T <: Integer
+            throw(DivideError())
+        elseif denominator(x) == zero(Tr)
+            return convert(T, copysign(one(Tr)//zero(Tr), numerator(x)))
+        end
+        convert(T,cld(x.num,x.den))
+    end
+end
+
 module ExactLinearAlgebra
     using LinearAlgebra
     
