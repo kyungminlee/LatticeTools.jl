@@ -120,11 +120,12 @@ using TightBindingLattice
         end
     end
 
-    @testset "minimal generator" begin
+    @testset "minimal_generating_set" begin
         for i in 1:32
-            group = PointSymmetryDatabase.get(i).group
+            psym = PointSymmetryDatabase.get(i)
+            group = psym.group
             mgs = minimal_generating_set(group)
-            @show i
+            @test length(mgs) <= length(psym.generators)
             @test generate_subgroup(group, mgs) == BitSet(1:group_order(group))
         end
     end
