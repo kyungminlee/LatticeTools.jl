@@ -120,6 +120,15 @@ using TightBindingLattice
         end
     end
 
+    @testset "minimal generator" begin
+        for i in 1:32
+            group = PointSymmetryDatabase.get(i).group
+            mgs = minimal_generating_set(group)
+            @show i
+            @test generate_subgroup(group, mgs) == BitSet(1:group_order(group))
+        end
+    end
+
     @testset "group isomorphism" begin
         # 4
         group1 = FiniteGroup([1 2 3 4;
