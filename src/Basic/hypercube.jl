@@ -19,13 +19,19 @@ struct HypercubicLattice
     function HypercubicLattice(scale_matrix::AbstractMatrix{<:Integer})
         n, m = size(scale_matrix)
         n != m && throw(DimensionMismatch("scale_matrix is not square: dimensions are ($n, $m)"))
-        d = ExactLinearAlgebra.determinant(scale_matrix)
+        d = abs( ExactLinearAlgebra.determinant(scale_matrix) )
         d == 0 && throw(ArgumentError("scale matrix null"))
-        d = abs(d)
 
         inverse_scale_matrix = ExactLinearAlgebra.inverse(scale_matrix)
 
-        function wrap(r::AbstractArray{<:Integer}, mode::RoundingMode=RoundDown)
+        function wrap(r::AbstractArray{<:Integer})
+            rnd = (x) -> floor(Int, x)
+            R = rnd.(inverse_scale_matrix * r)
+            r2 = r - scale_matrix * R
+            return R, r2
+        end
+
+        function wrap(r::AbstractArray{<:Integer}, mode::RoundingMode)
             rnd = (x) -> round(Int, x, mode)
             R = rnd.(inverse_scale_matrix * r)
             r2 = r - scale_matrix * R
@@ -45,22 +51,7 @@ struct HypercubicLattice
 
         @assert length(coords) == d
         @assert all(wrap(r) == (zeros(n), r) for (i, r) in enumerate(coords))
-
-        coord_indices = Dict(r => i for (i, r) in enumerate(coords))
-
-        # function torus_wrap(r::AbstractVector{<:Integer})
-        #     @warn "torus_wrap is deprecated"
-        #     R = Int.(floor.(inverse_scale_matrix * r))
-        #     r2 = r - scale_matrix * R
-        #     return R, coord_indices[r2]
-        # end
-
-        # function torus_wrap(r::AbstractMatrix{<:Integer})
-        #     @warn "torus_wrap is deprecated"
-        #     R = Int.(floor.(inverse_scale_matrix * r))
-        #     r2 = r - scale_matrix * R # TODO: need to be tested
-        #     return R, [coord_indices[x] for x in eachcol(r2)]
-        # end
+        coord_indices = Dict{Vector{Int}, Int}(r => i for (i, r) in enumerate(coords))
 
         return new(scale_matrix, inverse_scale_matrix, coords, coord_indices, wrap)
     end
@@ -70,29 +61,23 @@ struct HypercubicLattice
                                coords::AbstractVector{<:AbstractVector{<:Integer}})
         n, m = size(scale_matrix)
         n != m && throw(DimensionMismatch("scale_matrix is not square: dimensions are ($n, $m)"))
-        d = ExactLinearAlgebra.determinant(scale_matrix)
+        d = abs( ExactLinearAlgebra.determinant(scale_matrix) )
         d == 0 && throw(ArgumentError("scale matrix null"))
-        d = abs(d)
+
+        !allunique(coords) && throw(ArgumentError("coordinates not unique"))
+        length(coords) != d && throw(ArgumentError("too few coordinates"))
 
         inverse_scale_matrix = ExactLinearAlgebra.inverse(scale_matrix)
-
         coord_indices = Dict{Vector{Int}, Int}(r => i for (i, r) in enumerate(coords))
 
-        # function torus_wrap(r ::AbstractVector{<:Integer})
-        #     @warn "torus_wrap is deprecated"
-        #     R = Int.(floor.(inverse_scale_matrix * r))
-        #     r2 = r - scale_matrix * R
-        #     return R, coord_indices[r2]
-        # end
+        function wrap(r::AbstractArray{<:Integer})
+            rnd = (x) -> floor(Int, x)
+            R = rnd.(inverse_scale_matrix * r)
+            r2 = r - scale_matrix * R
+            return R, r2
+        end
 
-        # function torus_wrap(r ::AbstractMatrix{<:Integer})
-        #     @warn "torus_wrap is deprecated"
-        #     R = Int.(floor.(inverse_scale_matrix * r))
-        #     r2 = r - scale_matrix * R # TODO: need to be tested
-        #     return R, [coord_indices[x] for x in eachcol(r2)]
-        # end
-
-        function wrap(r::AbstractArray{<:Integer}, mode::RoundingMode=RoundDown)
+        function wrap(r::AbstractArray{<:Integer}, mode::RoundingMode)
             rnd = (x) -> round(Int, x, mode)
             R = rnd.(inverse_scale_matrix * r)
             r2 = r - scale_matrix * R
@@ -102,8 +87,6 @@ struct HypercubicLattice
         if !all(wrap(r) == (zeros(n), r) for (i, r) in enumerate(coords))
             throw(ArgumentError("coordinates are not that of the hypercubic lattice with size $(scale_matrix)"))
         end
-        !allunique(coords) && throw(ArgumentError("coordinates not unique"))
-        length(coords) != d && throw(ArgumentError("too few coordinates"))
 
         return new(scale_matrix, inverse_scale_matrix, coords, coord_indices, wrap)
     end
@@ -111,6 +94,7 @@ end
 
 
 dimension(hypercube::HypercubicLattice) = size(hypercube.scale_matrix, 1)
+
 
 import Base.(==)
 
