@@ -212,9 +212,9 @@ function iscompatible(hypercube::HypercubicLattice, psym::PointSymmetry)::Bool
 end
 
 
-# TODO: Think about whether to include orbitalmap here.
 function iscompatible(lattice::Lattice, psym::PointSymmetry)::Bool
-    return iscompatible(lattice.hypercube, psym) && !isnothing(findorbitalmap(lattice.unitcell, psym))
+    return iscompatible(lattice.hypercube, psym) &&
+           !isnothing(findorbitalmap(lattice.unitcell, psym))
 end
 
 
