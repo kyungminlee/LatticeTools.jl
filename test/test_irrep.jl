@@ -64,7 +64,7 @@ using TightBindingLattice
             @test iscompatible(tsic, psym_little)
             lg_matrep = psym.matrix_representations[little_group_elements(tsic, psym)]
             @test !isnothing(group_isomorphism(little_group(tsic, psym),
-                             FiniteGroup(group_multiplication_table(lg_matrep))))
+                                FiniteGroup(group_multiplication_table(lg_matrep))))
             let psic = IrrepComponent(psym, 1, 1)
                 if k in [[0,0], [2,2]]
                     SymmorphicIrrepComponent(tsic, psic)
