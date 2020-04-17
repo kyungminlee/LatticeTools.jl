@@ -99,10 +99,12 @@ function little_group_elements(tsic::IrrepComponent{SymmetryEmbedding{Translatio
                                  symmetry(psymbed))
 end
 
+
 function little_group(tsic::IrrepComponent{TranslationSymmetry},
                       psym::PointSymmetry)::FiniteGroup
     return little_group(tsic.symmetry, tsic.irrep_index, psym)
 end
+
 
 function little_group(tsic::IrrepComponent{SymmetryEmbedding{TranslationSymmetry}},
                       psymbed::SymmetryEmbedding{PointSymmetry})::FiniteGroup
@@ -133,10 +135,8 @@ end
 
 function iscompatible(tsic::IrrepComponent{SymmetryEmbedding{TranslationSymmetry}},
                       psymbed::SymmetryEmbedding{PointSymmetry})::Bool
-    # TODO: Check lattice?
-    return iscompatible(symmetry(tsic.symmetry),
-                        tsic.irrep_index,
-                        symmetry(psymbed))
+    return iscompatible(tsic.symmetry, psymbed) &&
+           iscompatible(symmetry(tsic.symmetry), tsic.irrep_index, symmetry(psymbed))
 end
 
 
