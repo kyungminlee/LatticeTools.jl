@@ -11,8 +11,12 @@ export isabelian
 export minimal_generating_set
 export group_multiplication_table
 
+export element, elements
+export element_name, element_names
+
 export group_isomorphism
 export ishomomorphic
+
 using Combinatorics
 
 struct FiniteGroup <: AbstractGroup
@@ -94,6 +98,13 @@ import Base.==
 ==(lhs::FiniteGroup, rhs::FiniteGroup) = (lhs.multiplication_table == rhs.multiplication_table)
 
 
+element(group::FiniteGroup, g) = Base.OneTo(group_order(group))[g]
+elements(group::FiniteGroup) = Base.OneTo(group_order(group))
+
+element_name(group::FiniteGroup, g) = string.(element(group, g))
+element_names(group::FiniteGroup) = string.(elements(group))
+
+
 """
     group_order(group)
 
@@ -110,10 +121,12 @@ Order of group element (i.e. period length)
 group_order(group::FiniteGroup, g) = group.period_lengths[g]
 period_length(group::FiniteGroup, g) = group.period_lengths[g]
 
+
+group_multiplication_table(group::FiniteGroup) = group.multiplication_table
+
 isabelian(group::FiniteGroup) = group.multiplication_table == transpose(group.multiplication_table)
 
 
-group_multiplication_table(group::FiniteGroup) = group.multiplication_table
 
 
 function group_product(group::FiniteGroup) # a bit like currying
