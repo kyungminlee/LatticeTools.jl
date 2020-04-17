@@ -13,7 +13,6 @@ struct HypercubicLattice
     inverse_scale_matrix ::Matrix{Rational{Int}}
     coordinates ::Vector{Vector{Int}}
     coordinate_indices ::Dict{Vector{Int}, Int}
-    # torus_wrap ::Function
     wrap ::Function
 
     function HypercubicLattice(scale_matrix::AbstractMatrix{<:Integer})
@@ -23,13 +22,6 @@ struct HypercubicLattice
         d == 0 && throw(ArgumentError("scale matrix null"))
 
         inverse_scale_matrix = ExactLinearAlgebra.inverse(scale_matrix)
-
-        # function wrap(r::AbstractArray{<:Integer})
-        #     rnd = (x) -> floor(Int, x)
-        #     R = rnd.(inverse_scale_matrix * r)
-        #     r2 = r - scale_matrix * R
-        #     return R, r2
-        # end
 
         function wrap(r::AbstractArray{<:Integer}, mode::RoundingMode=RoundDown)
             rnd = (x) -> round(Int, x, mode)
@@ -69,13 +61,6 @@ struct HypercubicLattice
 
         inverse_scale_matrix = ExactLinearAlgebra.inverse(scale_matrix)
         coord_indices = Dict{Vector{Int}, Int}(r => i for (i, r) in enumerate(coords))
-
-        # function wrap(r::AbstractArray{<:Integer})
-        #     rnd = (x) -> floor(Int, x)
-        #     R = rnd.(inverse_scale_matrix * r)
-        #     r2 = r - scale_matrix * R
-        #     return R, r2
-        # end
 
         function wrap(r::AbstractArray{<:Integer}, mode::RoundingMode=RoundDown)
             rnd = (x) -> round(Int, x, mode)
