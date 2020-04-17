@@ -13,7 +13,7 @@ struct HypercubicLattice
     inverse_scale_matrix ::Matrix{Rational{Int}}
     coordinates ::Vector{Vector{Int}}
     coordinate_indices ::Dict{Vector{Int}, Int}
-    torus_wrap ::Function
+    # torus_wrap ::Function
     wrap ::Function
 
     function HypercubicLattice(scale_matrix ::AbstractMatrix{<:Integer})
@@ -55,21 +55,21 @@ struct HypercubicLattice
 
         coord_indices = Dict(r => i for (i, r) in enumerate(coords))
 
-        function torus_wrap(r::AbstractVector{<:Integer})
-            @warn "torus_wrap is deprecated"
-            R = Int.(floor.(inverse_scale_matrix * r))
-            r2 = r - scale_matrix * R
-            return R, coord_indices[r2]
-        end
+        # function torus_wrap(r::AbstractVector{<:Integer})
+        #     @warn "torus_wrap is deprecated"
+        #     R = Int.(floor.(inverse_scale_matrix * r))
+        #     r2 = r - scale_matrix * R
+        #     return R, coord_indices[r2]
+        # end
 
-        function torus_wrap(r::AbstractMatrix{<:Integer})
-            @warn "torus_wrap is deprecated"
-            R = Int.(floor.(inverse_scale_matrix * r))
-            r2 = r - scale_matrix * R # TODO: need to be tested
-            return R, [coord_indices[x] for x in eachcol(r2)]
-        end
+        # function torus_wrap(r::AbstractMatrix{<:Integer})
+        #     @warn "torus_wrap is deprecated"
+        #     R = Int.(floor.(inverse_scale_matrix * r))
+        #     r2 = r - scale_matrix * R # TODO: need to be tested
+        #     return R, [coord_indices[x] for x in eachcol(r2)]
+        # end
 
-        return new(scale_matrix, inverse_scale_matrix, coords, coord_indices, torus_wrap, wrap)
+        return new(scale_matrix, inverse_scale_matrix, coords, coord_indices, wrap)
     end
 
 
@@ -85,30 +85,31 @@ struct HypercubicLattice
 
         coord_indices = Dict{Vector{Int}, Int}(r => i for (i, r) in enumerate(coords))
 
-        function torus_wrap(r ::AbstractVector{<:Integer})
-            @warn "torus_wrap is deprecated"
-            R = Int.(floor.(inverse_scale_matrix * r))
-            r2 = r - scale_matrix * R
-            return R, coord_indices[r2]
-        end
+        # function torus_wrap(r ::AbstractVector{<:Integer})
+        #     @warn "torus_wrap is deprecated"
+        #     R = Int.(floor.(inverse_scale_matrix * r))
+        #     r2 = r - scale_matrix * R
+        #     return R, coord_indices[r2]
+        # end
 
-        function torus_wrap(r ::AbstractMatrix{<:Integer})
-            @warn "torus_wrap is deprecated"
-            R = Int.(floor.(inverse_scale_matrix * r))
-            r2 = r - scale_matrix * R # TODO: need to be tested
-            return R, [coord_indices[x] for x in eachcol(r2)]
-        end
+        # function torus_wrap(r ::AbstractMatrix{<:Integer})
+        #     @warn "torus_wrap is deprecated"
+        #     R = Int.(floor.(inverse_scale_matrix * r))
+        #     r2 = r - scale_matrix * R # TODO: need to be tested
+        #     return R, [coord_indices[x] for x in eachcol(r2)]
+        # end
 
-        function wrap(r ::AbstractVector{<:Integer})
-            R = Int.(floor.(inverse_scale_matrix * r))
+        function wrap(r::AbstractArray{<:Integer})
+            rnd = (x) -> floor(Int, x)
+            R = rnd.(inverse_scale_matrix * r)
             r2 = r - scale_matrix * R
             return R, r2
         end
 
-        function wrap(r ::AbstractMatrix{<:Integer})
-            #@warn "Need to be tested"
-            R = Int.(floor.(inverse_scale_matrix * r))
-            r2 = r - scale_matrix * R # TODO: need to be tested
+        function wrap(r::AbstractArray{<:Integer}, mode::RoundingMode)
+            rnd = (x) -> round(Int, x, mode)
+            R = rnd.(inverse_scale_matrix * r)
+            r2 = r - scale_matrix * R
             return R, r2
         end
 
@@ -118,7 +119,7 @@ struct HypercubicLattice
         !allunique(coords) && throw(ArgumentError("coordinates not unique"))
         length(coords) != d && throw(ArgumentError("too few coordinates"))
 
-        return new(scale_matrix, inverse_scale_matrix, coords, coord_indices, torus_wrap, wrap)
+        return new(scale_matrix, inverse_scale_matrix, coords, coord_indices, wrap)
     end
 end
 
