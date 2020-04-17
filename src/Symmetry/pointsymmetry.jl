@@ -223,13 +223,6 @@ function iscompatible(tsym::TranslationSymmetry, psym::PointSymmetry)::Bool
 end
 
 
-# function iscompatible(tsym::TranslationSymmetry, matrix::AbstractMatrix{<:Integer})::Bool
-#     sm = tsym.hypercube.scale_matrix
-#     smi = tsym.hypercube.inverse_scale_matrix
-#     return all(mod(x,1) == 0 for x in smi * matrix * sm)
-# end
-
-
 function iscompatible(tsym::TranslationSymmetry, pop::PointOperation{<:Integer})::Bool
     sm = tsym.hypercube.scale_matrix
     smi = tsym.hypercube.inverse_scale_matrix
@@ -239,9 +232,19 @@ end
 
 function iscompatible(tsym::TranslationSymmetry,
                       tsym_irrep_index::Integer,
+                      pop::PointOperation{<:Integer})::Bool
+    reciprocal_matrix = ExactLinearAlgebra.inverse(transpose(pop.matrix))
+    k1 = tsym.fractional_momenta[tsym_irrep_index]
+    k2 = (x -> mod(x, 1)).(reciprocal_matrix * k1)
+    return k1 == k2
+end
+
+
+function iscompatible(tsym::TranslationSymmetry,
+                      tsym_irrep_index::Integer,
                       psym::PointSymmetry)::Bool
-    ! iscompatible(tsym, psym) && return false
-    return little_group_elements(tsym, tsym_irrep_index, psym) == 1:group_order(psym)
+    return iscompatible(tsym, psym) &&
+           all(iscompatible(tsym, tsym_irrep_index, pop) for pop in generator_elements(psym))
 end
 
 
