@@ -266,6 +266,7 @@ function minimal_generating_set(group::FiniteGroup, predicate::Function=(x->true
     function factorize(generators::Vector{Int}, span::BitSet, queue_begin::Int)::Bool
         ord_span = length(span)
         ord_span == ord_group && predicate(generators) && return true
+
         for i in queue_begin:ord_group
             (g, pl) = element_queue[i]
             if ord_group % (ord_span * pl) == 0
@@ -278,8 +279,16 @@ function minimal_generating_set(group::FiniteGroup, predicate::Function=(x->true
             end
         end
         # if failed to find orthogonal element, try other things
+        ord_prod_elem = Tuple{Int, Int}[]
         for i in queue_begin:ord_group
-            (g, pl) = element_queue[i]
+            new_span = generate_subgroup(group, group_product(group, span, g))
+            push!(ord_prod_elem, (-length(new_span), i))
+        end
+        sort!(ord_prod_elem)
+
+        #for i in queue_begin:ord_group
+        for (_, i) in ord_prod_elem
+            (g, _) = element_queue[i]
             new_span = generate_subgroup(group, group_product(group, span, g))
             push!(generators, g)
             factorize(generators, new_span, i+1) && return true
