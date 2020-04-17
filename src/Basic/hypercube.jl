@@ -16,7 +16,7 @@ struct HypercubicLattice
     # torus_wrap ::Function
     wrap ::Function
 
-    function HypercubicLattice(scale_matrix ::AbstractMatrix{<:Integer})
+    function HypercubicLattice(scale_matrix::AbstractMatrix{<:Integer})
         n, m = size(scale_matrix)
         n != m && throw(DimensionMismatch("scale_matrix is not square: dimensions are ($n, $m)"))
         d = ExactLinearAlgebra.determinant(scale_matrix)
@@ -25,14 +25,7 @@ struct HypercubicLattice
 
         inverse_scale_matrix = ExactLinearAlgebra.inverse(scale_matrix)
 
-        function wrap(r::AbstractArray{<:Integer})
-            rnd = (x) -> floor(Int, x)
-            R = rnd.(inverse_scale_matrix * r)
-            r2 = r - scale_matrix * R
-            return R, r2
-        end
-
-        function wrap(r::AbstractArray{<:Integer}, mode::RoundingMode)
+        function wrap(r::AbstractArray{<:Integer}, mode::RoundingMode=RoundDown)
             rnd = (x) -> round(Int, x, mode)
             R = rnd.(inverse_scale_matrix * r)
             r2 = r - scale_matrix * R
@@ -99,14 +92,7 @@ struct HypercubicLattice
         #     return R, [coord_indices[x] for x in eachcol(r2)]
         # end
 
-        function wrap(r::AbstractArray{<:Integer})
-            rnd = (x) -> floor(Int, x)
-            R = rnd.(inverse_scale_matrix * r)
-            r2 = r - scale_matrix * R
-            return R, r2
-        end
-
-        function wrap(r::AbstractArray{<:Integer}, mode::RoundingMode)
+        function wrap(r::AbstractArray{<:Integer}, mode::RoundingMode=RoundDown)
             rnd = (x) -> round(Int, x, mode)
             R = rnd.(inverse_scale_matrix * r)
             r2 = r - scale_matrix * R
