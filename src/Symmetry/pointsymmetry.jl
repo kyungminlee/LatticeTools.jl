@@ -200,11 +200,16 @@ symmetry_name(sym::PointSymmetry) = "PointSymmetry[$(sym.hermann_mauguinn)]"
 #     _, elems = hypercube.wrap(matrix * hypercube.scale_matrix)
 #     all(iszero(elems)) # all, since scale_matrix
 # end
+# function iscompatible(tsym::TranslationSymmetry, matrix::AbstractMatrix{<:Integer})::Bool
+#     sm = tsym.hypercube.scale_matrix
+#     smi = tsym.hypercube.inverse_scale_matrix
+#     return all(mod(x,1) == 0 for x in smi * matrix * sm)
+# end
 
 
 function iscompatible(hypercube::HypercubicLattice, pop::PointOperation{<:Integer})::Bool
     _, elems = hypercube.wrap(pop.matrix * hypercube.scale_matrix)
-    all(iszero(elems)) # all, since scale_matrix
+    return iszero(elems)
 end
 
 
