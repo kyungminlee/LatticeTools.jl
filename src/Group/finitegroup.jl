@@ -232,6 +232,7 @@ function generate_subgroup(group::FiniteGroup,
                                                           <:AbstractVector{<:Integer}}}
     change = true
     subgroup = BitSet(generators)
+    push!(subgroup, 1)
     while change
         change = false
         for g1 in generators, g2 in subgroup
@@ -275,6 +276,14 @@ function minimal_generating_set(group::FiniteGroup, predicate::Function=(x->true
                     pop!(generators)
                 end
             end
+        end
+        # if failed to find orthogonal element, try other things
+        for i in queue_begin:ord_group
+            (g, pl) = element_queue[i]
+            new_span = generate_subgroup(group, group_product(group, span, g))
+            push!(generators, g)
+            factorize(generators, new_span, i+1) && return true
+            pop!(generators)
         end
         return false
     end
