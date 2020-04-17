@@ -3,6 +3,57 @@ using LinearAlgebra
 using TightBindingLattice
 
 @testset "basic" begin
+
+    @testset "round" begin
+        for Ti in [Int, Int8, Int16, Int32, Int64]
+            @test round(Ti,  1//2, RoundDown) == 0
+            @test round(Ti, -1//2, RoundDown) == -1
+            @test round(Ti,  1//2, RoundUp) == 1
+            @test round(Ti, -1//2, RoundUp) == 0
+            @test round(Ti,  1//2, RoundToZero) == 0
+            @test round(Ti, -1//2, RoundToZero) == 0
+
+            @test round(Ti,  1//1, RoundDown) == 1
+            @test round(Ti, -1//1, RoundDown) == -1
+            @test round(Ti,  1//1, RoundUp) == 1
+            @test round(Ti, -1//1, RoundUp) == -1
+            @test round(Ti,  1//1, RoundToZero) == 1
+            @test round(Ti, -1//1, RoundToZero) == -1
+
+            inf = 1 // 0
+            @test_throws DivideError round(Ti,  inf, RoundDown)
+            @test_throws DivideError round(Ti, -inf, RoundDown)
+            @test_throws DivideError round(Ti,  inf, RoundUp)
+            @test_throws DivideError round(Ti, -inf, RoundUp)
+            @test_throws DivideError round(Ti,  inf, RoundToZero)
+            @test_throws DivideError round(Ti, -inf, RoundToZero)
+        end
+
+        for Tf in [Float16, Float32, Float64]
+            @test round(Tf,  1//2, RoundDown) == 0.0
+            @test round(Tf, -1//2, RoundDown) == -1.0
+            @test round(Tf,  1//2, RoundUp) == 1.0
+            @test round(Tf, -1//2, RoundUp) == 0.0
+            @test round(Tf,  1//2, RoundToZero) == 0.0
+            @test round(Tf, -1//2, RoundToZero) == 0.0
+
+            @test round(Tf,  1//1, RoundDown) == 1.0
+            @test round(Tf, -1//1, RoundDown) == -1.0
+            @test round(Tf,  1//1, RoundUp) == 1.0
+            @test round(Tf, -1//1, RoundUp) == -1.0
+            @test round(Tf,  1//1, RoundToZero) == 1.0
+            @test round(Tf, -1//1, RoundToZero) == -1.0
+
+            inf = 1 // 0
+            @test round(Tf,  inf, RoundDown) == Inf
+            @test round(Tf, -inf, RoundDown) == -Inf
+            @test round(Tf,  inf, RoundUp) == Inf
+            @test round(Tf, -inf, RoundUp) == -Inf
+            @test round(Tf,  inf, RoundToZero) == Inf
+            @test round(Tf, -inf, RoundToZero) == -Inf
+        end
+    end
+
     @testset "gcd" begin
         using TightBindingLattice: extended_gcd
         let x = 3, y = 0
