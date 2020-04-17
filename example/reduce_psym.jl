@@ -14,4 +14,4 @@ perms = get_orbital_permutations(lattice, psym)
 
 tsym = TranslationSymmetry(lattice)
 
-lge = little_group_element_indices(tsym, psym)
+lge = little_group_elements(tsym, psym)

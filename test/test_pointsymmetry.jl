@@ -274,10 +274,10 @@ using TightBindingLattice: simplify_name
         @testset "little group" begin
             lattice = make_lattice(unitcell, [2 0; 0 2])
             tsym = TranslationSymmetry(lattice)
-            @test little_group_element_indices(tsym, 1, psym) == collect(1:8)
-            @test little_group_element_indices(tsym, 2, psym) == [1,2,5,6]
-            @test little_group_element_indices(tsym, 3, psym) == [1,2,5,6]
-            @test little_group_element_indices(tsym, 4, psym) == collect(1:8)
+            @test little_group_elements(tsym, 1, psym) == collect(1:8)
+            @test little_group_elements(tsym, 2, psym) == [1,2,5,6]
+            @test little_group_elements(tsym, 3, psym) == [1,2,5,6]
+            @test little_group_elements(tsym, 4, psym) == collect(1:8)
 
             @test little_group(tsym, 1, psym) == little_group(tsym, psym, 1:8)
             @test little_group(tsym, 2, psym) == little_group(tsym, psym, [1,2,5,6])
@@ -294,7 +294,7 @@ using TightBindingLattice: simplify_name
                     k = tsym.hypercube.coordinates[tsym_irrep]
                     @test iscompatible(tsym, tsym_irrep, psym) == (k in [[0,0], [2,2]])
                     @test iscompatible(tsym, tsym_irrep, psym_little)
-                    lg_matrep = psym.matrix_representations[little_group_element_indices(tsym, tsym_irrep, psym)]
+                    lg_matrep = psym.matrix_representations[little_group_elements(tsym, tsym_irrep, psym)]
                     @test !isnothing(group_isomorphism(little_group(tsym, tsym_irrep, psym),
                                                        FiniteGroup(group_multiplication_table(lg_matrep))
                                                        ))

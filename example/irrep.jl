@@ -31,7 +31,7 @@ for tsym_irrep in 1:num_irreps(tsym)
   k = tsym.hypercube.coordinates[tsym_irrep]
   @test iscompatible(tsym, tsym_irrep, psym) == (k in [[0,0], [2,2]])
   @test iscompatible(tsym, tsym_irrep, psym_little)
-  lg_matrep = psym.matrix_representations[little_group_element_indices(tsym, tsym_irrep, psym)]
+  lg_matrep = psym.matrix_representations[little_group_elements(tsym, tsym_irrep, psym)]
   @test !isnothing(group_isomorphism(little_group(tsym, tsym_irrep, psym),
                                      FiniteGroup(group_multiplication_table(lg_matrep))))
 

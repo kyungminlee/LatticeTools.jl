@@ -41,8 +41,8 @@ using TightBindingLattice
 
             @test little_group(tsic, psym) == little_group(tsicbed, psymbed)
             
-            lge1 = little_group_element_indices(tsic, psym)
-            lge2 = little_group_element_indices(tsicbed, psymbed)
+            lge1 = little_group_elements(tsic, psym)
+            lge2 = little_group_elements(tsicbed, psymbed)
             @test lge1 == lge2
             lg_matrep = psym.matrix_representations[lge1]
             @test !isnothing(group_isomorphism(little_group(tsym, tsym_irrep, psym),
@@ -62,7 +62,7 @@ using TightBindingLattice
 
             @test iscompatible(tsic, psym) == (k in [[0,0], [2,2]])
             @test iscompatible(tsic, psym_little)
-            lg_matrep = psym.matrix_representations[little_group_element_indices(tsic, psym)]
+            lg_matrep = psym.matrix_representations[little_group_elements(tsic, psym)]
             @test !isnothing(group_isomorphism(little_group(tsic, psym),
                              FiniteGroup(group_multiplication_table(lg_matrep))))
             let psic = IrrepComponent(psym, 1, 1)
@@ -140,7 +140,7 @@ using TightBindingLattice
             k = tsym.hypercube.coordinates[tsym_irrep]
             @test iscompatible(tsym, tsym_irrep, psym) == (k in [[0,0], [2,2]])
             @test iscompatible(tsym, tsym_irrep, psym_little)
-            lg_matrep = psym.matrix_representations[little_group_element_indices(tsym, tsym_irrep, psym)]
+            lg_matrep = psym.matrix_representations[little_group_elements(tsym, tsym_irrep, psym)]
             @test !isnothing(group_isomorphism(little_group(tsym, tsym_irrep, psym),
                                                                                   FiniteGroup(group_multiplication_table(lg_matrep))))
             let psic = PointSymmetryIrrepComponent(psym, 1, 1)
@@ -158,7 +158,7 @@ using TightBindingLattice
 
             @test iscompatible(tsic, psym) == (k in [[0,0], [2,2]])
             @test iscompatible(tsic, psym_little)
-            lg_matrep = psym.matrix_representations[little_group_element_indices(tsic, psym)]
+            lg_matrep = psym.matrix_representations[little_group_elements(tsic, psym)]
             @test !isnothing(group_isomorphism(little_group(tsic, psym),
                              FiniteGroup(group_multiplication_table(lg_matrep))))
             let psic = PointSymmetryIrrepComponent(psym, 1, 1)

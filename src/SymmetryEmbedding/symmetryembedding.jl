@@ -73,31 +73,31 @@ function iscompatible(tsymbed::SymmetryEmbedding{TranslationSymmetry},
                       tsym_irrep_index::Integer,
                       psymbed::SymmetryEmbedding{PointSymmetry})::Bool
     ! iscompatible(tsymbed, psymbed) && return false
-    return little_group_element_indices(tsymbed, tsym_irrep_index, psymbed) == 1:group_order(psymbed)
+    return little_group_elements(tsymbed, tsym_irrep_index, psymbed) == 1:group_order(psymbed)
 end
 
 
 """
-    little_group_element_indices(tsymbed, psymbed)
+    little_group_elements(tsymbed, psymbed)
 
 
 """
-function little_group_element_indices(tsymbed::SymmetryEmbedding{TranslationSymmetry},
+function little_group_elements(tsymbed::SymmetryEmbedding{TranslationSymmetry},
                                psymbed::SymmetryEmbedding{PointSymmetry})
     if !iscompatible(tsymbed, psymbed)
         throw(ArgumentError("translation and point symmetry-embeddings not compatible"))
     end
-    return little_group_element_indices(symmetry(tsymbed), symmetry(psymbed))
+    return little_group_elements(symmetry(tsymbed), symmetry(psymbed))
 end
 
 
-function little_group_element_indices(tsymbed::SymmetryEmbedding{TranslationSymmetry},
+function little_group_elements(tsymbed::SymmetryEmbedding{TranslationSymmetry},
                                tsym_irrep_index::Integer,
                                psymbed::SymmetryEmbedding{PointSymmetry})
     if !iscompatible(tsymbed, psymbed)
         throw(ArgumentError("translation and point symmetry-embeddings not compatible"))
     end
-    return little_group_element_indices(symmetry(tsymbed), tsym_irrep_index, symmetry(psymbed))
+    return little_group_elements(symmetry(tsymbed), tsym_irrep_index, symmetry(psymbed))
 end
 
 
