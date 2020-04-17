@@ -19,13 +19,13 @@ end
 function little_group_elements(tsym::TranslationSymmetry,
                                tsym_irrep_index::Integer,
                                psym::PointSymmetry)
-    k1 = tsym.fractional_momenta[tsym_irrep_index]
-    lg = Int[]
-    for (i_elem, matrep) in enumerate(psym.matrix_representations)
-        k2 = (x->mod(x,1)).(ExactLinearAlgebra.inverse(transpose(matrep)) * k1)
-        k2 == k1 && push!(lg, i_elem)
+    lge = Int[]
+    for (i_elem, pop) in enumerate(elements(psym))
+        if iscompatible(tsym, tsym_irrep_index, pop)
+            push!(lge, i_elem)
+        end
     end
-    return lg
+    return lge
 end
 
 
