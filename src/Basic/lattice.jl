@@ -42,3 +42,6 @@ function make_lattice(unitcell::UnitCell{O}, scale_matrix::AbstractMatrix{<:Inte
 
     return Lattice{O}(unitcell, hypercube, new_unitcell)
 end
+#TODO unit testing for lattice with wrong dimensions
+
+dimension(lattice::Lattice) = dimension(lattice.unitcell)
