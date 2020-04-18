@@ -1,7 +1,6 @@
-export SuperCell
-export make_supercell
 export make_lattice
 export Lattice
+export dimension
 
 
 struct Lattice{O}
@@ -21,6 +20,11 @@ function make_lattice(unitcell::UnitCell, scale::Integer)
 end
 
 function make_lattice(unitcell::UnitCell{O}, scale_matrix::AbstractMatrix{<:Integer}) where O
+    dim = dimension(unitcell)
+    if size(scale_matrix) != (dim, dim)
+        throw(DimensionMismatch("unitcell and scale_matrix should have the same dimension"))
+    end
+    
     hypercube = orthogonalize(HypercubicLattice(scale_matrix))
 
     new_latticevectors = unitcell.latticevectors * hypercube.scale_matrix
