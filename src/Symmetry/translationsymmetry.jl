@@ -40,7 +40,7 @@ struct TranslationSymmetry <: AbstractSymmetry
     fractional_momenta::Vector{Vector{Rational{Int}}}
 
     function TranslationSymmetry(shape::Matrix{<:Integer}; tol::Real=Base.rtoldefault(Float64))
-        return TranslationSymmetry(HypercubicLattice(shape))
+        return TranslationSymmetry(orthogonalize(HypercubicLattice(shape)))
     end
 
     function TranslationSymmetry(lattice::Lattice; tol::Real=Base.rtoldefault(Float64))
@@ -59,6 +59,7 @@ struct TranslationSymmetry <: AbstractSymmetry
         end
     end
 
+    
     function TranslationSymmetry(hypercube::HypercubicLattice,
                                  generator_translations::AbstractMatrix{<:Integer};
                                  tol::Real=Base.rtoldefault(Float64))
@@ -73,11 +74,10 @@ struct TranslationSymmetry <: AbstractSymmetry
         @assert isabelian(group)
         @assert ord_group == length(hypercube.coordinates)
 
-        elements = [TranslationOperation(v) for v in hypercube.coordinates]
-
         generators = Int[ hypercube.coordinate_indices[ hypercube.wrap(v)[2] ]
                              for v in eachcol(generator_translations) ]
 
+        # BEGIN Orthogonal
         orthogonal_shape = [group.period_lengths[g] for g in generators] # in "generator" coordinates
         orthogonal_coordinates = vec([[x...] for x in Iterators.product([0:(d-1) for d in orthogonal_shape]...)])
 
@@ -99,6 +99,12 @@ struct TranslationSymmetry <: AbstractSymmetry
                         for (g, v) in zip(generators, eachcol(generator_translations))]...
                 )
         orthogonal_reduced_reciprocal_scale_matrix = ExactLinearAlgebra.inverse(transpose(orthogonal_scale_matrix))
+        # END Orthogonal
+        
+        elements = [TranslationOperation(orthogonal_to_coordinate_map[r_ortho])
+                        for r_ortho in orthogonal_coordinates]
+
+        @assert hypercube.coordinates == [t.displacement for t in elements] "Remove this when hypercube coordinates convention is fixed"
 
         fractional_momenta = let modunit = x -> mod(x, 1)
             [modunit.( orthogonal_reduced_reciprocal_scale_matrix * orthogonal_integer_momentum )
@@ -134,6 +140,7 @@ struct TranslationSymmetry <: AbstractSymmetry
                    orthogonal_scale_matrix, orthogonal_reduced_reciprocal_scale_matrix,
                    fractional_momenta)
     end
+
 end
 
 group(sym::TranslationSymmetry) = sym.group
