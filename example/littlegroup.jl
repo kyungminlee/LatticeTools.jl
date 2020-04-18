@@ -52,7 +52,7 @@ lg_matrep2 = lg_matrep[ϕ]
 for idx in 1:num_irreps(tsym)
     psym_little = little_symmetry(tsym, idx, psym)
     @show idx
-    @show tsym.hypercube.coordinates[idx]
+    @show tsym.fractional_momenta[idx]
     @show psym_little.hermann_mauguinn, group_order(psym_little)
     @show iscompatible(tsym, idx, psym)
     @show iscompatible(tsym, idx, psym_little)
