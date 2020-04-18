@@ -183,13 +183,15 @@ using TightBindingLattice
             end
         end
 
-        @test isbragg(tsym.fractional_momenta[1], [1,0]) # Γ point
+        @test  isbragg(tsym.fractional_momenta[1], [1,0]) # Γ point
         @test !isbragg(tsym.fractional_momenta[2], [1,0]) # Γ point
         @test !isbragg(tsym.fractional_momenta[2], [[0,0], [1,0]])
-
     end # testset lattice permutation
 
     @testset "reduction" begin
+        @test_throws DimensionMismatch isbragg([4, 0], [2,0,0], [2,0])
+        @test_throws DimensionMismatch isbragg([4, 4], [2,0], [2,0,0])
+
         @test_throws ArgumentError isbragg([4, 0], [2,0], [2,0])
         @test_throws ArgumentError isbragg([-2, 2], [2,0], [2,0])
 
@@ -206,6 +208,8 @@ using TightBindingLattice
         @test  isbragg([3,3], [0,0], [[0,0], [1,0], [2,0]])
         @test !isbragg([3,3], [1,0], [[0,0], [1,0], [2,0]])
 
+        @test_throws DimensionMismatch isbragg([1//2, 2//4, 0//2], [2,0])
+
         # Gamma point is always ok
         @test  isbragg([0,0] .// [3,3], [0,0])
         @test  isbragg([0,0] .// [3,3], [1,0])
@@ -218,6 +222,21 @@ using TightBindingLattice
 
         @test  isbragg([0,0] .// [3,3], [[0,0], [1,0], [2,0]])
         @test !isbragg([1,0] .// [3,3], [[0,0], [1,0], [2,0]])
+
+        tsym = TranslationSymmetry([6 2; -2 6])
+        @show generator_elements(tsym)
+        
+        @show tsym.generator_translations
+        @show tsym.hypercube.wrap(tsym.generator_translations)
+        for irrep_index in 1:num_irreps(tsym)
+            k = tsym.fractional_momenta[irrep_index]
+            k_ortho = tsym.orthogonal_coordinates[irrep_index] .// tsym.orthogonal_shape
+            for (t, t_ortho) in zip(elements(tsym), tsym.orthogonal_coordinates)
+                @test mod(k⋅t.displacement, 1) == mod(k_ortho⋅t_ortho, 1)
+            end
+        end
+        @show [t.displacement for t in elements(tsym)]
+        @show tsym.orthogonal_coordinates
     end
 end # @testset "TranslationSymmetry" begin
 
