@@ -8,7 +8,6 @@ export  group_order,
         irrep, irreps, num_irreps, irrep_dimension,
         generator_elements, generator_indices
 
-export iscompatible
 export project
 
 export little_group_elements
@@ -187,65 +186,6 @@ generator_elements(sym::PointSymmetry) = element(sym, sym.generators)
 
 symmetry_name(sym::PointSymmetry) = "PointSymmetry[$(sym.hermann_mauguinn)]"
 
-
-## iscompatible
-
-# function iscompatible(hypercube::HypercubicLattice, matrix::AbstractMatrix{<:Integer})::Bool
-#     _, elems = hypercube.wrap(matrix * hypercube.scale_matrix)
-#     all(iszero(elems)) # all, since scale_matrix
-# end
-# function iscompatible(tsym::TranslationSymmetry, matrix::AbstractMatrix{<:Integer})::Bool
-#     sm = tsym.hypercube.scale_matrix
-#     smi = tsym.hypercube.inverse_scale_matrix
-#     return all(mod(x,1) == 0 for x in smi * matrix * sm)
-# end
-
-
-function iscompatible(hypercube::HypercubicLattice, pop::PointOperation{<:Integer})::Bool
-    _, elems = hypercube.wrap(pop.matrix * hypercube.scale_matrix)
-    return iszero(elems)
-end
-
-
-function iscompatible(hypercube::HypercubicLattice, psym::PointSymmetry)::Bool
-    return all(iscompatible(hypercube, pop) for pop in elements(psym))
-end
-
-
-function iscompatible(lattice::Lattice, psym::PointSymmetry)::Bool
-    return iscompatible(lattice.hypercube, psym) &&
-           !isnothing(findorbitalmap(lattice.unitcell, psym))
-end
-
-
-function iscompatible(tsym::TranslationSymmetry, psym::PointSymmetry)::Bool
-    return iscompatible(tsym.hypercube, psym)
-end
-
-
-function iscompatible(tsym::TranslationSymmetry, pop::PointOperation{<:Integer})::Bool
-    sm = tsym.hypercube.scale_matrix
-    smi = tsym.hypercube.inverse_scale_matrix
-    return all(mod(x,1) == 0 for x in smi * pop.matrix * sm)
-end
-
-
-function iscompatible(tsym::TranslationSymmetry,
-                      tsym_irrep_index::Integer,
-                      pop::PointOperation{<:Integer})::Bool
-    reciprocal_matrix = ExactLinearAlgebra.inverse(transpose(pop.matrix))
-    k1 = tsym.fractional_momenta[tsym_irrep_index]
-    k2 = (x -> mod(x, 1)).(reciprocal_matrix * k1)
-    return k1 == k2
-end
-
-
-function iscompatible(tsym::TranslationSymmetry,
-                      tsym_irrep_index::Integer,
-                      psym::PointSymmetry)::Bool
-    return iscompatible(tsym, psym) &&
-           all(iscompatible(tsym, tsym_irrep_index, pop) for pop in generator_elements(psym))
-end
 
 
 # """

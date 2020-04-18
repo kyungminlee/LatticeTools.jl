@@ -20,6 +20,7 @@ include("SymmetryOperation/spaceoperation.jl")
 include("Symmetry/abstractsymmetry.jl")
 include("Symmetry/translationsymmetry.jl")
 include("Symmetry/pointsymmetry.jl")
+include("Symmetry/compatibility.jl")
 include("Symmetry/littlesymmetry.jl")
 
 include("SymmetryEmbedding/sitepermutation.jl")

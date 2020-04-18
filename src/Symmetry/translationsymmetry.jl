@@ -10,7 +10,6 @@ export group,
        generator_elements, generator_indices
 
 export isbragg
-export iscompatible
 
 export symmetry_name
 
@@ -232,89 +231,5 @@ function isbragg(shape::AbstractVector{<:Integer},
                  integer_momentum::AbstractVector{<:Integer},
                  identity_translations::AbstractVector{<:AbstractVector{<:Integer}})
     return all(isbragg(shape, integer_momentum, t) for t in identity_translations)
-end
-
-
-# function iscompatible(# lattice::Lattice,
-#                       tsym::TranslationSymmetry,
-#                       tsym_irrep_index::Integer,
-#                       identity_translation::AbstractVector{<:Integer})
-#     # !iscompatible(lattice, tsym) && return false
-#     orthogonal_momentum = tsym.orthogonal_coordinates[tsym_irrep_index]
-#     orthogonal_shape = tsym.orthogonal_shape
-#     return iscompatible(orthogonal_momentum, orthogonal_shape, identity_translation)
-# end
-
-
-# function iscompatible(# lattice::Lattice,
-#                       tsym::TranslationSymmetry,
-#                       tsym_irrep_index::Integer,
-#                       identity_translations::AbstractVector{<:AbstractVector{<:Integer}})
-#     orthogonal_momentum = tsym.orthogonal_coordinates[tsym_irrep_index]
-#     orthogonal_shape = tsym.orthogonal_shape
-#     return all(iscompatible(orthogonal_momentum, orthogonal_shape, t) for t in identity_translations)
-# end
-
-
-# function iscompatible(orthogonal_shape::AbstractVector{<:Integer},
-#                       orthogonal_momentum::AbstractVector{<:Integer},
-#                       identity_translation::TranslationOperation{<:Integer})
-#     value = Rational{Int}(0)
-#     for (n, i, j) in zip(orthogonal_shape, orthogonal_momentum, identity_translation.displacement)
-#         value += i * j // n
-#     end
-#     return mod(value, 1) == 0
-# end
-
-
-# """
-#     iscompatible(orthogonal_momentum, orthogonal_shape, identity_translations)
-
-# Test whether the given momentum is compatible with *all* the identity translations.
-# """
-# function iscompatible(orthogonal_shape::AbstractVector{<:Integer},
-#                       orthogonal_momentum::AbstractVector{<:Integer},
-#                       identity_translations::AbstractVector{<:TranslationOperation{<:Integer}})
-#     return all(iscompatible(orthogonal_shape, orthogonal_momentum, t) for t in identity_translations)
-# end
-
-
-"""
-    iscompatible(lattice, translation_symmetry)
-
-Test whether lattice and the symmetry are compatible.
-For translation symmetry, this means that the hypercubic lattice for both are the same.
-"""
-function iscompatible(lattice::Lattice, tsym::TranslationSymmetry)
-    return lattice.hypercube == tsym.hypercube
-end
-
-
-"""
-    iscompatible(lattice, tsym, tsym_irrep_index, identity_translation)
-
-Test whether the identity translation is compatible with the irreducible representation
-of the translation symmetry, i.e. (1) lattice is compatible with translation symmetry, 
-and (2) 
-"""
-function iscompatible(#lattice::Lattice,
-                      tsym::TranslationSymmetry,
-                      tsym_irrep_index::Integer,
-                      identity_translation::TranslationOperation{<:Integer})
-    #!iscompatible(lattice, tsym) && return false
-    orthogonal_momentum = tsym.orthogonal_coordinates[tsym_irrep_index]
-    orthogonal_shape = tsym.orthogonal_shape
-    return isbragg(orthogonal_shape, orthogonal_momentum, identity_translation.displacement)
-end
-
-
-function iscompatible(#lattice::Lattice,
-                      tsym::TranslationSymmetry,
-                      tsym_irrep_index::Integer,
-                      identity_translations::AbstractVector{<:TranslationOperation{<:Integer}})
-    orthogonal_shape = tsym.orthogonal_shape
-    orthogonal_momentum = tsym.orthogonal_coordinates[tsym_irrep_index]
-    return all(isbragg(orthogonal_shape, orthogonal_momentum, t.displacement)
-                   for t in identity_translations)
 end
 
