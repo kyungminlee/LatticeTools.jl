@@ -1,32 +1,7 @@
 export iscompatible
-## 1. Bragg condition
-
-"""
-    iscompatible(tsym, tsym_irrep_index, identity_translation)
-
-Test whether the identity translation is compatible with the irreducible representation
-of the translation symmetry, i.e. (1) lattice is compatible with translation symmetry, 
-and (2) 
-"""
-function iscompatible(tsym::TranslationSymmetry,
-                      tsym_irrep_index::Integer,
-                      identity_translation::TranslationOperation{<:Integer})
-    orthogonal_momentum = tsym.orthogonal_coordinates[tsym_irrep_index]
-    orthogonal_shape = tsym.orthogonal_shape
-    return isbragg(orthogonal_shape, orthogonal_momentum, identity_translation.displacement)
-end
-
-function iscompatible(tsym::TranslationSymmetry,
-                      tsym_irrep_index::Integer,
-                      identity_translations::AbstractVector{<:TranslationOperation{<:Integer}})
-    orthogonal_shape = tsym.orthogonal_shape
-    orthogonal_momentum = tsym.orthogonal_coordinates[tsym_irrep_index]
-    return all(isbragg(orthogonal_shape, orthogonal_momentum, t.displacement)
-                   for t in identity_translations)
-end
 
 
-## 2. Hypercube and Operation
+## 1. Hypercube and Operation
 
 function iscompatible(hypercube::HypercubicLattice, op::TranslationOperation{<:Integer})::Bool
     if dimension(hypercube) != dimension(op)
@@ -46,7 +21,7 @@ function iscompatible(hypercube::HypercubicLattice, op::PointOperation{<:Integer
 end
 
 
-## 3. Hypercube and Symmetry
+## 2. Hypercube and Symmetry
 
 function iscompatible(hypercube::HypercubicLattice, tsym::TranslationSymmetry)::Bool
     R, r = hypercube.wrap(tsym.hypercube.scale_matrix)
@@ -58,7 +33,7 @@ function iscompatible(hypercube::HypercubicLattice, psym::PointSymmetry)::Bool
 end
 
 
-## 4. TranslationSymmetry and PointOperation/PointSymmetry
+## 3. TranslationSymmetry and PointOperation/PointSymmetry
 
 function iscompatible(tsym::TranslationSymmetry, pop::PointOperation{<:Integer})::Bool
     # sm = tsym.hypercube.scale_matrix
@@ -72,7 +47,7 @@ function iscompatible(tsym::TranslationSymmetry, psym::PointSymmetry)::Bool
 end
 
 
-## 5. Translation Irreps and PointOperation/PointSymmetry
+## 4. Translation Irreps and PointOperation/PointSymmetry
 
 function iscompatible(tsym::TranslationSymmetry,
                       tsym_irrep_index::Integer,
@@ -91,7 +66,7 @@ function iscompatible(tsym::TranslationSymmetry,
 end
 
 
-## 6. Lattice and Operation
+## 5. Lattice and Operation
 
 function iscompatible(lattice::Lattice, op::TranslationOperation{<:Integer})
     if dimension(lattice) != dimension(op)
@@ -106,7 +81,7 @@ function iscompatible(lattice::Lattice, op::PointOperation{<:Integer})
 end
 
 
-## 7. Lattice and Symmetry
+## 6. Lattice and Symmetry
 
 """
     iscompatible(lattice, translation_symmetry)
@@ -122,68 +97,6 @@ end
 
 function iscompatible(lattice::Lattice, psym::PointSymmetry)::Bool
     return iscompatible(lattice.hypercube, psym) &&
-           all(!isnothing(findorbitalmap(lattice.unitcell, pop)) for pop in generator_elements(psym))
+           all(!isnothing(findorbitalmap(lattice.unitcell, pop))
+                   for pop in generator_elements(psym))
 end
-
-
-
-
-
-
-# function iscompatible(# lattice::Lattice,
-#                       tsym::TranslationSymmetry,
-#                       tsym_irrep_index::Integer,
-#                       identity_translation::AbstractVector{<:Integer})
-#     # !iscompatible(lattice, tsym) && return false
-#     orthogonal_momentum = tsym.orthogonal_coordinates[tsym_irrep_index]
-#     orthogonal_shape = tsym.orthogonal_shape
-#     return iscompatible(orthogonal_momentum, orthogonal_shape, identity_translation)
-# end
-
-
-# function iscompatible(# lattice::Lattice,
-#                       tsym::TranslationSymmetry,
-#                       tsym_irrep_index::Integer,
-#                       identity_translations::AbstractVector{<:AbstractVector{<:Integer}})
-#     orthogonal_momentum = tsym.orthogonal_coordinates[tsym_irrep_index]
-#     orthogonal_shape = tsym.orthogonal_shape
-#     return all(iscompatible(orthogonal_momentum, orthogonal_shape, t) for t in identity_translations)
-# end
-
-
-# function iscompatible(orthogonal_shape::AbstractVector{<:Integer},
-#                       orthogonal_momentum::AbstractVector{<:Integer},
-#                       identity_translation::TranslationOperation{<:Integer})
-#     value = Rational{Int}(0)
-#     for (n, i, j) in zip(orthogonal_shape, orthogonal_momentum, identity_translation.displacement)
-#         value += i * j // n
-#     end
-#     return mod(value, 1) == 0
-# end
-
-
-# """
-#     iscompatible(orthogonal_momentum, orthogonal_shape, identity_translations)
-
-# Test whether the given momentum is compatible with *all* the identity translations.
-# """
-# function iscompatible(orthogonal_shape::AbstractVector{<:Integer},
-#                       orthogonal_momentum::AbstractVector{<:Integer},
-#                       identity_translations::AbstractVector{<:TranslationOperation{<:Integer}})
-#     return all(iscompatible(orthogonal_shape, orthogonal_momentum, t) for t in identity_translations)
-# end
-
-
-## Between Something and PointSymmetry
-
-# function iscompatible(hypercube::HypercubicLattice, matrix::AbstractMatrix{<:Integer})::Bool
-#     _, elems = hypercube.wrap(matrix * hypercube.scale_matrix)
-#     all(iszero(elems)) # all, since scale_matrix
-# end
-
-# function iscompatible(tsym::TranslationSymmetry, matrix::AbstractMatrix{<:Integer})::Bool
-#     sm = tsym.hypercube.scale_matrix
-#     smi = tsym.hypercube.inverse_scale_matrix
-#     return all(mod(x,1) == 0 for x in smi * matrix * sm)
-# end
-
