@@ -141,25 +141,6 @@ using TightBindingLattice
         end
     end  # @testset "non-orthogonal lattice" begin
 
-    @testset "reduction" begin
-        t00 = TranslationOperation([0,0])
-        t10 = TranslationOperation([1,0])
-        t20 = TranslationOperation([2,0])
-
-        # Gamma point is always ok
-        @test isbragg([3,3], [0,0], [0,0])
-        @test isbragg([3,3], [0,0], [1,0])
-        @test isbragg([3,3], [0,0], [2,0])
-
-        # non-zero momentum depends on what the identity translation is
-        @test isbragg([3,3], [1,0], [0,0]) # zero translation is always identity, so it's always fine
-        @test !isbragg([3,3], [1,0], [1,0]) # these two translations are not compatible
-        @test !isbragg([3,3], [1,0], [2,0]) #   with momentum [1,1]
-
-        @test isbragg([3,3], [0,0], [[0,0], [1,0], [2,0]])
-        @test !isbragg([3,3], [1,0], [[0,0], [1,0], [2,0]])
-    end
-
     @testset "lattice permutation" begin
         unitcell = make_unitcell([1.0 0.0; 0.0 1.0]; OrbitalType=String)
         addorbital!(unitcell, "Ox", FractCoord([0,0], [0.5, 0.0]))
@@ -202,12 +183,42 @@ using TightBindingLattice
             end
         end
 
-        @test iscompatible(tsym, 1, TranslationOperation([1,0])) # Γ point
-        @test !iscompatible(tsym, 2, TranslationOperation([1,0])) # Γ point
-        @test !iscompatible(tsym, 2, TranslationOperation.([[0,0], [1,0]]))
+        @test isbragg(tsym.fractional_momenta[1], [1,0]) # Γ point
+        @test !isbragg(tsym.fractional_momenta[2], [1,0]) # Γ point
+        @test !isbragg(tsym.fractional_momenta[2], [[0,0], [1,0]])
 
     end # testset lattice permutation
 
+    @testset "reduction" begin
+        @test_throws ArgumentError isbragg([4, 0], [2,0], [2,0])
+        @test_throws ArgumentError isbragg([-2, 2], [2,0], [2,0])
+
+        # Gamma point is always ok
+        @test  isbragg([3,3], [0,0], [0,0])
+        @test  isbragg([3,3], [0,0], [1,0])
+        @test  isbragg([3,3], [0,0], [2,0])
+
+        # non-zero momentum depends on what the identity translation is
+        @test  isbragg([3,3], [1,0], [0,0]) # zero translation is always identity, so it's always fine
+        @test !isbragg([3,3], [1,0], [1,0]) # these two translations are not compatible
+        @test !isbragg([3,3], [1,0], [2,0]) #   with momentum [1,1]
+
+        @test  isbragg([3,3], [0,0], [[0,0], [1,0], [2,0]])
+        @test !isbragg([3,3], [1,0], [[0,0], [1,0], [2,0]])
+
+        # Gamma point is always ok
+        @test  isbragg([0,0] .// [3,3], [0,0])
+        @test  isbragg([0,0] .// [3,3], [1,0])
+        @test  isbragg([0,0] .// [3,3], [2,0])
+
+        # non-zero momentum depends on what the identity translation is
+        @test  isbragg([1,0] .// [3,3], [0,0]) # zero translation is always identity, so it's always fine
+        @test !isbragg([1,0] .// [3,3], [1,0]) # these two translations are not compatible
+        @test !isbragg([1,0] .// [3,3], [2,0]) #   with momentum [1,1]
+
+        @test  isbragg([0,0] .// [3,3], [[0,0], [1,0], [2,0]])
+        @test !isbragg([1,0] .// [3,3], [[0,0], [1,0], [2,0]])
+    end
 end # @testset "TranslationSymmetry" begin
 
 
