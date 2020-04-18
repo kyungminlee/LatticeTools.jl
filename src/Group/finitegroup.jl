@@ -258,38 +258,6 @@ end
 """
     minimal_generating_set
 """
-function minimal_generating_set_rec(group::FiniteGroup)
-    ord_group::Int = group_order(group)
-    element_queue::Vector{Tuple{Int, Int}} = collect(enumerate(group.period_lengths))
-    sort!(element_queue, by=item->(-item[2], item[1]))
-    
-    function factorize(generators::Vector{Int}, span::BitSet, queue_begin::Int)::Bool
-        length(span) == ord_group && return true
-        @assert(queue_begin <= ord_group)
-
-        next_index = queue_begin
-        next_elem = element_queue[queue_begin][1]
-        next_span = generate_subgroup(group, group_product(group, span, next_elem))
-        
-        for i in (queue_begin+1):ord_group
-            (g, _) = element_queue[i]
-            new_span = generate_subgroup(group, group_product(group, span, g))
-            if length(new_span) > length(next_span)
-                next_index = i
-                next_elem = g
-                next_span = new_span
-            end
-        end
-        push!(generators, next_elem)
-        factorize(generators, next_span, next_index+1)
-    end
-    generators = Int[]
-    factorize(generators, BitSet([1]), 1)
-    return generators
-end
-
-
-
 function minimal_generating_set(group::FiniteGroup)
     ord_group::Int = group_order(group)
     element_queue::Vector{Tuple{Int, Int}} = collect(enumerate(group.period_lengths))
@@ -317,8 +285,6 @@ function minimal_generating_set(group::FiniteGroup)
     end
     return generators
 end
-
-
 
 
 # function group_isomorphism_naive(group1::FiniteGroup, group2::FiniteGroup)
