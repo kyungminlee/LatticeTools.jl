@@ -18,7 +18,7 @@ struct HypercubicLattice
     function HypercubicLattice(scale_matrix::AbstractMatrix{<:Integer})
         n, m = size(scale_matrix)
         n != m && throw(DimensionMismatch("scale_matrix is not square: dimensions are ($n, $m)"))
-        d = abs( ExactLinearAlgebra.determinant(scale_matrix) )
+        d = abs(ExactLinearAlgebra.determinant(scale_matrix))
         d == 0 && throw(ArgumentError("scale matrix null"))
 
         inverse_scale_matrix = ExactLinearAlgebra.inverse(scale_matrix)
@@ -30,6 +30,7 @@ struct HypercubicLattice
             return R, r2
         end
 
+        ### PROBLEM === FROM HERE
         max_range = sum((abs.(scale_matrix[:, i]) for i in 1:n))
         coords = Vector{Int}[]
         sizehint!(coords, abs(d))
@@ -40,14 +41,58 @@ struct HypercubicLattice
                 push!(coords, r2)
             end
         end
-
         @assert length(coords) == d
         @assert all(wrap(r) == (zeros(n), r) for (i, r) in enumerate(coords))
         coord_indices = Dict{Vector{Int}, Int}(r => i for (i, r) in enumerate(coords))
+        ### === TO HERE
 
         return new(scale_matrix, inverse_scale_matrix, coords, coord_indices, wrap)
     end
 
+    function HypercubicLattice(scale_matrix::AbstractMatrix{<:Integer},
+                               generator_translations::AbstractMatrix{<:Integer})
+        dim = size(scale_matrix, 1)
+        let
+            n, m = size(scale_matrix)
+            n != m && throw(DimensionMismatch("scale_matrix is not square: dimensions are ($n, $m)"))
+
+            if size(generator_translations) != (n, n)
+                throw(DimensionMismatch("generator translation matrix does not have the same dimension as the scale matrix"))
+            end
+            if ExactLinearAlgebra.determinant(generator_translations) != 1
+                throw(ArgumentError("generator translation is not unimodular"))
+            end
+        end
+        det = abs(ExactLinearAlgebra.determinant(scale_matrix))
+        det == 0 && throw(ArgumentError("scale matrix null"))
+
+        inverse_scale_matrix = ExactLinearAlgebra.inverse(scale_matrix)
+        function wrap(r::AbstractArray{<:Integer}, mode::RoundingMode=RoundDown)
+            rnd = (x) -> round(Int, x, mode)
+            R = rnd.(inverse_scale_matrix * r)
+            r2 = r - scale_matrix * R
+            return R, r2
+        end
+
+        axes = Vector{Vector{Int}}[]
+        for d in 1:dim
+            t = generator_translations[:, d]
+            r = t
+            axis = Vector{Int}[zero(t)]
+            while !iszero(r)
+                push!(axis, r)
+                r = wrap(r .+ t)[2]
+            end
+            push!(axes, axis)
+        end
+        coordinates = vec( collect( wrap(sum(x))[2] for x in Iterators.product(axes...) ) )
+        coordinate_indices = Dict{Vector{Int}, Int}(r => i for (i, r) in enumerate(coordinates))
+
+        @assert length(coordinates) == det
+        @assert all(wrap(r) == (zeros(dim), r) for (i, r) in enumerate(coordinates))
+
+        return new(scale_matrix, inverse_scale_matrix, coordinates, coordinate_indices, wrap)
+    end
 
     function HypercubicLattice(scale_matrix ::AbstractMatrix{<:Integer},
                                coords::AbstractVector{<:AbstractVector{<:Integer}})
@@ -217,5 +262,4 @@ function orthogonalize(hypercube::HypercubicLattice)
     else
         error("currently only 1d and 2d are supported")
     end
-
 end
