@@ -224,10 +224,7 @@ using TightBindingLattice
         @test !isbragg([1,0] .// [3,3], [[0,0], [1,0], [2,0]])
 
         tsym = TranslationSymmetry([6 2; -2 6])
-        @show generator_elements(tsym)
-        
-        @show tsym.generator_translations
-        @show tsym.hypercube.wrap(tsym.generator_translations)
+
         for irrep_index in 1:num_irreps(tsym)
             k = tsym.fractional_momenta[irrep_index]
             k_ortho = tsym.orthogonal_coordinates[irrep_index] .// tsym.orthogonal_shape
@@ -235,8 +232,6 @@ using TightBindingLattice
                 @test mod(k⋅t.displacement, 1) == mod(k_ortho⋅t_ortho, 1)
             end
         end
-        @show [t.displacement for t in elements(tsym)]
-        @show tsym.orthogonal_coordinates
     end
 end # @testset "TranslationSymmetry" begin
 
