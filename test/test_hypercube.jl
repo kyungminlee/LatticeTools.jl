@@ -16,7 +16,7 @@ using TightBindingLattice
         @testset "orthogonal" begin
             hypercube = HypercubicLattice([3 0; 0 3])
             hypercube2 = HypercubicLattice([3 0; 0 3],
-                                                                          [[0,0],[1,0],[2,0],[0,1],[1,1],[2,1],[0,2],[1,2],[2,2]])
+                                [[0,0],[1,0],[2,0],[0,1],[1,1],[2,1],[0,2],[1,2],[2,2]])
             @test hypercube == hypercube2
             @test hypercube.inverse_scale_matrix == [1//3 0; 0 1//3]
             @test hypercube2.inverse_scale_matrix == [1//3 0; 0 1//3]
