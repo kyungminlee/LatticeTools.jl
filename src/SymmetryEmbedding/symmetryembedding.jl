@@ -167,3 +167,11 @@ function symmetry_name(arg::SymmorphicSpaceSymmetryEmbedding)
     name2 = symmetry_name(symmetry(arg.component2))
     return "Embed[$name1 ⋊ $name2 on $(arg.lattice.hypercube.scale_matrix)]"
 end
+
+
+
+
+function translation_symmetry_embedding(lattice::Lattice)
+    tsym = TranslationSymmetry(lattice)
+    return embed(lattice, tsym)
+end

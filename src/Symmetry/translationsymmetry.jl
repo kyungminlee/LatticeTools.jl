@@ -318,8 +318,3 @@ function iscompatible(#lattice::Lattice,
                    for t in identity_translations)
 end
 
-
-function translation_symmetry_embedding(lattice::Lattice)
-    tsym = TranslationSymmetry(lattice)
-    return embed(lattice, tsym)
-end
