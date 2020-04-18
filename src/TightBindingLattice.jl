@@ -4,6 +4,7 @@ include("Basic/basic.jl")
 include("Basic/permutation.jl")
 include("Basic/coord.jl")
 include("Basic/hypercube.jl")
+include("Basic/orthocube.jl")  # replacement for hypercube
 include("Basic/unitcell.jl")
 include("Basic/lattice.jl")
 
