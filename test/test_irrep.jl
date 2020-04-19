@@ -49,9 +49,9 @@ using TightBindingLattice
                                   FiniteGroup(group_multiplication_table(lg_matrep))))
             let psic = IrrepComponent(psym, 1, 1)
                 if k in [[0,0], [2,2]]
-                    SymmorphicIrrepComponent(tsic, psic)
+                    SymmorphicSpaceIrrepComponent(tsic, psic)
                 else
-                    @test_throws ArgumentError SymmorphicIrrepComponent(tsic, psic)
+                    @test_throws ArgumentError SymmorphicSpaceIrrepComponent(tsic, psic)
                 end
             end
         end # for tsym_irrep
@@ -67,9 +67,9 @@ using TightBindingLattice
                                 FiniteGroup(group_multiplication_table(lg_matrep))))
             let psic = IrrepComponent(psym, 1, 1)
                 if k in [[0,0], [2,2]]
-                    SymmorphicIrrepComponent(tsic, psic)
+                    SymmorphicSpaceIrrepComponent(tsic, psic)
                 else
-                    @test_throws ArgumentError SymmorphicIrrepComponent(tsic, psic)
+                    @test_throws ArgumentError SymmorphicSpaceIrrepComponent(tsic, psic)
                 end
             end
         end

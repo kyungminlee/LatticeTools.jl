@@ -2,7 +2,7 @@ export IrrepData
 
 export AbstractSymmetryIrrepComponent
 export IrrepComponent
-export SymmorphicIrrepComponent
+export SymmorphicSpaceIrrepComponent
 
 export group_order
 export get_irrep_components
@@ -62,12 +62,12 @@ function get_irrep_iterator(sic::IrrepComponent)
 end
 
 
-struct SymmorphicIrrepComponent{S1<:AbstractSymmetry, S2<:AbstractSymmetry} <:AbstractSymmetryIrrepComponent
+struct SymmorphicSpaceIrrepComponent{S1<:AbstractSymmetry, S2<:AbstractSymmetry} <:AbstractSymmetryIrrepComponent
 
     component1::IrrepComponent{S1} # e.g. Translation
     component2::IrrepComponent{S2} # e.g. Point
 
-    function SymmorphicIrrepComponent(
+    function SymmorphicSpaceIrrepComponent(
                 sic1::IrrepComponent{S1},
                 sic2::IrrepComponent{S2}) where {
             S1<:Union{TranslationSymmetry, SymmetryEmbedding{TranslationSymmetry}},
@@ -84,7 +84,7 @@ struct SymmorphicIrrepComponent{S1<:AbstractSymmetry, S2<:AbstractSymmetry} <:Ab
 end
 
 
-group_order(sic::SymmorphicIrrepComponent) = group_order(sic.component1) * group_order(sic.component2)
+group_order(sic::SymmorphicSpaceIrrepComponent) = group_order(sic.component1) * group_order(sic.component2)
 
 
 function little_group_elements(tsic::IrrepComponent{TranslationSymmetry},
@@ -143,13 +143,13 @@ end
 function get_irrep_components(tsym::S1,
                               psym::S2) where {S1<:AbstractSymmetry,
                                                S2<:AbstractSymmetry}
-    return (SymmorphicIrrepComponent(tsic, psic)
+    return (SymmorphicSpaceIrrepComponent(tsic, psic)
                 for tsic in get_irrep_components(tsym)
                 for psic in get_irrep_components(little_symmetry(tsic, psym)))
 end
 
 
-function get_irrep_iterator(ssic::SymmorphicIrrepComponent)
+function get_irrep_iterator(ssic::SymmorphicSpaceIrrepComponent)
 
     tsym = ssic.component1.symmetry
     tsym_irrep_index = ssic.component1.irrep_index
