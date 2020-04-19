@@ -84,10 +84,10 @@ end
 
 
 ## properties
-dimension(op::SpaceOperation) = length(op.displacement)
-isidentity(op::SpaceOperation) = isone(op.matrix) && iszero(op.displacement)
-istranslation(op::SpaceOperation) = isone(op.matrix)
-ispoint(op::SpaceOperation) = iszero(op.displacement)
+dimension(arg::SpaceOperation) = length(arg.displacement)
+isidentity(arg::SpaceOperation) = isone(arg.matrix) && iszero(arg.displacement)
+istranslation(arg::SpaceOperation) = isone(arg.matrix)
+ispoint(arg::SpaceOperation) = iszero(arg.displacement)
 
 function hash(op::SpaceOperation{S}) where S
     h = hash(SpaceOperation{S})

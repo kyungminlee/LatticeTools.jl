@@ -37,8 +37,8 @@ end
 ## properties
 dimension(arg::PointOperation) = size(arg.matrix, 1)
 isidentity(arg::PointOperation) = isone(arg.matrix)
-istranslation(op::PointOperation) = isone(arg.matrix)
-ispoint(op::PointOperation) = true
+istranslation(arg::PointOperation) = isone(arg.matrix)
+ispoint(arg::PointOperation) = true
 
 
 import Base.hash

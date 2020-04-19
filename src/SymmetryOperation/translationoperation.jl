@@ -35,8 +35,8 @@ end
 ## properties
 dimension(arg::TranslationOperation) = length(arg.displacement)
 isidentity(arg::TranslationOperation) = iszero(arg.displacement)
-istranslation(op::TranslationOperation) = true
-ispoint(op::TranslationOperation) = iszero(op.displacement)
+istranslation(arg::TranslationOperation) = true
+ispoint(arg::TranslationOperation) = iszero(arg.displacement)
 
 import Base.hash
 hash(arg::TranslationOperation{S}) where S = hash(arg.displacement, hash(TranslationOperation{S}))
