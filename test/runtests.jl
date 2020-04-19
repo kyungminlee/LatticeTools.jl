@@ -24,3 +24,5 @@ include("test_sitepermutation.jl")
 include("test_symmetryembedding.jl")
 
 include("test_compatibility.jl")
+
+include("test_symmorphic.jl")

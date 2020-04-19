@@ -181,8 +181,6 @@ using TightBindingLattice: simplify_name
     end
 
     @testset "iterate" begin
-        @show elements(psym)
-        
         @test [x for x in psym] == collect(elements(psym))
         @test all(x ∈ psym for x in psym)
         @test 100 ∉ psym
