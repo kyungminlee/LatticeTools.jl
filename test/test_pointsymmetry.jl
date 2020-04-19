@@ -131,7 +131,7 @@ using TightBindingLattice: simplify_name
         end
     end
 
-    # D_4
+    # D_4 (422)
     file_path = abspath(@__DIR__, "..", "data", "PointGroup3D", "PointGroup3D-12.yaml")
     data_yaml = YAML.load_file(file_path)
 
@@ -181,10 +181,22 @@ using TightBindingLattice: simplify_name
     end
 
     @testset "iterate" begin
+        @show elements(psym)
+        
         @test [x for x in psym] == collect(elements(psym))
         @test all(x ∈ psym for x in psym)
         @test PointOperation([1 2 0; -1 1 0; 0 0 1]) ∉ psym
+        @test IdentityOperation(Int, 2) ∉ psym
+        @test IdentityOperation(Int, 3) ∈ psym
+        @test TranslationOperation([100, 100, 0]) ∉ psym
+        @test TranslationOperation([0, 0]) ∉ psym
+        @test TranslationOperation([0, 0, 0]) ∈ psym
+        @test PointOperation([1 0 0; 0 1 0; 0 0 1]) ∈ psym
+        @test PointOperation([0 1 0; 1 0 0; 0 0 -1]) ∈ psym
+        @test SpaceOperation([0 1 0; 1 0 0; 0 0 -1], [0, 0, 0]) ∈ psym
+        @test SpaceOperation([0 1 0; 1 0 0; 0 0 -1], [1, 0, 0]) ∉ psym
     end
+
 
     @testset "irreps" begin
         @test num_irreps(psym) == 5
