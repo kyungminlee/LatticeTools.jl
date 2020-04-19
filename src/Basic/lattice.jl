@@ -20,24 +20,17 @@ function make_lattice(unitcell::UnitCell, scale::Integer)
     make_lattice(unitcell, scale*ones(Int, (1,1)))
 end
 
-function make_lattice(unitcell::UnitCell{O}, scale_matrix::AbstractMatrix{<:Integer}) where O
+function make_lattice(unitcell::UnitCell{O}, shape_matrix::AbstractMatrix{<:Integer}) where O
     dim = dimension(unitcell)
-    if size(scale_matrix) != (dim, dim)
-        throw(DimensionMismatch("unitcell and scale_matrix should have the same dimension"))
+    if size(shape_matrix) != (dim, dim)
+        throw(DimensionMismatch("unitcell and shape_matrix should have the same dimension"))
     end
     
-    # hypercube = orthogonalize(HypercubicLattice(scale_matrix))
-    orthocube = OrthoCube(scale_matrix)
+    orthocube = OrthoCube(shape_matrix)
     generator_translations = find_generators(orthocube)
-    coordinates = generate_coordinates(orthocube, generator_translations)
-
-    # new_latticevectors = unitcell.latticevectors * hypercube.scale_matrix
-    # inverse_scale_matrix = hypercube.inverse_scale_matrix
-    # unitcell_coordinates = hypercube.coordinates
+    unitcell_coordinates = generate_coordinates(orthocube, generator_translations)
     
     new_latticevectors = unitcell.latticevectors * orthocube.shape_matrix
-    inverse_scale_matrix = orthocube.inverse_shape_matrix
-    unitcell_coordinates = coordinates
 
     new_unitcell = make_unitcell(new_latticevectors; OrbitalType=Tuple{O, Vector{Int}})
     for uc in unitcell_coordinates, (orbname, orbcoord) in unitcell.orbitals
