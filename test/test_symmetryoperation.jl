@@ -165,7 +165,7 @@ using TightBindingLattice
         @test_throws DimensionMismatch SpaceOperation([1 0 0; 0 1 0], [1,2,3])
         @test_throws DimensionMismatch SpaceOperation([1 0; 0 1], [1,2,3])
 
-        let sop = SpaceOperation{Int}(2)
+        let sop = SpaceOperation{Int, Int}(2)
             @test sop.matrix == [1 0; 0 1]
             @test sop.displacement == [0, 0]
         end
@@ -176,7 +176,7 @@ using TightBindingLattice
         t10 = TranslationOperation([ 1,  0])
 
         @testset "properties" begin
-            s0 = SpaceOperation(Int, 2)
+            s0 = SpaceOperation(Int, Int, 2)
             s1 = SpaceOperation(c4p, t10)
             @test domaintype(s0) == Int
             @test dimension(s0) == 2
@@ -242,11 +242,11 @@ using TightBindingLattice
         end
 
         @testset "promotion" begin
-            @test promote_type(IdentityOperation{Int}, SpaceOperation{Int}) == SpaceOperation{Int}
-            @test promote_type(TranslationOperation{Int}, SpaceOperation{Int}) == SpaceOperation{Int}
-            @test promote_type(PointOperation{Int}, SpaceOperation{Int}) == SpaceOperation{Int}
+            @test promote_type(IdentityOperation{Int}, SpaceOperation{Int, Int}) == SpaceOperation{Int, Int}
+            @test promote_type(TranslationOperation{Int}, SpaceOperation{Int, Int}) == SpaceOperation{Int, Int}
+            @test promote_type(PointOperation{Int}, SpaceOperation{Int, Int}) == SpaceOperation{Int, Int}
 
-            arr = SpaceOperation{Int}[]
+            arr = SpaceOperation{Int, Int}[]
             push!(arr, PointOperation([0 1; 1 0]))
             push!(arr, TranslationOperation([1, 0]))
             push!(arr, IdentityOperation(Int, 2))
