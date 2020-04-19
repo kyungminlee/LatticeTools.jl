@@ -4,7 +4,7 @@ export SymmetryEmbedding
 export SymmorphicSpaceSymmetryEmbedding
 
 export embed
-export element, elements
+export elementtype, element, elements
 export symmetry
 export generator_elements, generator_indices
 
@@ -27,6 +27,7 @@ struct SymmetryEmbedding{SymmetryType}<:AbstractSymmetryEmbedding
     end
 end
 
+elementtype(::SymmetryEmbedding) = SitePermutation
 elements(symbed::SymmetryEmbedding) = symbed.elements
 element(symbed::SymmetryEmbedding, g) = symbed.elements[g]
 symmetry(symbed::SymmetryEmbedding) = symbed.symmetry
