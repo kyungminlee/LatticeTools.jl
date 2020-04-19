@@ -106,7 +106,7 @@ function little_symmetry(tsymbed::SymmetryEmbedding{TranslationSymmetry},
     if !iscompatible(tsymbed, psymbed)
         throw(ArgumentError("translation and point symmetry-embeddings not compatible"))
     end
-    psym_little = little_symmetry(symmetry(tsymbed.symmetry), symmetry(psymbed))
+    psym_little = little_symmetry(symmetry(tsymbed), symmetry(psymbed))
     return SymmetryEmbedding(psymbed.lattice, psym_little)
 end
 
@@ -123,7 +123,7 @@ end
 
 
 function symmetry_name(arg::SymmetryEmbedding)
-    return "Embed[$(symmetry_name(symmetry(arg))) on $(arg.lattice.hypercube.scale_matrix)]"
+    return "Embed[$(symmetry_name(symmetry(arg))) on $(arg.lattice.orthocube.shape_matrix) with $(numorbital(arg.lattice.unitcell)) orbitals]"
 end
 
 
