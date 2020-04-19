@@ -20,7 +20,15 @@ struct SymmorphicSymmetry{S1<:AbstractSymmetry, S2<:AbstractSymmetry, E<:Abstrac
     element_names::Array{String}
 
     function SymmorphicSymmetry(normal::S1, rest::S2) where {S1<:AbstractSymmetry, S2<:AbstractSymmetry}
+        if !iscompatible(normal, rest)
+            throw(ArgumentError("symmetries $normal and $rest are not compatible"))
+        end
+        # @show elementtype(normal), elementtype(rest)
+        # @show promote_type(elementtype(normal), elementtype(rest))
         E = promote_type(elementtype(normal), elementtype(rest))
+        if !isconcretetype(E)
+            throw(ArgumentError("element type $E is not a concrete type"))
+        end
         for g in rest, n in normal
             n2 = g * n * inv(g)
             if n2 ∉ normal
