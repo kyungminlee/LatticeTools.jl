@@ -18,7 +18,7 @@ end
 
 abstract type AbstractSymmetryIrrepComponent end
 
-struct IrrepComponent{SymmetryType}<:AbstractSymmetryIrrepComponent
+struct IrrepComponent{SymmetryType<:AbstractSymmetry}<:AbstractSymmetryIrrepComponent
     symmetry::SymmetryType
     irrep_index::Int
     irrep_component::Int
