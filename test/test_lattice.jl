@@ -10,6 +10,9 @@ using TightBindingLattice
     #@test lattice.hypercube == HypercubicLattice(scale_matrix)
     @test lattice.orthocube == OrthoCube(scale_matrix)
     @test numorbital(lattice.supercell) == 3
+
+    @test_throws DimensionMismatch make_lattice(unitcell, [3 0])
+    @test_throws DimensionMismatch make_lattice(unitcell, [3 0; 0 3])
 end
 
 @testset "Lattice" begin
@@ -17,6 +20,10 @@ end
     addorbital!(unitcell, "d", FractCoord([0,0], [0.0, 0.0]))
     addorbital!(unitcell, "px", FractCoord([0,0], [0.5, 0.0]))
     addorbital!(unitcell, "py", FractCoord([0,0], [0.0, 0.5]))
+
+    @test_throws DimensionMismatch make_lattice(unitcell, 3)
+    @test_throws DimensionMismatch make_lattice(unitcell, [1 0 0; 0 1 0; 0 0 1])
+
     lattice = make_lattice(unitcell, [2 0; 0 2])
 
     @test lattice.unitcell == unitcell
