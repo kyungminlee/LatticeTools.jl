@@ -61,6 +61,10 @@ group(sym::SymmorphicSymmetry) = FiniteGroup(group_multiplication_table(vec(sym.
 group_order(sym::SymmorphicSymmetry) = group_order(sym.normal) * group_order(sym.rest)
 group_multiplication_table(sym::SymmorphicSymmetry) = group_multiplication_table(vec(sym.elements), symmetry_product(sym))
 
+elementtype(sym::SymmorphicSymmetry{S1, S2, E}) where {S1, S2, E} = E
+import Base.valtype
+valtype(sym::SymmorphicSymmetry{S1, S2, E}) where {S1, S2, E} = E
+
 element(sym::SymmorphicSymmetry, g...) = sym.elements[g...]
 elements(sym::SymmorphicSymmetry) = sym.elements
 
