@@ -29,7 +29,7 @@ struct SymmorphicSymmetry{S1<:AbstractSymmetry, S2<:AbstractSymmetry, E<:Abstrac
         if !isconcretetype(E)
             throw(ArgumentError("element type $E is not a concrete type"))
         end
-        for g in rest, n in normal
+        for g in generator_elements(rest), n in generator_elements(normal)
             n2 = g * n * inv(g)
             if n2 ∉ normal
                 throw(ArgumentError("first argument must be normal"))
