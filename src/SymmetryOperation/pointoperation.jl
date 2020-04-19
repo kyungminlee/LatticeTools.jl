@@ -2,7 +2,7 @@ export PointOperation
 
 export apply_operation
 export domaintype
-export isidentity
+export isidentity, istranslation, ispoint
 
 struct PointOperation{S<:Real} <:AbstractSymmetryOperation{S}
     matrix::Matrix{S}
@@ -37,6 +37,9 @@ end
 ## properties
 dimension(arg::PointOperation) = size(arg.matrix, 1)
 isidentity(arg::PointOperation) = isone(arg.matrix)
+istranslation(op::PointOperation) = isone(arg.matrix)
+ispoint(op::PointOperation) = true
+
 
 import Base.hash
 hash(arg::PointOperation{S}) where S = hash(arg.matrix, hash(PointOperation{S}))

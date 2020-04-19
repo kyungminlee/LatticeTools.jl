@@ -1,9 +1,7 @@
 export SpaceOperation
 export apply_operation
 export dimension
-export isidentity
-# export canonize
-# export iscanonical
+export isidentity, istranslation, ispoint
 
 import LinearAlgebra
 
@@ -88,6 +86,8 @@ end
 ## properties
 dimension(op::SpaceOperation) = length(op.displacement)
 isidentity(op::SpaceOperation) = isone(op.matrix) && iszero(op.displacement)
+istranslation(op::SpaceOperation) = isone(op.matrix)
+ispoint(op::SpaceOperation) = iszero(op.displacement)
 
 function hash(op::SpaceOperation{S}) where S
     h = hash(SpaceOperation{S})
@@ -201,3 +201,5 @@ end
 function (op::SpaceOperation{S})(coord::AbstractArray{S}) where {S<:Real}
     return op.matrix * (coord .+ op.displacement)
 end
+
+

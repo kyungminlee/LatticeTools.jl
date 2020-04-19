@@ -2,7 +2,7 @@ export TranslationOperation
 
 export apply_operation
 export domaintype
-export isidentity
+export isidentity, istranslation, ispoint
 
 struct TranslationOperation{S<:Real} <:AbstractSymmetryOperation{S}
     displacement::Vector{S}
@@ -35,6 +35,8 @@ end
 ## properties
 dimension(arg::TranslationOperation) = length(arg.displacement)
 isidentity(arg::TranslationOperation) = iszero(arg.displacement)
+istranslation(op::TranslationOperation) = true
+ispoint(op::TranslationOperation) = iszero(op.displacement)
 
 import Base.hash
 hash(arg::TranslationOperation{S}) where S = hash(arg.displacement, hash(TranslationOperation{S}))
