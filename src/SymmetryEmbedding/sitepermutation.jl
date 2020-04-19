@@ -58,7 +58,7 @@ end
 
 Embed the simplest version of point operation. (no local unitary operation)
 """
-function embed(lattice::Lattice, pop::PointOperation)
+function embed(lattice::Lattice, pop::PointOperation{<:Integer})
     orbital_map = findorbitalmap(lattice.unitcell, pop)
     if isnothing(orbital_map)
         throw(ArgumentError("lattice not compatible with $pop"))
@@ -77,3 +77,7 @@ function embed(lattice::Lattice, pop::PointOperation)
     return SitePermutation(p)
 end
 
+
+function embed(lattice::Lattice, sop::SpaceOperation{<:Integer, <:Integer})
+    embed(lattice, PointOperation(sop.matrix)) * embed(lattice, TranslationOperation(sop.displacement))
+end
