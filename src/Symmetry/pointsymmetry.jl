@@ -1,12 +1,14 @@
 export PointSymmetry
 
 export  group_order,
+        elementtype,
         element, elements,
         element_name, element_names,
         group_multiplication_table,
         character_table,
         irrep, irreps, num_irreps, irrep_dimension,
-        generator_elements, generator_indices
+        generator_elements, generator_indices,
+        symmetry_product
 
 export project
 
@@ -163,6 +165,8 @@ end
 
 ## Basic properties
 
+elementtype(sym::PointSymmetry) = PointOperation{Int}
+
 element(sym::PointSymmetry, g) = sym.elements[g]
 elements(sym::PointSymmetry) = sym.elements
 
@@ -184,6 +188,21 @@ generator_elements(sym::PointSymmetry) = element(sym, sym.generators)
 
 symmetry_name(sym::PointSymmetry) = "PointSymmetry[$(sym.hermann_mauguinn)]"
 
+function symmetry_product(sym::PointSymmetry)
+    function product(lhs::PointOperation, rhs::PointOperation)
+        return PointSymmetry(lhs.matrix * rhs.matrix)
+    end
+    return product
+end
+
+import Base.in
+in(item::Any, sym::PointSymmetry) = false
+in(item::PointOperation, sym::PointSymmetry) = true
+in(item::SpaceOperation, sym::PointSymmetry) = ispoint(item)
+
+import Base.iterate
+iterate(sym::PointSymmetry) = iterate(elements(sym))
+iterate(sym::PointSymmetry, i) = iterate(elements(sym), i)
 
 
 # """

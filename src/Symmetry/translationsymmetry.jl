@@ -5,9 +5,11 @@ export group,
        group_multiplication_table,
        character_table,
        irrep, irreps, irrep_dimension, num_irreps,
+       elementtype,
        element, elements,
        element_name, element_names,
-       generator_elements, generator_indices
+       generator_elements, generator_indices,
+       symmetry_product
 
 export isbragg
 
@@ -244,31 +246,13 @@ struct TranslationSymmetry <: AbstractSymmetry{TranslationOperation{Int}}
     end
     =#
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 end
 
 group(sym::TranslationSymmetry) = sym.group
 group_order(sym::TranslationSymmetry, g...) = group_order(sym.group, g...)
 group_multiplication_table(psym::TranslationSymmetry) = group_multiplication_table(psym.group)
+
+elementtype(sym::TranslationSymmetry) = TranslationOperation{Int}
 
 element(sym::TranslationSymmetry, g) = sym.elements[g]
 elements(sym::TranslationSymmetry) = sym.elements
@@ -285,6 +269,25 @@ irrep_dimension(sym::TranslationSymmetry, idx::Integer) = 1 # size(first(sym.irr
 
 generator_indices(sym::TranslationSymmetry) = sym.generators
 generator_elements(sym::TranslationSymmetry) = element(sym, sym.generators)
+
+
+function symmetry_product(sym::TranslationSymmetry)
+    function product(lhs::TranslationOperation, rhs::TranslationOperation)
+        return sym.orthocube.wrap(lhs.displacement + rhs.displacement)[2]
+    end
+    return product
+end
+
+
+
+import Base.in
+in(item::Any, sym::TranslationSymmetry) = false
+in(item::TranslationOperation, sym::TranslationSymmetry) = true
+in(item::SpaceOperation, sym::TranslationSymmetry) = istranslation(item)
+
+import Base.iterate
+iterate(sym::TranslationSymmetry) = iterate(elements(sym))
+iterate(sym::TranslationSymmetry, i) = iterate(elements(sym), i)
 
 
 function symmetry_name(sym::TranslationSymmetry)
