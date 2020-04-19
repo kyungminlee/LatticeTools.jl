@@ -38,6 +38,14 @@ generator_elements(symbed::SymmetryEmbedding) = element(symbed, generator_indice
 generator_indices(symbed::SymmetryEmbedding) = generator_indices(symbed.symmetry)
 
 
+import Base.iterate
+iterate(sym::SymmetryEmbedding) = iterate(elements(sym))
+iterate(sym::SymmetryEmbedding, i) = iterate(elements(sym), i)
+
+import Base.length
+length(sym::SymmetryEmbedding) = length(elements(sym))
+
+
 for f in [:group_order,
           :group_multiplication_table,
           :element_names,
