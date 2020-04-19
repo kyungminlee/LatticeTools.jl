@@ -255,6 +255,7 @@ using TightBindingLattice: simplify_name
         @test little_symmetry(tsym1, psym_proj).hermann_mauguinn == "422"
         @test little_symmetry(tsym2, psym_proj).hermann_mauguinn == "222"
         @test little_symmetry(TranslationSymmetry([4 1; 0 3]), psym_proj).hermann_mauguinn == "2"
+        @test_throws ArgumentError little_symmetry(tsym2, 1, psym_proj) # when specifying irrep, tsym and psym have to be compatible
     end
 
     @testset "symmetry_name" begin
