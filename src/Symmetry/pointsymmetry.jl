@@ -165,6 +165,8 @@ end
 
 ## Basic properties
 
+dimension(sym::PointSymmetry) = size(sym.matrix_representations[1], 1)
+
 elementtype(sym::PointSymmetry) = PointOperation{Int}
 
 element(sym::PointSymmetry, g) = sym.elements[g]

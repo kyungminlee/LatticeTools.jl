@@ -1,8 +1,6 @@
 export TranslationSymmetry
-
-export group,
-       group_order,
-       group_multiplication_table,
+export dimension
+export group, group_order, group_multiplication_table,
        character_table,
        irrep, irreps, irrep_dimension, num_irreps,
        elementtype,
@@ -247,6 +245,8 @@ struct TranslationSymmetry <: AbstractSymmetry{TranslationOperation{Int}}
     =#
 
 end
+
+dimension(sym::TranslationSymmetry) = dimension(sym.orthocube)
 
 group(sym::TranslationSymmetry) = sym.group
 group_order(sym::TranslationSymmetry, g...) = group_order(sym.group, g...)
