@@ -1,3 +1,3 @@
 export AbstractSymmetry
 
-abstract type AbstractSymmetry end
+abstract type AbstractSymmetry{OperationType<:AbstractSymmetryOperation} end

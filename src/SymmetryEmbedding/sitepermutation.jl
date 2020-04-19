@@ -1,7 +1,7 @@
 export SitePermutation
 export embed
 
-abstract type AbstractSymmetryOperationEmbedding end
+abstract type AbstractSymmetryOperationEmbedding <: AbstractSymmetryOperation{Int} end
 
 struct SitePermutation <:AbstractSymmetryOperationEmbedding
     permutation::Permutation

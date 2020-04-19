@@ -21,11 +21,9 @@ export symmetry_name
 
 simplify_name(name::AbstractString) = replace(replace(name, r"<sub>.*?</sub>"=>""), r"<sup>.*?</sup>"=>"")
 
-
 ## PointSymmetry, constructor and related functions
-
-struct PointSymmetry <: AbstractSymmetry
-    elements::Vector{PointOperation}
+struct PointSymmetry <: AbstractSymmetry{PointOperation{Int}}
+    elements::Vector{PointOperation{Int}}
     group::FiniteGroup
 
     generators::Vector{Int}

@@ -8,7 +8,7 @@ export element, elements
 export symmetry
 export generator_elements, generator_indices
 
-abstract type AbstractSymmetryEmbedding<:AbstractSymmetry end
+abstract type AbstractSymmetryEmbedding<:AbstractSymmetry{SitePermutation} end
 
 struct SymmetryEmbedding{SymmetryType}<:AbstractSymmetryEmbedding
     lattice::Lattice

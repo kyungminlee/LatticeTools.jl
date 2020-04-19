@@ -16,7 +16,7 @@ export symmetry_name
 export translation_symmetry_embedding
 
 
-struct TranslationSymmetry <: AbstractSymmetry
+struct TranslationSymmetry <: AbstractSymmetry{TranslationOperation{Int}}
     # hypercube::HypercubicLattice
     orthocube::OrthoCube
     
