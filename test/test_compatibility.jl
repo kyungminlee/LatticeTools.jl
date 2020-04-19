@@ -39,6 +39,10 @@ using TightBindingLattice
         @test  iscompatible(TranslationSymmetry([2 0; 0 2]), psym)
         @test  iscompatible(TranslationSymmetry([2 2; 0 2]), psym)
         @test !iscompatible(TranslationSymmetry([3 0; 0 2]), psym)
+
+        @test  iscompatible(psym, TranslationSymmetry([2 0; 0 2]))
+        @test  iscompatible(psym, TranslationSymmetry([2 2; 0 2]))
+        @test !iscompatible(psym, TranslationSymmetry([3 0; 0 2]))
     end
 
 
