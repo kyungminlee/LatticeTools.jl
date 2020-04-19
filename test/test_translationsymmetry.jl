@@ -116,6 +116,7 @@ using TightBindingLattice
         @testset "iterate/membership" begin
             @test [x for x in tsym] == collect(elements(tsym))
             @test all(x ∈ tsym for x in tsym)
+            @test 100 ∉ tsym
             @test IdentityOperation(Int, 2) ∈ tsym
             @test IdentityOperation(Int, 3) ∉ tsym
             @test TranslationOperation([100, 100]) ∈ tsym

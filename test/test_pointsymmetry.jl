@@ -185,6 +185,7 @@ using TightBindingLattice: simplify_name
         
         @test [x for x in psym] == collect(elements(psym))
         @test all(x ∈ psym for x in psym)
+        @test 100 ∉ psym
         @test PointOperation([1 2 0; -1 1 0; 0 0 1]) ∉ psym
         @test IdentityOperation(Int, 2) ∉ psym
         @test IdentityOperation(Int, 3) ∈ psym
