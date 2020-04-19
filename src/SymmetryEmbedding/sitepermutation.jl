@@ -44,7 +44,7 @@ Embed the simplest version of integer translation (no mapping between orbitals e
 function embed(lattice::Lattice, top::TranslationOperation{<:Integer})
     p = zeros(Int, numorbital(lattice.supercell))
     for (orbital_index1, ((orbital_name1, uc_coord1), _)) in enumerate(lattice.supercell.orbitals)
-        _, uc_coord2 = lattice.hypercube.wrap( top(uc_coord1) )
+        _, uc_coord2 = lattice.orthocube.wrap( top(uc_coord1) )
         orbital_index1 = getorbitalindex(lattice.supercell, (orbital_name1, uc_coord1))
         orbital_index2 = getorbitalindex(lattice.supercell, (orbital_name1, uc_coord2))
         p[orbital_index1] = orbital_index2
@@ -67,8 +67,8 @@ function embed(lattice::Lattice, pop::PointOperation)
     for (i, (j, dR)) in enumerate(orbital_map)
         namei = getorbitalname(lattice.unitcell, i)
         namej = getorbitalname(lattice.unitcell, j)
-        for Ri in lattice.hypercube.coordinates
-            _, Rj = lattice.hypercube.wrap(pop.matrix * Ri + dR)
+        for Ri in lattice.bravais_coordinates
+            _, Rj = lattice.orthocube.wrap(pop.matrix * Ri + dR)
             i_super = lattice.supercell.orbitalindices[(namei, Ri)]
             j_super = lattice.supercell.orbitalindices[(namej, Rj)]
             p[i_super] = j_super

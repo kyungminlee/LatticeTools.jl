@@ -3,34 +3,61 @@ export iscompatible
 
 ## 1. Hypercube and Operation
 
-function iscompatible(hypercube::HypercubicLattice, op::TranslationOperation{<:Integer})::Bool
-    if dimension(hypercube) != dimension(op)
+# function iscompatible(hypercube::HypercubicLattice, op::TranslationOperation{<:Integer})::Bool
+#     if dimension(hypercube) != dimension(op)
+#         throw(DimensionMismatch("hypercube and operation have different dimension"))
+#     end
+#     return true
+# end
+
+function iscompatible(orthocube::OrthoCube, op::TranslationOperation{<:Integer})::Bool
+    if dimension(orthocube) != dimension(op)
         throw(DimensionMismatch("hypercube and operation have different dimension"))
     end
     return true
 end
 
-"""
-    iscompatible(hypercube, point_operation)
 
-    (R ⋅ L) mod L = 0   and   (R ⋅ L) / L = 1
-"""
-function iscompatible(hypercube::HypercubicLattice, op::PointOperation{<:Integer})::Bool
-    R, r = hypercube.wrap(op.matrix * hypercube.scale_matrix)
+
+# """
+#     iscompatible(hypercube, point_operation)
+
+#     (R ⋅ L) mod L = 0   and   (R ⋅ L) / L = 1
+# """
+# function iscompatible(hypercube::HypercubicLattice, op::PointOperation{<:Integer})::Bool
+#     R, r = hypercube.wrap(op.matrix * hypercube.scale_matrix)
+#     return iszero(r) && abs(ExactLinearAlgebra.determinant(R)) == 1
+# end
+
+
+
+function iscompatible(orthocube::OrthoCube, op::PointOperation{<:Integer})::Bool
+    R, r = orthocube.wrap(op.matrix * orthocube.shape_matrix)
     return iszero(r) && abs(ExactLinearAlgebra.determinant(R)) == 1
 end
+
 
 
 ## 2. Hypercube and Symmetry
 
-function iscompatible(hypercube::HypercubicLattice, tsym::TranslationSymmetry)::Bool
-    R, r = hypercube.wrap(tsym.hypercube.scale_matrix)
+# function iscompatible(hypercube::HypercubicLattice, tsym::TranslationSymmetry)::Bool
+#     R, r = hypercube.wrap(tsym.hypercube.scale_matrix)
+#     return iszero(r) && abs(ExactLinearAlgebra.determinant(R)) == 1
+# end
+
+# function iscompatible(hypercube::HypercubicLattice, psym::PointSymmetry)::Bool
+#     return all(iscompatible(hypercube, pop) for pop in elements(psym))
+# end
+
+function iscompatible(orthocube::OrthoCube, tsym::TranslationSymmetry)::Bool
+    R, r = orthocube.wrap(tsym.orthocube.shape_matrix)
     return iszero(r) && abs(ExactLinearAlgebra.determinant(R)) == 1
 end
 
-function iscompatible(hypercube::HypercubicLattice, psym::PointSymmetry)::Bool
-    return all(iscompatible(hypercube, pop) for pop in elements(psym))
+function iscompatible(orthocube::OrthoCube, psym::PointSymmetry)::Bool
+    return all(iscompatible(orthocube, pop) for pop in elements(psym))
 end
+
 
 
 ## 3. TranslationSymmetry and PointOperation/PointSymmetry
@@ -39,11 +66,11 @@ function iscompatible(tsym::TranslationSymmetry, pop::PointOperation{<:Integer})
     # sm = tsym.hypercube.scale_matrix
     # smi = tsym.hypercube.inverse_scale_matrix
     # return all(mod(x,1) == 0 for x in smi * pop.matrix * sm)
-    return iscompatible(tsym.hypercube, pop)
+    return iscompatible(tsym.orthocube, pop)
 end
 
 function iscompatible(tsym::TranslationSymmetry, psym::PointSymmetry)::Bool
-    return iscompatible(tsym.hypercube, psym)
+    return iscompatible(tsym.orthocube, psym)
 end
 
 
@@ -76,7 +103,7 @@ function iscompatible(lattice::Lattice, op::TranslationOperation{<:Integer})
 end
 
 function iscompatible(lattice::Lattice, op::PointOperation{<:Integer})
-    return iscompatible(lattice.hypercube, op) &&
+    return iscompatible(lattice.orthocube, op) &&
            !isnothing(findorbitalmap(lattice.unitcell, op))
 end
 
@@ -91,12 +118,12 @@ For translation symmetry, this means that the hypercubic lattice for both are th
 """
 function iscompatible(lattice::Lattice, tsym::TranslationSymmetry)
     # return lattice.hypercube == tsym.hypercube
-    return iscompatible(lattice.hypercube, tsym)
+    return iscompatible(lattice.orthocube, tsym)
 end
 
 
 function iscompatible(lattice::Lattice, psym::PointSymmetry)::Bool
-    return iscompatible(lattice.hypercube, psym) &&
+    return iscompatible(lattice.orthocube, psym) &&
            all(!isnothing(findorbitalmap(lattice.unitcell, pop))
                    for pop in generator_elements(psym))
 end

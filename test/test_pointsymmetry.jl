@@ -210,8 +210,8 @@ using TightBindingLattice: simplify_name
     end
 
     @testset "iscompatible" begin
-        hc1 = HypercubicLattice([4 0; 0 4])
-        hc2 = HypercubicLattice([4 0; 0 3])
+        hc1 = OrthoCube([4 0; 0 4])
+        hc2 = OrthoCube([4 0; 0 3])
         tsym1 = TranslationSymmetry(hc1)
         tsym2 = TranslationSymmetry(hc2)
 
@@ -291,7 +291,7 @@ using TightBindingLattice: simplify_name
                 tsym = TranslationSymmetry(lattice)
                 for tsym_irrep in 1:num_irreps(tsym)
                     psym_little = LSYM(tsym, tsym_irrep, psym)
-                    k = tsym.hypercube.coordinates[tsym_irrep]
+                    k = tsym.coordinates[tsym_irrep]
                     @test iscompatible(tsym, tsym_irrep, psym) == (k in [[0,0], [2,2]])
                     @test iscompatible(tsym, tsym_irrep, psym_little)
                     lg_matrep = psym.matrix_representations[little_group_elements(tsym, tsym_irrep, psym)]

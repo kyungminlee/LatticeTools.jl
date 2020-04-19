@@ -17,7 +17,9 @@ export translation_symmetry_embedding
 
 
 struct TranslationSymmetry <: AbstractSymmetry
-    hypercube::HypercubicLattice
+    # hypercube::HypercubicLattice
+    orthocube::OrthoCube
+    
     elements::Vector{TranslationOperation{Int}}
     group::FiniteGroup
 
@@ -29,37 +31,137 @@ struct TranslationSymmetry <: AbstractSymmetry
 
     # for quick
     generator_translations::Matrix{Int}
+    coordinates::Vector{Vector{Int}}
     orthogonal_shape::Vector{Int}
     orthogonal_coordinates::Vector{Vector{Int}}
 
     orthogonal_to_coordinate_map::Dict{Vector{Int}, Vector{Int}}
     coordinate_to_orthogonal_map::Dict{Vector{Int}, Vector{Int}}
 
-    orthogonal_scale_matrix::Matrix{Int}
-    orthogonal_reduced_reciprocal_scale_matrix::Matrix{Rational{Int}}
+    orthogonal_shape_matrix::Matrix{Int}
+    orthogonal_reduced_reciprocal_shape_matrix::Matrix{Rational{Int}}
     fractional_momenta::Vector{Vector{Rational{Int}}}
 
+    # function TranslationSymmetry(shape::Matrix{<:Integer}; tol::Real=Base.rtoldefault(Float64))
+    #     return TranslationSymmetry(orthogonalize(HypercubicLattice(shape)))
+    # end
+
+    # function TranslationSymmetry(lattice::Lattice; tol::Real=Base.rtoldefault(Float64))
+    #     return TranslationSymmetry(lattice.hypercube)
+    # end
+
+    # function TranslationSymmetry(hypercube::HypercubicLattice; tol::Real=Base.rtoldefault(Float64))
+    #     if dimension(hypercube) == 1
+    #         generator_translations = ones(Int, (1,1))
+    #         return TranslationSymmetry(hypercube, generator_translations; tol=tol)
+    #     elseif dimension(hypercube) == 2
+    #         generator_translations = decompose_lattice_2d(hypercube)
+    #         return TranslationSymmetry(hypercube, generator_translations; tol=tol)
+    #     else
+    #         error("Currenly only supports 1D and 2D")
+    #     end
+    # end
+
     function TranslationSymmetry(shape::Matrix{<:Integer}; tol::Real=Base.rtoldefault(Float64))
-        return TranslationSymmetry(orthogonalize(HypercubicLattice(shape)))
+        return TranslationSymmetry(OrthoCube(shape))
     end
 
     function TranslationSymmetry(lattice::Lattice; tol::Real=Base.rtoldefault(Float64))
-        return TranslationSymmetry(lattice.hypercube)
+        return TranslationSymmetry(lattice.orthocube)
     end
 
-    function TranslationSymmetry(hypercube::HypercubicLattice; tol::Real=Base.rtoldefault(Float64))
-        if dimension(hypercube) == 1
-            generator_translations = ones(Int, (1,1))
-            return TranslationSymmetry(hypercube, generator_translations; tol=tol)
-        elseif dimension(hypercube) == 2
-            generator_translations = decompose_lattice_2d(hypercube)
-            return TranslationSymmetry(hypercube, generator_translations; tol=tol)
-        else
-            error("Currenly only supports 1D and 2D")
+    function TranslationSymmetry(orthocube::OrthoCube;
+                                 tol::Real=Base.rtoldefault(Float64))
+        generator_translations = find_generators(orthocube)
+        return TranslationSymmetry(orthocube, generator_translations; tol=tol)
+    end
+   
+    function TranslationSymmetry(orthocube::OrthoCube,
+                                 generator_translations::AbstractMatrix{<:Integer};
+                                 tol::Real=Base.rtoldefault(Float64))
+
+        if ExactLinearAlgebra.determinant(generator_translations) != 1
+            throw(ArgumentError("generator translation is not unimodular"))
         end
+        
+        # group = FiniteGroup(translation_group_multiplication_table(hypercube))
+        # ord_group = group_order(group)
+
+        # @assert isabelian(group)
+        # @assert ord_group == length(hypercube.coordinates)
+
+        # BEGIN Orthogonal
+        coordinates = generate_coordinates(orthocube, generator_translations)
+        coordinate_indices = Dict(r => i for (i, r) in enumerate(coordinates))
+
+        pbcadd = (x::Vector{Int}, y::Vector{Int}) -> orthocube.wrap(x+y)[2]
+        group = FiniteGroup(group_multiplication_table(coordinates, pbcadd))
+        ord_group = group_order(group)
+
+        generators = Int[ coordinate_indices[ orthocube.wrap(v)[2] ]
+                            for v in eachcol(generator_translations) ]
+
+        orthogonal_shape = [group.period_lengths[g] for g in generators] # in "generator" coordinates
+        orthogonal_coordinates = vec([[x...] for x in Iterators.product([0:(d-1) for d in orthogonal_shape]...)])
+
+        @assert prod(orthogonal_shape) == ord_group
+        @assert length(orthogonal_coordinates) == ord_group
+
+        orthogonal_to_coordinate_map = Dict{Vector{Int}, Vector{Int}}()
+        coordinate_to_orthogonal_map = Dict{Vector{Int}, Vector{Int}}()
+
+        let ortho_latvec = generator_translations
+            for (r, r_ortho) in zip(coordinates, orthogonal_coordinates)
+                @assert r == orthocube.wrap(ortho_latvec * r_ortho)[2]
+                orthogonal_to_coordinate_map[r_ortho] = r
+                coordinate_to_orthogonal_map[r] = r_ortho
+            end
+        end
+        orthogonal_shape_matrix = hcat(
+                    [group_order(group, g) * v
+                        for (g, v) in zip(generators, eachcol(generator_translations))]...)
+        orthogonal_reduced_reciprocal_shape_matrix = ExactLinearAlgebra.inverse(transpose(orthogonal_shape_matrix))
+        
+        elements = [TranslationOperation(r) for r in coordinates]
+
+        fractional_momenta = let modunit = x -> mod(x, 1)
+            [modunit.( orthogonal_reduced_reciprocal_shape_matrix * orthogonal_integer_momentum )
+                 for orthogonal_integer_momentum in orthogonal_coordinates]
+        end
+
+        # each element of an abelian group is a conjugacy class
+        element_names = ["$(orthogonal_to_coordinate_map[t])" for t in orthogonal_coordinates]
+        conjugacy_classes = [[i] for (i,x) in enumerate(element_names)]
+
+        momentum(oc::AbstractVector{<:Integer}) = [2π * x / d for (x, d) in zip(oc, orthogonal_shape)]
+        character_table = ComplexF64[cis(-dot(momentum(kd), t))
+                                     for kd in orthogonal_coordinates,
+                                          t in orthogonal_coordinates]
+
+        character_table = cleanup_number(character_table, tol)
+
+        # each element forms a conjugacy class
+        irreps = Vector{Matrix{ComplexF64}}[]
+        for (idx_rep, momentum) in enumerate(orthogonal_coordinates)
+            matrices = Matrix{ComplexF64}[]
+            for (idx_elem, orthogonal_translation) in enumerate(orthogonal_coordinates)
+                push!(matrices, character_table[idx_rep, idx_elem] * ones(ComplexF64, 1, 1))
+            end
+            push!(irreps, matrices)
+        end
+
+        return new(orthocube, elements, group, generators,
+                   conjugacy_classes, character_table, irreps, element_names,
+                   generator_translations,
+                   coordinates,
+                   orthogonal_shape, orthogonal_coordinates,
+                   orthogonal_to_coordinate_map, coordinate_to_orthogonal_map,
+                   orthogonal_shape_matrix, orthogonal_reduced_reciprocal_shape_matrix,
+                   fractional_momenta)
     end
 
-    
+
+    #=
     function TranslationSymmetry(hypercube::HypercubicLattice,
                                  generator_translations::AbstractMatrix{<:Integer};
                                  tol::Real=Base.rtoldefault(Float64))
@@ -94,11 +196,11 @@ struct TranslationSymmetry <: AbstractSymmetry
                 coordinate_to_orthogonal_map[r] = r_ortho
             end
         end
-        orthogonal_scale_matrix = hcat(
+        orthogonal_shape_matrix = hcat(
                     [group_order(group, g) * v
                         for (g, v) in zip(generators, eachcol(generator_translations))]...
                 )
-        orthogonal_reduced_reciprocal_scale_matrix = ExactLinearAlgebra.inverse(transpose(orthogonal_scale_matrix))
+        orthogonal_reduced_reciprocal_shape_matrix = ExactLinearAlgebra.inverse(transpose(orthogonal_shape_matrix))
         # END Orthogonal
         
         elements = [TranslationOperation(orthogonal_to_coordinate_map[r_ortho])
@@ -107,7 +209,7 @@ struct TranslationSymmetry <: AbstractSymmetry
         @assert hypercube.coordinates == [t.displacement for t in elements] "Remove this when hypercube coordinates convention is fixed"
 
         fractional_momenta = let modunit = x -> mod(x, 1)
-            [modunit.( orthogonal_reduced_reciprocal_scale_matrix * orthogonal_integer_momentum )
+            [modunit.( orthogonal_reduced_reciprocal_shape_matrix * orthogonal_integer_momentum )
                  for orthogonal_integer_momentum in orthogonal_coordinates]
         end
 
@@ -137,9 +239,30 @@ struct TranslationSymmetry <: AbstractSymmetry
                    generator_translations,
                    orthogonal_shape, orthogonal_coordinates,
                    orthogonal_to_coordinate_map, coordinate_to_orthogonal_map,
-                   orthogonal_scale_matrix, orthogonal_reduced_reciprocal_scale_matrix,
+                   orthogonal_shape_matrix, orthogonal_reduced_reciprocal_shape_matrix,
                    fractional_momenta)
     end
+    =#
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 end
 
@@ -165,10 +288,10 @@ generator_elements(sym::TranslationSymmetry) = element(sym, sym.generators)
 
 
 function symmetry_name(sym::TranslationSymmetry)
-    n11 = sym.hypercube.scale_matrix[1,1]
-    n12 = sym.hypercube.scale_matrix[1,2]
-    n21 = sym.hypercube.scale_matrix[2,1]
-    n22 = sym.hypercube.scale_matrix[2,2]
+    n11 = sym.orthocube.shape_matrix[1,1]
+    n12 = sym.orthocube.shape_matrix[1,2]
+    n21 = sym.orthocube.shape_matrix[2,1]
+    n22 = sym.orthocube.shape_matrix[2,2]
     return "TranslationSymmetry[($n11,$n21)x($n12,$n22)]"
 end
 

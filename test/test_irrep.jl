@@ -29,7 +29,7 @@ using TightBindingLattice
             psymbed_little = little_symmetry(tsicbed, psymbed)
             @test psym_little.group == symmetry(psymbed_little).group
 
-            k = tsym.hypercube.coordinates[tsym_irrep]
+            k = tsym.coordinates[tsym_irrep]
             @test iscompatible(tsym, tsym_irrep, psym) == (k in [[0,0], [2,2]])
             @test iscompatible(tsym, tsym_irrep, psym_little)
 
@@ -57,7 +57,7 @@ using TightBindingLattice
         end # for tsym_irrep
 
         for tsic in get_irrep_components(tsym)
-            k = tsym.hypercube.coordinates[tsic.irrep_index]
+            k = tsym.coordinates[tsic.irrep_index]
             psym_little = little_symmetry(tsic, psym)
 
             @test iscompatible(tsic, psym) == (k in [[0,0], [2,2]])
@@ -112,7 +112,7 @@ using TightBindingLattice
         for ((tsic, psic), ssic) in zip(ssics1, ssics2)
             @test group_order(ssic) == group_order(tsic) * group_order(psic)
 
-            @test tsic.symmetry.hypercube == ssic.component1.symmetry.hypercube
+            @test tsic.symmetry.orthocube == ssic.component1.symmetry.orthocube
             @test psic.symmetry.hermann_mauguinn == ssic.component2.symmetry.hermann_mauguinn
             @test tsic.irrep_index == ssic.component1.irrep_index
             @test psic.irrep_index == ssic.component2.irrep_index

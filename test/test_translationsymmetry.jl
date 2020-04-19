@@ -8,7 +8,7 @@ using TightBindingLattice
         TranslationSymmetry(4*ones(Int, (1, 1)))
         TranslationSymmetry([4 0; 0 4])
         @test_throws ErrorException TranslationSymmetry([4 0 0; 0 4 0; 0 0 4])  # <- Temporary
-        @test_throws ArgumentError TranslationSymmetry(HypercubicLattice([2 0; 0 2]), [2 0; 0 1])
+        @test_throws ArgumentError TranslationSymmetry(OrthoCube([2 0; 0 2]), [2 0; 0 1])
     end
 
     @testset "properties" begin
@@ -55,8 +55,8 @@ using TightBindingLattice
         end
 
         @testset "elements" begin
-            @test tsym.hypercube.coordinates[idx_gen1] == [1, 0]
-            @test tsym.hypercube.coordinates[idx_gen2] == [0, 1]
+            @test tsym.coordinates[idx_gen1] == [1, 0]
+            @test tsym.coordinates[idx_gen2] == [0, 1]
             # elements ordered according to the "generator" (i.e. orthogonal order)
             @test tsym.element_names == [
                 "[0, 0]", "[1, 0]", "[2, 0]",
@@ -71,10 +71,10 @@ using TightBindingLattice
 
         @testset "multiplication table" begin
             mtab = zeros(Int, (9, 9))
-            lookup = Dict(r => i for (i, r) in enumerate(tsym.hypercube.coordinates))
-            for (i, ri) in enumerate(tsym.hypercube.coordinates)
-                for (j, rj) in enumerate(tsym.hypercube.coordinates)
-                    _, ek = tsym.hypercube.wrap(ri + rj)
+            lookup = Dict(r => i for (i, r) in enumerate(tsym.coordinates))
+            for (i, ri) in enumerate(tsym.coordinates)
+                for (j, rj) in enumerate(tsym.coordinates)
+                    _, ek = tsym.orthocube.wrap(ri + rj)
                     k = lookup[ek]
                     mtab[i,j] = k
                 end # for j
@@ -85,8 +85,8 @@ using TightBindingLattice
 
         @testset "coordinates" begin
             @test tsym.orthogonal_shape == [3, 3]
-            @test tsym.orthogonal_coordinates == tsym.hypercube.coordinates
-            for cc in tsym.hypercube.coordinates
+            @test tsym.orthogonal_coordinates == tsym.coordinates
+            for cc in tsym.coordinates
                 oc = tsym.coordinate_to_orthogonal_map[cc]
                 cc2 = tsym.orthogonal_to_coordinate_map[oc]
                 @test cc == cc2
@@ -116,8 +116,8 @@ using TightBindingLattice
 
         @test length(tsym.generators) == 2
         # idx_gen = tsym.generators[1]
-        @test tsym.hypercube.coordinates[tsym.generators[1]] == [1, 0]
-        @test tsym.hypercube.coordinates[tsym.generators[2]] == [0, 1]
+        @test tsym.coordinates[tsym.generators[1]] == [1, 0]
+        @test tsym.coordinates[tsym.generators[2]] == [0, 1]
         # elements ordered according to the "generator" (i.e. orthogonal order)
         @test element_names(tsym) == [
             "[0, 0]", "[1, 0]", "[2, 0]", "[3, 0]",
@@ -128,7 +128,7 @@ using TightBindingLattice
 
         @test tsym.orthogonal_shape == [4,3]
         @test tsym.orthogonal_coordinates == [[0,0], [1,0], [2,0], [3,0], [0,1], [1,1], [2,1], [3,1], [0,2], [1,2], [2,2], [3,2]]
-        for cc in tsym.hypercube.coordinates
+        for cc in tsym.coordinates
             oc = tsym.coordinate_to_orthogonal_map[cc]
             cc2 = tsym.orthogonal_to_coordinate_map[oc]
             @test cc == cc2
@@ -158,7 +158,7 @@ using TightBindingLattice
         @test length(perms) == 16
         @test perms[1].permutation.map == 1:32  # identity
 
-        for (ir, r) in enumerate(lattice.hypercube.coordinates)
+        for (ir, r) in enumerate(lattice.bravais_coordinates)
             @test perms[ir].permutation.map == [
                 let
                     ivec = [(i-1) % 4, (i-1) ÷ 4]

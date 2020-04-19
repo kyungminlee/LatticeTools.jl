@@ -38,8 +38,10 @@ end
 function find_generators(ortho::OrthoCube)
     if dimension(ortho) == 1
         return ones(Int, 1, 1)
-    else
+    elseif dimension(ortho) == 2
         return find_generators_2d(ortho)
+    else
+        error("Currently, only 1D and 2D lattices are supported")
     end
 end
 
@@ -48,11 +50,12 @@ function find_generators_2d(ortho::OrthoCube)
     dimension(ortho) != 2 && throw(ArgumentError("shape matrix should be 2x2"))
 
     orthovolume = abs(volume(ortho))
-    allowed_pairs = [[x, y] for y in 0:orthovolume, x in 0:orthovolume if gcd(x,y) == 1]
-
+    allowed_pairs = [[1,0]]
+    append!(allowed_pairs, [x, y] for y in 1:orthovolume, x in 0:orthovolume if gcd(x,y) == 1)
+    
     function make_loop(t::Vector{Int})
         axis = Vector{Int}[zero(t)]
-        r = t
+        r = ortho.wrap(t)[2]
         while !iszero(r)
             push!(axis, r)
             r = ortho.wrap(r .+ t)[2]
@@ -69,7 +72,6 @@ function find_generators_2d(ortho::OrthoCube)
         for r2 in allowed_pairs
             ExactLinearAlgebra.determinant(hcat(r1, r2)) != 1 && continue
             axis2 = make_loop(r2)
-            #mod(orthovolume, length(axis1) * length(axis2)) != 0 && continue
             orthovolume != length(axis1) * length(axis2) && continue
             coordinates = vec([ortho.wrap(sum(x))[2]
                                    for x in Iterators.product(axis1, axis2)])
@@ -80,7 +82,8 @@ function find_generators_2d(ortho::OrthoCube)
 end
 
 
-function generate_coordinates(ortho::OrthoCube, generator_translations::AbstractMatrix{<:Integer})
+function generate_coordinates(ortho::OrthoCube,
+                              generator_translations::AbstractMatrix{<:Integer})
     let dim = dimension(ortho)
         if size(generator_translations) != (dim, dim)
             throw(DimensionMismatch("OrthoCube and generator_translations have different dimensions"))
@@ -90,7 +93,7 @@ function generate_coordinates(ortho::OrthoCube, generator_translations::Abstract
     end
     function make_loop(t::AbstractVector{<:Integer})
         axis = Vector{Int}[zero(t)]
-        r = t
+        r = ortho.wrap(t)[2]
         while !iszero(r)
             push!(axis, r)
             r = ortho.wrap(r .+ t)[2]
