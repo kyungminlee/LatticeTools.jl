@@ -48,10 +48,11 @@ function ⋊(normal::AbstractSymmetry, rest::AbstractSymmetry)
 end
 
 
-function symmetry_product(sym::SymmorphicSymmetry{TranslationSymmetry, PointSymmetry, SpaceOperation{Int}})
-    function product(lhs::SpaceOperation, rhs::SpaceOperation)
+function symmetry_product(sym::SymmorphicSymmetry{TranslationSymmetry,PointSymmetry,S}
+            ) where {S<:SpaceOperation{<:Integer}}
+    function product(lhs::SpaceOperation{<:Integer}, rhs::SpaceOperation{<:Integer})
         foo = lhs * rhs
-        return SpaceOperation(foo.matrix, sym.normal.orthocube.wrap(foo.displacement)[2])
+        return S(foo.matrix, sym.normal.orthocube.wrap(foo.displacement)[2])
     end
     return product
 end
