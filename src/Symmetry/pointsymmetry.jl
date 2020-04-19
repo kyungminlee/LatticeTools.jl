@@ -200,10 +200,10 @@ end
 
 import Base.in
 in(item::Any, sym::PointSymmetry) = false
-in(item::TranslationOperation, sym::PointSymmetry) = ispoint(item)
-in(item::PointOperation, sym::PointSymmetry) = in(item, elements(sym))
-in(item::SpaceOperation, sym::PointSymmetry) = ispoint(item) && in(PointOperation(sym.matrix), sym)
-
+in(item::IdentityOperation, sym::PointSymmetry) = dimension(item) == dimension(sym)
+in(item::TranslationOperation, sym::PointSymmetry) = dimension(item) == dimension(sym) && ispoint(item)
+in(item::PointOperation{<:Integer}, sym::PointSymmetry) = in(item, elements(sym))
+in(item::SpaceOperation{<:Integer, Tt}, sym::PointSymmetry) where {Tt} = ispoint(item) && in(PointOperation(sym.matrix), sym)
 
 import Base.iterate
 iterate(sym::PointSymmetry) = iterate(elements(sym))

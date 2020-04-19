@@ -281,9 +281,19 @@ end
 
 import Base.in
 in(item::Any, sym::TranslationSymmetry) = false
-in(item::TranslationOperation, sym::TranslationSymmetry) = true
-in(item::PointOperation, sym::TranslationSymmetry) = istranslation(item)
-in(item::SpaceOperation, sym::TranslationSymmetry) = istranslation(item)
+function in(item::IdentityOperation, sym::TranslationSymmetry)
+    dimension(item) == dimension(sym)
+end
+
+function in(item::TranslationOperation{<:Integer}, sym::TranslationSymmetry)
+    dimension(item) == dimension(sym)
+end
+function in(item::PointOperation, sym::TranslationSymmetry) 
+    dimension(item) == dimension(sym) && istranslation(item)
+end
+function in(item::SpaceOperation{Tp, <:Integer}, sym::TranslationSymmetry) where {Tp}
+    dimension(item) == dimension(sym) && istranslation(item)
+end
 
 
 import Base.iterate
