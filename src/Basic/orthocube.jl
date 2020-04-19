@@ -37,17 +37,9 @@ end
 
 
 function isequiv(lhs::OrthoCube, rhs::OrthoCube)
-    let
-        R, r = lhs.wrap(rhs.shape_matrix)
-        if abs(ExactLinearAlgebra.determinant(R)) != 1 || !iszero(r)
-            return false
-        end
-    end
-    let
-        R, r = rhs.wrap(lhs.shape_matrix)
-        if abs(ExactLinearAlgebra.determinant(R)) != 1 || !iszero(r)
-            return false
-        end
+    R, r = lhs.wrap(rhs.shape_matrix)
+    if abs(ExactLinearAlgebra.determinant(R)) != 1 || !iszero(r)
+        return false
     end
     return true
 end
