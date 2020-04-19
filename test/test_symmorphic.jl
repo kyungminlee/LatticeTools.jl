@@ -47,4 +47,6 @@ using TightBindingLattice
         @test group_multiplication_table(ssym) == mtab
     end
 
+    # get_irrep_components(ssym)
+
 end
