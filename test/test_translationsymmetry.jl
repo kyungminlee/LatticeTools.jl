@@ -106,6 +106,13 @@ using TightBindingLattice
                 @test oc == oc2
             end
         end
+
+        @testset "symmetry_product" begin
+            pro = symmetry_product(tsym)
+            @test all( pro(x,y).displacement == tsym.orthocube.wrap(x.displacement + y.displacement)[2]
+                       for x in tsym, y in tsym)
+        end
+
         @testset "iterate" begin
             @test [x for x in tsym] == collect(elements(tsym))
             @test all(x ∈ tsym for x in tsym)
