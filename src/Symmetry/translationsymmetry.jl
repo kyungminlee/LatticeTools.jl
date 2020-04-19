@@ -279,16 +279,17 @@ function symmetry_product(sym::TranslationSymmetry)
 end
 
 
-
 import Base.in
 in(item::Any, sym::TranslationSymmetry) = false
 in(item::TranslationOperation, sym::TranslationSymmetry) = true
-in(item::PointOperation, sym::PointSymmetry) = istranslation(item)
+in(item::PointOperation, sym::TranslationSymmetry) = istranslation(item)
 in(item::SpaceOperation, sym::TranslationSymmetry) = istranslation(item)
+
 
 import Base.iterate
 iterate(sym::TranslationSymmetry) = iterate(elements(sym))
 iterate(sym::TranslationSymmetry, i) = iterate(elements(sym), i)
+
 
 import Base.length
 length(sym::TranslationSymmetry) = length(elements(sym))

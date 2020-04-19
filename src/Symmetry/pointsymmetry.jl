@@ -195,15 +195,18 @@ function symmetry_product(sym::PointSymmetry)
     return product
 end
 
+
 import Base.in
 in(item::Any, sym::PointSymmetry) = false
 in(item::TranslationOperation, sym::PointSymmetry) = ispoint(item)
 in(item::PointOperation, sym::PointSymmetry) = in(item, elements(sym))
 in(item::SpaceOperation, sym::PointSymmetry) = ispoint(item) && in(PointOperation(sym.matrix), sym)
 
+
 import Base.iterate
 iterate(sym::PointSymmetry) = iterate(elements(sym))
 iterate(sym::PointSymmetry, i) = iterate(elements(sym), i)
+
 
 import Base.length
 length(sym::PointSymmetry) = length(elements(sym))

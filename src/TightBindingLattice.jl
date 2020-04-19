@@ -28,13 +28,12 @@ include("SymmetryEmbedding/orbitalmap.jl")
 include("SymmetryEmbedding/localunitary.jl")
 include("SymmetryEmbedding/symmetryembedding.jl")
 
+include("Irrep/irrep.jl")
+
 export PointSymmetryDatabase
 include("Symmetry/pointsymmetrydatabase.jl")
-
 export IrrepDatabase
-include("Irrep/irrep.jl")
 include("Irrep/irrepdatabase.jl")
-
 
 include("Symmorphic/symmorphicsymmetry.jl")
 include("Symmorphic/symmorphicsymmetryembedding.jl")
