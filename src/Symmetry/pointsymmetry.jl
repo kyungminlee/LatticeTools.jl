@@ -168,6 +168,8 @@ end
 dimension(sym::PointSymmetry) = size(sym.matrix_representations[1], 1)
 
 elementtype(sym::PointSymmetry) = PointOperation{Int}
+import Base.valtype
+valtype(sym::PointSymmetry) = PointOperation{Int}
 
 element(sym::PointSymmetry, g) = sym.elements[g]
 elements(sym::PointSymmetry) = sym.elements

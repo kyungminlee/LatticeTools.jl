@@ -28,6 +28,9 @@ struct SymmetryEmbedding{SymmetryType}<:AbstractSymmetryEmbedding
 end
 
 elementtype(::SymmetryEmbedding) = SitePermutation
+import Base.valtype
+valtype(::SymmetryEmbedding) = SitePermutation
+
 elements(symbed::SymmetryEmbedding) = symbed.elements
 element(symbed::SymmetryEmbedding, g) = symbed.elements[g]
 symmetry(symbed::SymmetryEmbedding) = symbed.symmetry

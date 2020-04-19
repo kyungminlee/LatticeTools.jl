@@ -21,7 +21,10 @@ struct SymmorphicSymmetryEmbedding{S1<:AbstractSymmetry, S2<:AbstractSymmetry}<:
 end
 
 embed(lattice::Lattice, ssym::SymmorphicSymmetry) = SymmorphicSymmetryEmbedding(lattice, ssym)
+
 elementtype(::SymmorphicSymmetryEmbedding) = SitePermutation
+import Base.valtype
+valtype(::SymmorphicSymmetryEmbedding) = SitePermutation
 
 export iscompatible
 function iscompatible(lattice::Lattice, ssym::SymmorphicSymmetry{S1, S2, E}) where {S1, S2, E}

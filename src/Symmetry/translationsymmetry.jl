@@ -253,6 +253,8 @@ group_order(sym::TranslationSymmetry, g...) = group_order(sym.group, g...)
 group_multiplication_table(psym::TranslationSymmetry) = group_multiplication_table(psym.group)
 
 elementtype(sym::TranslationSymmetry) = TranslationOperation{Int}
+import Base.valtype
+valtype(sym::TranslationSymmetry) = TranslationOperation{Int}
 
 element(sym::TranslationSymmetry, g) = sym.elements[g]
 elements(sym::TranslationSymmetry) = sym.elements
