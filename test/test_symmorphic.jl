@@ -8,6 +8,8 @@ using TightBindingLattice
     @test_throws ArgumentError psym ⋊ tsym
     ssym = tsym ⋊ psym
 
+    @test elementtype(ssym) == SpaceOperation{Int, Int}
+    @test valtype(ssym) == SpaceOperation{Int, Int}
     @test element(ssym, 2) == TranslationOperation([1, 0])  # equality between different types
     let els = elements(ssym)
         @test length(els) == 4 * 4 * group_order(psym)
