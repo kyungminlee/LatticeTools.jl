@@ -139,41 +139,41 @@ end
 
 
 
-struct SymmorphicSpaceSymmetryEmbedding<:AbstractSymmetryEmbedding
-    lattice::Lattice
-    translation_symmetry::TranslationSymmetry
-    point_symmetry::PointSymmetry
-    elements::Matrix{SitePermutation}
+# struct SymmorphicSpaceSymmetryEmbedding<:AbstractSymmetryEmbedding
+#     lattice::Lattice
+#     translation_symmetry::TranslationSymmetry
+#     point_symmetry::PointSymmetry
+#     elements::Matrix{SitePermutation}
 
-    function SymmorphicSpaceSymmetryEmbedding(
-                lattice::Lattice,
-                translation::TranslationSymmetry,
-                point::PointSymmetry)
-        if !iscompatible(translation, point)
-            throw(ArgumentError("translation symmetry and point symmetry not compatible"))
-        end
-        tels = [embed(lattice, elem) for elem in translation.elements]
-        pels = [embed(lattice, elem) for elem in point.elements]
+#     function SymmorphicSpaceSymmetryEmbedding(
+#                 lattice::Lattice,
+#                 translation::TranslationSymmetry,
+#                 point::PointSymmetry)
+#         if !iscompatible(translation, point)
+#             throw(ArgumentError("translation symmetry and point symmetry not compatible"))
+#         end
+#         tels = [embed(lattice, elem) for elem in translation.elements]
+#         pels = [embed(lattice, elem) for elem in point.elements]
 
-        if !allunique(pels)
-            throw(ArgumentError("lattice too small for the point symmetry operation (not faithful)"))
-        end
+#         if !allunique(pels)
+#             throw(ArgumentError("lattice too small for the point symmetry operation (not faithful)"))
+#         end
 
-        elements = [pop * top for top in tels, pop in pels]
-        @assert size(elements) == (length(tels), length(pels))
-        new(lattice, translation, point, elements)
-    end
-end
-
-
-
-function embed(lattice::Lattice, tsym::TranslationSymmetry, psym::PointSymmetry)
-    SymmorphicSpaceSymmetryEmbedding(lattice, tsym, psym)
-end
+#         elements = [pop * top for top in tels, pop in pels]
+#         @assert size(elements) == (length(tels), length(pels))
+#         new(lattice, translation, point, elements)
+#     end
+# end
 
 
-function symmetry_name(arg::SymmorphicSpaceSymmetryEmbedding)
-    name1 = symmetry_name(symmetry(arg.component1))
-    name2 = symmetry_name(symmetry(arg.component2))
-    return "Embed[$name1 ⋊ $name2 on $(arg.lattice.hypercube.scale_matrix)]"
-end
+
+# function embed(lattice::Lattice, tsym::TranslationSymmetry, psym::PointSymmetry)
+#     SymmorphicSpaceSymmetryEmbedding(lattice, tsym, psym)
+# end
+
+
+# function symmetry_name(arg::SymmorphicSpaceSymmetryEmbedding)
+#     name1 = symmetry_name(symmetry(arg.component1))
+#     name2 = symmetry_name(symmetry(arg.component2))
+#     return "Embed[$name1 ⋊ $name2 on $(arg.lattice.hypercube.scale_matrix)]"
+# end
