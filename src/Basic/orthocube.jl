@@ -2,6 +2,7 @@ export OrthoCube
 export find_generators
 export generate_coordinates
 export volume
+export isequiv
 
 struct OrthoCube
     shape_matrix::Matrix{Int}
@@ -33,6 +34,36 @@ import Base.(==)
 function (==)(lhs::OrthoCube, rhs::OrthoCube)
     return (lhs.shape_matrix == rhs.shape_matrix)
 end
+
+
+function isequiv(lhs::OrthoCube, rhs::OrthoCube)
+    let
+        R, r = lhs.wrap(rhs.shape_matrix)
+        if abs(ExactLinearAlgebra.determinant(R)) != 1 || !iszero(r)
+            return false
+        end
+    end
+    let
+        R, r = rhs.wrap(lhs.shape_matrix)
+        if abs(ExactLinearAlgebra.determinant(R)) != 1 || !iszero(r)
+            return false
+        end
+    end
+    return true
+end
+
+function isequiv_old(lhs::OrthoCube, rhs::OrthoCube)
+    det_lhs = TightBindingLattice.ExactLinearAlgebra.determinant(lhs.shape_matrix)
+    det_rhs = TightBindingLattice.ExactLinearAlgebra.determinant(rhs.shape_matrix)
+    det_lhs != det_rhs && return false
+
+    inv_lhs = TightBindingLattice.ExactLinearAlgebra.inverse(lhs.shape_matrix)
+    inv_rhs = TightBindingLattice.ExactLinearAlgebra.inverse(rhs.shape_matrix)
+
+    return all(isinteger.(inv_lhs * rhs.shape_matrix)) && all(isinteger.(inv_rhs * lhs.shape_matrix))
+end
+
+
 
 
 function find_generators(ortho::OrthoCube)
