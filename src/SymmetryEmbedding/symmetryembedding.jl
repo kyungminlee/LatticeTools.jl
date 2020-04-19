@@ -127,6 +127,18 @@ function symmetry_name(arg::SymmetryEmbedding)
 end
 
 
+embed(lattice::Lattice, tsym::TranslationSymmetry) = SymmetryEmbedding(lattice, tsym)
+embed(lattice::Lattice, psym::PointSymmetry) = SymmetryEmbedding(lattice, psym)
+
+
+function translation_symmetry_embedding(lattice::Lattice)
+    tsym = TranslationSymmetry(lattice)
+    return embed(lattice, tsym)
+end
+
+
+
+
 struct SymmorphicSpaceSymmetryEmbedding<:AbstractSymmetryEmbedding
     lattice::Lattice
     translation_symmetry::TranslationSymmetry
@@ -154,8 +166,6 @@ struct SymmorphicSpaceSymmetryEmbedding<:AbstractSymmetryEmbedding
 end
 
 
-embed(lattice::Lattice, tsym::TranslationSymmetry) = SymmetryEmbedding(lattice, tsym)
-embed(lattice::Lattice, psym::PointSymmetry) = SymmetryEmbedding(lattice, psym)
 
 function embed(lattice::Lattice, tsym::TranslationSymmetry, psym::PointSymmetry)
     SymmorphicSpaceSymmetryEmbedding(lattice, tsym, psym)
@@ -166,12 +176,4 @@ function symmetry_name(arg::SymmorphicSpaceSymmetryEmbedding)
     name1 = symmetry_name(symmetry(arg.component1))
     name2 = symmetry_name(symmetry(arg.component2))
     return "Embed[$name1 ⋊ $name2 on $(arg.lattice.hypercube.scale_matrix)]"
-end
-
-
-
-
-function translation_symmetry_embedding(lattice::Lattice)
-    tsym = TranslationSymmetry(lattice)
-    return embed(lattice, tsym)
 end
