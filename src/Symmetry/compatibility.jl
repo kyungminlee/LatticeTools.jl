@@ -73,6 +73,10 @@ function iscompatible(tsym::TranslationSymmetry, psym::PointSymmetry)::Bool
     return iscompatible(tsym.orthocube, psym)
 end
 
+function iscompatible(psym::PointSymmetry, tsym::TranslationSymmetry)::Bool
+    return iscompatible(tsym, psym)
+end
+
 
 ## 4. Translation Irreps and PointOperation/PointSymmetry
 
