@@ -113,7 +113,7 @@ function generate_coordinates(ortho::OrthoCube,
     let dim = dimension(ortho)
         if size(generator_translations) != (dim, dim)
             throw(DimensionMismatch("OrthoCube and generator_translations have different dimensions"))
-        elseif ExactLinearAlgebra.determinant(generator_translations) != 1
+        elseif abs(ExactLinearAlgebra.determinant(generator_translations)) != 1
             throw(ArgumentError("generator_translations is not unimodular"))
         end
     end
@@ -128,7 +128,10 @@ function generate_coordinates(ortho::OrthoCube,
     end
     axes = [make_loop(t) for t in eachcol(generator_translations)]
     coordinates = vec([ortho.wrap(sum(x))[2] for x in Iterators.product(axes...)])
-    @assert length(coordinates) == abs(volume(ortho))
+
+    if length(coordinates) != abs(volume(ortho))
+        throw(ArgumentError("translations $generator_translations generates $(length(coordinates)) coordinates, while the volume is $(abs(volume(ortho)))"))
+    end
     @assert allunique(coordinates)
     return coordinates
 end
