@@ -36,6 +36,13 @@ using TightBindingLattice
         @test all(irrep_dimension(tsym, i) == 1 for i in 1:3)
         @test generator_indices(tsym) == [2, 1]
         @test generator_elements(tsym) == [TranslationOperation([1,0]), TranslationOperation([0,0])]
+
+        let n = lowercase(symmetry_name(tsym))
+            @test occursin("translation", n)
+            @test occursin("3", n)
+            @test occursin("1", n)
+            @test occursin("0", n)
+        end
     end
 
     @testset "orthogonal lattice" begin

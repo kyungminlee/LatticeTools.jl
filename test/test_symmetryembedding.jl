@@ -23,6 +23,13 @@ using LinearAlgebra
             tsymbed = embed(lattice, tsym)
             translation_symmetry_embedding(lattice)
 
+
+            let n = lowercase(symmetry_name(tsymbed))
+                @test occursin("embed", n)
+                @test occursin("translation", n)
+                @test occursin("2", n) && occursin("0", n)
+            end
+
             @test length(elements(tsymbed)) == 4
             @test elements(tsymbed)[1] == SitePermutation([1,2,3,4,5,6,7,8])
             @test elements(tsymbed)[2] == SitePermutation([3,4,1,2,7,8,5,6])
@@ -42,6 +49,14 @@ using LinearAlgebra
             psym = project(PointSymmetryDatabase.get(13), [1 0 0; 0 1 0])
             @test psym.hermann_mauguinn == "4mm"
             psymbed = embed(lattice, psym)
+
+            let n = lowercase(symmetry_name(psymbed))
+                @test occursin("embed", n)
+                @test occursin("point", n)
+                @test occursin("4mm", n) || occursin("C<sub>4v</sub>", n)
+            end
+
+
             idx_C4 = 3
             @test element_name(psym, idx_C4) == "4<sup>+</sup><sub>001</sub>"
             @test length(elements(psymbed)) == 8
@@ -49,6 +64,7 @@ using LinearAlgebra
 
             @test iscompatible(tsymbed, psymbed)
 
+            @test little_symmetry(tsymbed, psymbed).symmetry.hermann_mauguinn == "4mm"
             @test little_symmetry(tsymbed, 1, psymbed).symmetry.hermann_mauguinn == "4mm"
             @test little_symmetry(tsymbed, 2, psymbed).symmetry.hermann_mauguinn == "mm2"
             @test little_symmetry(tsymbed, 3, psymbed).symmetry.hermann_mauguinn == "mm2"
@@ -120,4 +136,5 @@ using LinearAlgebra
         psym_embed = embed(kagome.lattice, kagome.point_symmetry)
         ssym_embed = embed(kagome.lattice, kagome.translation_symmetry, kagome.point_symmetry)
     end
+
 end

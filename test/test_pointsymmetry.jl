@@ -229,6 +229,13 @@ using TightBindingLattice: simplify_name
         @test little_symmetry(TranslationSymmetry([4 1; 0 3]), psym_proj).hermann_mauguinn == "2"
     end
 
+    @testset "symmetry_name" begin
+        let n = lowercase(symmetry_name(psym))
+            @test occursin("point", n)
+            @test occursin("422", n)
+        end
+    end
+
 
     @testset "two-band model" begin
         unitcell = make_unitcell([1.0 0.0; 0.0 1.0]; OrbitalType=String)
