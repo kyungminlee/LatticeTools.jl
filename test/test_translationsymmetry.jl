@@ -14,6 +14,7 @@ using TightBindingLattice
     @testset "properties" begin
         tsym = TranslationSymmetry([3 0; 0 1])
         mtab = [1 2 3; 2 3 1; 3 1 2]
+        @test elementtype(tsym) == TranslationOperation{Int}
         @test group(tsym) == FiniteGroup(mtab)
         @test group_order(tsym) == 3
         @test group_order(tsym, 1) == 1
@@ -104,6 +105,11 @@ using TightBindingLattice
                 oc2 = tsym.coordinate_to_orthogonal_map[cc]
                 @test oc == oc2
             end
+        end
+        @testset "iterate" begin
+            @test [x for x in tsym] == collect(elements(tsym))
+            @test all(x ∈ tsym for x in tsym)
+            @test TranslationOperation([100, 100]) ∈ tsym
         end
 
         @testset "irreps" begin

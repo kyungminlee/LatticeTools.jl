@@ -33,6 +33,7 @@ using TightBindingLattice: simplify_name
                              hermann_mauguinn, schoenflies)
 
         let TBL = TightBindingLattice
+            @test elementtype(psym) == PointOperation{Int}
             @test all(TBL.element(psym, i) == PointOperation(matrix_representations[i]) for i in 1:2)
             @test TBL.elements(psym) == PointOperation.(matrix_representations)
             @test all(TBL.element_name(psym, i) == element_names[i] for i in 1:2)
@@ -170,6 +171,20 @@ using TightBindingLattice: simplify_name
         @test matrep_mtab == group_multiplication_table(psym.group)
     end
 
+    @testset "symmetry_product" begin
+        p = symmetry_product(psym)
+        for x in elements(psym), y in elements(psym)
+            z = x*y
+            @test isa(z, PointOperation{Int})
+            @test z.matrix == x.matrix * y.matrix
+        end
+    end
+
+    @testset "iterate" begin
+        @test [x for x in psym] == collect(elements(psym))
+        @test all(x ∈ psym for x in psym)
+        @test PointOperation([1 2 0; -1 1 0; 0 0 1]) ∉ psym
+    end
 
     @testset "irreps" begin
         @test num_irreps(psym) == 5
