@@ -88,6 +88,12 @@ end
 function promote_rule(::Type{SpaceOperation{Tp, Tt}}, ::Type{PointOperation{Tp}}) where {Tp, Tt}
     return SpaceOperation{Tp, Tt}
 end
+function promote_rule(::Type{TranslationOperation{Tt}}, ::Type{PointOperation{Tp}}) where {Tp, Tt}
+    return SpaceOperation{Tp, Tt}
+end
+# function promote_rule(::Type{PointOperation{Tp}}, ::Type{TranslationOperation{Tt}}) where {Tp, Tt}
+#     return SpaceOperation{Tp, Tt}
+# end
 
 
 ## properties
