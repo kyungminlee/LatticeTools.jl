@@ -273,7 +273,7 @@ generator_elements(sym::TranslationSymmetry) = element(sym, sym.generators)
 
 function symmetry_product(sym::TranslationSymmetry)
     function product(lhs::TranslationOperation, rhs::TranslationOperation)
-        return sym.orthocube.wrap(lhs.displacement + rhs.displacement)[2]
+        return TranslationOperation(sym.orthocube.wrap(lhs.displacement + rhs.displacement)[2])
     end
     return product
 end
