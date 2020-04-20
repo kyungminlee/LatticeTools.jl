@@ -3,7 +3,6 @@ export dimension
 export group, group_order, group_multiplication_table,
        character_table,
        irrep, irreps, irrep_dimension, num_irreps,
-       elementtype,
        element, elements,
        element_name, element_names,
        generator_elements, generator_indices,
@@ -252,7 +251,8 @@ group(sym::TranslationSymmetry) = sym.group
 group_order(sym::TranslationSymmetry, g...) = group_order(sym.group, g...)
 group_multiplication_table(psym::TranslationSymmetry) = group_multiplication_table(psym.group)
 
-elementtype(sym::TranslationSymmetry) = TranslationOperation{Int}
+import Base.eltype
+eltype(sym::TranslationSymmetry) = TranslationOperation{Int}
 import Base.valtype
 valtype(sym::TranslationSymmetry) = TranslationOperation{Int}
 

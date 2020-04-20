@@ -4,7 +4,7 @@ export SymmetryEmbedding
 # export SymmorphicSpaceSymmetryEmbedding
 
 export embed
-export elementtype, element, elements
+export element, elements
 export symmetry
 export generator_elements, generator_indices
 
@@ -29,7 +29,8 @@ struct SymmetryEmbedding{SymmetryType}<:AbstractSymmetryEmbedding
     end
 end
 
-elementtype(::SymmetryEmbedding) = SitePermutation
+import Base.eltype
+eltype(::SymmetryEmbedding) = SitePermutation
 import Base.valtype
 valtype(::SymmetryEmbedding) = SitePermutation
 

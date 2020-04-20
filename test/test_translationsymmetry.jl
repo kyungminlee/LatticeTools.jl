@@ -14,7 +14,7 @@ using TightBindingLattice
     @testset "properties" begin
         tsym = TranslationSymmetry([3 0; 0 1])
         mtab = [1 2 3; 2 3 1; 3 1 2]
-        @test elementtype(tsym) == TranslationOperation{Int}
+        @test eltype(tsym) == TranslationOperation{Int}
         @test group(tsym) == FiniteGroup(mtab)
         @test group_order(tsym) == 3
         @test group_order(tsym, 1) == 1

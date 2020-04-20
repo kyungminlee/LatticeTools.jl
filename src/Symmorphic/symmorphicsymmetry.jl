@@ -25,9 +25,7 @@ struct SymmorphicSymmetry{S1<:SymmetryOrEmbedding,
         if !iscompatible(normal, rest)
             throw(ArgumentError("symmetries $normal and $rest are not compatible"))
         end
-        # @show elementtype(normal), elementtype(rest)
-        # @show promote_type(elementtype(normal), elementtype(rest))
-        E = promote_type(elementtype(normal), elementtype(rest))
+        E = promote_type(eltype(normal), eltype(rest))
         if !isconcretetype(E)
             throw(ArgumentError("element type $E is not a concrete type"))
         end
@@ -63,7 +61,8 @@ group(sym::SymmorphicSymmetry) = FiniteGroup(group_multiplication_table(vec(sym.
 group_order(sym::SymmorphicSymmetry) = group_order(sym.normal) * group_order(sym.rest)
 group_multiplication_table(sym::SymmorphicSymmetry) = group_multiplication_table(vec(sym.elements), symmetry_product(sym))
 
-elementtype(sym::SymmorphicSymmetry{S1, S2, E}) where {S1, S2, E} = E
+import Base.eltype
+eltype(sym::SymmorphicSymmetry{S1, S2, E}) where {S1, S2, E} = E
 import Base.valtype
 valtype(sym::SymmorphicSymmetry{S1, S2, E}) where {S1, S2, E} = E
 

@@ -33,7 +33,7 @@ using TightBindingLattice: simplify_name
                              hermann_mauguinn, schoenflies)
 
         let TBL = TightBindingLattice
-            @test elementtype(psym) == PointOperation{Int}
+            @test eltype(psym) == PointOperation{Int}
             @test all(TBL.element(psym, i) == PointOperation(matrix_representations[i]) for i in 1:2)
             @test TBL.elements(psym) == PointOperation.(matrix_representations)
             @test all(TBL.element_name(psym, i) == element_names[i] for i in 1:2)

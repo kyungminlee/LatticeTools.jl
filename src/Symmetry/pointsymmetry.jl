@@ -1,7 +1,6 @@
 export PointSymmetry
 
 export  group_order,
-        elementtype,
         element, elements,
         element_name, element_names,
         group_multiplication_table,
@@ -167,7 +166,8 @@ end
 
 dimension(sym::PointSymmetry) = size(sym.matrix_representations[1], 1)
 
-elementtype(sym::PointSymmetry) = PointOperation{Int}
+import Base.eltype
+eltype(sym::PointSymmetry) = PointOperation{Int}
 import Base.valtype
 valtype(sym::PointSymmetry) = PointOperation{Int}
 
