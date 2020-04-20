@@ -41,6 +41,13 @@ generator_elements(symbed::SymmetryEmbedding) = element(symbed, generator_indice
 generator_indices(symbed::SymmetryEmbedding) = generator_indices(symbed.symmetry)
 
 
+import Base.==
+function (==)(lhs::SymmetryEmbedding{S}, rhs::SymmetryEmbedding{S}) where S
+    return lhs.lattice == rhs.lattice && lhs.symmetry == rhs.symmetry && lhs.elements == rhs.elements
+end
+
+
+
 import Base.iterate
 iterate(sym::SymmetryEmbedding) = iterate(elements(sym))
 iterate(sym::SymmetryEmbedding, i) = iterate(elements(sym), i)
