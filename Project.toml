@@ -1,7 +1,7 @@
 name = "TightBindingLattice"
 uuid = "f0da6d2f-861b-4198-860c-d50f6f65dfeb"
 author = "Kyungmin Lee"
-version = "0.4.1"
+version = "0.4.2"
 
 [deps]
 FileIO = "5789e2e9-d7fb-5bc7-8068-2c6fae9b9549"
