@@ -15,6 +15,7 @@ using TightBindingLattice
         tsym = TranslationSymmetry([3 0; 0 1])
         mtab = [1 2 3; 2 3 1; 3 1 2]
         @test eltype(tsym) == TranslationOperation{Int}
+        @test valtype(tsym) == TranslationOperation{Int}
         @test group(tsym) == FiniteGroup(mtab)
         @test group_order(tsym) == 3
         @test group_order(tsym, 1) == 1
