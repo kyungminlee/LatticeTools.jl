@@ -14,6 +14,8 @@ using TightBindingLattice
         n=-3; @test iden^n == iden
         @test inv(iden) == iden
         @test isidentity(iden)
+        @test istranslation(iden)
+        @test ispoint(iden)
         @test domaintype(iden) == Int
         @test dimension(iden) == 2
         @test hash(iden) == hash(IdentityOperation(Int, 2))
@@ -37,8 +39,12 @@ using TightBindingLattice
             @test domaintype(t1) == Int
             @test dimension(t1) == 2
             @test dimension(t2) == 2
-            @test isidentity(t0)
+            @test  isidentity(t0)
             @test !isidentity(t1)
+            @test  istranslation(t0)
+            @test  istranslation(t1)
+            @test  ispoint(t0)
+            @test !ispoint(t1)
         end
 
         @testset "equality" begin
@@ -100,9 +106,13 @@ using TightBindingLattice
         @testset "properties" begin
             @test domaintype(p0) == Int
             @test dimension(p0) == 2
-            @test isidentity(p0)
-            @test !isidentity(p1)
             @test dimension(p1) == 2
+            @test  isidentity(p0)
+            @test !isidentity(p1)
+            @test  istranslation(p0)
+            @test !istranslation(p1)
+            @test  ispoint(p0)
+            @test  ispoint(p1)
         end
 
         @testset "equality" begin
@@ -177,12 +187,29 @@ using TightBindingLattice
 
         @testset "properties" begin
             s0 = SpaceOperation(Int, Int, 2)
-            s1 = SpaceOperation(c4p, t10)
+            st = SpaceOperation([1 0; 0 1], [1, 0])
+            sp = SpaceOperation([0 1; 1 0], [0, 0])
+            s2 = SpaceOperation([0 1; 1 0], [1, 0])
+            
             @test domaintype(s0) == Int
-            @test dimension(s0) == 2
-            @test isidentity(s0)
-            @test !isidentity(s1)
-            @test dimension(s1) == 2
+            @test domaintype(st) == Int
+            @test domaintype(sp) == Int
+            @test domaintype(s2) == Int
+            
+            @test  isidentity(s0)
+            @test !isidentity(st)
+            @test !isidentity(sp)
+            @test !isidentity(s2)
+            
+            @test  istranslation(s0)
+            @test  istranslation(st)
+            @test !istranslation(sp)
+            @test !istranslation(s2)
+
+            @test  ispoint(s0)
+            @test !ispoint(st)
+            @test  ispoint(sp)
+            @test !ispoint(s2)
         end
 
         @testset "equality" begin
