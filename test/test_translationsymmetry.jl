@@ -8,12 +8,14 @@ using TightBindingLattice
         TranslationSymmetry(4*ones(Int, (1, 1)))
         TranslationSymmetry([4 0; 0 4])
         @test_throws ErrorException TranslationSymmetry([4 0 0; 0 4 0; 0 0 4])  # <- Temporary
-        @test_throws ArgumentError TranslationSymmetry(HypercubicLattice([2 0; 0 2]), [2 0; 0 1])
+        @test_throws ArgumentError TranslationSymmetry(OrthoCube([2 0; 0 2]), [2 0; 0 1])
     end
 
     @testset "properties" begin
         tsym = TranslationSymmetry([3 0; 0 1])
         mtab = [1 2 3; 2 3 1; 3 1 2]
+        @test eltype(tsym) == TranslationOperation{Int}
+        @test valtype(tsym) == TranslationOperation{Int}
         @test group(tsym) == FiniteGroup(mtab)
         @test group_order(tsym) == 3
         @test group_order(tsym, 1) == 1
@@ -34,11 +36,16 @@ using TightBindingLattice
         @test irrep(tsym, 2) == irreps(tsym)[2]
         @test irrep(tsym, 3) == irreps(tsym)[3]
         @test all(irrep_dimension(tsym, i) == 1 for i in 1:3)
+        @test generator_indices(tsym) == [2, 1]
+        @test generator_elements(tsym) == [TranslationOperation([1,0]), TranslationOperation([0,0])]
 
-
-
+        let n = lowercase(symmetry_name(tsym))
+            @test occursin("translation", n)
+            @test occursin("3", n)
+            @test occursin("1", n)
+            @test occursin("0", n)
+        end
     end
-
 
     @testset "orthogonal lattice" begin
         tsym = TranslationSymmetry([3 0; 0 3])
@@ -57,8 +64,8 @@ using TightBindingLattice
         end
 
         @testset "elements" begin
-            @test tsym.hypercube.coordinates[idx_gen1] == [1, 0]
-            @test tsym.hypercube.coordinates[idx_gen2] == [0, 1]
+            @test tsym.coordinates[idx_gen1] == [1, 0]
+            @test tsym.coordinates[idx_gen2] == [0, 1]
             # elements ordered according to the "generator" (i.e. orthogonal order)
             @test tsym.element_names == [
                 "[0, 0]", "[1, 0]", "[2, 0]",
@@ -73,10 +80,10 @@ using TightBindingLattice
 
         @testset "multiplication table" begin
             mtab = zeros(Int, (9, 9))
-            lookup = Dict(r => i for (i, r) in enumerate(tsym.hypercube.coordinates))
-            for (i, ri) in enumerate(tsym.hypercube.coordinates)
-                for (j, rj) in enumerate(tsym.hypercube.coordinates)
-                    _, ek = tsym.hypercube.wrap(ri + rj)
+            lookup = Dict(r => i for (i, r) in enumerate(tsym.coordinates))
+            for (i, ri) in enumerate(tsym.coordinates)
+                for (j, rj) in enumerate(tsym.coordinates)
+                    _, ek = tsym.orthocube.wrap(ri + rj)
                     k = lookup[ek]
                     mtab[i,j] = k
                 end # for j
@@ -87,8 +94,8 @@ using TightBindingLattice
 
         @testset "coordinates" begin
             @test tsym.orthogonal_shape == [3, 3]
-            @test tsym.orthogonal_coordinates == tsym.hypercube.coordinates
-            for cc in tsym.hypercube.coordinates
+            @test tsym.orthogonal_coordinates == tsym.coordinates
+            for cc in tsym.coordinates
                 oc = tsym.coordinate_to_orthogonal_map[cc]
                 cc2 = tsym.orthogonal_to_coordinate_map[oc]
                 @test cc == cc2
@@ -99,6 +106,26 @@ using TightBindingLattice
                 oc2 = tsym.coordinate_to_orthogonal_map[cc]
                 @test oc == oc2
             end
+        end
+
+        @testset "symmetry_product" begin
+            pro = symmetry_product(tsym)
+            @test all( pro(x,y).displacement == tsym.orthocube.wrap(x.displacement + y.displacement)[2]
+                       for x in tsym, y in tsym)
+        end
+
+        @testset "iterate/membership" begin
+            @test [x for x in tsym] == collect(elements(tsym))
+            @test all(x ∈ tsym for x in tsym)
+            @test 100 ∉ tsym
+            @test IdentityOperation(Int, 2) ∈ tsym
+            @test IdentityOperation(Int, 3) ∉ tsym
+            @test TranslationOperation([100, 100]) ∈ tsym
+            @test TranslationOperation([100, 100, 100]) ∉ tsym
+            @test PointOperation([1 0; 0 1]) ∈ tsym
+            @test PointOperation([0 1; 1 0]) ∉ tsym
+            @test SpaceOperation([1 0; 0 1], [1, 0]) ∈ tsym
+            @test SpaceOperation([0 1; 1 0], [1, 0]) ∉ tsym
         end
 
         @testset "irreps" begin
@@ -118,8 +145,8 @@ using TightBindingLattice
 
         @test length(tsym.generators) == 2
         # idx_gen = tsym.generators[1]
-        @test tsym.hypercube.coordinates[tsym.generators[1]] == [1, 0]
-        @test tsym.hypercube.coordinates[tsym.generators[2]] == [0, 1]
+        @test tsym.coordinates[tsym.generators[1]] == [1, 0]
+        @test tsym.coordinates[tsym.generators[2]] == [0, 1]
         # elements ordered according to the "generator" (i.e. orthogonal order)
         @test element_names(tsym) == [
             "[0, 0]", "[1, 0]", "[2, 0]", "[3, 0]",
@@ -130,7 +157,7 @@ using TightBindingLattice
 
         @test tsym.orthogonal_shape == [4,3]
         @test tsym.orthogonal_coordinates == [[0,0], [1,0], [2,0], [3,0], [0,1], [1,1], [2,1], [3,1], [0,2], [1,2], [2,2], [3,2]]
-        for cc in tsym.hypercube.coordinates
+        for cc in tsym.coordinates
             oc = tsym.coordinate_to_orthogonal_map[cc]
             cc2 = tsym.orthogonal_to_coordinate_map[oc]
             @test cc == cc2
@@ -142,21 +169,6 @@ using TightBindingLattice
             @test oc == oc2
         end
     end  # @testset "non-orthogonal lattice" begin
-
-    @testset "reduction" begin
-        # Gamma point is always ok
-        @test iscompatible([0,0], [3,3], [0,0])
-        @test iscompatible([0,0], [3,3], [1,0])
-        @test iscompatible([0,0], [3,3], [2,0])
-
-        # non-zero momentum depends on what the identity translation is
-        @test iscompatible([1,0], [3,3], [0,0]) # zero translation is always identity, so it's always fine
-        @test !iscompatible([1,0], [3,3], [1,0]) # these two translations are not compatible
-        @test !iscompatible([1,0], [3,3], [2,0]) #   with momentum [1,1]
-
-        @test iscompatible([0,0], [3,3], [[0,0], [1,0], [2,0]])
-        @test !iscompatible([1,0], [3,3], [[0,0], [1,0], [2,0]])
-    end
 
     @testset "lattice permutation" begin
         unitcell = make_unitcell([1.0 0.0; 0.0 1.0]; OrbitalType=String)
@@ -175,7 +187,7 @@ using TightBindingLattice
         @test length(perms) == 16
         @test perms[1].permutation.map == 1:32  # identity
 
-        for (ir, r) in enumerate(lattice.hypercube.coordinates)
+        for (ir, r) in enumerate(lattice.bravais_coordinates)
             @test perms[ir].permutation.map == [
                 let
                     ivec = [(i-1) % 4, (i-1) ÷ 4]
@@ -200,12 +212,76 @@ using TightBindingLattice
             end
         end
 
-        @test iscompatible(lattice, tsym, 1, [1,0]) # Γ point
-        @test !iscompatible(lattice, tsym, 2, [1,0]) # Γ point
-        @test !iscompatible(lattice, tsym, 2, [[0,0], [1,0]])
-
+        @test  isbragg(tsym.fractional_momenta[1], [1,0]) # Γ point
+        @test !isbragg(tsym.fractional_momenta[2], [1,0]) # Γ point
+        @test !isbragg(tsym.fractional_momenta[2], [[0,0], [1,0]])
     end # testset lattice permutation
 
+    @testset "reduction" begin
+        @test_throws DimensionMismatch isbragg([4, 0], [2,0,0], [2,0])
+        @test_throws DimensionMismatch isbragg([4, 4], [2,0], [2,0,0])
+
+        @test_throws ArgumentError isbragg([4, 0], [2,0], [2,0])
+        @test_throws ArgumentError isbragg([-2, 2], [2,0], [2,0])
+
+        tsym = TranslationSymmetry([3 0; 0 3])
+        # Gamma point is always ok
+        @test  isbragg([3,3], [0,0], [0,0])
+        @test  isbragg([3,3], [0,0], [1,0])
+        @test  isbragg([3,3], [0,0], [2,0])
+        
+        @test  isbragg(tsym, 1, TranslationOperation([0,0]))
+        @test  isbragg(tsym, 1, TranslationOperation([1,0]))
+        @test  isbragg(tsym, 1, TranslationOperation([2,0]))
+
+        # non-zero momentum depends on what the identity translation is
+        @test  isbragg([3,3], [1,0], [0,0]) # zero translation is always identity, so it's always fine
+        @test !isbragg([3,3], [1,0], [1,0]) # these two translations are not compatible
+        @test !isbragg([3,3], [1,0], [2,0]) #   with momentum [1,1]
+
+        @test  isbragg(tsym, 2, TranslationOperation([0,0]))
+        @test !isbragg(tsym, 2, TranslationOperation([1,0]))
+        @test !isbragg(tsym, 2, TranslationOperation([2,0]))
+
+        @test  isbragg([3,3], [0,0], [[0,0], [1,0], [2,0]])
+        @test !isbragg([3,3], [1,0], [[0,0], [1,0], [2,0]])
+
+        @test  isbragg(tsym, 1, TranslationOperation.([[0,0], [1,0], [2,0]]))
+        @test !isbragg(tsym, 2, TranslationOperation.([[0,0], [1,0], [2,0]]))
+
+        @test_throws DimensionMismatch isbragg([1//2, 2//4, 0//2], [2,0])
+
+        # Gamma point is always ok
+        @test  isbragg([0,0] .// [3,3], [0,0])
+        @test  isbragg([0,0] .// [3,3], [1,0])
+        @test  isbragg([0,0] .// [3,3], [2,0])
+
+        # non-zero momentum depends on what the identity translation is
+        @test  isbragg([1,0] .// [3,3], [0,0]) # zero translation is always identity, so it's always fine
+        @test !isbragg([1,0] .// [3,3], [1,0]) # these two translations are not compatible
+        @test !isbragg([1,0] .// [3,3], [2,0]) #   with momentum [1,1]
+
+        @test  isbragg([0,0] .// [3,3], [[0,0], [1,0], [2,0]])
+        @test !isbragg([1,0] .// [3,3], [[0,0], [1,0], [2,0]])
+
+
+        tsym = TranslationSymmetry([4 0; 0 4])
+        @test  isbragg(tsym, 11, TranslationOperation([2,0]))
+        @test !isbragg(tsym, 10, TranslationOperation([2,0]))
+        @test  isbragg(tsym, 11, TranslationOperation.([[0,0], [2,0], [0,2], [2,2]]))
+        
+        tsym = TranslationSymmetry([6 2; -2 6])
+
+        # TODO more tests for isbragg
+
+        for irrep_index in 1:num_irreps(tsym)
+            k = tsym.fractional_momenta[irrep_index]
+            k_ortho = tsym.orthogonal_coordinates[irrep_index] .// tsym.orthogonal_shape
+            for (t, t_ortho) in zip(elements(tsym), tsym.orthogonal_coordinates)
+                @test mod(k⋅t.displacement, 1) == mod(k_ortho⋅t_ortho, 1)
+            end
+        end
+    end
 end # @testset "TranslationSymmetry" begin
 
 

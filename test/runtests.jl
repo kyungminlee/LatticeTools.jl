@@ -5,7 +5,7 @@ include("test_basic.jl")
 include("test_parser.jl")
 include("test_coord.jl")
 include("test_unitcell.jl")
-include("test_hypercube.jl")
+include("test_orthocube.jl")
 include("test_lattice.jl")
 include("test_permutation.jl")
 
@@ -22,3 +22,7 @@ include("test_irrepdatabase.jl")
 include("test_orbitalmap.jl")
 include("test_sitepermutation.jl")
 include("test_symmetryembedding.jl")
+
+include("test_compatibility.jl")
+
+include("test_symmorphic.jl")

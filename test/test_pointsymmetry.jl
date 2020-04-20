@@ -33,6 +33,8 @@ using TightBindingLattice: simplify_name
                              hermann_mauguinn, schoenflies)
 
         let TBL = TightBindingLattice
+            @test eltype(psym) == PointOperation{Int}
+            @test valtype(psym) == PointOperation{Int}
             @test all(TBL.element(psym, i) == PointOperation(matrix_representations[i]) for i in 1:2)
             @test TBL.elements(psym) == PointOperation.(matrix_representations)
             @test all(TBL.element_name(psym, i) == element_names[i] for i in 1:2)
@@ -45,6 +47,8 @@ using TightBindingLattice: simplify_name
             @test all(TBL.irrep(psym, i) == irreps[i] for i in 1:2)
             @test num_irreps(psym) == 2
             @test all(TBL.irrep_dimension(psym, i) == 1 for i in 1:2)
+            @test generator_indices(psym) == [2]
+            @test generator_elements(psym) == [PointOperation([-1 0; 0 -1])]
         end
 
         let generators = [1]
@@ -93,6 +97,14 @@ using TightBindingLattice: simplify_name
                         conjugacy_classes, character_table, irreps,
                         element_names, matrix_representations, hermann_mauguinn, schoenflies)
         end
+        let irreps = [
+                    [ones(ComplexF64, 1, 1), ones(ComplexF64, 1, 1)],
+                    [ones(ComplexF64, 1, 1), 2*ones(ComplexF64, 1, 1)],
+            ]
+            @test_throws ArgumentError PointSymmetry(group, generators,
+                        conjugacy_classes, character_table, irreps,
+                        element_names, matrix_representations, hermann_mauguinn, schoenflies)
+        end
         let element_names = ["1", "2", "3"]
             @test_throws ArgumentError PointSymmetry(group, generators,
                         conjugacy_classes, character_table, irreps,
@@ -120,7 +132,7 @@ using TightBindingLattice: simplify_name
         end
     end
 
-    # D_4
+    # D_4 (422)
     file_path = abspath(@__DIR__, "..", "data", "PointGroup3D", "PointGroup3D-12.yaml")
     data_yaml = YAML.load_file(file_path)
 
@@ -158,6 +170,31 @@ using TightBindingLattice: simplify_name
         @test matrep_mtab == psym.group.multiplication_table
         @test matrep_mtab == group_multiplication_table(psym)
         @test matrep_mtab == group_multiplication_table(psym.group)
+    end
+
+    @testset "symmetry_product" begin
+        p = symmetry_product(psym)
+        for x in elements(psym), y in elements(psym)
+            z = x*y
+            @test isa(z, PointOperation{Int})
+            @test z.matrix == x.matrix * y.matrix
+        end
+    end
+
+    @testset "iterate" begin
+        @test [x for x in psym] == collect(elements(psym))
+        @test all(x ∈ psym for x in psym)
+        @test 100 ∉ psym
+        @test PointOperation([1 2 0; -1 1 0; 0 0 1]) ∉ psym
+        @test IdentityOperation(Int, 2) ∉ psym
+        @test IdentityOperation(Int, 3) ∈ psym
+        @test TranslationOperation([100, 100, 0]) ∉ psym
+        @test TranslationOperation([0, 0]) ∉ psym
+        @test TranslationOperation([0, 0, 0]) ∈ psym
+        @test PointOperation([1 0 0; 0 1 0; 0 0 1]) ∈ psym
+        @test PointOperation([0 1 0; 1 0 0; 0 0 -1]) ∈ psym
+        @test SpaceOperation([0 1 0; 1 0 0; 0 0 -1], [0, 0, 0]) ∈ psym
+        @test SpaceOperation([0 1 0; 1 0 0; 0 0 -1], [1, 0, 0]) ∉ psym
     end
 
 
@@ -200,8 +237,8 @@ using TightBindingLattice: simplify_name
     end
 
     @testset "iscompatible" begin
-        hc1 = HypercubicLattice([4 0; 0 4])
-        hc2 = HypercubicLattice([4 0; 0 3])
+        hc1 = OrthoCube([4 0; 0 4])
+        hc2 = OrthoCube([4 0; 0 3])
         tsym1 = TranslationSymmetry(hc1)
         tsym2 = TranslationSymmetry(hc2)
 
@@ -217,6 +254,14 @@ using TightBindingLattice: simplify_name
         @test little_symmetry(tsym1, psym_proj).hermann_mauguinn == "422"
         @test little_symmetry(tsym2, psym_proj).hermann_mauguinn == "222"
         @test little_symmetry(TranslationSymmetry([4 1; 0 3]), psym_proj).hermann_mauguinn == "2"
+        @test_throws ArgumentError little_symmetry(tsym2, 1, psym_proj) # when specifying irrep, tsym and psym have to be compatible
+    end
+
+    @testset "symmetry_name" begin
+        let n = lowercase(symmetry_name(psym))
+            @test occursin("point", n)
+            @test occursin("422", n)
+        end
     end
 
 
@@ -281,7 +326,7 @@ using TightBindingLattice: simplify_name
                 tsym = TranslationSymmetry(lattice)
                 for tsym_irrep in 1:num_irreps(tsym)
                     psym_little = LSYM(tsym, tsym_irrep, psym)
-                    k = tsym.hypercube.coordinates[tsym_irrep]
+                    k = tsym.coordinates[tsym_irrep]
                     @test iscompatible(tsym, tsym_irrep, psym) == (k in [[0,0], [2,2]])
                     @test iscompatible(tsym, tsym_irrep, psym_little)
                     lg_matrep = psym.matrix_representations[little_group_elements(tsym, tsym_irrep, psym)]
@@ -293,3 +338,14 @@ using TightBindingLattice: simplify_name
         end # testset little_symmetry
     end
 end # @testset "PointSymmetry"
+
+
+@testset "PointSymmetryDatabase" begin
+    psym1 = PointSymmetryDatabase.get(13)
+    psym2 = PointSymmetryDatabase.find("4mm")
+    @test length(psym1) == length(psym2) == 8
+    @test psym1.hermann_mauguinn == "4mm"
+    @test psym2.hermann_mauguinn == "4mm"
+    @test_throws ArgumentError PointSymmetryDatabase.get(999)
+    @test isnothing(PointSymmetryDatabase.find("blah blah"))
+end

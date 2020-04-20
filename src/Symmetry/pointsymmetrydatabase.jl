@@ -34,6 +34,16 @@ function get(group_index::Integer)
     return POINT_SYMMETRY_DATABASE[group_index]
 end
 
+function find(group_name::AbstractString)
+    for i in 1:32
+        psym = get(i)
+        if group_name == psym.hermann_mauguinn
+            return psym
+        end
+    end
+    return nothing
+end
+
 function find(element_names::AbstractVector{<:AbstractString})
     simple_names = sort(simplify_name.(element_names))
     return POINT_SYMMETRY_LOOKUP[simple_names]

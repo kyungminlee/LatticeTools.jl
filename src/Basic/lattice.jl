@@ -1,18 +1,18 @@
-export SuperCell
-export make_supercell
 export make_lattice
 export Lattice
+export dimension
 
 
 struct Lattice{O}
     unitcell::UnitCell{O}
-    hypercube::HypercubicLattice
+    orthocube::OrthoCube
+    bravais_coordinates::Vector{Vector{Int}}
     supercell::UnitCell{Tuple{O, Vector{Int}}}
 end
 
 import Base.==
 function ==(lhs::Lattice{O}, rhs::Lattice{O}) where O
-    return lhs.unitcell == rhs.unitcell && lhs.hypercube == rhs.hypercube
+    return lhs.unitcell == rhs.unitcell && lhs.orthocube == rhs.orthocube
 end
 
 
@@ -20,12 +20,17 @@ function make_lattice(unitcell::UnitCell, scale::Integer)
     make_lattice(unitcell, scale*ones(Int, (1,1)))
 end
 
-function make_lattice(unitcell::UnitCell{O}, scale_matrix::AbstractMatrix{<:Integer}) where O
-    hypercube = orthogonalize(HypercubicLattice(scale_matrix))
-
-    new_latticevectors = unitcell.latticevectors * hypercube.scale_matrix
-    inverse_scale_matrix = hypercube.inverse_scale_matrix
-    unitcell_coordinates = hypercube.coordinates
+function make_lattice(unitcell::UnitCell{O}, shape_matrix::AbstractMatrix{<:Integer}) where O
+    dim = dimension(unitcell)
+    if size(shape_matrix) != (dim, dim)
+        throw(DimensionMismatch("unitcell and shape_matrix should have the same dimension"))
+    end
+    
+    orthocube = OrthoCube(shape_matrix)
+    generator_translations = find_generators(orthocube)
+    unitcell_coordinates = generate_coordinates(orthocube, generator_translations)
+    
+    new_latticevectors = unitcell.latticevectors * orthocube.shape_matrix
 
     new_unitcell = make_unitcell(new_latticevectors; OrbitalType=Tuple{O, Vector{Int}})
     for uc in unitcell_coordinates, (orbname, orbcoord) in unitcell.orbitals
@@ -36,5 +41,8 @@ function make_lattice(unitcell::UnitCell{O}, scale_matrix::AbstractMatrix{<:Inte
         addorbital!(new_unitcell, new_orbname, new_orbcoord)
     end
 
-    return Lattice{O}(unitcell, hypercube, new_unitcell)
+    return Lattice{O}(unitcell, orthocube, unitcell_coordinates, new_unitcell)
 end
+#TODO unit testing for lattice with wrong dimensions
+
+dimension(lattice::Lattice) = dimension(lattice.unitcell)

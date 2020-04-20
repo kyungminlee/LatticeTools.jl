@@ -31,12 +31,9 @@ using TightBindingLattice
     @test isless(p1, p3)
 
     @test_throws ArgumentError Permutation([1,2,3,4]) * Permutation([1,2,3,4,5])
-    @test hash(Permutation(Int[1,2,3,4])) == hash(Int[1,2,3,4])
-
+    @test hash(Permutation(Int[1,2,3,4])) != hash(Int[1,2,3,4])
 
     @test generate_group(p1) == Set([p0, p1, p2, p3])
     @test generate_group(p2) == Set([p0, p2])
     @test generate_group(p1, p2) == Set([p0, p1, p2, p3])
-
-
 end

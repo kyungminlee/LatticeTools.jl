@@ -27,6 +27,14 @@ using TightBindingLattice
         @test period_length(group, [1,2,3]) == [1,3,3]
         @test isabelian(group)
         @test group_multiplication_table(group) == mtab
+        @test element(group, 2) == 2
+        @test element(group, 1:2) == 1:2
+        @test elements(group) == 1:3
+        @test element_name(group, 2) == "2"
+        @test element_name(group, 1:2) == ["1", "2"]
+        @test element_names(group) == ["1", "2", "3"]
+        @test_throws BoundsError element(group, 5)
+        @test_throws BoundsError element_name(group, 5)
 
         gp = group_product(group)
         for i in 1:3, j in 1:3
@@ -109,6 +117,16 @@ using TightBindingLattice
             end
             group2 = FiniteGroup(mtab2)
             @test !isnothing(group_isomorphism(group, group2))
+        end
+    end
+
+    @testset "minimal_generating_set" begin
+        for i in 1:32
+            psym = PointSymmetryDatabase.get(i)
+            group = psym.group
+            mgs = minimal_generating_set(group)
+            @test length(mgs) <= length(psym.generators)
+            @test generate_subgroup(group, mgs) == BitSet(1:group_order(group))
         end
     end
 

@@ -11,8 +11,12 @@ export isabelian
 export minimal_generating_set
 export group_multiplication_table
 
+export element, elements
+export element_name, element_names
+
 export group_isomorphism
 export ishomomorphic
+
 using Combinatorics
 
 struct FiniteGroup <: AbstractGroup
@@ -94,6 +98,13 @@ import Base.==
 ==(lhs::FiniteGroup, rhs::FiniteGroup) = (lhs.multiplication_table == rhs.multiplication_table)
 
 
+element(group::FiniteGroup, g) = Base.OneTo(group_order(group))[g]
+elements(group::FiniteGroup) = Base.OneTo(group_order(group))
+
+element_name(group::FiniteGroup, g) = string.(element(group, g))
+element_names(group::FiniteGroup) = string.(elements(group))
+
+
 """
     group_order(group)
 
@@ -110,10 +121,12 @@ Order of group element (i.e. period length)
 group_order(group::FiniteGroup, g) = group.period_lengths[g]
 period_length(group::FiniteGroup, g) = group.period_lengths[g]
 
+
+group_multiplication_table(group::FiniteGroup) = group.multiplication_table
+
 isabelian(group::FiniteGroup) = group.multiplication_table == transpose(group.multiplication_table)
 
 
-group_multiplication_table(group::FiniteGroup) = group.multiplication_table
 
 
 function group_product(group::FiniteGroup) # a bit like currying
@@ -219,6 +232,7 @@ function generate_subgroup(group::FiniteGroup,
                                                           <:AbstractVector{<:Integer}}}
     change = true
     subgroup = BitSet(generators)
+    push!(subgroup, 1)
     while change
         change = false
         for g1 in generators, g2 in subgroup
@@ -244,31 +258,31 @@ end
 """
     minimal_generating_set
 """
-function minimal_generating_set(group::FiniteGroup, predicate::Function=(x->true))
-    ord_group ::Int = group_order(group)
-    element_queue ::Vector{Tuple{Int, Int}} = collect(enumerate(group.period_lengths))
+function minimal_generating_set(group::FiniteGroup)
+    ord_group::Int = group_order(group)
+    element_queue::Vector{Tuple{Int, Int}} = collect(enumerate(group.period_lengths))
     sort!(element_queue, by=item->(-item[2], item[1]))
-    
-    function factorize(generators::Vector{Int}, span::BitSet, queue_begin::Int)::Bool
-        ord_span = length(span)
-        ord_span == ord_group && predicate(generators) && return true
-        for i in queue_begin:ord_group
-            (g, pl) = element_queue[i]
-            if ord_group % (ord_span * pl) == 0
-                new_span = generate_subgroup(group, group_product(group, span, g))
-                if length(new_span) == ord_span * pl # orthogonal
-                    push!(generators, g)
-                    factorize(generators, new_span, i+1) && return true
-                    pop!(generators)
-                end
+
+    queue_begin = 1
+    span = BitSet([1])
+    generators = Int[]
+    while queue_begin <= ord_group && length(span) < ord_group
+        next_index = queue_begin
+        next_elem = element_queue[queue_begin][1]
+        next_span = generate_subgroup(group, group_product(group, span, next_elem))
+        for i in (queue_begin+1):ord_group
+            (g, _) = element_queue[i]
+            new_span = generate_subgroup(group, group_product(group, span, g))
+            if length(new_span) > length(next_span)
+                next_index = i
+                next_elem = g
+                next_span = new_span
             end
         end
-        return false
+        queue_begin = next_index + 1
+        span = next_span
+        push!(generators, next_elem)
     end
-    generators = Int[]
-    sizehint!(generators, ord_group)
-    result = factorize(generators, BitSet([1]), 1)
-    (!result) && error("factorization failed")
     return generators
 end
 

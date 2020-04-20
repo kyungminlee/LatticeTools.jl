@@ -13,7 +13,7 @@ matrix:
         - git clone https://github.com/JuliaRegistries/General.git $HOME/.julia/registries/General
         - git clone https://github.com/kyungminlee/KyungminLeeRegistry.jl.git $HOME/.julia/registries/KyungminLeeRegistry
         - julia --project -e 'import Pkg; Pkg.build()'
-        - JULIA_NUM_THREADS=2 julia --project --check-bounds=yes -e 'import Pkg; Pkg.test(; coverage=true)'
+        - JULIA_NUM_THREADS=2 julia --project --check-bounds=yes --inline=no -e 'import Pkg; Pkg.test(; coverage=true)'
       after_success:
         - julia --project -e 'import Pkg; import TightBindingLattice; cd(joinpath(dirname(pathof(TightBindingLattice)), "..")); Pkg.add("Coverage"); using Coverage; Codecov.submit(Codecov.process_folder()); Coveralls.submit(process_folder());'
         - julia --project=docs/ -e 'using Pkg; Pkg.develop(PackageSpec(path=pwd())); Pkg.instantiate()'

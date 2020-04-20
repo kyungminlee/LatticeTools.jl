@@ -1,5 +1,6 @@
 export findorbitalmap
 
+
 function findorbitalmap(unitcell::UnitCell,
                         tsym_op::TranslationOperation{<:Integer})::Vector{Tuple{Int, Vector{Int}}}
     norb = numorbital(unitcell)
@@ -17,7 +18,7 @@ end
 
 
 function findorbitalmap(unitcell::UnitCell,
-                        psym_op::PointOperation{<:Integer})::Vector{Tuple{Int, Vector{Int}}}
+                        psym_op::PointOperation{<:Integer})::Union{Nothing, Vector{Tuple{Int, Vector{Int}}}}
     norb = numorbital(unitcell)
     map = Tuple{Int, Vector{Int}}[]
     for (orbname, orbfc) in unitcell.orbitals

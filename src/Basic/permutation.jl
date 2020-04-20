@@ -5,9 +5,6 @@ export Permutation
 export generate_group
 
 
-abstract type AbstractSymmetryOperation end
-
-
 """
         Permutation(perms; max_order=2048)
 
@@ -22,7 +19,7 @@ Create a permutation of integers from 1 to n.
 The convention for the permutation is that map[i] gets mapped to i.
 In other words, map tells you where each element is from.
 """
-struct Permutation <: AbstractSymmetryOperation
+struct Permutation
     map ::Vector{Int}
     order ::Int
     function Permutation(perms::AbstractVector{<:Integer}; max_order=2048)
@@ -143,8 +140,9 @@ end
 
 
 import Base.hash
-hash(p ::Permutation) = hash(p.map)
-
+function hash(p::Permutation, h::UInt=UInt(0x0))
+    return hash(p.map, hash(Permutation, h))
+end
 
 function generate_group(generators::Permutation...)
     change = true

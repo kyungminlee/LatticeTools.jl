@@ -1,29 +1,77 @@
 export IdentityOperation
 
 export apply_operation
-export canonize
-export iscanonical
-export combinable
+export domaintype
+export isidentity, istranslation, ispoint
 
-struct IdentityOperation <:AbstractSymmetryOperation end
+struct IdentityOperation{S<:Real} <: AbstractSymmetryOperation{S}
+    dimension::Int
+    function IdentityOperation{S}(dim::Integer) where {S<:Real} 
+        new{S}(dim)
+    end
+    function IdentityOperation(::Type{S}, dim::Integer) where {S<:Real} 
+        new{S}(dim)
+    end
+end
+
+
+## properties
+isidentity(arg::IdentityOperation) = true
+istranslation(arg::IdentityOperation) = true
+ispoint(arg::IdentityOperation) = true
+
+dimension(arg::IdentityOperation) = arg.dimension
+
+hash(arg::IdentityOperation{S}) where S = hash(arg.dimension, hash(IdentityOperation{S}))
+
+
+## operators
+import Base.==
+function (==)(lhs::IdentityOperation{S}, rhs::IdentityOperation{S}) where S 
+    lhs.dimension == rhs.dimension
+end
 
 import Base.*
-(*)(lhs::IdentityOperation, rhs::IdentityOperation) = lhs
-(*)(lhs::AbstractSymmetryOperation, rhs::IdentityOperation) = lhs
-(*)(lhs::IdentityOperation, rhs::AbstractSymmetryOperation) = rhs
+function (*)(lhs::IdentityOperation{S}, rhs::IdentityOperation{S}) where S
+    if dimension(lhs) != dimension(rhs) 
+        throw(DimensionMismatch("dimensions mismatch"))
+    end
+    return lhs
+end
 
-combinable(lhs::IdentityOperation, rhs::IdentityOperation) = true
-combinable(lhs::AbstractSymmetryOperation, rhs::IdentityOperation) = true
-combinable(lhs::IdentityOperation, rhs::AbstractSymmetryOperation) = true
+function (*)(lhs::AbstractSymmetryOperation{S}, rhs::IdentityOperation{S}) where S
+    if dimension(lhs) != dimension(rhs) 
+        throw(DimensionMismatch("dimensions mismatch"))
+    end
+    return lhs
+end
+
+function (*)(lhs::IdentityOperation{S}, rhs::AbstractSymmetryOperation{S}) where S
+    if dimension(lhs) != dimension(rhs) 
+        throw(DimensionMismatch("dimensions mismatch"))
+    end
+    return rhs
+end
+
+import Base.^
+(^)(lhs::IdentityOperation, rhs::Integer) = lhs
 
 import Base.inv
 inv(arg::IdentityOperation) = arg
-apply_operation(symop::IdentityOperation, rhs) = rhs
-(symop::IdentityOperation)(coord::AbstractVector{<:Real}) = coord
 
-canonize(arg::IdentityOperation) = arg
 
-iscanonical(arg::IdentityOperation) = true
+## apply
+function apply_operation(symop::IdentityOperation{S}, arg::AbstractArray{S}) where {S<:Real}
+    if dimension(symop) != size(arg, 1)
+        throw(DimensionMismatch("dimension mismatch"))
+    end
+    return arg
+end
 
-dimension(arg::IdentityOperation) = 0
-scalartype(arg::IdentityOperation) = Bool
+function (symop::IdentityOperation{S})(arg::AbstractArray{S}) where {S<:Real} 
+    if dimension(symop) != size(arg, 1)
+        throw(DimensionMismatch("dimension mismatch"))
+    end
+    return arg
+end
+

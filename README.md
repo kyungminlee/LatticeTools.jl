@@ -15,8 +15,8 @@ Tight Binding
 [travis-img]: https://travis-ci.org/kyungminlee/TightBindingLattice.jl.svg?branch=master
 [travis-url]: https://travis-ci.org/kyungminlee/TightBindingLattice.jl
 
-[appveyor-img]: https://ci.appveyor.com/api/projects/status/r5270ufhu14imba0?svg=true
-[appveyor-url]: https://ci.appveyor.com/project/kyungminlee/exactdiagonalization-jl
+[appveyor-img]: https://ci.appveyor.com/api/projects/status/1yrosfyjvn4u61nw?svg=true
+[appveyor-url]: https://ci.appveyor.com/project/kyungminlee/tightbindinglattice-jl
 
 [codecov-img]: https://codecov.io/gh/kyungminlee/TightBindingLattice.jl/branch/master/graph/badge.svg
 [codecov-url]: https://codecov.io/gh/kyungminlee/TightBindingLattice.jl
