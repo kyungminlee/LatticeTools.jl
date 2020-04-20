@@ -34,6 +34,7 @@ using TightBindingLattice: simplify_name
 
         let TBL = TightBindingLattice
             @test eltype(psym) == PointOperation{Int}
+            @test valtype(psym) == PointOperation{Int}
             @test all(TBL.element(psym, i) == PointOperation(matrix_representations[i]) for i in 1:2)
             @test TBL.elements(psym) == PointOperation.(matrix_representations)
             @test all(TBL.element_name(psym, i) == element_names[i] for i in 1:2)
@@ -337,3 +338,14 @@ using TightBindingLattice: simplify_name
         end # testset little_symmetry
     end
 end # @testset "PointSymmetry"
+
+
+@testset "PointSymmetryDatabase" begin
+    psym1 = PointSymmetryDatabase.get(13)
+    psym2 = PointSymmetryDatabase.find("4mm")
+    @test length(psym1) == length(psym2) == 8
+    @test psym1.hermann_mauguinn == "4mm"
+    @test psym2.hermann_mauguinn == "4mm"
+    @test_throws ArgumentError PointSymmetryDatabase.get(999)
+    @test isnothing(PointSymmetryDatabase.find("blah blah"))
+end
