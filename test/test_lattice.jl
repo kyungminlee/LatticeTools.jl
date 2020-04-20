@@ -1,6 +1,7 @@
 using Test
 using TightBindingLattice
 
+
 @testset "Lattice1D" begin
     unitcell = make_unitcell(2.0; OrbitalType=String)
     addorbital!(unitcell, "Spin", FractCoord([0], [0.0]))
@@ -14,6 +15,7 @@ using TightBindingLattice
     @test_throws DimensionMismatch make_lattice(unitcell, [3 0])
     @test_throws DimensionMismatch make_lattice(unitcell, [3 0; 0 3])
 end
+
 
 @testset "Lattice" begin
     unitcell = make_unitcell([1.0 0.0; 0.0 1.0]; OrbitalType=String)

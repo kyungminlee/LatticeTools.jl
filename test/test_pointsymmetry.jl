@@ -1,9 +1,10 @@
 using Test
+using TightBindingLattice
+
+using TightBindingLattice: simplify_name
+
 using LinearAlgebra
 using YAML
-
-using TightBindingLattice
-using TightBindingLattice: simplify_name
 
 @testset "PointSymmetry" begin
     @testset "simplify_name" begin

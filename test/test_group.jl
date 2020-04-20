@@ -1,9 +1,9 @@
 using Test
+using TightBindingLattice
 
 using Combinatorics
 using LinearAlgebra
 using YAML
-using TightBindingLattice
 
 @testset "Group" begin
     @testset "FiniteGroup-Abelian" begin

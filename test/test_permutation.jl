@@ -1,6 +1,7 @@
 using Test
 using TightBindingLattice
 
+
 @testset "Permutation" begin
     @test_throws ArgumentError Permutation([1,2,4])
     @test_throws OverflowError Permutation([mod(x, 4096)+1 for x in 1:4096])

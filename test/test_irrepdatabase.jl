@@ -1,6 +1,7 @@
 using Test
 using TightBindingLattice
 
+
 @testset "irrepdatabase" begin
     # D<sub>10</sub> group
     @testset "find" begin

@@ -1,6 +1,7 @@
 using Test
 using TightBindingLattice
 
+
 @testset "symmetryoperation" begin
     iden = IdentityOperation(Int, 2)
 
