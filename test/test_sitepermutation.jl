@@ -3,6 +3,12 @@ using TightBindingLattice
 
 
 @testset "sitepermutation" begin
+    @test_throws ArgumentError SitePermutation([4,3])
+    @test_throws ArgumentError SitePermutation([4,3,2,2])
+    @test isidentity(SitePermutation(Int[]))
+    @test isidentity(SitePermutation([1,2,3]))
+    @test !isidentity(SitePermutation([3,2,1]))
+
     op1 = SitePermutation([3,1,2]) # 1=>3, 2=>1, 3=>2
     op1p = SitePermutation([3,1,2])
     op2 = SitePermutation([2,1,3]) # 1=>2, 2=>1, 3=>3
