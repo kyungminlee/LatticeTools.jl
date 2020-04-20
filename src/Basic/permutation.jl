@@ -128,13 +128,9 @@ import Base.==
 ==(p1 ::Permutation, p2::Permutation) = p1.map == p2.map
 
 
-import Base.isequal
-isequal(p1 ::Permutation, p2::Permutation) = isequal(p1.map, p2.map)
-
-
 import Base.isless
 function isless(p1 ::Permutation, p2::Permutation)
-    return isless(p1.order, p2.order) || (isequal(p1.order, p2.order) && isless(p1.map, p2.map))
+    return isless(p1.order, p2.order) || ((p1.order == p2.order) && isless(p1.map, p2.map))
 end
 
 

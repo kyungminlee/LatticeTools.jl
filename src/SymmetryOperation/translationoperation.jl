@@ -55,12 +55,6 @@ function (==)(iden::IdentityOperation{S}, top::TranslationOperation{S}) where S
 end
 
 
-import Base.isequal
-function isequal(lhs::TranslationOperation{S}, rhs::TranslationOperation{S}) where S
-    isequal(lhs.displacement, rhs.displacement)
-end
-
-
 import Base.*
 function (*)(lhs::TranslationOperation{S}, rhs::TranslationOperation{S}) where S
     TranslationOperation{S}(lhs.displacement .+ rhs.displacement)

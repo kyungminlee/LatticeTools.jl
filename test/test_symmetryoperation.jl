@@ -50,7 +50,6 @@ using TightBindingLattice
         @testset "equality" begin
             @test t1 == t1p
             @test t1 !== t1p
-            @test isequal(t1, t1p)
             @test hash(t1) == hash(t1p)
             @test hash(t1) != hash(t2)
         end
@@ -118,7 +117,6 @@ using TightBindingLattice
         @testset "equality" begin
             @test p1 == p1p
             @test p1 !== p1p
-            @test isequal(p1, p1p)
             @test hash(p1) == hash(p1p)
             @test hash(p1) != hash(p2)
         end

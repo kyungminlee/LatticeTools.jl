@@ -66,9 +66,6 @@ function (==)(top::TranslationOperation{S}, pop::PointOperation{S}) where S
     isidentity(pop) && isidentity(top)
 end
 
-# import Base.isequal
-# isequal(lhs::PointOperation, rhs::PointOperation) = isequal(lhs.matrix, rhs.matrix)
-
 import Base.*
 (*)(lhs::PointOperation, rhs::PointOperation) = PointOperation(lhs.matrix * rhs.matrix)
 

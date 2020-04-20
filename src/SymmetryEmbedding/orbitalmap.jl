@@ -3,16 +3,22 @@ export findorbitalmap
 
 """
     findorbitalmap(unitcell, translation_operation)
+
+Find which orbital gets mapped to which orbital with what lattice displacement.
+Return a vector of tuples `(j, Rj)` at index `i`, representing that the orbital `i`
+gets mapped to orbital `j` with lattice displacement `Rj`.
+
+The overall transformation will be a combiation of (1) the result here, and
+(2) Bravais lattice transformation. Since all the integer translations will be
+taken care of by the Bravais lattice transformation, Rj here is all zero vectors.
 """
 function findorbitalmap(unitcell::UnitCell,
                         tsym_op::TranslationOperation{<:Integer})::Vector{Tuple{Int, Vector{Int}}}
     norb = numorbital(unitcell)
     dim = dimension(unitcell)
     return [(i, zeros(Int, dim)) for i in 1:norb]
-    # Zero because in the end, the transformation will be a combination
-    # of Bravais lattice transformation, and the result here.
-    # All the integer translation will be taken care of by the bravais lattice transformation
 end
+
 
 """
     findorbitalmap(unitcell, translation_symmetry)
@@ -24,6 +30,10 @@ end
 
 """
     findorbitalmap(unitcell, point_operation)
+
+Find which orbital gets mapped to which orbital with what lattice displacement.
+Return a vector of tuples `(j, Rj)` at index `i`, representing that the orbital `i`
+gets mapped to orbital `j` with lattice displacement `Rj`.
 """
 function findorbitalmap(unitcell::UnitCell,
                         psym_op::PointOperation{<:Integer})::Union{Nothing, Vector{Tuple{Int, Vector{Int}}}}
@@ -36,6 +46,7 @@ function findorbitalmap(unitcell::UnitCell,
     end
     return map
 end
+
 
 """
     findorbitalmap(unitcell, point_symmetry)

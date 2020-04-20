@@ -12,11 +12,9 @@ using TightBindingLattice
     @test op1 !== op1p
     @test op1 == op1p
     @test hash(op1) == hash(op1p)
-    @test isequal(op1, op1p)
 
     @test op1 != op2
     @test hash(op1) != hash(op2)
-    @test !isequal(op1, op2)
 
     @test inv(op1) == SitePermutation([2,3,1])
 

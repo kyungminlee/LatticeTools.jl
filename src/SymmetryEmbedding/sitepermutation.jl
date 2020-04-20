@@ -18,9 +18,6 @@ end
 import Base.==
 ==(lhs::SitePermutation, rhs::SitePermutation) = lhs.permutation == rhs.permutation
 
-import Base.isequal
-isequal(lhs::SitePermutation, rhs::SitePermutation) = isequal(lhs.permutation, rhs.permutation)
-
 import Base.*
 *(lhs::SitePermutation, rhs::SitePermutation) = SitePermutation(lhs.permutation * rhs.permutation)
 
