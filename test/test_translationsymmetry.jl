@@ -224,18 +224,30 @@ using TightBindingLattice
         @test_throws ArgumentError isbragg([4, 0], [2,0], [2,0])
         @test_throws ArgumentError isbragg([-2, 2], [2,0], [2,0])
 
+        tsym = TranslationSymmetry([3 0; 0 3])
         # Gamma point is always ok
         @test  isbragg([3,3], [0,0], [0,0])
         @test  isbragg([3,3], [0,0], [1,0])
         @test  isbragg([3,3], [0,0], [2,0])
+        
+        @test  isbragg(tsym, 1, TranslationOperation([0,0]))
+        @test  isbragg(tsym, 1, TranslationOperation([1,0]))
+        @test  isbragg(tsym, 1, TranslationOperation([2,0]))
 
         # non-zero momentum depends on what the identity translation is
         @test  isbragg([3,3], [1,0], [0,0]) # zero translation is always identity, so it's always fine
         @test !isbragg([3,3], [1,0], [1,0]) # these two translations are not compatible
         @test !isbragg([3,3], [1,0], [2,0]) #   with momentum [1,1]
 
+        @test  isbragg(tsym, 2, TranslationOperation([0,0]))
+        @test !isbragg(tsym, 2, TranslationOperation([1,0]))
+        @test !isbragg(tsym, 2, TranslationOperation([2,0]))
+
         @test  isbragg([3,3], [0,0], [[0,0], [1,0], [2,0]])
         @test !isbragg([3,3], [1,0], [[0,0], [1,0], [2,0]])
+
+        @test  isbragg(tsym, 1, TranslationOperation.([[0,0], [1,0], [2,0]]))
+        @test !isbragg(tsym, 2, TranslationOperation.([[0,0], [1,0], [2,0]]))
 
         @test_throws DimensionMismatch isbragg([1//2, 2//4, 0//2], [2,0])
 
@@ -252,7 +264,15 @@ using TightBindingLattice
         @test  isbragg([0,0] .// [3,3], [[0,0], [1,0], [2,0]])
         @test !isbragg([1,0] .// [3,3], [[0,0], [1,0], [2,0]])
 
+
+        tsym = TranslationSymmetry([4 0; 0 4])
+        @test  isbragg(tsym, 11, TranslationOperation([2,0]))
+        @test !isbragg(tsym, 10, TranslationOperation([2,0]))
+        @test  isbragg(tsym, 11, TranslationOperation.([[0,0], [2,0], [0,2], [2,2]]))
+        
         tsym = TranslationSymmetry([6 2; -2 6])
+
+        # TODO more tests for isbragg
 
         for irrep_index in 1:num_irreps(tsym)
             k = tsym.fractional_momenta[irrep_index]
