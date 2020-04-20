@@ -3,6 +3,9 @@ export embed
 
 abstract type AbstractSymmetryOperationEmbedding <: AbstractSymmetryOperation{Int} end
 
+"""
+    SitePermutation
+"""
 struct SitePermutation <:AbstractSymmetryOperationEmbedding
     permutation::Permutation
     SitePermutation(p::Permutation) = new(p)
@@ -78,6 +81,9 @@ function embed(lattice::Lattice, pop::PointOperation{<:Integer})
 end
 
 
+"""
+    embed(lattice, sop::SpaceOperation{<:Integer, <:Integer})
+"""
 function embed(lattice::Lattice, sop::SpaceOperation{<:Integer, <:Integer})
     embed(lattice, PointOperation(sop.matrix)) * embed(lattice, TranslationOperation(sop.displacement))
 end

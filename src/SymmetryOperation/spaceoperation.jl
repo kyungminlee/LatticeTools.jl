@@ -6,7 +6,11 @@ export isidentity, istranslation, ispoint
 import LinearAlgebra
 
 
-# S(r) = M ⋅ ( r + R )
+"""
+    SpaceOperation{Tp<:Real, Tt<:Real}
+
+    S: r ↦ M ⋅ ( r + R )
+"""
 struct SpaceOperation{Tp<:Real, Tt<:Real} <:AbstractSymmetryOperation{Tt}
     matrix::Matrix{Tp}
     displacement::Vector{Tt}
@@ -29,8 +33,6 @@ struct SpaceOperation{Tp<:Real, Tt<:Real} <:AbstractSymmetryOperation{Tt}
         end
         return new{Tp, Tt}(matrix, displacement)
     end
-
-
 
     function SpaceOperation(matrix::AbstractMatrix{Tp},
                             displacement::AbstractVector{Tt}) where {Tp<:Real, Tt<:Real}
@@ -82,18 +84,18 @@ import Base.promote_rule
 function promote_rule(::Type{SpaceOperation{Tp, Tt}}, ::Type{<:IdentityOperation{<:Union{Tp, Tt}}}) where {Tp, Tt}
     return SpaceOperation{Tp, Tt}
 end
+
 function promote_rule(::Type{SpaceOperation{Tp, Tt}}, ::Type{TranslationOperation{Tt}}) where {Tp, Tt}
     return SpaceOperation{Tp, Tt}
 end
+
 function promote_rule(::Type{SpaceOperation{Tp, Tt}}, ::Type{PointOperation{Tp}}) where {Tp, Tt}
     return SpaceOperation{Tp, Tt}
 end
+
 function promote_rule(::Type{TranslationOperation{Tt}}, ::Type{PointOperation{Tp}}) where {Tp, Tt}
     return SpaceOperation{Tp, Tt}
 end
-# function promote_rule(::Type{PointOperation{Tp}}, ::Type{TranslationOperation{Tt}}) where {Tp, Tt}
-#     return SpaceOperation{Tp, Tt}
-# end
 
 
 ## properties
@@ -102,6 +104,7 @@ isidentity(arg::SpaceOperation) = isone(arg.matrix) && iszero(arg.displacement)
 istranslation(arg::SpaceOperation) = isone(arg.matrix)
 ispoint(arg::SpaceOperation) = iszero(arg.displacement)
 
+import Base.hash
 function hash(op::SpaceOperation{Tp, Tt}) where {Tp, Tt}
     h = hash(SpaceOperation{Tp, Tt})
     h = hash(op.matrix, h)
@@ -139,6 +142,7 @@ end
 function (==)(iden::IdentityOperation{<:Union{Tp, Tt}}, sop::SpaceOperation{Tp, Tt}) where {Tp, Tt}
     return dimension(sop) == dimension(iden) && iszero(sop.displacement) && isone(sop.matrix)
 end
+
 
 import Base.*
 function (*)(lhs::PointOperation{Tp}, rhs::TranslationOperation{Tt}) where {Tp, Tt}
@@ -186,11 +190,13 @@ function (*)(lhs::PointOperation{Tp}, rhs::SpaceOperation{Tp, Tt}) where {Tp, Tt
     return SpaceOperation{Tp, Tt}(matrix, displacement)
 end
 
+
 import Base.inv
 function inv(arg::SpaceOperation{Tp, Tt}) where {Tp, Tt}
     matrix_inv = Matrix{Tp}(ExactLinearAlgebra.inverse(arg.matrix))
     return SpaceOperation{Tp, Tt}(matrix_inv, -arg.matrix * arg.displacement)
 end
+
 
 import Base.^
 function (^)(op::SpaceOperation{Tp, Tt}, power::Integer) where {Tp, Tt}
@@ -205,7 +211,9 @@ function (^)(op::SpaceOperation{Tp, Tt}, power::Integer) where {Tp, Tt}
 end
 
 
-## apply
+"""
+    apply_operation(op::SpaceOperation{Tp, Tt}, coord::AbstractArray{<:Union{Tp, Tt}}) where {Tp, Tt}
+"""
 function apply_operation(op::SpaceOperation{Tp, Tt}, coord::AbstractArray{<:Union{Tp, Tt}}) where {Tp, Tt}
     return op.matrix * (coord .+ op.displacement)
 end

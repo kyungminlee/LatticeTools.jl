@@ -5,7 +5,7 @@
 
 export SymmorphicSymmetry
 export SymmorphicIrrepComponent
-export ⋊
+export ⋊, ⋉
 export symmetry_product
 export group, group_order, group_multiplication_table,
        element, elements, element_name, element_names
@@ -13,6 +13,9 @@ export group, group_order, group_multiplication_table,
 export generator_indices, generator_elements
 
 
+"""
+    SymmorphicSymmetry{S1, S2, E}
+"""
 struct SymmorphicSymmetry{S1<:SymmetryOrEmbedding,
                           S2<:SymmetryOrEmbedding,
                           E<:AbstractSymmetryOperation}<:AbstractSymmetry{E}
@@ -46,8 +49,14 @@ end
 function ⋊(normal::AbstractSymmetry, rest::AbstractSymmetry)
     return SymmorphicSymmetry(normal, rest)
 end
+function ⋉(rest::AbstractSymmetry, normal::AbstractSymmetry)
+    return SymmorphicSymmetry(normal, rest)
+end
 
 
+"""
+    symmetry_product(sym::SymmorphicSymmetry{TranslationSymmetry,PointSymmetry,S}) where {S<:SpaceOperation{<:Integer}}
+"""
 function symmetry_product(sym::SymmorphicSymmetry{TranslationSymmetry,PointSymmetry,S}
             ) where {S<:SpaceOperation{<:Integer}}
     function product(lhs::SpaceOperation{<:Integer}, rhs::SpaceOperation{<:Integer})
@@ -79,11 +88,19 @@ element_names(sym::SymmorphicSymmetry) = sym.element_names
 # num_irreps(sym::SymmorphicSymmetry) = length(sym.irreps)
 # irrep_dimension(sym::SymmorphicSymmetry, idx::Integer) = 1 # size(first(sym.irreps[idx]), 1)
 
+
+"""
+    generator_indices(sym::SymmorphicSymmetry)
+"""
 function generator_indices(sym::SymmorphicSymmetry)
     gn, gr = sym.normal.generators, sym.rest.generators
     return vcat([CartesianIndex(x..., 1) for x in gn], [CartesianIndex(1, x...) for x in gr])
 end
 
+
+"""
+    generator_elements(sym::SymmorphicSymmetry)
+"""
 function generator_elements(sym::SymmorphicSymmetry) 
     g = generator_indices(sym)
     return element(sym, g)

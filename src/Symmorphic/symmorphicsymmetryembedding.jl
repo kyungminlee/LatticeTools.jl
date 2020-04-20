@@ -2,6 +2,8 @@
 export SymmorphicSymmetryEmbedding
 export embed
 export get_irrep_components
+export iscompatible
+export ⋉, ⋊
 
 struct SymmorphicSymmetryEmbedding{S1<:AbstractSymmetry,
                                    S2<:AbstractSymmetry}<:AbstractSymmetryEmbedding
@@ -29,24 +31,37 @@ struct SymmorphicSymmetryEmbedding{S1<:AbstractSymmetry,
     end
 end
 
+
+"""
+    embed(lattice::Lattice, ssym::SymmorphicSymmetry)
+"""
 embed(lattice::Lattice, ssym::SymmorphicSymmetry) = SymmorphicSymmetryEmbedding(lattice, ssym)
+
 
 function ⋊(normal::SymmetryEmbedding{S1}, rest::SymmetryEmbedding{S2}) where {S1, S2}
     return SymmorphicSymmetryEmbedding(normal, rest)
 end
 
+function ⋉(rest::SymmetryEmbedding{S2}, normal::SymmetryEmbedding{S1}) where {S1, S2}
+    return SymmorphicSymmetryEmbedding(normal, rest)
+end
+
+
 import Base.eltype
 eltype(::SymmorphicSymmetryEmbedding) = SitePermutation
+
 import Base.valtype
 valtype(::SymmorphicSymmetryEmbedding) = SitePermutation
+
 
 function (==)(lhs::SymmorphicSymmetryEmbedding{S1, S2}, rhs::SymmorphicSymmetryEmbedding{S1, S2}) where {S1, S2}
     return lhs.lattice == rhs.lattice && lhs.normal == rhs.normal && lhs.rest == rhs.rest
 end
 
 
-
-export iscompatible
+"""
+    iscompatible(lattice::Lattice, ssym::SymmorphicSymmetry{S1, S2, E}) where {S1, S2, E}
+"""
 function iscompatible(lattice::Lattice, ssym::SymmorphicSymmetry{S1, S2, E}) where {S1, S2, E}
     return iscompatible(lattice, ssym.normal) && iscompatible(lattice, ssym.rest)
 end
@@ -57,6 +72,3 @@ end
 #         for normal_sic in get_irrep_components(sym.normal)
 #         for rest_sic in get_irrep_components(little_symmetry(normal_sic, sym.rest)))
 # end
-
-
-
