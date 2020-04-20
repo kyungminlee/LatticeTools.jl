@@ -2,7 +2,7 @@ export IdentityOperation
 
 export apply_operation
 export domaintype
-export isidentity
+export isidentity, istranslation, ispoint
 
 struct IdentityOperation{S<:Real} <: AbstractSymmetryOperation{S}
     dimension::Int
@@ -17,6 +17,9 @@ end
 
 ## properties
 isidentity(arg::IdentityOperation) = true
+istranslation(arg::IdentityOperation) = true
+ispoint(arg::IdentityOperation) = true
+
 dimension(arg::IdentityOperation) = arg.dimension
 
 hash(arg::IdentityOperation{S}) where S = hash(arg.dimension, hash(IdentityOperation{S}))
