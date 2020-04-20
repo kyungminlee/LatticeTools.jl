@@ -146,4 +146,12 @@ using LinearAlgebra
         ssym_embed = embed(kagome.lattice, kagome.translation_symmetry ⋊ kagome.point_symmetry)
     end
 
+    # @testset "kagome-strong" begin
+    #     include("Kagome.jl")
+    #     kagome = make_kagome_lattice([4 -2; 2 2])
+    #     tsymbed = embed(kagome.lattice, kagome.translation_symmetry)
+    #     psymbed = little_symmetry_strong(tsymbed, embed(kagome.lattice, kagome.point_symmetry))
+    #     @show symmetry_name(tsymbed)
+    #     @show symmetry_name(psymbed)
+    # end
 end
