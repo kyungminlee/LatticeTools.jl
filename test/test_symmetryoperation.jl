@@ -184,13 +184,14 @@ using TightBindingLattice
         c4m = PointOperation([ 0  1; -1  0])
         m10 = PointOperation([-1  0;  0  1])
         t10 = TranslationOperation([ 1,  0])
+        t01 = TranslationOperation([ 0,  1])
 
         @testset "properties" begin
             s0 = SpaceOperation(Int, Int, 2)
             st = SpaceOperation([1 0; 0 1], [1, 0])
             sp = SpaceOperation([0 1; 1 0], [0, 0])
             s2 = SpaceOperation([0 1; 1 0], [1, 0])
-            
+
             @test domaintype(s0) == Int
             @test domaintype(st) == Int
             @test domaintype(sp) == Int
@@ -243,15 +244,13 @@ using TightBindingLattice
             @test t10_c4p * c4p == SpaceOperation([-1 0; 0 -1], [-1,  0])
 
             # associativity
-            for A in [t10, m10, c4p, c4m],
-                B in [t10, m10, c4p, c4m],
-                C in [t10, m10, c4p, c4m]
-                @test (A * B) * C == A * (B * C)
-            end
+            @test all((A * B) * C == A * (B * C)
+                        for A in [t10, t01, m10, c4p, c4m],
+                            B in [t10, t01, m10, c4p, c4m],
+                            C in [t10, t01, m10, c4p, c4m])
             # inverse
-            for A in [t10, m10, c4p, c4m], B in [t10, m10, c4p, c4m]
-                @test inv(A * B) == inv(B) * inv(A)
-            end
+            @test all(inv(A * B) == inv(B) * inv(A)
+                          for A in [t10, t01, m10, c4p, c4m], B in [t10, t01, m10, c4p, c4m])
         end
 
         @testset "comparison with other types" begin
