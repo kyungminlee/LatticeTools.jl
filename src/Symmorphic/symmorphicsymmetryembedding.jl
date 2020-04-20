@@ -32,11 +32,7 @@ end
 embed(lattice::Lattice, ssym::SymmorphicSymmetry) = SymmorphicSymmetryEmbedding(lattice, ssym)
 
 function ⋊(normal::SymmetryEmbedding{S1}, rest::SymmetryEmbedding{S2}) where {S1, S2}
-    lattice = normal.lattice
-    if rest.lattice != lattice
-        throw(ArgumentError("two symmetry embeddings should have the same lattice"))
-    end
-    return SymmorphicSymmetryEmbedding(lattice, SymmorphicSymmetry(normal.symmetry, rest.symmetry))
+    return SymmorphicSymmetryEmbedding(normal, rest)
 end
 
 import Base.eltype
