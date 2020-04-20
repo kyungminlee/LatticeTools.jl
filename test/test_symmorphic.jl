@@ -68,8 +68,29 @@ using TightBindingLattice
 
         ssymbed1 = embed(lattice, ssym)
         ssymbed2 = tsymbed ⋊ psymbed
+        ssymbed3 = SymmorphicSymmetryEmbedding(tsymbed, psymbed)
+        @test_throws ArgumentError SymmorphicSymmetryEmbedding(psymbed, tsymbed)
+        
+        let lattice2 = make_lattice(unitcell, [4 0; 0 3])
+            tsymbed2 = translation_symmetry_embedding(lattice2)
+            @test_throws ArgumentError tsymbed2 ⋊ psymbed
+        end
 
         @test typeof(ssymbed1) == typeof(ssymbed2)
+        @test eltype(ssymbed1) == SitePermutation
+        @test eltype(ssymbed2) == SitePermutation
+
+        @test ssymbed1 == ssymbed2
+        @test ssymbed1 == ssymbed3
         
+        @test ssymbed1.lattice == lattice
+        @test ssymbed1.normal.symmetry == tsymbed.symmetry
+        @test ssymbed1.rest.symmetry == psymbed.symmetry
+
+        @test ssymbed2.lattice == lattice
+        @test ssymbed2.normal.symmetry == tsymbed.symmetry
+        @test ssymbed2.rest.symmetry == psymbed.symmetry
+
+
     end
 end
