@@ -1,3 +1,7 @@
+using Test
+using TightBindingLattice
+
+
 @testset "UnitCell" begin
     latticevectors = [0.5 0.0; 0.0 1.0]
 

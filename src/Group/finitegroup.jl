@@ -17,7 +17,6 @@ export element_name, element_names
 export group_isomorphism
 export ishomomorphic
 
-using Combinatorics
 
 struct FiniteGroup <: AbstractGroup
     multiplication_table::Matrix{Int}

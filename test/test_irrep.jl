@@ -1,8 +1,8 @@
 using Test
 using TightBindingLattice
 
-@testset "irrep" begin
 
+@testset "irrep" begin
     unitcell = make_unitcell([1.0 0.0; 0.0 1.0]; OrbitalType=String)
     addorbital!(unitcell, "Ox", FractCoord([0,0], [0.5, 0.0]))
     addorbital!(unitcell, "Oy", FractCoord([0,0], [0.0, 0.5]))

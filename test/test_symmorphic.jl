@@ -1,6 +1,7 @@
 using Test
 using TightBindingLattice
 
+
 @testset "symmorphic" begin
     tsym = TranslationSymmetry([4 0; 0 4])
     psym = project(PointSymmetryDatabase.find("4mm"), [1 0 0; 0 1 0])

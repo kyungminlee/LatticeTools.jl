@@ -3,6 +3,7 @@ using TightBindingLattice
 
 using TightBindingLattice: parse_expr
 
+
 @testset "parse_expr" begin
     @test 1 == parse_expr(1)
     @test 1 == parse_expr("1")

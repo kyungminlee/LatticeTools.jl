@@ -1,7 +1,9 @@
 using Test
+using TightBindingLattice
+
 using LinearAlgebra
 using YAML
-using TightBindingLattice
+
 
 @testset "TranslationSymmetry" begin
     @testset "constructors" begin

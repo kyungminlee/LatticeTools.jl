@@ -1,3 +1,7 @@
+using Test
+using TightBindingLattice
+
+
 @testset "FractCoord" begin
     @testset "Explicit Construction" begin
         fractcoord = FractCoord([-2, 1], [0.8, 0.5])

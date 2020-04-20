@@ -1,6 +1,7 @@
 using Test
 using TightBindingLattice
 
+
 @testset "OrthoCube" begin
     @testset "failures" begin
         @test_throws DimensionMismatch OrthoCube([1 2 3; 4 5 6])
