@@ -18,13 +18,13 @@ end
 
 abstract type AbstractSymmetryIrrepComponent end
 
-struct IrrepComponent{SymmetryType<:AbstractSymmetry}<:AbstractSymmetryIrrepComponent
+struct IrrepComponent{SymmetryType<:SymmetryOrEmbedding}<:AbstractSymmetryIrrepComponent
     symmetry::SymmetryType
     irrep_index::Int
     irrep_component::Int
     function IrrepComponent(sym::S,
                             irrep_index::Integer,
-                            irrep_compo::Integer=1) where {S<:AbstractSymmetry}
+                            irrep_compo::Integer=1) where {S<:SymmetryOrEmbedding}
         if !(1 <= irrep_index <= num_irreps(sym))
             throw(ArgumentError("irrep index must be between 1 and $(num_irreps(sym))"))
         elseif !(1 <= irrep_compo <= irrep_dimension(sym, irrep_index))
@@ -44,7 +44,7 @@ end
 
 group_order(sic::IrrepComponent) = group_order(sic.symmetry)
 
-function get_irrep_components(sym::AbstractSymmetry)
+function get_irrep_components(sym::SymmetryOrEmbedding)
     return (IrrepComponent(sym, irrep_index, irrep_compo)
                 for irrep_index in 1:num_irreps(sym)
                 for irrep_compo in 1:irrep_dimension(sym, irrep_index))
@@ -62,29 +62,29 @@ function get_irrep_iterator(sic::IrrepComponent)
 end
 
 
-struct SymmorphicSpaceIrrepComponent{S1<:AbstractSymmetry, S2<:AbstractSymmetry} <:AbstractSymmetryIrrepComponent
+# struct SymmorphicSpaceIrrepComponent{S1<:SymmetryOrEmbedding, S2<:SymmetryOrEmbedding} <:AbstractSymmetryIrrepComponent
 
-    component1::IrrepComponent{S1} # e.g. Translation
-    component2::IrrepComponent{S2} # e.g. Point
+#     component1::IrrepComponent{S1} # e.g. Translation
+#     component2::IrrepComponent{S2} # e.g. Point
 
-    function SymmorphicSpaceIrrepComponent(
-                sic1::IrrepComponent{S1},
-                sic2::IrrepComponent{S2}) where {
-            S1<:Union{TranslationSymmetry, SymmetryEmbedding{TranslationSymmetry}},
-            S2<:Union{PointSymmetry, SymmetryEmbedding{PointSymmetry}}}
-        sym1 = sic1.symmetry
-        sym_irrep_index1 = sic1.irrep_index
-        sym2 = sic2.symmetry
-        if !iscompatible(sym1, sym_irrep_index1, sym2)
-            throw(ArgumentError("symmetry $(symmetry_name(sym2)) is not compatible with "*
-                                "symmetry $(symmetry_name(sym1)) at irrep $sym_irrep_index1"))
-        end
-        return new{S1, S2}(sic1, sic2)
-    end
-end
+#     function SymmorphicSpaceIrrepComponent(
+#                 sic1::IrrepComponent{S1},
+#                 sic2::IrrepComponent{S2}) where {
+#             S1<:Union{TranslationSymmetry, SymmetryEmbedding{TranslationSymmetry}},
+#             S2<:Union{PointSymmetry, SymmetryEmbedding{PointSymmetry}}}
+#         sym1 = sic1.symmetry
+#         sym_irrep_index1 = sic1.irrep_index
+#         sym2 = sic2.symmetry
+#         if !iscompatible(sym1, sym_irrep_index1, sym2)
+#             throw(ArgumentError("symmetry $(symmetry_name(sym2)) is not compatible with "*
+#                                 "symmetry $(symmetry_name(sym1)) at irrep $sym_irrep_index1"))
+#         end
+#         return new{S1, S2}(sic1, sic2)
+#     end
+# end
 
 
-group_order(sic::SymmorphicSpaceIrrepComponent) = group_order(sic.component1) * group_order(sic.component2)
+# group_order(sic::SymmorphicSpaceIrrepComponent) = group_order(sic.component1) * group_order(sic.component2)
 
 
 function little_group_elements(tsic::IrrepComponent{TranslationSymmetry},
@@ -140,37 +140,37 @@ function iscompatible(tsic::IrrepComponent{SymmetryEmbedding{TranslationSymmetry
 end
 
 
-function get_irrep_components(tsym::S1,
-                              psym::S2) where {S1<:AbstractSymmetry,
-                                               S2<:AbstractSymmetry}
-    return (SymmorphicSpaceIrrepComponent(tsic, psic)
-                for tsic in get_irrep_components(tsym)
-                for psic in get_irrep_components(little_symmetry(tsic, psym)))
-end
+# function get_irrep_components(tsym::S1,
+#                               psym::S2) where {S1<:SymmetryOrEmbedding,
+#                                                S2<:SymmetryOrEmbedding}
+#     return (SymmorphicSpaceIrrepComponent(tsic, psic)
+#                 for tsic in get_irrep_components(tsym)
+#                 for psic in get_irrep_components(little_symmetry(tsic, psym)))
+# end
 
 
-function get_irrep_iterator(ssic::SymmorphicSpaceIrrepComponent)
+# function get_irrep_iterator(ssic::SymmorphicSpaceIrrepComponent)
 
-    tsym = ssic.component1.symmetry
-    tsym_irrep_index = ssic.component1.irrep_index
-    tsym_irrep_compo = ssic.component1.irrep_component
+#     tsym = ssic.component1.symmetry
+#     tsym_irrep_index = ssic.component1.irrep_index
+#     tsym_irrep_compo = ssic.component1.irrep_component
 
-    psym = ssic.component2.symmetry
-    psym_irrep_index = ssic.component2.irrep_index
-    psym_irrep_compo = ssic.component2.irrep_component
+#     psym = ssic.component2.symmetry
+#     psym_irrep_index = ssic.component2.irrep_index
+#     psym_irrep_compo = ssic.component2.irrep_component
     
-    tsym_elements = elements(tsym)
-    tsym_irrep = irrep(tsym, tsym_irrep_index)
-    tsym_irrep_components = [m[tsym_irrep_compo, tsym_irrep_compo] for m in tsym_irrep]
+#     tsym_elements = elements(tsym)
+#     tsym_irrep = irrep(tsym, tsym_irrep_index)
+#     tsym_irrep_components = [m[tsym_irrep_compo, tsym_irrep_compo] for m in tsym_irrep]
 
-    psym_elements = elements(psym)
-    psym_irrep = irrep(psym, psym_irrep_index)
-    psym_irrep_components = [m[psym_irrep_compo, psym_irrep_compo] for m in psym_irrep]
+#     psym_elements = elements(psym)
+#     psym_irrep = irrep(psym, psym_irrep_index)
+#     psym_irrep_components = [m[psym_irrep_compo, psym_irrep_compo] for m in psym_irrep]
 
-    return ((psym_elem * tsym_elem, psym_phase * tsym_phase)
-                for (psym_elem, psym_phase) in zip(psym_elements, psym_irrep_components)
-                for (tsym_elem, tsym_phase) in zip(tsym_elements, tsym_irrep_components))
-end
+#     return ((psym_elem * tsym_elem, psym_phase * tsym_phase)
+#                 for (psym_elem, psym_phase) in zip(psym_elements, psym_irrep_components)
+#                 for (tsym_elem, tsym_phase) in zip(tsym_elements, tsym_irrep_components))
+# end
 
 
 

@@ -4,7 +4,8 @@ export embed
 export get_irrep_components
 export elementtype
 
-struct SymmorphicSymmetryEmbedding{S1<:AbstractSymmetry, S2<:AbstractSymmetry}<:AbstractSymmetryEmbedding
+struct SymmorphicSymmetryEmbedding{S1<:AbstractSymmetry,
+                                   S2<:AbstractSymmetry}<:AbstractSymmetryEmbedding
     lattice::Lattice
     normal::SymmetryEmbedding{S1}
     rest::SymmetryEmbedding{S2}
@@ -21,6 +22,12 @@ struct SymmorphicSymmetryEmbedding{S1<:AbstractSymmetry, S2<:AbstractSymmetry}<:
 end
 
 embed(lattice::Lattice, ssym::SymmorphicSymmetry) = SymmorphicSymmetryEmbedding(lattice, ssym)
+
+function ⋊(normal::SymmetryEmbedding{S1}, rest::SymmetryEmbedding{S2}) where {S1, S2}
+    lattice = normal.lattice
+    return SymmorphicSymmetryEmbedding(lattice, SymmorphicSymmetry(normal.symmetry, rest.symmetry))
+end
+
 
 elementtype(::SymmorphicSymmetryEmbedding) = SitePermutation
 import Base.valtype

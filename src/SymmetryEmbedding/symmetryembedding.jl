@@ -1,14 +1,16 @@
 export AbstractSymmetryEmbedding
 
 export SymmetryEmbedding
-export SymmorphicSpaceSymmetryEmbedding
+# export SymmorphicSpaceSymmetryEmbedding
 
 export embed
 export elementtype, element, elements
 export symmetry
 export generator_elements, generator_indices
 
-abstract type AbstractSymmetryEmbedding<:AbstractSymmetry{SitePermutation} end
+abstract type AbstractSymmetryEmbedding end
+
+SymmetryOrEmbedding = Union{<:AbstractSymmetry, <:AbstractSymmetryEmbedding}
 
 struct SymmetryEmbedding{SymmetryType}<:AbstractSymmetryEmbedding
     lattice::Lattice

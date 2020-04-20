@@ -13,13 +13,15 @@ export group, group_order, group_multiplication_table,
 export generator_indices, generator_elements
 
 
-struct SymmorphicSymmetry{S1<:AbstractSymmetry, S2<:AbstractSymmetry, E<:AbstractSymmetryOperation}<:AbstractSymmetry{E}
+struct SymmorphicSymmetry{S1<:SymmetryOrEmbedding,
+                          S2<:SymmetryOrEmbedding,
+                          E<:AbstractSymmetryOperation}<:AbstractSymmetry{E}
     normal::S1   # e.g.) Translation Symmetry
     rest::S2     # e.g.) Point Symmetry
     elements::Array{E}
     element_names::Array{String}
 
-    function SymmorphicSymmetry(normal::S1, rest::S2) where {S1<:AbstractSymmetry, S2<:AbstractSymmetry}
+    function SymmorphicSymmetry(normal::S1, rest::S2) where {S1<:SymmetryOrEmbedding, S2<:SymmetryOrEmbedding}
         if !iscompatible(normal, rest)
             throw(ArgumentError("symmetries $normal and $rest are not compatible"))
         end
@@ -80,10 +82,10 @@ element_names(sym::SymmorphicSymmetry) = sym.element_names
 
 function generator_indices(sym::SymmorphicSymmetry)
     gn, gr = sym.normal.generators, sym.rest.generators
-    return ([CartesianIndex(x..., 1) for x in gn], [CartesianIndex(1, x...) for x in gr])
+    return vcat([CartesianIndex(x..., 1) for x in gn], [CartesianIndex(1, x...) for x in gr])
 end
 
 function generator_elements(sym::SymmorphicSymmetry) 
-    gn, gr = generator_indices(sym)
-    return (element(sym, gn), element(sym, gr))
+    g = generator_indices(sym)
+    return element(sym, g)
 end
