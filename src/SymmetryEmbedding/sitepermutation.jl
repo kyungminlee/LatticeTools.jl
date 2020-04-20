@@ -1,8 +1,13 @@
 export SitePermutation
 export embed
+export isidentity
+
 
 abstract type AbstractSymmetryOperationEmbedding <: AbstractSymmetryOperation{Int} end
 
+"""
+    SitePermutation
+"""
 struct SitePermutation <:AbstractSymmetryOperationEmbedding
     permutation::Permutation
     SitePermutation(p::Permutation) = new(p)
@@ -12,9 +17,6 @@ end
 
 import Base.==
 ==(lhs::SitePermutation, rhs::SitePermutation) = lhs.permutation == rhs.permutation
-
-import Base.isequal
-isequal(lhs::SitePermutation, rhs::SitePermutation) = isequal(lhs.permutation, rhs.permutation)
 
 import Base.*
 *(lhs::SitePermutation, rhs::SitePermutation) = SitePermutation(lhs.permutation * rhs.permutation)
@@ -78,6 +80,12 @@ function embed(lattice::Lattice, pop::PointOperation{<:Integer})
 end
 
 
+"""
+    embed(lattice, sop::SpaceOperation{<:Integer, <:Integer})
+"""
 function embed(lattice::Lattice, sop::SpaceOperation{<:Integer, <:Integer})
     embed(lattice, PointOperation(sop.matrix)) * embed(lattice, TranslationOperation(sop.displacement))
 end
+
+
+isidentity(perm::SitePermutation) = isidentity(perm.permutation)

@@ -1,9 +1,8 @@
 export AbstractSymmetryOperation
 
 export Permutation
-
 export generate_group
-
+export isidentity
 
 """
         Permutation(perms; max_order=2048)
@@ -129,13 +128,9 @@ import Base.==
 ==(p1 ::Permutation, p2::Permutation) = p1.map == p2.map
 
 
-import Base.isequal
-isequal(p1 ::Permutation, p2::Permutation) = isequal(p1.map, p2.map)
-
-
 import Base.isless
 function isless(p1 ::Permutation, p2::Permutation)
-    return isless(p1.order, p2.order) || (isequal(p1.order, p2.order) && isless(p1.map, p2.map))
+    return isless(p1.order, p2.order) || ((p1.order == p2.order) && isless(p1.map, p2.map))
 end
 
 
@@ -158,4 +153,9 @@ function generate_group(generators::Permutation...)
         end
     end
     return group
+end
+
+
+function isidentity(perm::Permutation)
+    return perm.map == 1:length(perm.map)
 end

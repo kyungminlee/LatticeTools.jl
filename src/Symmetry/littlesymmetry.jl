@@ -7,37 +7,43 @@ export little_symmetry_iso
 ## Symmetry reduction (little group etc.)
 
 """
-    psym compatible with hypercube
+    little_group_elements(tsym, psym)
+
+Return elements of `psym` compatible with the translation symmetry `tsym`.
 """
 function little_group_elements(tsym::TranslationSymmetry, psym::PointSymmetry)
-    lg_elements = [i for (i, elem) in enumerate(elements(psym))
-                     if iscompatible(tsym, elem)]
-    return lg_elements
+    return Int[i_elem for (i_elem, elem) in enumerate(elements(psym))
+                      if iscompatible(tsym, elem)]
 end
 
+"""
+    little_group_elements(tsym, tsym_irrep_index, psym)
 
+Return elements of `psym` compatible with the translation symmetry `tsym` at 
+irrep `tsym_irrep_index`
+"""
 function little_group_elements(tsym::TranslationSymmetry,
                                tsym_irrep_index::Integer,
                                psym::PointSymmetry)
-    lge = Int[]
-    for (i_elem, pop) in enumerate(elements(psym))
-        if iscompatible(tsym, tsym_irrep_index, pop)
-            push!(lge, i_elem)
-        end
-    end
-    return lge
+    return Int[i_elem for (i_elem, pop) in enumerate(elements(psym))
+                      if iscompatible(tsym, tsym_irrep_index, pop)]
 end
 
 
+"""
+    little_group(tsym, tsym_irrep_index, psym)
+"""
 function little_group(tsym::TranslationSymmetry,
                       tsym_irrep_index::Integer,
-                      psym::PointSymmetry)
+                      psym::PointSymmetry)::FiniteGroup
     lg_elems = little_group_elements(tsym, tsym_irrep_index, psym)
     return little_group(tsym, psym, lg_elems)
 end
 
 
 """
+    little_group(tsym, psym, elements)
+
 Generate a little group with given elements.
 The elements of the little group, which may be sparse, are compressed into consecutive integers.
 """
@@ -54,10 +60,10 @@ function little_group(tsym::TranslationSymmetry,
 end
 
 
-function little_symmetry(tsym::TranslationSymmetry, psym::PointSymmetry)
-
+function little_symmetry(tsym::TranslationSymmetry,
+                         psym::PointSymmetry,
+                         lg_elements::AbstractVector{<:Integer})
     (lg_raw, lg_matrep_raw, lg_element_names_raw) = let
-        lg_elements = little_group_elements(tsym, psym)
         lg_raw = little_group(tsym, psym, lg_elements)
         lg_matrep_raw = psym.matrix_representations[lg_elements]
         lg_element_names_raw = psym.element_names[lg_elements]
@@ -84,6 +90,17 @@ function little_symmetry(tsym::TranslationSymmetry, psym::PointSymmetry)
 end
 
 
+"""
+    little_symmetry(tsym, psym)
+"""
+function little_symmetry(tsym::TranslationSymmetry, psym::PointSymmetry)
+    return little_symmetry(tsym, psym, little_group_elements(tsym, psym))
+end
+
+
+"""
+    little_symmetry(tsym, tsym_irrep_index, psym)
+"""
 function little_symmetry(tsym::TranslationSymmetry, tsym_irrep::Integer, psym::PointSymmetry)
     if !iscompatible(tsym, psym)
         throw(ArgumentError("translation and point symmetries are not compatible"))

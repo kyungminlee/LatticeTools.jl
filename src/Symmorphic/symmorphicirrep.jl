@@ -2,6 +2,10 @@ export SymmorphicIrrepComponent
 export get_irrep_components
 export get_irrep_iterator
 
+
+"""
+    SymmorphicIrrepComponent{S1<:SymmetryOrEmbedding, S2<:SymmetryOrEmbedding}
+"""
 struct SymmorphicIrrepComponent{S1<:SymmetryOrEmbedding, S2<:SymmetryOrEmbedding}<:AbstractSymmetryIrrepComponent
     normal::IrrepComponent{S1}
     rest::IrrepComponent{S2}
@@ -29,13 +33,29 @@ end
 group_order(arg::SymmorphicIrrepComponent) = group_order(arg.normal) * group_order(arg.rest)
 
 
-function get_irrep_components(sym::Union{<:SymmorphicSymmetry, <:SymmorphicSymmetryEmbedding})
+"""
+    get_irrep_components(sym::SymmorphicSymmetryEmbedding)
+"""
+function get_irrep_components(sym::SymmorphicSymmetryEmbedding)
     (SymmorphicIrrepComponent(normal_sic, rest_sic)
         for normal_sic in get_irrep_components(sym.normal)
         for rest_sic in get_irrep_components(little_symmetry(normal_sic, sym.rest)))
 end
 
 
+"""
+    get_irrep_components(sym::SymmorphicSymmetry)
+"""
+function get_irrep_components(sym::SymmorphicSymmetry)
+    (SymmorphicIrrepComponent(normal_sic, rest_sic)
+        for normal_sic in get_irrep_components(sym.normal)
+        for rest_sic in get_irrep_components(little_symmetry(normal_sic, sym.rest)))
+end
+
+
+"""
+    get_irrep_iterator(ssic::SymmorphicIrrepComponent)
+"""
 function get_irrep_iterator(ssic::SymmorphicIrrepComponent)
     normal_elements, normal_irrep_components = let
         nsym = ssic.normal.symmetry

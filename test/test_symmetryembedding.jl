@@ -88,7 +88,7 @@ using LinearAlgebra
             @test iscompatible(tsymbed, 4, psymbed)
 
             @test_throws ArgumentError embed(lattice, PointOperation([1 -1; 1 1])) # lattice not invariant under operation
-            @test_throws ArgumentError embed(make_lattice(unitcell, [1 0; 0 1]), psym) # lattice too small for faithful psym
+            embed(make_lattice(unitcell, [1 0; 0 1]), psym) # lattice too small for faithful psym. Only a warning
 
             let lattice_large = make_lattice(unitcell, [4 0; 0 4])
                 tsymbed_large = translation_symmetry_embedding(lattice_large)
@@ -123,31 +123,35 @@ using LinearAlgebra
         end
         tsym_embed = embed(kagome.lattice, kagome.translation_symmetry)
         @test_throws ArgumentError embed(kagome.lattice, kagome.point_symmetry)
-        # @test_throws ArgumentError embed(kagome.lattice, kagome.translation_symmetry, kagome.point_symmetry)
         @test_throws ArgumentError embed(kagome.lattice, kagome.translation_symmetry ⋊ kagome.point_symmetry)
 
         # lattice too small for faithful embedding
         kagome = make_kagome_lattice([1 0; 0 1])
         tsym_embed = embed(kagome.lattice, kagome.translation_symmetry)
-        @test_throws ArgumentError embed(kagome.lattice, kagome.point_symmetry)
-        # @test_throws ArgumentError embed(kagome.lattice, kagome.translation_symmetry, kagome.point_symmetry)
-        @test_throws ArgumentError embed(kagome.lattice, kagome.translation_symmetry ⋊ kagome.point_symmetry)
+        psymbed = embed(kagome.lattice, kagome.point_symmetry)
+        ssymbed = embed(kagome.lattice, kagome.translation_symmetry ⋊ kagome.point_symmetry)
 
         kagome = make_kagome_lattice([2 0; 0 2])
         tsym_embed = embed(kagome.lattice, kagome.translation_symmetry)
         psym_embed = embed(kagome.lattice, kagome.point_symmetry)
-        # ssym_embed = embed(kagome.lattice, kagome.translation_symmetry, kagome.point_symmetry)
         ssym_embed = embed(kagome.lattice, kagome.translation_symmetry ⋊ kagome.point_symmetry)
 
         @test group_order(tsym_embed) == group_order(kagome.translation_symmetry)
         @test group_order(psym_embed) == group_order(kagome.point_symmetry)
-        #@test group_order(ssym_embed) == group_order(kagome.translation_symmetry) * group_order(kagome.point_symmetry)
+        @test group_order(ssym_embed) == group_order(kagome.translation_symmetry) * group_order(kagome.point_symmetry)
 
         kagome = make_kagome_lattice([4 -2; 2 2])
         tsym_embed = embed(kagome.lattice, kagome.translation_symmetry)
         psym_embed = embed(kagome.lattice, kagome.point_symmetry)
-        # ssym_embed = embed(kagome.lattice, kagome.translation_symmetry, kagome.point_symmetry)
         ssym_embed = embed(kagome.lattice, kagome.translation_symmetry ⋊ kagome.point_symmetry)
     end
 
+    # @testset "kagome-strong" begin
+    #     include("Kagome.jl")
+    #     kagome = make_kagome_lattice([4 -2; 2 2])
+    #     tsymbed = embed(kagome.lattice, kagome.translation_symmetry)
+    #     psymbed = little_symmetry_strong(tsymbed, embed(kagome.lattice, kagome.point_symmetry))
+    #     @show symmetry_name(tsymbed)
+    #     @show symmetry_name(psymbed)
+    # end
 end

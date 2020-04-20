@@ -15,7 +15,6 @@ export little_group_elements
 export little_group
 export little_symmetry, little_symmetry_iso
 
-# export get_orbital_permutation, get_orbital_permutations
 export get_irrep_iterator
 export read_point_symmetry
 export symmetry_name
@@ -23,6 +22,10 @@ export symmetry_name
 simplify_name(name::AbstractString) = replace(replace(name, r"<sub>.*?</sub>"=>""), r"<sup>.*?</sup>"=>"")
 
 ## PointSymmetry, constructor and related functions
+
+"""
+    PointSymmetry
+"""
 struct PointSymmetry <: AbstractSymmetry{PointOperation{Int}}
     elements::Vector{PointOperation{Int}}
     group::FiniteGroup
@@ -118,6 +121,9 @@ struct PointSymmetry <: AbstractSymmetry{PointOperation{Int}}
 end
 
 
+"""
+    read_point_symmetry(data::AbstractDict)
+"""
 function read_point_symmetry(data::AbstractDict)
     tol = Base.rtoldefault(Float64)
     read_matrix(obj) = collect(transpose(hcat(parse_expr(obj)...)))
@@ -140,6 +146,9 @@ function read_point_symmetry(data::AbstractDict)
 end
 
 
+"""
+    project(psym, projection; tol=√ϵ)
+"""
 function project(psym::PointSymmetry,
                  projection::AbstractMatrix{<:Integer};
                  tol::Real=Base.rtoldefault(Float64))
@@ -168,6 +177,7 @@ dimension(sym::PointSymmetry) = size(sym.matrix_representations[1], 1)
 
 import Base.eltype
 eltype(sym::PointSymmetry) = PointOperation{Int}
+
 import Base.valtype
 valtype(sym::PointSymmetry) = PointOperation{Int}
 
@@ -192,6 +202,10 @@ generator_elements(sym::PointSymmetry) = element(sym, sym.generators)
 
 symmetry_name(sym::PointSymmetry) = "PointSymmetry[$(sym.hermann_mauguinn)]"
 
+
+"""
+    symmetry_product(psym::PointSymmetry)
+"""
 function symmetry_product(sym::PointSymmetry)
     function product(lhs::PointOperation, rhs::PointOperation)
         return PointSymmetry(lhs.matrix * rhs.matrix)
@@ -210,7 +224,6 @@ in(item::SpaceOperation{<:Integer, Tt}, sym::PointSymmetry) where {Tt} = ispoint
 import Base.iterate
 iterate(sym::PointSymmetry) = iterate(elements(sym))
 iterate(sym::PointSymmetry, i) = iterate(elements(sym), i)
-
 
 import Base.length
 length(sym::PointSymmetry) = length(elements(sym))

@@ -54,20 +54,18 @@ function (==)(iden::IdentityOperation{S}, top::TranslationOperation{S}) where S
     iszero(top.displacement)
 end
 
-import Base.isequal
-function isequal(lhs::TranslationOperation{S}, rhs::TranslationOperation{S}) where S
-    isequal(lhs.displacement, rhs.displacement)
-end
 
 import Base.*
 function (*)(lhs::TranslationOperation{S}, rhs::TranslationOperation{S}) where S
     TranslationOperation{S}(lhs.displacement .+ rhs.displacement)
 end
 
+
 import Base.^
 function (^)(lhs::TranslationOperation{S}, rhs::Real) where S
     TranslationOperation{S}(lhs.displacement .* rhs)
 end
+
 
 import Base.inv
 function inv(arg::TranslationOperation{S}) where S
@@ -76,6 +74,9 @@ end
 
 
 ## apply
+"""
+    apply_operation(symop::TranslationOperation{S}, coordinate::AbstractArray{S}) where S
+"""
 function apply_operation(symop::TranslationOperation{S},
                          coord::AbstractArray{S}) where {S<:Real}
     return coord .+ symop.displacement

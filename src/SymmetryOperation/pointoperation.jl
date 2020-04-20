@@ -4,6 +4,9 @@ export apply_operation
 export domaintype
 export isidentity, istranslation, ispoint
 
+"""
+    PointOperation{S<:Real}
+"""
 struct PointOperation{S<:Real} <:AbstractSymmetryOperation{S}
     matrix::Matrix{S}
     function PointOperation(matrix::AbstractMatrix{S}) where {S<:Real}
@@ -63,9 +66,6 @@ function (==)(top::TranslationOperation{S}, pop::PointOperation{S}) where S
     isidentity(pop) && isidentity(top)
 end
 
-import Base.isequal
-isequal(lhs::PointOperation, rhs::PointOperation) = isequal(lhs.matrix, rhs.matrix)
-
 import Base.*
 (*)(lhs::PointOperation, rhs::PointOperation) = PointOperation(lhs.matrix * rhs.matrix)
 
@@ -86,6 +86,11 @@ end
 
 
 ## apply
+"""
+    apply_operation(symop::PointOperation{S}, coordinate::AbstractArray{S}) where {S}
+
+Apply point operation to the coordinates.
+"""
 function apply_operation(symop::PointOperation{S}, coord::AbstractVector{S}) where S
     symop.matrix * coord
 end

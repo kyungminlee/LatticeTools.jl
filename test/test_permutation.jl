@@ -26,7 +26,7 @@ using TightBindingLattice
     @test inv(p2) == p2
     @test inv(p3) == p1
 
-    @test isequal(p0, Permutation([1,2,3,4]))
+    @test p0 == Permutation([1,2,3,4])
     @test isless(p0, p1)
     @test isless(p1, p3)
 
