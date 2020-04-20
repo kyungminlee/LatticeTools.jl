@@ -53,6 +53,10 @@ function ⋉(rest::AbstractSymmetry, normal::AbstractSymmetry)
     return SymmorphicSymmetry(normal, rest)
 end
 
+import Base.==
+function (==)(lhs::SymmorphicSymmetry{S1, S2, E}, rhs::SymmorphicSymmetry{S1, S2, E}) where {S1, S2, E}
+    return lhs.normal == rhs.normal && lhs.rest == rhs.rest
+end
 
 """
     symmetry_product(sym::SymmorphicSymmetry{TranslationSymmetry,PointSymmetry,S}) where {S<:SpaceOperation{<:Integer}}
