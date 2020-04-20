@@ -49,9 +49,9 @@ using TightBindingLattice
                                   FiniteGroup(group_multiplication_table(lg_matrep))))
             let psic = IrrepComponent(psym, 1, 1)
                 if k in [[0,0], [2,2]]
-                    SymmorphicSpaceIrrepComponent(tsic, psic)
+                    SymmorphicIrrepComponent(tsic, psic)
                 else
-                    @test_throws ArgumentError SymmorphicSpaceIrrepComponent(tsic, psic)
+                    @test_throws ArgumentError SymmorphicIrrepComponent(tsic, psic)
                 end
             end
         end # for tsym_irrep
@@ -67,9 +67,9 @@ using TightBindingLattice
                                 FiniteGroup(group_multiplication_table(lg_matrep))))
             let psic = IrrepComponent(psym, 1, 1)
                 if k in [[0,0], [2,2]]
-                    SymmorphicSpaceIrrepComponent(tsic, psic)
+                    SymmorphicIrrepComponent(tsic, psic)
                 else
-                    @test_throws ArgumentError SymmorphicSpaceIrrepComponent(tsic, psic)
+                    @test_throws ArgumentError SymmorphicIrrepComponent(tsic, psic)
                 end
             end
         end
@@ -105,19 +105,19 @@ using TightBindingLattice
             end
         end
         ssics2 = []
-        for ssic in get_irrep_components(tsym, psym)
+        for ssic in get_irrep_components(tsym ⋊ psym)
             push!(ssics2, ssic)
         end
         @test length(ssics1) == length(ssics2)
         for ((tsic, psic), ssic) in zip(ssics1, ssics2)
             @test group_order(ssic) == group_order(tsic) * group_order(psic)
 
-            @test tsic.symmetry.orthocube == ssic.component1.symmetry.orthocube
-            @test psic.symmetry.hermann_mauguinn == ssic.component2.symmetry.hermann_mauguinn
-            @test tsic.irrep_index == ssic.component1.irrep_index
-            @test psic.irrep_index == ssic.component2.irrep_index
-            @test tsic.irrep_component == ssic.component1.irrep_component
-            @test psic.irrep_component == ssic.component2.irrep_component
+            @test tsic.symmetry.orthocube == ssic.normal.symmetry.orthocube
+            @test psic.symmetry.hermann_mauguinn == ssic.rest.symmetry.hermann_mauguinn
+            @test tsic.irrep_index == ssic.normal.irrep_index
+            @test psic.irrep_index == ssic.rest.irrep_index
+            @test tsic.irrep_component == ssic.normal.irrep_component
+            @test psic.irrep_component == ssic.rest.irrep_component
 
             @test sum(1 for x in collect(get_irrep_iterator(ssic))) == group_order(tsic) * group_order(psic)
         end

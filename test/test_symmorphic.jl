@@ -49,6 +49,27 @@ using TightBindingLattice
         @test group_multiplication_table(ssym) == mtab
     end
 
+    gen_inds = generator_indices(ssym)
+    gen_els = generator_elements(ssym)
+    @test length(gen_inds) == length(generator_indices(tsym)) + length(generator_indices(psym))
+    @test length(gen_els) == length(generator_indices(tsym)) + length(generator_indices(psym))
+
     # get_irrep_components(ssym)
 
+    @testset "embedding" begin
+        unitcell = make_unitcell([1.0 0.0; 0.0 1.0]; OrbitalType=String)
+        addorbital!(unitcell, "A", FractCoord([0, 0], [0.5, 0.0]))
+        addorbital!(unitcell, "B", FractCoord([0, 0], [0.0, 0.5]))
+        lattice = make_lattice(unitcell, [4 0; 0 4])
+        tsymbed = embed(lattice, tsym)
+        psymbed = embed(lattice, psym)
+
+        ssym = tsym ⋊ psym
+
+        ssymbed1 = embed(lattice, ssym)
+        ssymbed2 = tsymbed ⋊ psymbed
+
+        @test typeof(ssymbed1) == typeof(ssymbed2)
+        
+    end
 end
