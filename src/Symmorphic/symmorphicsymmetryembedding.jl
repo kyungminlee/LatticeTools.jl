@@ -59,6 +59,9 @@ function (==)(lhs::SymmorphicSymmetryEmbedding{S1, S2}, rhs::SymmorphicSymmetryE
 end
 
 
+group_order(sym::SymmorphicSymmetryEmbedding) = group_order(sym.normal) * group_order(sym.rest)
+
+
 """
     iscompatible(lattice::Lattice, ssym::SymmorphicSymmetry{S1, S2, E}) where {S1, S2, E}
 """
