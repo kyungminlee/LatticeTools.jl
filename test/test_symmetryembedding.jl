@@ -30,7 +30,11 @@ using LinearAlgebra
                 @test occursin("2", n) && occursin("0", n)
             end
 
+            @test length(tsymbed) == 4
+            @test length(collect(tsymbed)) == 4
             @test length(elements(tsymbed)) == 4
+            @test eltype(tsymbed) == SitePermutation
+            @test valtype(tsymbed) == SitePermutation
             @test elements(tsymbed)[1] == SitePermutation([1,2,3,4,5,6,7,8])
             @test elements(tsymbed)[2] == SitePermutation([3,4,1,2,7,8,5,6])
             @test element(tsymbed, 2) == SitePermutation([3,4,1,2,7,8,5,6])
@@ -56,10 +60,14 @@ using LinearAlgebra
                 @test occursin("4mm", n) || occursin("C<sub>4v</sub>", n)
             end
 
+            @test eltype(psymbed) == SitePermutation
+            @test valtype(psymbed) == SitePermutation
 
             idx_C4 = 3
             @test element_name(psym, idx_C4) == "4<sup>+</sup><sub>001</sub>"
+            @test length(psymbed) == 8
             @test length(elements(psymbed)) == 8
+            @test length(collect(psymbed)) == 8
             @test element(psymbed, idx_C4) == SitePermutation([2,3,6,7,4,1,8,5])
 
             @test iscompatible(tsymbed, psymbed)
@@ -79,7 +87,8 @@ using LinearAlgebra
             @test !iscompatible(tsymbed, 3, psymbed)
             @test iscompatible(tsymbed, 4, psymbed)
 
-            @test_throws ArgumentError embed(make_lattice(unitcell, [1 0; 0 1]), psym)
+            @test_throws ArgumentError embed(lattice, PointOperation([1 -1; 1 1])) # lattice not invariant under operation
+            @test_throws ArgumentError embed(make_lattice(unitcell, [1 0; 0 1]), psym) # lattice too small for faithful psym
 
             let lattice_large = make_lattice(unitcell, [4 0; 0 4])
                 tsymbed_large = translation_symmetry_embedding(lattice_large)
