@@ -1,9 +1,8 @@
 export AbstractSymmetryOperation
 
 export Permutation
-
 export generate_group
-
+export isidentity
 
 """
         Permutation(perms; max_order=2048)
@@ -158,4 +157,9 @@ function generate_group(generators::Permutation...)
         end
     end
     return group
+end
+
+
+function isidentity(perm::Permutation)
+    return perm.map == 1:length(perm.map)
 end

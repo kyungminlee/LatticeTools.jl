@@ -1,5 +1,7 @@
 export SitePermutation
 export embed
+export isidentity
+
 
 abstract type AbstractSymmetryOperationEmbedding <: AbstractSymmetryOperation{Int} end
 
@@ -87,3 +89,6 @@ end
 function embed(lattice::Lattice, sop::SpaceOperation{<:Integer, <:Integer})
     embed(lattice, PointOperation(sop.matrix)) * embed(lattice, TranslationOperation(sop.displacement))
 end
+
+
+isidentity(perm::SitePermutation) = isidentity(perm.permutation)
