@@ -43,7 +43,7 @@ import Base.valtype
 valtype(::SymmetryEmbedding) = SitePermutation
 
 elements(symbed::SymmetryEmbedding) = symbed.elements
-element(symbed::SymmetryEmbedding, g) = symbed.elements[g]
+element(symbed::SymmetryEmbedding, g...) = symbed.elements[g...]
 symmetry(symbed::SymmetryEmbedding) = symbed.symmetry
 generator_elements(symbed::SymmetryEmbedding) = element(symbed, generator_indices(symbed.symmetry))
 generator_indices(symbed::SymmetryEmbedding) = generator_indices(symbed.symmetry)

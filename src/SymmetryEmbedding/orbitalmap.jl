@@ -31,7 +31,7 @@ function findorbitalmap(unitcell::UnitCell,
     map = Tuple{Int, Vector{Int}}[]
     for (orbname, orbfc) in unitcell.orbitals
         j, Rj = findorbitalindex(unitcell, psym_op.matrix * orbfc)
-        j <= 0 && error("orbital map not found with $unitcell and $psym_op")
+        j <= 0 && throw(ArgumentError("orbital map not found with $unitcell and $psym_op"))
         push!(map, (j, Rj))
     end
     return map
