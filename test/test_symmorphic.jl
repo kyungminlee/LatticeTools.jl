@@ -70,6 +70,7 @@ using TightBindingLattice
         ssymbed2 = tsymbed ⋊ psymbed
         ssymbed3 = SymmorphicSymmetryEmbedding(tsymbed, psymbed)
         @test_throws ArgumentError SymmorphicSymmetryEmbedding(psymbed, tsymbed)
+        @test_throws ArgumentError SymmorphicSymmetryEmbedding(make_lattice(unitcell, [4 0; 0 3]), ssym)
         
         let lattice2 = make_lattice(unitcell, [4 0; 0 3])
             tsymbed2 = translation_symmetry_embedding(lattice2)
@@ -79,6 +80,8 @@ using TightBindingLattice
         @test typeof(ssymbed1) == typeof(ssymbed2)
         @test eltype(ssymbed1) == SitePermutation
         @test eltype(ssymbed2) == SitePermutation
+        @test valtype(ssymbed1) == SitePermutation
+        @test valtype(ssymbed2) == SitePermutation
 
         @test ssymbed1 == ssymbed2
         @test ssymbed1 == ssymbed3
@@ -91,6 +94,15 @@ using TightBindingLattice
         @test ssymbed2.normal.symmetry == tsymbed.symmetry
         @test ssymbed2.rest.symmetry == psymbed.symmetry
 
+        tsic1 = first(get_irrep_components(tsymbed))
+        psic1 = first(get_irrep_components(psymbed))
+        SymmorphicIrrepComponent(tsic1, psic1)
+
+        let lattice2 = make_lattice(unitcell, [4 0; 0 3])
+            tsymbed2 = translation_symmetry_embedding(lattice2)
+            tsic2 = first(get_irrep_components(tsymbed2))
+            @test_throws ArgumentError SymmorphicIrrepComponent(tsic2, psic1)
+        end
 
     end
 end
