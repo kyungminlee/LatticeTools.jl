@@ -245,12 +245,14 @@ using TightBindingLattice
 
             # associativity
             @test all((A * B) * C == A * (B * C)
-                        for A in [t10, t01, m10, c4p, c4m],
-                            B in [t10, t01, m10, c4p, c4m],
-                            C in [t10, t01, m10, c4p, c4m])
+                        for A in AbstractSymmetryOperation[t10, t01, m10, c4p, c4m],
+                            B in AbstractSymmetryOperation[t10, t01, m10, c4p, c4m],
+                            C in AbstractSymmetryOperation[t10, t01, m10, c4p, c4m])
+            
             # inverse
             @test all(inv(A * B) == inv(B) * inv(A)
-                          for A in [t10, t01, m10, c4p, c4m], B in [t10, t01, m10, c4p, c4m])
+                          for A in AbstractSymmetryOperation[t10, t01, m10, c4p, c4m],
+                              B in AbstractSymmetryOperation[t10, t01, m10, c4p, c4m])
         end
 
         @testset "comparison with other types" begin
