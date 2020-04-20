@@ -2,7 +2,6 @@ export IrrepData
 
 export AbstractSymmetryIrrepComponent
 export IrrepComponent
-export SymmorphicSpaceIrrepComponent
 
 export group_order
 export get_irrep_components
