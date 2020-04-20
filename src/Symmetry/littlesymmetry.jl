@@ -60,13 +60,10 @@ function little_group(tsym::TranslationSymmetry,
 end
 
 
-"""
-    little_symmetry(tsym, psym)
-"""
-function little_symmetry(tsym::TranslationSymmetry, psym::PointSymmetry)
-
+function little_symmetry(tsym::TranslationSymmetry,
+                         psym::PointSymmetry,
+                         lg_elements::AbstractVector{<:Integer})
     (lg_raw, lg_matrep_raw, lg_element_names_raw) = let
-        lg_elements = little_group_elements(tsym, psym)
         lg_raw = little_group(tsym, psym, lg_elements)
         lg_matrep_raw = psym.matrix_representations[lg_elements]
         lg_element_names_raw = psym.element_names[lg_elements]
@@ -91,6 +88,15 @@ function little_symmetry(tsym::TranslationSymmetry, psym::PointSymmetry)
                   psym2.hermann_mauguinn,
                   psym2.schoenflies)
 end
+
+
+"""
+    little_symmetry(tsym, psym)
+"""
+function little_symmetry(tsym::TranslationSymmetry, psym::PointSymmetry)
+    return little_symmetry(tsym, psym, little_group_elements(tsym, psym))
+end
+
 
 """
     little_symmetry(tsym, tsym_irrep_index, psym)
