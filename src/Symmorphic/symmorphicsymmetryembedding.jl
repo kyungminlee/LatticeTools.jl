@@ -44,6 +44,12 @@ eltype(::SymmorphicSymmetryEmbedding) = SitePermutation
 import Base.valtype
 valtype(::SymmorphicSymmetryEmbedding) = SitePermutation
 
+function (==)(lhs::SymmorphicSymmetryEmbedding{S1, S2}, rhs::SymmorphicSymmetryEmbedding{S1, S2}) where {S1, S2}
+    return lhs.lattice == rhs.lattice && lhs.normal == rhs.normal && lhs.rest == rhs.rest
+end
+
+
+
 export iscompatible
 function iscompatible(lattice::Lattice, ssym::SymmorphicSymmetry{S1, S2, E}) where {S1, S2, E}
     return iscompatible(lattice, ssym.normal) && iscompatible(lattice, ssym.rest)
