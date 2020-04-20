@@ -31,7 +31,7 @@ struct SymmetryEmbedding{SymmetryType}<:AbstractSymmetryEmbedding
         end
         elems = [embed(lattice, elem) for elem in elements(symmetry)]
         if !allunique(elems)
-            throw(ArgumentError("lattice too small for the symmetry operation (not faithful)"))
+            @warn "lattice $(lattice.orthocube.shape_matrix) too small for the symmetry $(symmetry_name(symmetry)) (not faithful)"
         end
         new{SymmetryType}(lattice, symmetry, elems)
     end
