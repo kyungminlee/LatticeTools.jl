@@ -94,14 +94,37 @@ end
 
 
 import Base.==
-
 ==(lhs::FiniteGroup, rhs::FiniteGroup) = (lhs.multiplication_table == rhs.multiplication_table)
 
+"""
+    element(group, idx)
 
-element(group::FiniteGroup, g) = Base.OneTo(group_order(group))[g]
+Return the element of index `idx`. For `FiniteGroup`, this is somewhat meaningless
+since the `idx`th element is `idx`. The sole purpose of this function is the bounds checking.
+"""
+element(group::FiniteGroup, idx) = Base.OneTo(group_order(group))[idx]
+
+"""
+    elements(group)
+
+Return the elements of the group.
+"""
 elements(group::FiniteGroup) = Base.OneTo(group_order(group))
 
-element_name(group::FiniteGroup, g) = string.(element(group, g))
+
+"""
+    element_name(group, idx)
+
+Return the name of element at index `idx`, which is just the string of `idx`.
+"""
+element_name(group::FiniteGroup, idx) = string.(element(group, idx))
+
+
+"""
+    element_names(group)
+
+Return the names of element.
+"""
 element_names(group::FiniteGroup) = string.(elements(group))
 
 
@@ -119,16 +142,37 @@ group_order(group::FiniteGroup) = size(group.multiplication_table, 1)
 Order of group element (i.e. period length)
 """
 group_order(group::FiniteGroup, g) = group.period_lengths[g]
+
+
+"""
+    period_length(group, g)
+
+Order of group element (i.e. period length)
+"""
 period_length(group::FiniteGroup, g) = group.period_lengths[g]
 
 
+"""
+    group_multiplication_table(group)
+
+Return multiplcation table of the group.
+"""
 group_multiplication_table(group::FiniteGroup) = group.multiplication_table
 
+
+"""
+    isabelian(group)
+
+Check if the group is abelian.
+"""
 isabelian(group::FiniteGroup) = group.multiplication_table == transpose(group.multiplication_table)
 
 
+"""
+    group_product(group)
 
-
+Return a function which computes the group product.
+"""
 function group_product(group::FiniteGroup) # a bit like currying
     function product(lhs::Integer, rhs::Integer)
         group.multiplication_table[lhs, rhs]
@@ -149,7 +193,9 @@ end
 """
     group_product(group, lhs, rhs)
 """
-group_product(group::FiniteGroup, lhs::Integer, rhs::Integer) = group.multiplication_table[lhs, rhs]
+function group_product(group::FiniteGroup, lhs::Integer, rhs::Integer)
+    return group.multiplication_table[lhs, rhs]
+end
 
 
 function group_product(group::FiniteGroup,
@@ -174,7 +220,7 @@ end
 """
     group_inverse(group)
 
-Get a function which gives inverse
+Get a function which gives inverse.
 """
 function group_inverse(group::FiniteGroup)
     inverse(idx::Integer) = group.inverses[idx]
@@ -182,10 +228,11 @@ function group_inverse(group::FiniteGroup)
     return inverse
 end
 
+
 """
     group_inverse(group, g)
 
-Get inverse of element g
+Get inverse of element/elements `g`.
 """
 group_inverse(group::FiniteGroup, g::Integer) = group.inverses[g]
 group_inverse(group::FiniteGroup, g::AbstractVector{<:Integer}) = group.inverses[g]
@@ -194,7 +241,7 @@ group_inverse(group::FiniteGroup, g::AbstractVector{<:Integer}) = group.inverses
 """
     conjugacy_class(group, i)
 
-Conjugacy class of the element i.
+Conjugacy class of the element `i`.
 """
 function conjugacy_class(group::FiniteGroup, i::Integer)
     return findfirst(c -> let j = searchsortedfirst(c, i)
@@ -248,7 +295,9 @@ end
 
 
 """
-    issubgroup(mtab, subset)
+    issubgroup(group, subset)
+
+Check whether the given subset is a subgroup of `group`.
 """
 function issubgroup(group::FiniteGroup, subset::AbstractSet{<:Integer})
     return all(group_product(group, x, y) in subset for x in subset for y in subset)
@@ -256,7 +305,9 @@ end
 
 
 """
-    minimal_generating_set
+    minimal_generating_set(group)
+
+Get minimally generating set of the finite group.
 """
 function minimal_generating_set(group::FiniteGroup)
     ord_group::Int = group_order(group)
@@ -285,63 +336,6 @@ function minimal_generating_set(group::FiniteGroup)
     end
     return generators
 end
-
-
-# function group_isomorphism_naive(group1::FiniteGroup, group2::FiniteGroup)
-#     group_order(group1) != group_order(group2) && return nothing
-#     sort(group1.period_lengths) != sort(group2.period_lengths) && return nothing
-#
-#     ord_group = group_order(group1)
-#     element_groups1 = Dict{Tuple{Int, Int}, Vector{Int}}() # group by period lengths and conjugacy class size
-#     element_groups2 = Dict{Tuple{Int, Int}, Vector{Int}}() # group by period lengths
-#
-#     for i in 1:group_order(group1)
-#         pl = group1.period_lengths[i]
-#         cc = length(group1.conjugacy_classes[conjugacy_class(group1, i)])
-#         if !haskey(element_groups1, (pl, cc))
-#             element_groups1[(pl, cc)] = Int[]
-#         end
-#         push!(element_groups1[(pl, cc)], i)
-#     end
-#
-#     for i in 1:group_order(group2)
-#         pl = group2.period_lengths[i]
-#         cc = length(group2.conjugacy_classes[conjugacy_class(group2, i)])
-#         if !haskey(element_groups2, (pl, cc))
-#             element_groups2[(pl, cc)] = Int[]
-#         end
-#         push!(element_groups2[(pl, cc)], i)
-#     end
-#
-#     #q = sort([(pl, i) for (pl, els) in element_groups1 for i in els], rev=true)
-#     plccs = sort(collect(keys(element_groups1)))
-#     mapping = zeros(Int, ord_group)
-#     for perm_set in Iterators.product([
-#             permutations(1:length(element_groups1[plcc]), length(element_groups1[plcc]))
-#             for plcc in plccs
-#         ]...)
-#         #@assert length(pls) == length(perm_set)
-#         for (ipl, (plcc, perm)) in enumerate(zip(plccs, perm_set))
-#             elg1, elg2 = element_groups1[plcc], element_groups2[plcc]
-#             for j in 1:length(perm)
-#                 mapping[ element_groups1[plcc][j] ] = element_groups2[plcc][ perm[j] ]
-#             end
-#         end
-#         #mtab1p = zeros(Int, (ord_group, ord_group))
-#         isiso = true
-#         for i in 1:ord_group, j in 1:ord_group
-#             #mtab1p[mapping[i], mapping[j]] = mapping[group1.multiplication_table[i, j]]
-#             if group2.multiplication_table[mapping[i], mapping[j]] != mapping[group1.multiplication_table[i, j]]
-#                 isiso = false
-#                 break
-#             end
-#         end
-#         isiso && return mapping
-#         #!isiso && continue
-#         #mtab1p == group2.multiplication_table && return mapping
-#     end
-#     return nothing
-# end
 
 
 """
@@ -428,6 +422,11 @@ function group_multiplication_table(elements::AbstractVector{ElementType},
 end
 
 
+"""
+    ishomomorphic(group, representation; product=(*), equal=(==))
+
+Check whether `representation` is homomorphic to `group` under `product` and `equal`, order preserved.
+"""
 function ishomomorphic(group::FiniteGroup,
                        representation::AbstractVector;
                        product::Function=(*),
@@ -444,3 +443,60 @@ function ishomomorphic(group::FiniteGroup,
     end
     return true
 end
+
+
+# function group_isomorphism_naive(group1::FiniteGroup, group2::FiniteGroup)
+#     group_order(group1) != group_order(group2) && return nothing
+#     sort(group1.period_lengths) != sort(group2.period_lengths) && return nothing
+#
+#     ord_group = group_order(group1)
+#     element_groups1 = Dict{Tuple{Int, Int}, Vector{Int}}() # group by period lengths and conjugacy class size
+#     element_groups2 = Dict{Tuple{Int, Int}, Vector{Int}}() # group by period lengths
+#
+#     for i in 1:group_order(group1)
+#         pl = group1.period_lengths[i]
+#         cc = length(group1.conjugacy_classes[conjugacy_class(group1, i)])
+#         if !haskey(element_groups1, (pl, cc))
+#             element_groups1[(pl, cc)] = Int[]
+#         end
+#         push!(element_groups1[(pl, cc)], i)
+#     end
+#
+#     for i in 1:group_order(group2)
+#         pl = group2.period_lengths[i]
+#         cc = length(group2.conjugacy_classes[conjugacy_class(group2, i)])
+#         if !haskey(element_groups2, (pl, cc))
+#             element_groups2[(pl, cc)] = Int[]
+#         end
+#         push!(element_groups2[(pl, cc)], i)
+#     end
+#
+#     #q = sort([(pl, i) for (pl, els) in element_groups1 for i in els], rev=true)
+#     plccs = sort(collect(keys(element_groups1)))
+#     mapping = zeros(Int, ord_group)
+#     for perm_set in Iterators.product([
+#             permutations(1:length(element_groups1[plcc]), length(element_groups1[plcc]))
+#             for plcc in plccs
+#         ]...)
+#         #@assert length(pls) == length(perm_set)
+#         for (ipl, (plcc, perm)) in enumerate(zip(plccs, perm_set))
+#             elg1, elg2 = element_groups1[plcc], element_groups2[plcc]
+#             for j in 1:length(perm)
+#                 mapping[ element_groups1[plcc][j] ] = element_groups2[plcc][ perm[j] ]
+#             end
+#         end
+#         #mtab1p = zeros(Int, (ord_group, ord_group))
+#         isiso = true
+#         for i in 1:ord_group, j in 1:ord_group
+#             #mtab1p[mapping[i], mapping[j]] = mapping[group1.multiplication_table[i, j]]
+#             if group2.multiplication_table[mapping[i], mapping[j]] != mapping[group1.multiplication_table[i, j]]
+#                 isiso = false
+#                 break
+#             end
+#         end
+#         isiso && return mapping
+#         #!isiso && continue
+#         #mtab1p == group2.multiplication_table && return mapping
+#     end
+#     return nothing
+# end
