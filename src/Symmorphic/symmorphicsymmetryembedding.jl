@@ -18,12 +18,24 @@ struct SymmorphicSymmetryEmbedding{S1<:AbstractSymmetry,
                            embed(lattice, symmetry.normal),
                            embed(lattice, symmetry.rest))
     end
+
+    function SymmorphicSymmetryEmbedding(normal::SymmetryEmbedding{S1}, rest::SymmetryEmbedding{S2}) where {S1, S2}
+        lattice = normal.lattice
+        if rest.lattice != lattice
+            throw(ArgumentError("two symmetry embeddings should have the same lattice"))
+        end
+        symmetry = SymmorphicSymmetry(normal.symmetry, rest.symmetry)
+        return SymmorphicSymmetryEmbedding(lattice, symmetry)
+    end
 end
 
 embed(lattice::Lattice, ssym::SymmorphicSymmetry) = SymmorphicSymmetryEmbedding(lattice, ssym)
 
 function ⋊(normal::SymmetryEmbedding{S1}, rest::SymmetryEmbedding{S2}) where {S1, S2}
     lattice = normal.lattice
+    if rest.lattice != lattice
+        throw(ArgumentError("two symmetry embeddings should have the same lattice"))
+    end
     return SymmorphicSymmetryEmbedding(lattice, SymmorphicSymmetry(normal.symmetry, rest.symmetry))
 end
 
