@@ -145,6 +145,40 @@ function little_symmetry(tsymbed::SymmetryEmbedding{TranslationSymmetry},
 end
 
 
+
+"""
+    little_symmetry_strong(tsymbed, psymbed)
+"""
+function little_symmetry_strong(tsymbed::SymmetryEmbedding{TranslationSymmetry},
+                                psymbed::SymmetryEmbedding{PointSymmetry})
+    if !iscompatible(tsymbed, psymbed)
+        throw(ArgumentError("translation and point symmetry-embeddings not compatible"))
+    end
+    psym_little = little_symmetry(symmetry(tsymbed), symmetry(psymbed))
+
+    little_element_indices = Int[]
+    little_element_embedding = Set{SitePermutation}()
+
+    for (i_elem, elem) in enumerate(elements(psym_little))
+        embed_elem = embed(tsymbed.lattice, elem)
+        if i_elem == 1
+            @assert iscompatible(symmetry(tsymbed), elem)
+            push!(little_element_indices, i_elem)
+            push!(little_element_embedding, embed_elem)
+        elseif (iscompatible(symmetry(tsymbed), elem) && 
+                !isidentity(embed_elem) &&
+                embed_elem ∉ little_element_embedding)
+            push!(little_element_indices, i_elem)
+            push!(little_element_embedding, embed_elem)
+        end
+    end
+    psym_little2 = little_symmetry(symmetry(tsymbed), symmetry(psymbed))
+    return SymmetryEmbedding(psymbed.lattice, psym_little2)
+end
+
+
+
+
 """
     little_symmetry(tsymbed, tsym_irrep_index, psymbed)
 """
