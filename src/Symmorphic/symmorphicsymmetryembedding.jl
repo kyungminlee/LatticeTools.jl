@@ -5,6 +5,8 @@ export get_irrep_components
 export iscompatible
 export ⋉, ⋊
 
+export fractional_momentum
+
 struct SymmorphicSymmetryEmbedding{S1<:AbstractSymmetry,
                                    S2<:AbstractSymmetry}<:AbstractSymmetryEmbedding
     lattice::Lattice
@@ -60,6 +62,11 @@ end
 
 
 group_order(sym::SymmorphicSymmetryEmbedding) = group_order(sym.normal) * group_order(sym.rest)
+
+
+function fractional_momentum(sym::SymmorphicSymmetryEmbedding{<:TranslationSymmetry, S2}, args...) where S2
+    return fractional_momentum(sym.normal, args...)
+end
 
 
 """

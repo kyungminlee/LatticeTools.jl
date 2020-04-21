@@ -7,6 +7,7 @@ export embed
 export element, elements
 export symmetry
 export generator_elements, generator_indices
+export fractional_momentum
 
 abstract type AbstractSymmetryEmbedding end
 
@@ -96,6 +97,12 @@ for f in [:group_order,
         ($f)(symbed::SymmetryEmbedding, args...) = ($f)(symbed.symmetry, args...)
     end)
 end
+
+
+function fractional_momentum(symbed::SymmetryEmbedding{<:TranslationSymmetry}, args...)
+    return fractional_momentum(symmetry(symbed), args...)
+end
+
 
 
 """
