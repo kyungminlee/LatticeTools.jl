@@ -17,7 +17,7 @@ export translation_symmetry_embedding
 
 
 struct TranslationSymmetry <: AbstractSymmetry{TranslationOperation{Int}}
-    # hypercube::HypercubicLattice
+
     orthocube::OrthoCube
     
     elements::Vector{TranslationOperation{Int}}
@@ -63,11 +63,6 @@ struct TranslationSymmetry <: AbstractSymmetry{TranslationOperation{Int}}
             throw(ArgumentError("generator translation is not unimodular"))
         end
         
-        # group = FiniteGroup(translation_group_multiplication_table(hypercube))
-        # ord_group = group_order(group)
-
-        
-
         # BEGIN Orthogonal
         coordinates = generate_coordinates(orthocube, generator_translations)
         coordinate_indices = Dict(r => i for (i, r) in enumerate(coordinates))
