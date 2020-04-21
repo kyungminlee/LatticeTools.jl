@@ -170,7 +170,8 @@ function little_symmetry(tsymbed::SymmetryEmbedding{TranslationSymmetry},
     return SymmetryEmbedding(psymbed.lattice, psym_little)
 end
 
-export little_symmetry_strong
+
+# export little_symmetry_strong
 
 # WIP
 # """
