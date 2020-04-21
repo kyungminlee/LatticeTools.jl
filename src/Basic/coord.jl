@@ -22,12 +22,12 @@ Fractional coordinates.
 * `fraction ::Vector{Float64}`: [0,1) part of fractional coordinates
 """
 struct FractCoord  # TODO: Type parameter for integer and float
-    whole ::Vector{Int}
-    fraction ::Vector{Float64}
+    whole::Vector{Int}
+    fraction::Vector{Float64}
 
-    function FractCoord(w ::AbstractVector{<:Integer},
-                        f ::AbstractVector{<:AbstractFloat};
-                        tol ::Real=Base.rtoldefault(Float64))
+    function FractCoord(w::AbstractVector{<:Integer},
+                        f::AbstractVector{<:Real};
+                        tol::Real=Base.rtoldefault(Float64))
         length(w) != length(f) && throw(ArgumentError("w and f need to be of same the length"))
         tol < 0 && throw(ArgumentError("tol must be non-negative"))
         !all(x -> 0 <= x < 1+tol, f) && throw(ArgumentError("f must be a list of floating points in [0, 1) (got $f)"))
@@ -45,14 +45,14 @@ struct FractCoord  # TODO: Type parameter for integer and float
         return new(neww, newf)
     end
 
-    function FractCoord(coord ::AbstractVector{<:AbstractFloat};
-                        tol ::Real=sqrt(eps(Float64)))
+    function FractCoord(coord::AbstractVector{<:Real};
+                        tol::Real=Base.rtoldefault(Float64))
         w = Int[fld(x,1) for x in coord]
         f = Float64[mod(x,1) for x in coord]
         return FractCoord(w, f; tol=tol)
     end
 
-    function FractCoord(ndim ::Integer)
+    function FractCoord(ndim::Integer)
         ndim <= 0 && throw(ArgumentError("ndim should be positive"))
         w = zeros(Int, ndim)
         f = zeros(Float64, ndim)
@@ -69,32 +69,32 @@ Dimension of the fractional coordinates
 # Arguments
 * `fc ::FractCoord`: Fractional coordinates.
 """
-dimension(fc ::FractCoord) = length(fc.whole)
+dimension(fc::FractCoord) = length(fc.whole)
 
 import Base: +, -
-function +(fc ::FractCoord) ::FractCoord
+function (+)(fc::FractCoord)::FractCoord
     return fc
 end
 
-function -(fc ::FractCoord) ::FractCoord
+function (-)(fc::FractCoord)::FractCoord
     return FractCoord(-(fc.whole + fc.fraction))
 end
 
-function +(fractcoord ::FractCoord, R ::AbstractVector{<:Integer}) ::FractCoord
+function (+)(fractcoord::FractCoord, R::AbstractVector{<:Integer})::FractCoord
     return FractCoord(fractcoord.whole + R, fractcoord.fraction)
 end
 
-function -(fractcoord ::FractCoord, R ::AbstractVector{<:Integer}) ::FractCoord
+function (-)(fractcoord::FractCoord, R::AbstractVector{<:Integer})::FractCoord
     return FractCoord(fractcoord.whole - R, fractcoord.fraction)
 end
 
-function +(fc1 ::FractCoord, fc2 ::FractCoord) ::FractCoord
+function (+)(fc1::FractCoord, fc2::FractCoord)::FractCoord
     R = Int[fld(x+y,1) for (x,y) in zip(fc1.fraction, fc2.fraction)]
     r = Float64[mod(x+y,1) for (x,y) in zip(fc1.fraction, fc2.fraction)]
     return FractCoord(fc1.whole + fc2.whole + R, r)
 end
 
-function -(fc1 ::FractCoord, fc2 ::FractCoord) ::FractCoord
+function (-)(fc1::FractCoord, fc2::FractCoord) ::FractCoord
     R = Int[fld(x-y,1) for (x,y) in zip(fc1.fraction, fc2.fraction)]
     r = Float64[mod(x-y,1) for (x,y) in zip(fc1.fraction, fc2.fraction)]
     return FractCoord(fc1.whole - fc2.whole + R, r)
@@ -102,22 +102,22 @@ end
 
 
 import Base.isapprox
-function isapprox(fc1 ::FractCoord, fc2 ::FractCoord;
-                  atol::Real=sqrt(eps(Float64)),
-                  rtol::Real=sqrt(eps(Float64))) ::Bool
+function isapprox(fc1::FractCoord, fc2::FractCoord;
+                  atol::Real=Base.rtoldefault(Float64),
+                  rtol::Real=Base.rtoldefault(Float64))::Bool
     return (fc1.whole == fc2.whole) &&
            isapprox(fc1.fraction, fc2.fraction; atol=atol, rtol=rtol)
 end
 
 import Base.*
-function (*)(mat::AbstractMatrix{<:Number}, fc::FractCoord)
+function (*)(mat::AbstractMatrix{<:Number}, fc::FractCoord)::FractCoord
     return FractCoord(mat * (fc.whole + fc.fraction))
 end
 
 
 
 import Base.==
-function ==(fc1 ::FractCoord, fc2 ::FractCoord) ::Bool
+function (==)(fc1::FractCoord, fc2::FractCoord)::Bool
     return (fc1.whole == fc2.whole) && (fc1.fraction == fc2.fraction)
 end
 
@@ -135,8 +135,8 @@ end
 * `latticevectors ::AbstractArray{<:AbstractFloat, 2}`: square matrix whose columns are lattice vectors.
 * `fc ::FractCoord`: fractional coordinates
 """
-function fract2carte(latticevectors ::AbstractArray{<:AbstractFloat, 2},
-                     fc ::FractCoord) ::CarteCoord
+function fract2carte(latticevectors::AbstractMatrix{<:Real},
+                     fc::FractCoord)::CarteCoord
     d1, d2 = size(latticevectors)
     d3 = dimension(fc)
     if d1 != d2
@@ -158,9 +158,9 @@ end
 * `cc ::CarteCoord`: cartesian coordinates
 * `tol ::Real=sqrt(eps(Float64))`: tolerance
 """
-function carte2fract(latticevectors ::AbstractArray{<:AbstractFloat, 2},
-                     cc ::CarteCoord;
-                     tol ::Real=sqrt(eps(Float64))) ::FractCoord
+function carte2fract(latticevectors::AbstractMatrix{<:Real},
+                     cc::CarteCoord;
+                     tol::Real=Base.rtoldefault(Float64))::FractCoord
     fc = inv(latticevectors) * cc
     w = Int[fld(x, 1) for x in fc]
     f = Float64[mod(x, 1) for x in fc]

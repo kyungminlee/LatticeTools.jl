@@ -7,6 +7,7 @@ export embed
 export element, elements
 export symmetry
 export generator_elements, generator_indices
+export fractional_momentum
 
 abstract type AbstractSymmetryEmbedding end
 
@@ -98,6 +99,12 @@ for f in [:group_order,
 end
 
 
+function fractional_momentum(symbed::SymmetryEmbedding{<:TranslationSymmetry}, args...)
+    return fractional_momentum(symmetry(symbed), args...)
+end
+
+
+
 """
     iscompatible(tsymbed, psymbed)
 
@@ -163,7 +170,8 @@ function little_symmetry(tsymbed::SymmetryEmbedding{TranslationSymmetry},
     return SymmetryEmbedding(psymbed.lattice, psym_little)
 end
 
-export little_symmetry_strong
+
+# export little_symmetry_strong
 
 # WIP
 # """

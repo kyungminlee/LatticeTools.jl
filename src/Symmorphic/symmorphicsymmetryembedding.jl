@@ -5,6 +5,8 @@ export get_irrep_components
 export iscompatible
 export ⋉, ⋊
 
+export fractional_momentum
+
 struct SymmorphicSymmetryEmbedding{S1<:AbstractSymmetry,
                                    S2<:AbstractSymmetry}<:AbstractSymmetryEmbedding
     lattice::Lattice
@@ -62,16 +64,14 @@ end
 group_order(sym::SymmorphicSymmetryEmbedding) = group_order(sym.normal) * group_order(sym.rest)
 
 
+function fractional_momentum(sym::SymmorphicSymmetryEmbedding{<:TranslationSymmetry, S2}, args...) where S2
+    return fractional_momentum(sym.normal, args...)
+end
+
+
 """
     iscompatible(lattice::Lattice, ssym::SymmorphicSymmetry{S1, S2, E}) where {S1, S2, E}
 """
 function iscompatible(lattice::Lattice, ssym::SymmorphicSymmetry{S1, S2, E}) where {S1, S2, E}
     return iscompatible(lattice, ssym.normal) && iscompatible(lattice, ssym.rest)
 end
-
-# function get_irrep_components(sym::SymmorphicSymmetryEmbedding{S1, S2}) where {S1, S2}
-#     (SymmorphicIrrepComponent(normal_sic.symmetry, normal_sic.irrep_index, normal_sic.irrep_component,
-#                                    rest_sic.symmetry, rest_sic.irrep_index, rest_sic.irrep_component)
-#         for normal_sic in get_irrep_components(sym.normal)
-#         for rest_sic in get_irrep_components(little_symmetry(normal_sic, sym.rest)))
-# end

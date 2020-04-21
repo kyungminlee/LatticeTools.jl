@@ -10,6 +10,7 @@ export symmetry_product
 export group, group_order, group_multiplication_table,
        element, elements, element_name, element_names
 
+export fractional_momentum
 export generator_indices, generator_elements
 
 
@@ -91,6 +92,11 @@ element_names(sym::SymmorphicSymmetry) = sym.element_names
 # irrep(sym::SymmorphicSymmetry, idx) = sym.irreps[idx]
 # num_irreps(sym::SymmorphicSymmetry) = length(sym.irreps)
 # irrep_dimension(sym::SymmorphicSymmetry, idx::Integer) = 1 # size(first(sym.irreps[idx]), 1)
+
+function fractional_momentum(sym::SymmorphicSymmetry{<:TranslationSymmetry, S2, E}, args...) where {S2, E}
+    return fractional_momentum(sym.normal, args...)
+end
+
 
 
 """

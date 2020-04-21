@@ -8,6 +8,7 @@ export group, group_order, group_multiplication_table,
        generator_elements, generator_indices,
        symmetry_product
 
+export fractional_momentum
 export isbragg
 
 export symmetry_name
@@ -16,7 +17,7 @@ export translation_symmetry_embedding
 
 
 struct TranslationSymmetry <: AbstractSymmetry{TranslationOperation{Int}}
-    # hypercube::HypercubicLattice
+
     orthocube::OrthoCube
     
     elements::Vector{TranslationOperation{Int}}
@@ -62,11 +63,6 @@ struct TranslationSymmetry <: AbstractSymmetry{TranslationOperation{Int}}
             throw(ArgumentError("generator translation is not unimodular"))
         end
         
-        # group = FiniteGroup(translation_group_multiplication_table(hypercube))
-        # ord_group = group_order(group)
-
-        
-
         # BEGIN Orthogonal
         coordinates = generate_coordinates(orthocube, generator_translations)
         coordinate_indices = Dict(r => i for (i, r) in enumerate(coordinates))
@@ -219,6 +215,10 @@ function symmetry_name(sym::TranslationSymmetry)
     return "TranslationSymmetry[($n11,$n21)x($n12,$n22)]"
 end
 
+
+function fractional_momentum(sym::TranslationSymmetry, g...)
+    return sym.fractional_momenta[g...]
+end
 
 
 raw"""
