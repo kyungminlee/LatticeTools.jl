@@ -22,7 +22,7 @@ function __init__()
         conjugacy_classes = data["ConjugacyClasses"]
 
         if group.conjugacy_classes != conjugacy_classes
-            error("Conjugacy class not canonical")
+            error("Conjugacy class not canonical") # COV_EXCL_LINE
         end
 
         character_table = cleanup_number(transpose(hcat(parse_expr(data["CharacterTable"])...)), tol)
