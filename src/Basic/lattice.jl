@@ -12,7 +12,8 @@ end
 
 import Base.==
 function ==(lhs::Lattice{O}, rhs::Lattice{O}) where O
-    return lhs.unitcell == rhs.unitcell && lhs.orthocube == rhs.orthocube
+    return lhs.unitcell == rhs.unitcell && lhs.orthocube == rhs.orthocube &&
+            lhs.bravais_coordinates == rhs.bravais_coordinates
 end
 
 
