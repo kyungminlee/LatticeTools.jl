@@ -79,30 +79,6 @@ function get_irrep_iterator(sic::IrrepComponent)
 end
 
 
-# struct SymmorphicSpaceIrrepComponent{S1<:SymmetryOrEmbedding, S2<:SymmetryOrEmbedding} <:AbstractSymmetryIrrepComponent
-
-#     component1::IrrepComponent{S1} # e.g. Translation
-#     component2::IrrepComponent{S2} # e.g. Point
-
-#     function SymmorphicSpaceIrrepComponent(
-#                 sic1::IrrepComponent{S1},
-#                 sic2::IrrepComponent{S2}) where {
-#             S1<:Union{TranslationSymmetry, SymmetryEmbedding{TranslationSymmetry}},
-#             S2<:Union{PointSymmetry, SymmetryEmbedding{PointSymmetry}}}
-#         sym1 = sic1.symmetry
-#         sym_irrep_index1 = sic1.irrep_index
-#         sym2 = sic2.symmetry
-#         if !iscompatible(sym1, sym_irrep_index1, sym2)
-#             throw(ArgumentError("symmetry $(symmetry_name(sym2)) is not compatible with "*
-#                                 "symmetry $(symmetry_name(sym1)) at irrep $sym_irrep_index1"))
-#         end
-#         return new{S1, S2}(sic1, sic2)
-#     end
-# end
-
-
-# group_order(sic::SymmorphicSpaceIrrepComponent) = group_order(sic.component1) * group_order(sic.component2)
-
 
 """
     little_group_elements(tsic, psym)
@@ -175,6 +151,31 @@ function iscompatible(tsic::IrrepComponent{SymmetryEmbedding{TranslationSymmetry
     return iscompatible(tsic.symmetry, psymbed) &&
            iscompatible(symmetry(tsic.symmetry), tsic.irrep_index, symmetry(psymbed))
 end
+
+
+# struct SymmorphicSpaceIrrepComponent{S1<:SymmetryOrEmbedding, S2<:SymmetryOrEmbedding} <:AbstractSymmetryIrrepComponent
+
+#     component1::IrrepComponent{S1} # e.g. Translation
+#     component2::IrrepComponent{S2} # e.g. Point
+
+#     function SymmorphicSpaceIrrepComponent(
+#                 sic1::IrrepComponent{S1},
+#                 sic2::IrrepComponent{S2}) where {
+#             S1<:Union{TranslationSymmetry, SymmetryEmbedding{TranslationSymmetry}},
+#             S2<:Union{PointSymmetry, SymmetryEmbedding{PointSymmetry}}}
+#         sym1 = sic1.symmetry
+#         sym_irrep_index1 = sic1.irrep_index
+#         sym2 = sic2.symmetry
+#         if !iscompatible(sym1, sym_irrep_index1, sym2)
+#             throw(ArgumentError("symmetry $(symmetry_name(sym2)) is not compatible with "*
+#                                 "symmetry $(symmetry_name(sym1)) at irrep $sym_irrep_index1"))
+#         end
+#         return new{S1, S2}(sic1, sic2)
+#     end
+# end
+
+
+# group_order(sic::SymmorphicSpaceIrrepComponent) = group_order(sic.component1) * group_order(sic.component2)
 
 
 # function get_irrep_components(tsym::S1,
