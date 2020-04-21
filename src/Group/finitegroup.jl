@@ -39,7 +39,7 @@ struct FiniteGroup <: AbstractGroup
         end
         # check associativity
         for i in 1:n_elem, j in 1:n_elem, k in 1:n_elem
-            mtab[mtab[i, j], k] != mtab[i, mtab[j, k]] && throw(Argument("Multiplication not associative"))
+            mtab[mtab[i, j], k] != mtab[i, mtab[j, k]] && throw(ArgumentError("Multiplication not associative"))
         end
         # compute cycles
         period_lengths = zeros(Int, n_elem)
