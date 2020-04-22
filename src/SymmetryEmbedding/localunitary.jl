@@ -1,4 +1,4 @@
-
+# COV_EXCL_START
 struct LocalUnitary{S<:Number}<:AbstractSymmetryOperationEmbedding
     operations::Dict{Int, Matrix{S}}
     function LocalUnitary(ops::AbstractDict{<:Integer, <:AbstractMatrix{S}}) where {S<:Number}
@@ -11,3 +11,4 @@ struct LocalUnitary{S<:Number}<:AbstractSymmetryOperationEmbedding
         LocalUnitary(Dict(pairs...))
     end
 end
+# COV_EXCL_STOP
