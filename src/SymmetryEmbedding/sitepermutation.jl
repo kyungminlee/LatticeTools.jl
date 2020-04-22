@@ -16,13 +16,13 @@ end
 
 
 import Base.==
-==(lhs::SitePermutation, rhs::SitePermutation) = lhs.permutation == rhs.permutation
+(==)(lhs::SitePermutation, rhs::SitePermutation) = lhs.permutation == rhs.permutation
 
 import Base.*
-*(lhs::SitePermutation, rhs::SitePermutation) = SitePermutation(lhs.permutation * rhs.permutation)
+(*)(lhs::SitePermutation, rhs::SitePermutation) = SitePermutation(lhs.permutation * rhs.permutation)
 
 import Base.^
-^(lhs::SitePermutation, rhs::Integer) = SitePermutation(lhs.permutation^rhs)
+(^)(lhs::SitePermutation, rhs::Integer) = SitePermutation(lhs.permutation^rhs)
 
 # import Base.isless
 # isless(lhs::SitePermutation, rhs::SitePermutation) = isless(lhs.permutation, rhs.permutation)
@@ -36,6 +36,7 @@ end
 import Base.inv
 inv(sp::SitePermutation) = SitePermutation(inv(sp.permutation))
 
+(p::SitePermutation)(i::Integer) = p.permutation(i)
 
 
 """

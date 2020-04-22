@@ -48,9 +48,9 @@ struct SymmetryEmbedding{SymmetryType}<:AbstractSymmetryEmbedding
                     end
                 end
                 @warn "Lattice $(lattice.orthocube.shape_matrix) is too small for $(symmetry_name(symmetry)) (embedding not faithful).\n"*
-                      "Reduced point group isomorphic to: $(join(isomorphic_group_names, ", "))"
+                      "Reduced point group isomorphic to: $(join(isomorphic_group_names, ", "))" # COV_EXCL_LINE
             else
-                @warn "Lattice $(lattice.orthocube.shape_matrix) is too small for $(symmetry_name(symmetry)) (embedding not faithful)."
+                @warn "Lattice $(lattice.orthocube.shape_matrix) is too small for $(symmetry_name(symmetry)) (embedding not faithful)." # COV_EXCL_LINE
             end
         end
         new{SymmetryType}(lattice, symmetry, elems)

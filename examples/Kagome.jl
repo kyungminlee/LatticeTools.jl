@@ -28,8 +28,10 @@ function make_kagome_lattice(size_matrix ::AbstractMatrix{<:Integer}; compute_sy
     lattice = make_lattice(unitcell, size_matrix)
     hypercube = lattice.hypercube
     supercell = lattice.supercell
-    tsym = TranslationSymmetry(lattice)
+    tsymbed = translation_symmetry_embedding(lattice)
     psym = project(PointSymmetryDatabase.get(25), [1 0 0; 0 1 0])
+    psymbed = embed(lattice, psym)
+    ssymbed = tsymbed ⋊ psymbed
 
     nnbonds = []
     nnnbonds = []
@@ -84,8 +86,7 @@ function make_kagome_lattice(size_matrix ::AbstractMatrix{<:Integer}; compute_sy
 
     return (unitcell=unitcell,
             lattice=lattice,
-            translation_symmetry=tsym,
-            point_symmetry=psym,
+            space_symmetry_embedding=ssymbed,
             nearest_neighbor_bonds=nnbonds,
             next_nearest_neighbor_bonds=nnnbonds,
             nearest_neighbor_triangles=nn_triangles)

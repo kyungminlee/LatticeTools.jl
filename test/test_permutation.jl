@@ -31,6 +31,9 @@ using TightBindingLattice
     @test isless(p0, p1)
     @test isless(p1, p3)
 
+    @test p0(1) == 1 && p0(2) == 2 && p0(3) == 3 && p0(4) == 4
+    @test p1(1) == 2 && p1(2) == 3 && p1(3) == 4 && p1(4) == 1
+
     @test_throws ArgumentError Permutation([1,2,3,4]) * Permutation([1,2,3,4,5])
     @test hash(Permutation(Int[1,2,3,4])) != hash(Int[1,2,3,4])
 

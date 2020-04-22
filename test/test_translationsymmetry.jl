@@ -231,7 +231,7 @@ using YAML
         @test  isbragg([3,3], [0,0], [0,0])
         @test  isbragg([3,3], [0,0], [1,0])
         @test  isbragg([3,3], [0,0], [2,0])
-        
+
         @test  isbragg(tsym, 1, TranslationOperation([0,0]))
         @test  isbragg(tsym, 1, TranslationOperation([1,0]))
         @test  isbragg(tsym, 1, TranslationOperation([2,0]))
@@ -271,7 +271,7 @@ using YAML
         @test  isbragg(tsym, 11, TranslationOperation([2,0]))
         @test !isbragg(tsym, 10, TranslationOperation([2,0]))
         @test  isbragg(tsym, 11, TranslationOperation.([[0,0], [2,0], [0,2], [2,2]]))
-        
+
         tsym = TranslationSymmetry([6 2; -2 6])
 
         # TODO more tests for isbragg
@@ -306,7 +306,7 @@ end # @testset "TranslationSymmetry" begin
 #   @test g.fractional_momenta == [[0//3, 0//2], [1//3, 0//2], [2//3, 0//2],
 #                                  [0//3, 1//2], [1//3, 1//2], [2//3, 1//2]]
 #   χ = [cis(-2π * (k ⋅ t)) for k in g.fractional_momenta, t in g.translations]
-#   @test isapprox(g.character_table, χ; atol=sqrt(eps(Float64)))
+#   @test isapprox(g.character_table, χ; atol=Base.rtoldefault(Float64))
 #
 #   @test is_compatible([0//1, 0//1], [0,0])
 #   @test !is_compatible([0//1, 1//2], [0,1])

@@ -121,4 +121,27 @@ using TightBindingLattice
                       for ssic in get_irrep_components(ssymbed1))
         
     end
+    @testset "fractional_momentum" begin
+        unitcell = make_unitcell([1.0 0.0; 0.0 1.0]; OrbitalType=String)
+        addorbital!(unitcell, "A", FractCoord([0, 0], [0.5, 0.0]))
+        addorbital!(unitcell, "B", FractCoord([0, 0], [0.0, 0.5]))
+        lattice = make_lattice(unitcell, [4 0; 0 4])
+        tsymbed = embed(lattice, tsym)
+        psymbed = embed(lattice, psym)
+        ssymbed = tsymbed ⋊ psymbed
+
+        tsym = symmetry(tsymbed)
+        psym = symmetry(psymbed)
+        ssym = tsym ⋊ psym
+
+        kf = tsym.fractional_momenta
+        @test all(  let tidx = tsic.irrep_index
+                        kf[tidx] ==
+                            fractional_momentum(tsym, tidx) ==
+                            fractional_momentum(ssym, tidx) ==
+                            fractional_momentum(tsymbed, tidx) ==
+                            fractional_momentum(ssymbed, tidx)
+                    end for tsic in get_irrep_components(tsymbed) )
+    end
+
 end

@@ -12,7 +12,8 @@ end
 
 import Base.==
 function ==(lhs::Lattice{O}, rhs::Lattice{O}) where O
-    return lhs.unitcell == rhs.unitcell && lhs.orthocube == rhs.orthocube
+    return lhs.unitcell == rhs.unitcell && lhs.orthocube == rhs.orthocube &&
+            lhs.bravais_coordinates == rhs.bravais_coordinates
 end
 
 
@@ -44,5 +45,29 @@ function make_lattice(unitcell::UnitCell{O}, shape_matrix::AbstractMatrix{<:Inte
     return Lattice{O}(unitcell, orthocube, unitcell_coordinates, new_unitcell)
 end
 #TODO unit testing for lattice with wrong dimensions
+
+
+function make_lattice(unitcell::UnitCell{O}, shape_matrix::AbstractMatrix{<:Integer}, generator_translations::AbstractMatrix{<:Integer}) where O
+    dim = dimension(unitcell)
+    if size(shape_matrix) != (dim, dim)
+        throw(DimensionMismatch("unitcell and shape_matrix should have the same dimension"))
+    end
+    orthocube = OrthoCube(shape_matrix)
+    unitcell_coordinates = generate_coordinates(orthocube, generator_translations)
+    
+    new_latticevectors = unitcell.latticevectors * orthocube.shape_matrix
+
+    new_unitcell = make_unitcell(new_latticevectors; OrbitalType=Tuple{O, Vector{Int}})
+    for uc in unitcell_coordinates, (orbname, orbcoord) in unitcell.orbitals
+        cc = fract2carte(unitcell, orbcoord)
+        new_cc = cc + unitcell.latticevectors * uc
+        new_orbcoord = carte2fract(new_unitcell, new_cc)
+        new_orbname = (orbname, uc)
+        addorbital!(new_unitcell, new_orbname, new_orbcoord)
+    end
+
+    return Lattice{O}(unitcell, orthocube, unitcell_coordinates, new_unitcell)
+end
+
 
 dimension(lattice::Lattice) = dimension(lattice.unitcell)

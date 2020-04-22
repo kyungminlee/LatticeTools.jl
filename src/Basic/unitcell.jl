@@ -67,11 +67,11 @@ Construct a one-dimensional lattice.
 * `OrbitalType`: List of orbitals
 
 # Optional Arguments
-* `tol=sqrt(eps(Float64))`: Tolerance
+* `tol=√ϵ`: Tolerance
 """
 function make_unitcell(latticeconstant ::Real;
                        OrbitalType::DataType=Any,
-                       tol=sqrt(eps(Float64)))
+                       tol::Real=Base.rtoldefault(Float64))
     return make_unitcell(reshape([latticeconstant], (1,1));
                          OrbitalType=OrbitalType, tol=tol)
 end
@@ -87,11 +87,11 @@ Construct an n-dimensional lattice.
 * `OrbitalType::DataType`
 
 # Optional Arguments
-* `tol=sqrt(eps(Float64))`: Epsilon
+* `tol=√ϵ`: Epsilon
 """
 function make_unitcell(latticevectors ::AbstractArray{<:Real, 2};
                        OrbitalType::DataType=Any,
-                       tol ::Real=sqrt(eps(Float64)))
+                       tol ::Real=Base.rtoldefault(Float64))
     (ndim, ndim_) = size(latticevectors)
     if ndim != ndim_
         throw(ArgumentError("lattice vectors has dimension ($(ndim), $(ndim_))"))
@@ -111,7 +111,7 @@ end
 
 function make_unitcell(latticevectors::AbstractVector{<:AbstractVector};
                        OrbitalType::DataType=Any,
-                       tol ::Real=sqrt(eps(Float64)))
+                       tol::Real=Base.rtoldefault(Float64))
     lv = hcat(latticevectors...)
     return make_unitcell(lv; OrbitalType=OrbitalType, tol=tol)
 end
@@ -315,9 +315,8 @@ end
 * `latticevectors ::Array{Float64, 2}`
 * `cc ::CarteCoord`
 """
-function carte2fract(unitcell ::UnitCell,
-                     cc ::CarteCoord;
-                     tol ::Real=sqrt(eps(Float64)))
+function carte2fract(unitcell::UnitCell, cc::CarteCoord;
+                     tol::Real=Base.rtoldefault(Float64))
     if dimension(unitcell) != length(cc)
         throw(ArgumentError("unitcell and cartecoord must have the same dimension"))
     end
@@ -334,10 +333,8 @@ end
 # Return
 * `R ::Vector{Int}`: which unit cell the specificied orbital/cartesian coordinates belongs to.
 """
-function whichunitcell(uc ::UnitCell{O},
-                       name ::O,
-                       cc ::CarteCoord;
-                       tol ::Real=sqrt(eps(Float64))) where {O}
+function whichunitcell(uc::UnitCell{O}, name::O, cc::CarteCoord;
+                       tol::Real=Base.rtoldefault(Float64)) where {O}
     fc1 = getorbitalcoord(uc, name)
     fc2 = carte2fract(uc, cc)
     if !isapprox(fc1.fraction, fc2.fraction; atol=tol)
@@ -354,10 +351,8 @@ end
 # Return
 * `R ::Vector{Int}`: which unit cell the specificied orbital/cartesian coordinates belongs to.
 """
-function whichunitcell(uc ::UnitCell{O},
-                       name ::O,
-                       fc ::FractCoord;
-                       tol ::Real=sqrt(eps(Float64))) where {O}
+function whichunitcell(uc::UnitCell{O}, name::O, fc::FractCoord;
+                       tol::Real=Base.rtoldefault(Float64)) where {O}
     fc1 = getorbitalcoord(uc, name)
     fc2 = fc
     if !isapprox(fc1.fraction, fc2.fraction; atol=tol)

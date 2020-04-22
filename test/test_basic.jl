@@ -108,33 +108,34 @@ using LinearAlgebra
         end
 
         @testset "determinant" begin
-
+            tol = Base.rtoldefault(Float64)
             @test_throws ArgumentError ExactLinearAlgebra.determinant([1 2 3; 4 5 6])
             @test_throws ArgumentError ExactLinearAlgebra.determinant(ones(Int, 0,0))
             @test ExactLinearAlgebra.determinant(7*ones(Int, 1, 1)) == 7
 
             @test ExactLinearAlgebra.determinant(float.(mat)) == det(mat)
-            @test abs(det(mat) - ExactLinearAlgebra.determinant(mat)) < sqrt(eps(Float64))
+            @test abs(det(mat) - ExactLinearAlgebra.determinant(mat)) < tol
             for n in [5, 6, 7, 8]
                 a = rand(-3:3, (n, n))
                 det1 = det(a)
                 det2 = ExactLinearAlgebra.determinant(a)
-                @test abs(det1 - det2) < sqrt(eps(Float64))
+                @test abs(det1 - det2) < Base.rtoldefault(Float64)
             end
         end # testset determinant
 
         @testset "inverse" begin
+            tol = Base.rtoldefault(Float64)
             @test_throws ArgumentError ExactLinearAlgebra.inverse([1 2 3; 4 5 6])
             @test_throws ArgumentError ExactLinearAlgebra.inverse(ones(Int, 0, 0))
             @test ExactLinearAlgebra.inverse(7*ones(Int, 1, 1)) == ones(Int, 1, 1)//7
 
-            @test maximum(abs.(inv(mat) - ExactLinearAlgebra.inverse(float.(mat)))) < sqrt(eps(Float64))
-            @test maximum(abs.(inv(mat) - ExactLinearAlgebra.inverse(mat))) < sqrt(eps(Float64))
+            @test maximum(abs.(inv(mat) - ExactLinearAlgebra.inverse(float.(mat)))) < tol
+            @test maximum(abs.(inv(mat) - ExactLinearAlgebra.inverse(mat))) < tol
             for n in [5, 6, 7, 8]
                 a = rand(-3:3, (n, n)) + 30*I
                 inv1 = inv(a)
                 inv2 = ExactLinearAlgebra.inverse(a)
-                @test maximum(abs.(inv1 - inv2)) < sqrt(eps(Float64))
+                @test maximum(abs.(inv1 - inv2)) < tol
             end
 
         end

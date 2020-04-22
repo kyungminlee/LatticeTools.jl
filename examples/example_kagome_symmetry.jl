@@ -1,63 +1,56 @@
+# # Kagome Lattice
+
 using LinearAlgebra
 using Printf
 using Plots
+plotlyjs()
 
 using TightBindingLattice
 
 include("Kagome.jl")
 
 kagome = make_kagome_lattice([4 -2; 2 2])
-#kagome = make_kagome_lattice([2 -1; 1 1])
 
-#=
-kagome.unitcell
-kagome.lattice
-kagome.translation_symmetry
-kagome.point_symmetry
-kagome.nearest_neighbor_bonds
-kagome.next_nearest_neighbor_bonds
-kagome.nearest_neighbor_triangles
-=#
+tsymbed = kagome.space_symmetry_embedding.normal
+psymbed = kagome.space_symmetry_embedding.rest
+tsym = symmetry(tsymbed)
+psym = symmetry(psymbed)
 
-println("Point group: ", kagome.point_symmetry.hermann_mauguinn)
-
+println("Point Symmetry")
+println("==============")
+println()
+println("Point group: ", psym.hermann_mauguinn)
 
 # ## Orbital map
-orbital_map = findorbitalmap(kagome.lattice.unitcell, kagome.point_symmetry)
 
-println("=== Orbital map ===")
-for (n, map) in zip(kagome.point_symmetry.element_names, orbital_map)
+orbital_map = findorbitalmap(kagome.lattice.unitcell, psym)
+
+println("Orbital map")
+println("-----------")
+println()
+
+for (n, map) in zip(element_names(psym), orbital_map)
     @printf("%32s:", n)
     for (i_elem, (j_elem, R)) in enumerate(map)
-        print("\t$i_elem ↦ $j_elem, $R")
+        @printf("  %d ↦ %d, %-8s", i_elem, j_elem, string(R))
     end
     println()
 end
 println()
 
 
-permutations_direct = Permutation[]
-for (n, mat, map) in zip(kagome.point_symmetry.element_names,
-                         kagome.point_symmetry.matrix_representations,
-                         orbital_map)
-    push!(permutations_direct, get_orbital_permutation(kagome.lattice, mat, map))
-end
-permutations = get_orbital_permutations(kagome.lattice, kagome.point_symmetry)
-
-@show permutations_direct == permutations
-
-
-
-
 # ## Angle
+println("Angles")
+println("------")
+println()
 
 @printf("%32s", "name")
 for (iorb, (orbname, orbfc)) in enumerate(kagome.unitcell.orbitals)
-    @printf("\t%9s", orbname)
+    @printf("\t%12s", orbname)
 end
 println()
 println("---------------------------------------------------------------------------------")
-for (n, m) in zip(kagome.point_symmetry.element_names, orbital_map)
+for (n, m) in zip(element_names(psym), orbital_map)
     @printf("%32s", n)
     for (i_elem, (j_elem, R)) in enumerate(m)
         ri = fract2carte(kagome.lattice.unitcell, getorbitalcoord(kagome.lattice.unitcell, i_elem))
@@ -83,20 +76,21 @@ for (n, m) in zip(kagome.point_symmetry.element_names, orbital_map)
 end
 
 
-# ## Point Symmetry
+# ## Plot Point Symmetry
 
-permutations = get_orbital_permutations(kagome.lattice, kagome.point_symmetry)
 extent = [-2, 2, -2, 2]
-within = (r) -> extent[1] <= r[1] <= extent[2] && extent[3] <= r[2] <= extent[4]
+within(r) = (extent[1] <= r[1] <= extent[2] && extent[3] <= r[2] <= extent[4])
 
-for (i_elem, perm) in enumerate(permutations)
-    elname = element_name(kagome.point_symmetry, i_elem)
-    fig = plot(title=elname, aspect=1, size=(300, 300), grid=false)
+println("Plotting point symmetry embeddings")
+
+for (i_elem, perm) in enumerate(elements(psymbed))
+    elname = element_name(psym, i_elem)
+    fig = plot(title=elname, aspect=1, size=(500, 500), grid=false)
     orbcoords = []
     orbnames = []
 
     for iorb in eachindex(kagome.lattice.supercell.orbitals)
-        orbfc = getorbitalcoord(kagome.lattice.supercell, perm.map[iorb])
+        orbfc = getorbitalcoord(kagome.lattice.supercell, perm(iorb))
         orbcc = fract2carte(kagome.lattice.supercell, orbfc)
         push!(orbnames, "$iorb")
         push!(orbcoords, orbcc)
@@ -115,26 +109,25 @@ for (i_elem, perm) in enumerate(permutations)
     end
     xlims!(-2, 2)
     ylims!(-2, 2)
-    # savefig(fig, "point_symmetry-$i_elem.png")
+    savefig(fig, "point_symmetry-$i_elem.html")
 end
 
 
+# ## Plot Translation Symmetry
 
-
-# ## Translation Symmetry
-
-permutations = get_orbital_permutations(kagome.lattice, kagome.translation_symmetry)
 extent = [-2, 2, -2, 2]
-within = (r) -> extent[1] <= r[1] <= extent[2] && extent[3] <= r[2] <= extent[4]
+within(r) = (extent[1] <= r[1] <= extent[2] && extent[3] <= r[2] <= extent[4])
 
-for (i_elem, perm) in enumerate(permutations)
-    elname = element_name(kagome.translation_symmetry, i_elem)
-    fig = plot(title=elname, aspect=1, size=(300, 300), grid=false)
+println("Plotting translation symmetry embeddings")
+
+for (i_elem, perm) in enumerate(elements(tsymbed))
+    elname = element_name(tsym, i_elem)
+    fig = plot(title=elname, aspect=1, size=(500, 500), grid=false)
     orbcoords = []
     orbnames = []
 
     for iorb in eachindex(kagome.lattice.supercell.orbitals)
-        orbfc = getorbitalcoord(kagome.lattice.supercell, perm.map[iorb])
+        orbfc = getorbitalcoord(kagome.lattice.supercell, perm(iorb))
         orbcc = fract2carte(kagome.lattice.supercell, orbfc)
         push!(orbnames, "$iorb")
         push!(orbcoords, orbcc)
@@ -153,5 +146,5 @@ for (i_elem, perm) in enumerate(permutations)
     end
     xlims!(-2, 2)
     ylims!(-2, 2)
-    #savefig(fig, "translation_symmetry-$i_elem.png")
+    savefig(fig, "translation_symmetry-$i_elem.html")
 end

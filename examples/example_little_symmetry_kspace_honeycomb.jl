@@ -371,11 +371,3 @@ let
     savefig(img, "momentumspace-6x6.pdf")
 end
 
-
-
-
-
-
-
-
-

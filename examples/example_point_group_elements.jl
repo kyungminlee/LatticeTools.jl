@@ -1,8 +1,10 @@
+# Search elements by their Seitz name, and show their matrix representations
+
 using TightBindingLattice
 
 all_elements = Dict()
 for i in 1:32
-    println("Reading group #$i")
+    println("# Reading group #$i")
     psym = PointSymmetryDatabase.get(i)
     for (elname, matrep) in zip(psym.element_names, psym.matrix_representations)
         if !haskey(all_elements, elname)
@@ -12,11 +14,13 @@ for i in 1:32
     end
 end
 
-println("All elements:")
+println("elements:")
 for (k, v) in all_elements
-    println("- Element name: $k")
-    println("  Matrix representations:")
+    println("- element_name: $k")
+    println("  matrix_representations:")
     for v2 in v
-        println("  - $v2")
+        m = [collect(x) for x in eachrow(v2[1])]
+        g = v2[2]
+        println("  - { matrix: $(m), group: \"$g\" }")
     end
 end

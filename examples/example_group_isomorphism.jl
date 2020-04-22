@@ -1,7 +1,8 @@
 using TightBindingLattice
 using Combinatorics
 
-println("# Group Isomorphism")
+println("Group Isomorphism")
+println("=================")
 println()
 
 group1 = FiniteGroup([1 2 3 4;
@@ -18,17 +19,20 @@ group2 = let mtab1 = group1.multiplication_table,
              FiniteGroup(mtab2)
          end
 
-println("## Group G₁")
+println("Group G₁")
+println("--------")
 display(group_multiplication_table(group1))
 println()
 println()
 
-println("## Group G₂")
+println("Group G₂")
+println("--------")
 display(group_multiplication_table(group2))
 println()
 println()
 
-println("## Group isomorphism  ϕ: G₁ → G₂")
+println("Group isomorphism  ϕ: G₁ → G₂")
+println("-----------------------------")
 ϕ = group_isomorphism(group1, group2)
 for g in 1:group_order(group1)
     println("  $g ↦ $(ϕ[g])")
@@ -40,9 +44,10 @@ for g in 1:group_order(group1), h in 1:group_order(group1)
     mtab2[ϕ[g], ϕ[h]] = ϕ[ group_product(group1, g, h) ]
 end
 
-println("# Multiplication table of ϕ(G₁)")
+println("Multiplication table of ϕ(G₁)")
+println("-----------------------------")
 println("  ϕ(g)⋅ϕ(h) = ϕ(g⋅h)")
 println("  ϕ(G₁) = G₂ should hold.")
-
+println()
 display(mtab2)
 println()

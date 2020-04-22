@@ -156,7 +156,7 @@ end
 # Arguments
 * `latticevectors ::AbstractArray{<:AbstractFloat, 2}`: square matrix whose columns are lattice vectors.
 * `cc ::CarteCoord`: cartesian coordinates
-* `tol ::Real=sqrt(eps(Float64))`: tolerance
+* `tol ::Real=Base.rtoldefault(Float64)`: tolerance
 """
 function carte2fract(latticevectors::AbstractMatrix{<:Real},
                      cc::CarteCoord;

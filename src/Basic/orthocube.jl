@@ -96,7 +96,7 @@ function find_generators_2d(ortho::OrthoCube)
             allunique(coordinates) && return hcat(r1, r2)
         end
     end
-    error("Failed to find decomposition")
+    error("Failed to find decomposition") # COV_EXCL_LINE
 end
 
 
