@@ -25,6 +25,10 @@ end
 
     @test_throws DimensionMismatch make_lattice(unitcell, 3)
     @test_throws DimensionMismatch make_lattice(unitcell, [1 0 0; 0 1 0; 0 0 1])
+    @test_throws DimensionMismatch make_lattice(unitcell, [1 0 0; 0 1 0; 0 0 1], [1 0; 0 1])
+
+    @test_throws DimensionMismatch make_lattice(unitcell, [3 0; 0 3], ones(Int, 1, 1))
+    @test_throws DimensionMismatch make_lattice(unitcell, [3 0; 0 3], [1 0 0; 0 1 0; 0 0 1])
     @test_throws ArgumentError make_lattice(unitcell, [4 0; 0 3], [1 1; 0 1]) # generators not orthogonal
     @test_throws ArgumentError make_lattice(unitcell, [4 0; 0 4], [1 0; 0 2]) # generator not unimodular
 
