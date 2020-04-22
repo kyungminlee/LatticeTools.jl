@@ -21,19 +21,15 @@ function linpath(anchors::AbstractVector...; nseg::Integer=100)
             throw(DimensionMismatch("All anchor points should have the same dimension"))
         end
     end
-    # out = Vector{Float64}[]
     out = Matrix{Float64}(undef, (d, (n-1) * nseg + 1))
-    # sizehint!(out, (n-1) * nseg + 1)
     for i in 1:n-1
         from = anchors[i]
         to = anchors[i+1]
         dvec = (to - from) ./ nseg
         for j in 0:(nseg-1)
             out[:, (i-1)*nseg + j + 1] = from + dvec * j
-            # push!(out, from + dvec * j)
         end
     end
-    # push!(out, anchors[end])
     out[:, end] = anchors[end]
     return out
 end
