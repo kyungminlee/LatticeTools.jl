@@ -68,7 +68,7 @@ julia> Permutation([1,3,2]) * Permutation([2,1,3])
 Permutation([3, 1, 2], 3)
 ```
 """
-function *(p1 ::Permutation, p2 ::Permutation)
+function (*)(p1 ::Permutation, p2 ::Permutation)
     if length(p1.map) != length(p2.map)
         throw(ArgumentError("permutations of different universes"))
     end
@@ -78,15 +78,15 @@ end
 
 #=
 import Base.*
-function *(lhs ::AbstractSet{Permutation}, rhs::Permutation)
+function (*)(lhs ::AbstractSet{Permutation}, rhs::Permutation)
         return generate_group(lhs..., rhs)
 end
 
-function *(lhs ::Permutation, rhs::AbstractSet{Permutation})
+function (*)(lhs ::Permutation, rhs::AbstractSet{Permutation})
         return generate_group(lhs, rhs...)
 end
 
-function *(lhs ::AbstractSet{Permutation}, rhs::AbstractSet{Permutation})
+function (*)(lhs ::AbstractSet{Permutation}, rhs::AbstractSet{Permutation})
         return generate_group(lhs..., rhs...)
 end
 =#
@@ -105,7 +105,7 @@ julia> Permutation([2,3,4,1])^2
 Permutation([3, 4, 1, 2], 2)
 ```
 """
-function ^(perm ::Permutation, pow ::Integer)
+function (^)(perm ::Permutation, pow ::Integer)
     p = mod(pow, perm.order)
     out = collect(1:length(perm.map))
     for i in 1:p
@@ -125,8 +125,9 @@ end
 
 
 import Base.==
-==(p1 ::Permutation, p2::Permutation) = p1.map == p2.map
+(==)(p1 ::Permutation, p2::Permutation) = p1.map == p2.map
 
+(p::Permutation)(i::Integer) = p.map[i]
 
 import Base.isless
 function isless(p1 ::Permutation, p2::Permutation)
