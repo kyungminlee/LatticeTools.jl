@@ -1,0 +1,93 @@
+using TightBindingLattice
+
+function make_kagome_lattice(size_matrix ::AbstractMatrix{<:Integer}; compute_symmetry::Bool=false)
+    latticevectors = [1 -0.5; 0 0.5*sqrt(3.0)];
+    unitcell = make_unitcell(latticevectors, OrbitalType=String)
+    addorbital!(unitcell, "A", carte2fract(unitcell, [0.5, 0.0]))
+    addorbital!(unitcell, "B", carte2fract(unitcell, [0.25, 0.25*sqrt(3.0)]))
+    addorbital!(unitcell, "C", carte2fract(unitcell, [0.5+0.25, 0.25*sqrt(3.0)]))
+
+    nnbondtypes = [
+        ([ 0, 0], "A", [ 0, 0], "B", 1),
+        ([ 0, 0], "A", [ 0, 0], "C", 1),
+        ([ 0, 0], "B", [ 0, 0], "C", 1),
+        ([ 1, 1], "A", [ 1, 0], "B",-1),
+        ([ 1, 0], "B", [ 0, 0], "C",-1),
+        ([ 0, 0], "C", [ 1, 1], "A",-1),
+    ]
+
+    nnnbondtypes = [
+        ([ 0, 0], "A", [ 1, 0], "B", 1), # ◁
+        ([ 1, 0], "B", [ 0,-1], "C", 1),
+        ([ 0,-1], "C", [ 0, 0], "A", 1),
+        ([ 0, 0], "C", [ 1, 0], "A",-1),
+        ([ 1, 0], "A", [ 0,-1], "B",-1), # ▷
+        ([ 0,-1], "B", [ 0, 0], "C",-1),
+    ]
+
+    lattice = make_lattice(unitcell, size_matrix)
+    hypercube = lattice.hypercube
+    supercell = lattice.supercell
+    tsymbed = translation_symmetry_embedding(lattice)
+    psym = project(PointSymmetryDatabase.get(25), [1 0 0; 0 1 0])
+    psymbed = embed(lattice, psym)
+    ssymbed = tsymbed ⋊ psymbed
+
+    nnbonds = []
+    nnnbonds = []
+
+    for r in hypercube.coordinates
+        for (rowvec, roworb, colvec, colorb, bondsign) in nnbondtypes
+            R_row, r_row = hypercube.wrap(r .+ rowvec)
+            R_col, r_col = hypercube.wrap(r .+ colvec)
+            roworb_super = (roworb, r_row)
+            colorb_super = (colorb, r_col)
+            irow = get(supercell.orbitalindices, roworb_super, -1)
+            icol = get(supercell.orbitalindices, colorb_super, -1)
+            push!(nnbonds, ((irow, icol), R_col-R_row, bondsign))
+        end
+        for (rowvec, roworb, colvec, colorb, bondsign) in nnnbondtypes
+            R_row, r_row = hypercube.wrap(r .+ rowvec)
+            R_col, r_col = hypercube.wrap(r .+ colvec)
+            roworb_super = (roworb, r_row)
+            colorb_super = (colorb, r_col)
+            irow = get(supercell.orbitalindices, roworb_super, -1)
+            icol = get(supercell.orbitalindices, colorb_super, -1)
+            push!(nnnbonds, ((irow, icol), R_col-R_row, bondsign))
+        end
+    end
+
+    nn_triangles = []
+    for r in hypercube.coordinates
+      triangle = []
+      for (rowvec, roworb, colvec, colorb, bondsign) in nnbondtypes[1:3]
+        R_row, r_row = hypercube.wrap(r .+ rowvec)
+        R_col, r_col = hypercube.wrap(r .+ colvec)
+        roworb_super = (roworb, r_row)
+        colorb_super = (colorb, r_col)
+        irow = get(supercell.orbitalindices, roworb_super, -1)
+        icol = get(supercell.orbitalindices, colorb_super, -1)
+        push!(triangle, ((irow, icol), R_col-R_row))
+      end
+      push!(nn_triangles, (triangle, 1))
+
+      triangle = []
+      for (rowvec, roworb, colvec, colorb, bondsign) in nnbondtypes[4:6]
+        R_row, r_row = hypercube.wrap(r .+ rowvec)
+        R_col, r_col = hypercube.wrap(r .+ colvec)
+        roworb_super = (roworb, r_row)
+        colorb_super = (colorb, r_col)
+        irow = get(supercell.orbitalindices, roworb_super, -1)
+        icol = get(supercell.orbitalindices, colorb_super, -1)
+        push!(triangle, ((irow, icol), R_col-R_row))
+      end
+      push!(nn_triangles, (triangle, -1))
+    end
+
+    return (unitcell=unitcell,
+            lattice=lattice,
+            space_symmetry_embedding=ssymbed,
+            nearest_neighbor_bonds=nnbonds,
+            next_nearest_neighbor_bonds=nnnbonds,
+            nearest_neighbor_triangles=nn_triangles)
+end
