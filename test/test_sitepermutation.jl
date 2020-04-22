@@ -12,6 +12,10 @@ using TightBindingLattice
     op1 = SitePermutation([3,1,2]) # 1=>3, 2=>1, 3=>2
     op1p = SitePermutation([3,1,2])
     op2 = SitePermutation([2,1,3]) # 1=>2, 2=>1, 3=>3
+
+    @test_throws BoundsError op1(10) 
+    @test op1(1) == 3 && op1(2) == 1 && op1(3) == 2
+
     @test op2 * op1 != SitePermutation([1,2,3])
     @test op2 * op1 == SitePermutation([3,2,1])
 
