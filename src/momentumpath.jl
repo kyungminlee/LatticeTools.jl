@@ -10,38 +10,41 @@ Generate a list of momenta
 * `anchorpoints`
 * (Optional) `nseg` - number of points in each segment
 """
-function linpath(anchorpoints ::AbstractVector{<:AbstractVector{<:Number}}; nseg=64)
-    n = length(anchorpoints)
+function linpath(anchors::AbstractVector...; nseg::Integer=100)
+    n = length(anchors)
     if n <= 1
         throw(ArgumentError("Number of anchor points should be more than one"))
     end
-
-    d = length(anchorpoints[1])
+    d = length(anchors[1])
     for i in 2:n
-        if length(anchorpoints[i]) != d
-            throw(ArgumentError("All anchor points should have the same dimension"))
+        if length(anchors[i]) != d
+            throw(DimensionMismatch("All anchor points should have the same dimension"))
         end
     end
-
-    out = Vector{Float64}[]
+    # out = Vector{Float64}[]
+    out = Matrix{Float64}(undef, (d, (n-1) * nseg + 1))
+    # sizehint!(out, (n-1) * nseg + 1)
     for i in 1:n-1
-        from = anchorpoints[i]
-        to = anchorpoints[i+1]
+        from = anchors[i]
+        to = anchors[i+1]
         dvec = (to - from) ./ nseg
-        append!(out, from + dvec * 0:(nseg-1))
+        for j in 0:(nseg-1)
+            out[:, (i-1)*nseg + j + 1] = from + dvec * j
+            # push!(out, from + dvec * j)
+        end
     end
-    push!(out, anchorpoints[end])
+    # push!(out, anchors[end])
+    out[:, end] = anchors[end]
     return out
 end
 
-
-"""
-    momentumpath
-
-The anchorpoints are given in units of the reciprocal lattice vectors.
-"""
-function momentumpath(unitcell ::UnitCell,
-                      anchorpoints ::AbstractVector{<:AbstractVector{<:Number}})
-    real_anchorpoints = [unitcell.reciprocallatticevectors * ap for ap in anchorpoints]
-    return linpath(real_anchorpoints)
-end
+# """
+#     momentumpath
+#
+# The anchorpoints are given in units of the reciprocal lattice vectors.
+# """
+# function momentumpath(unitcell::UnitCell,
+#                       anchors::AbstractVector{<:AbstractVector{<:Number}})
+#     real_anchorpoints = [unitcell.reciprocallatticevectors * ap for ap in anchorpoints]
+#     return linpath(real_anchorpoints...)
+# end
