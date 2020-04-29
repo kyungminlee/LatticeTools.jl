@@ -1,7 +1,9 @@
 # # Orthocube Examples (Bravais Lattice)
 
+# ## Preamble
 using TightBindingLattice
 using Plots
+mkpath("example_orthocube")
 
 function draw_orthocube(orthocube::OrthoCube, coordinates::AbstractMatrix{<:Integer})
     xlim = (minimum(coordinates[1,:]) - 3.5, maximum(coordinates[1,:]) + 3.5)
@@ -33,6 +35,7 @@ function draw_orthocube(orthocube::OrthoCube, coordinates::AbstractMatrix{<:Inte
     fig
 end
 
+
 # ## (4,-4) x (4,4)
 size_matrix = [ 4 4; -4 4]
 orthocube = OrthoCube(size_matrix)
@@ -48,6 +51,11 @@ for (it, t) in enumerate(eachcol(generator_translations))
     println("t($it) = $t")
 end
 draw_orthocube(orthocube, coordmat)
+savefig("example_orthocube/bravais_(4,-4)x(4,4).svg")
+
+
+# ![](example_orthocube//bravais_(4,-4)x(4,4).svg)
+
 
 # ## (2,-2) x (2,4)
 size_matrix = [ 2 2; -2 4]
@@ -65,3 +73,7 @@ for (it, t) in enumerate(eachcol(generator_translations))
     println("t($it) = $t")
 end
 draw_orthocube(orthocube, coordmat)
+savefig("example_orthocube/bravais_(2,-2)x(2,4).svg")
+
+
+# ![](example_orthocube//bravais_(2,-2)x(2,4).svg)

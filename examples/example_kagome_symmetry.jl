@@ -6,11 +6,6 @@ using LinearAlgebra
 using Printf
 using Plots
 
-latexify(s::AbstractString) = "\$" * (
-                    s |> (x-> replace(x, r"<sup>(.+?)</sup>" => s"^{\1}"))
-                      |> (x-> replace(x, r"<sub>(.+?)</sub>" => s"_{\1}"))
-                      |> (x-> replace(x, r"-(\d)" => s"\\overline{\1}"))
-                )* "\$"
 mkpath("example_kagome_symmetry")
 extent = [-2, 2, -2, 2]
 within(r) = (extent[1] <= r[1] <= extent[2] && extent[3] <= r[2] <= extent[4])
@@ -195,7 +190,7 @@ end
 
 for (i_elem, perm) in enumerate(elements(psymbed))
     elname = element_name(psym, i_elem)
-    fig = plot(title=latexify(elname), aspect=1, size=(200, 200), grid=false, titlefont=Plots.font("sans-serif", pointsize=8))
+    fig = plot(title=elname, aspect=1, size=(200, 200), grid=false, titlefont=Plots.font("sans-serif", pointsize=8))
     orbcoords = []
     orbnames = []
 

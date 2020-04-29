@@ -2,15 +2,10 @@
 
 # ## Preamble
 using TightBindingLattice
-using YAML
 using LinearAlgebra
 using Plots
+plotly()
 
-latexify(s::AbstractString) = "\$" * (
-                    s |> (x-> replace(x, r"<sup>(.+?)</sup>" => s"^{\1}"))
-                      |> (x-> replace(x, r"<sub>(.+?)</sub>" => s"_{\1}"))
-                      |> (x-> replace(x, r"-(\d)" => s"\\overline{\1}"))
-                )* "\$"
 mkpath("example_honeycomb_symmetry")
 extent = [-2.5, 2.5, -2.5, 2.5]
 within(r) = (extent[1] <= r[1] <= extent[2] && extent[3] <= r[2] <= extent[4]);
@@ -55,7 +50,7 @@ println()
 
 for (i_elem, perm) in enumerate(elements(tsymbed))
     elname = element_name(tsym, i_elem)
-    fig = plot(title=elname, aspect=1, size=(200, 200), grid=false, titlefont=Plots.font("sans-serif", pointsize=8))
+    fig = plot(title=elname, aspect=1, size=(200, 250), grid=false, titlefont=Plots.font("sans-serif", pointsize=8))
     orbcoords = []
     orbnames = []
 
@@ -100,7 +95,7 @@ end
 
 for (i_elem, perm) in enumerate(elements(psymbed))
     elname = element_name(psym, i_elem)
-    fig = plot(title=latexify(elname), aspect=1, size=(200, 200), grid=false, titlefont=Plots.font("sans-serif", pointsize=8))
+    fig = plot(title=elname, aspect=1, size=(200, 250), grid=false, titlefont=Plots.font("sans-serif", pointsize=8))
     orbcoords = []
     orbnames = []
 
