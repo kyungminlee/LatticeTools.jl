@@ -26,6 +26,7 @@ using TightBindingLattice: parse_expr
     @test parse_expr("2-3") == 2-3
     @test parse_expr("2*3") == 2*3
     @test parse_expr("2/3") == 2/3
+    @test parse_expr("2//3") == 2//3
     @test parse_expr("2\\3") == 2\3
     @test parse_expr("2^3") == 2^3
 

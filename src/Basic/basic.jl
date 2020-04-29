@@ -99,7 +99,7 @@ SYMBOL_DATABASE = Dict(
     :im => im,
     :pi => pi,
     :π => π,
-    :+ => (+),  :- => (-),  :* => (*),  :/ => (/),  :\ => (\),  :^ => (^),
+    :+ => (+),  :- => (-),  :* => (*),  :/ => (/),  :\ => (\),  :^ => (^), :// => (//),
     :cos => cos,  :sin => sin,  :tan => tan,
     :exp => exp,  :cis => cis,
     :cospi => cospi,  :sinpi => sinpi,
