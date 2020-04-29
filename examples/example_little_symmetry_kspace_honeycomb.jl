@@ -154,7 +154,8 @@ let
     scatter!(reciprocallatticepoints[1,:], reciprocallatticepoints[2,:], markershape=:circle, markersize=6, color="red", markerstrokecolor="red", label="reciprocal lattice")
     xlims!(extent[1] - 0.1, extent[2] + 0.1)
     ylims!(extent[3] - 0.1, extent[4] + 0.1)
-    savefig(img, "momentumspace-root3xroot3.pdf")
+    savefig(img, "momentumspace-root3xroot3.svg")
+    img
 end
 
 
@@ -162,7 +163,7 @@ end
 # ## 2√3 × 2√3 supercell
 
 # ### Make Superlattice
-shape = [4 -2; 2 2]
+shape = [2 2; -2 4]
 lattice = make_lattice(unitcell, shape)
 
 # ### Plot lattice
@@ -189,6 +190,7 @@ let bravais_lattice = [], a_sites = [], b_sites = []
     scatter!(b_sites[1,:], b_sites[2,:], color="blue", markerstrokewidth=0, markersize=3, label="B")
     xlims!(extent[1], extent[2])
     ylims!(extent[3], extent[4])
+    img
 end
 
 
@@ -261,7 +263,8 @@ let
     scatter!(reciprocallatticepoints[1,:], reciprocallatticepoints[2,:], markershape=:circle, markersize=6, color="red", markerstrokecolor="red", label="reciprocal lattice")
     xlims!(extent[1]-0.1, extent[2]+0.1)
     ylims!(extent[3]-0.1, extent[4]+0.1)
-    savefig(img, "momentumspace-2root3x2root3.pdf")
+    savefig(img, "momentumspace-2root3x2root3.svg")
+    img
 end
 
 
@@ -368,6 +371,7 @@ let
     scatter!(reciprocallatticepoints[1,:], reciprocallatticepoints[2,:], markershape=:circle, markersize=6, color="red", markerstrokecolor="red", label="reciprocal lattice")
     xlims!(extent[1] - 0.1, extent[2] + 0.1)
     ylims!(extent[3] - 0.1, extent[4] + 0.1)
-    savefig(img, "momentumspace-6x6.pdf")
+    savefig(img, "momentumspace-6x6.svg")
+    img
 end
 
