@@ -11,11 +11,3 @@ YAML = "ddb6d928-2868-570f-bddf-ab3f9cf99eb6"
 
 [compat]
 julia = ">= 1.4"
-
-[extras]
-Literate = "98b081ad-f1c9-55d3-8b20-4c87d4299306"
-Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
-
-[targets]
-example = ["Literate"]
-test = ["Test"]
