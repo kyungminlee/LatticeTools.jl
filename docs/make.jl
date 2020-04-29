@@ -42,4 +42,5 @@ makedocs(
 
 deploydocs(
         repo = "github.com/kyungminlee/TightBindingLattice.jl.git",
+        devbranch = "dev",
 )
