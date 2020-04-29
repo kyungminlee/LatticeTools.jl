@@ -24,7 +24,6 @@ makedocs(
     format=Documenter.HTML(prettyurls=!("local" in ARGS)),
     authors="Kyungmin Lee",
     checkdocs=:all,
-    clean=false,
     pages = [
         "Home" => "index.md",
         "Examples" => [
