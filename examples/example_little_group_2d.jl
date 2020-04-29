@@ -1,32 +1,47 @@
-# # Little Group Example
+# # Little Group in 2D
 
+# ## Preamble
 using TightBindingLattice
+using Formatting
 using Plots
+function display_matrix(io::IO, matrix::AbstractMatrix; prefix::AbstractString="")
+    width = ceil(Int, maximum(length("$item") for item in matrix)/4)*4
+    for row in eachrow(matrix)
+        for (icol, col) in enumerate(row)
+            if icol == 1
+                print(io, prefix)
+                printfmt(io, "{:>$(width)s}", "$col")
+            else
+                printfmt(io, " {:>$(width)s}", "$col")
+            end
+        end
+        println(io)
+    end
+end
 
+# ## Set up lattice and symmetry
+unitcell = make_unitcell([1.0 0.0; 0.0 1.0]; OrbitalType=String);
+addorbital!(unitcell, "Ox", FractCoord([0,0], [0.5, 0.0]));
+addorbital!(unitcell, "Oy", FractCoord([0,0], [0.0, 0.5]));
 
-# ## Lattice and symmetry setup
-
-unitcell = make_unitcell([1.0 0.0; 0.0 1.0]; OrbitalType=String)
-addorbital!(unitcell, "Ox", FractCoord([0,0], [0.5, 0.0]))
-addorbital!(unitcell, "Oy", FractCoord([0,0], [0.0, 0.5]))
-
-lattice = make_lattice(unitcell, [4 0; 0 4])
-tsym = TranslationSymmetry(lattice)
-psym = project(PointSymmetryDatabase.get(13), [1 0 0; 0 1 0])
+lattice = make_lattice(unitcell, [4 0; 0 4]);
+tsym = TranslationSymmetry(lattice);
+psym = project(PointSymmetryDatabase.get(13), [1 0 0; 0 1 0]);
 
 
 # ## Little Group
-
 lge = little_group_elements(tsym, 2, psym)
 lg = little_group(tsym, 2, psym)
-println("Little group: $lg")
+println("Little group")
+println("------------")
+display_matrix(stdout, group_multiplication_table(lg))
+
 
 lg_matrep = psym.matrix_representations[lge]
 println("Matrix representations: $lg_matrep")
 
 
-# ## Finding isomorphic point groups
-
+# ## Finding point groups isomorphic to the little group
 little_symmetry_candidates = Tuple{PointSymmetry, Vector{Int}}[]
 for i in 1:32
     ps = PointSymmetryDatabase.get(i)
@@ -38,18 +53,24 @@ end
 (psym2, ϕ) = first(little_symmetry_candidates)
 
 lg_matrep2 = lg_matrep[ϕ]
-println("Matrix representations (iso): $lg_matrep2")
+println("Matrix representations (isomorphic): $lg_matrep2")
 
 
 # ## Multiplication Tables
-
-@show group_multiplication_table(psym2)
-@show group_multiplication_table(lg_matrep)
-@show group_multiplication_table(lg_matrep2)
+println("Parent point group")
+println("------------------")
+display_matrix(stdout, group_multiplication_table(psym2))
+println("Little group")
+println("------------")
+display_matrix(stdout, group_multiplication_table(lg_matrep))
+println("Isomorphic little group")
+println("-----------------------")
+display_matrix(stdout, group_multiplication_table(lg_matrep2))
 
 # ## Irreps and Little Groups
 
 println("Irreps and Little Groups")
+println("------------------------")
 for tsic in get_irrep_components(tsym)
     idx = tsic.irrep_index
     kf = tsym.fractional_momenta[idx]
