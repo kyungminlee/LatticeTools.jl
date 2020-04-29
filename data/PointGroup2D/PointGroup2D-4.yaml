@@ -1,32 +1,33 @@
 CharacterTable:
 - [1, 1, 1, 1]
 - [1, 1, -1, -1]
-- [1, -1, i, -i]
-- [1, -1, -i, i]
+- [1, -1, 1, -1]
+- [1, -1, -1, 1]
 ConjugacyClasses:
 - [1]
 - [2]
-- [3]
 - [4]
-ElementNames: ['1', '2', 4<sup>+</sup>, 4<sup>-</sup>]
+- [3]
+ElementNames: ['1', '2', m<sub>10</sub>, m<sub>01</sub>]
 Generators: [2, 3]
-HermannMauguinn: '4'
+HermannMauguinn: 2mm
+Schoenflies: C<sub>2v</sub>
 IrreducibleRepresentations:
 - [1, 1, 1, 1]
 - [1, 1, -1, -1]
-- [1, -1, i, -i]
-- [1, -1, -i, i]
+- [1, -1, -1, 1]
+- [1, -1, 1, -1]
 MatrixRepresentations:
 - - [1, 0]
   - [0, 1]
 - - [-1, 0]
   - [0, -1]
-- - [0, -1]
-  - [1, 0]
-- - [0, 1]
-  - [-1, 0]
+- - [-1, 0]
+  - [0, 1]
+- - [1, 0]
+  - [0, -1]
 MultiplicationTable:
 - [1, 2, 3, 4]
 - [2, 1, 4, 3]
-- [3, 4, 2, 1]
-- [4, 3, 1, 2]
+- [3, 4, 1, 2]
+- [4, 3, 2, 1]

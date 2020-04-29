@@ -4,9 +4,10 @@ CharacterTable:
 ConjugacyClasses:
 - [1]
 - [2]
-ElementNames: ['1', m<sub>10</sub>]
+ElementNames: ['1', '2']
 Generators: [2]
-HermannMauguinn: m
+HermannMauguinn: '2'
+Schoenflies: C<sub>2</sub>
 IrreducibleRepresentations:
 - [1, 1]
 - [1, -1]
@@ -14,7 +15,7 @@ MatrixRepresentations:
 - - [1, 0]
   - [0, 1]
 - - [-1, 0]
-  - [0, 1]
+  - [0, -1]
 MultiplicationTable:
 - [1, 2]
 - [2, 1]
