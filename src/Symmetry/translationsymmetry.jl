@@ -16,6 +16,9 @@ export symmetry_name
 export translation_symmetry_embedding
 
 
+"""
+    TranslationSymmetry
+"""
 struct TranslationSymmetry <: AbstractSymmetry{TranslationOperation{Int}}
 
     orthocube::OrthoCube

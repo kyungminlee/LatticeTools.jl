@@ -26,6 +26,8 @@ makedocs(
     checkdocs=:all,
     pages = [
         "Home" => "index.md",
+        "lattice.md",
+        "symmetry.md",
         "Examples" => [
             "Group isomorphism" => "generated/example_group_isomorphism.md",
             "Orthocube" => "generated/example_orthocube.md",
@@ -36,7 +38,8 @@ makedocs(
             "Honeycomb lattice" => "generated/example_honeycomb_symmetry.md",
             "Honeycomb lattice in k-space" => "generated/example_little_symmetry_kspace_honeycomb.md",
             "Kagome lattice" => "generated/example_kagome_symmetry.md",
-        ]
+        ],
+        "api.md",
     ]
 )
 
