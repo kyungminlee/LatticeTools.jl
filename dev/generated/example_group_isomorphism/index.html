@@ -5,8 +5,12 @@ function display_matrix(io::IO, matrix::AbstractMatrix; prefix::AbstractString=&
     width = ceil(Int, maximum(length(&quot;$item&quot;) for item in matrix)/4)*4
     for row in eachrow(matrix)
         for (icol, col) in enumerate(row)
-            print(io, icol == 1 ? prefix : &quot; &quot;)
-            printfmt(io, &quot;{:&gt;$(width)s}&quot;, &quot;$col&quot;)
+            if icol == 1
+                print(io, prefix)
+                printfmt(io, &quot;{:&gt;$(width)s}&quot;, &quot;$col&quot;)
+            else
+                printfmt(io, &quot; {:&gt;$(width)s}&quot;, &quot;$col&quot;)
+            end
         end
         println(io)
     end
@@ -74,4 +78,4 @@ Multiplication table of ϕ(G₁)
    4    1    2    3
 
   ϕ(g)⋅ϕ(h) = ϕ(g⋅h)
-  ϕ(G₁) ≡ G₂ should hold.</code></pre><hr/><p><em>This page was generated using <a href="https://github.com/fredrikekre/Literate.jl">Literate.jl</a>.</em></p></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../../">« Home</a><a class="docs-footer-nextpage" href="../example_orthocube/">Orthocube »</a></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> on <span class="colophon-date" title="Thursday 30 April 2020 01:21">Thursday 30 April 2020</span>. Using Julia version 1.4.1.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
+  ϕ(G₁) ≡ G₂ should hold.</code></pre><hr/><p><em>This page was generated using <a href="https://github.com/fredrikekre/Literate.jl">Literate.jl</a>.</em></p></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../../">« Home</a><a class="docs-footer-nextpage" href="../example_orthocube/">Orthocube »</a></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> on <span class="colophon-date" title="Thursday 30 April 2020 01:23">Thursday 30 April 2020</span>. Using Julia version 1.4.1.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
