@@ -2,15 +2,17 @@
 
 using LinearAlgebra
 using Plots
-plotly()
-
 using TightBindingLattice
 
+simplifyname(s::AbstractString) = (
+                    s |> (x-> replace(x, r"<sup>(.+?)</sup>" => s"\1"))
+                      |> (x-> replace(x, r"<sub>(.+?)</sub>" => s"[\1]"))
+                )
 function makewithin(extent::AbstractVector{<:Real})
     a, b, c, d = extent
     (x::Real, y::Real) -> ((a <= x <= b) && (c <= y <= d))
 end
-mkpath("example_honeycomb_kspace")
+mkpath("example_little_symmetry_kspace_honeycomb")
 
 
 # ## Honeycome lattice
@@ -44,10 +46,10 @@ let bravais_lattice = [], a_sites = [], b_sites = []
     scatter!(b_sites[1,:], b_sites[2,:], color="blue", markerstrokewidth=0, markersize=5, label="B")
     xlims!(extent[1], extent[2])
     ylims!(extent[3], extent[4])
-    savefig(img, "example_honeycomb_kspace/realspace.svg")
+    savefig(img, "example_little_symmetry_kspace_honeycomb/realspace.svg")
 end
 
-# ![](example_honeycomb_kspace/realspace.svg)
+# ![](example_little_symmetry_kspace_honeycomb/realspace.svg)
 
 # ## √3 × √3 supercell
 
@@ -79,10 +81,10 @@ let bravais_lattice = [], a_sites = [], b_sites = []
     scatter!(b_sites[1,:], b_sites[2,:], color="blue", markerstrokewidth=0, markersize=5, label="B")
     xlims!(extent[1], extent[2])
     ylims!(extent[3], extent[4])
-    savefig(img, "example_honeycomb_kspace/realspace-root3xroot3.svg")
+    savefig(img, "example_little_symmetry_kspace_honeycomb/realspace-root3xroot3.svg")
 end
 
-# ![](example_honeycomb_kspace/realspace-root3xroot3.svg)
+# ![](example_little_symmetry_kspace_honeycomb/realspace-root3xroot3.svg)
 
 
 # ### Symmetries
@@ -136,7 +138,7 @@ let
             if within(k...)
                 push!(kpoints, k)
                 push!(littlegroupnames, psym_little.hermann_mauguinn)
-                push!(generatornames, join(psym_little.element_names[psym_little.generators], "<br>"))
+                push!(generatornames, join(simplifyname.(psym_little.element_names[psym_little.generators]), "\n"))
                 push!(kpointnames, "$tsym_irrep_index")
             end
         end
@@ -149,17 +151,17 @@ let
              markershape=:circle, markersize=6, markercolor=RGBA(1,1,1,0), markerstrokecolor=RGBA(1,0,0,1), label="reciprocal lattice")
     scatter!(kpoints[1,:], kpoints[2,:],
              markershape=:circle, markersize=4, markercolor=RGBA(0,0,1,0.5), markerstrokecolor=RGBA(0,0,1,0.5),
-             series_annotations=[Plots.text("k<sub>$x</sub>", 10, :left, :bottom) for x in kpointnames], label="momentum points")
+             series_annotations=[Plots.text("k[$x]", 8, :left, :bottom) for x in kpointnames], label="momentum points")
     scatter!(kpoints[1,:], kpoints[2,:],
              markershape=:circle, markersize=0, color=RGBA(0,0,0,0),
              series_annotations=[Plots.text("$x ", 8, :right, :top) for x in littlegroupnames], label="")
     scatter!(kpoints[1,:], kpoints[2,:],
              markershape=:circle, markersize=0, color=RGBA(0,0,0,0),
-             series_annotations=[Plots.text("<br>$x", 8, :left, :top) for x in generatornames], label="")
-    savefig(img, "example_honeycomb_kspace/momentumspace-root3xroot3.svg")
+             series_annotations=[Plots.text("$x", 6, :left, :top) for x in generatornames], label="")
+    savefig(img, "example_little_symmetry_kspace_honeycomb/momentumspace-root3xroot3.svg")
 end
 
-# ![](example_honeycomb_kspace/momentumspace-root3xroot3.svg)
+# ![](example_little_symmetry_kspace_honeycomb/momentumspace-root3xroot3.svg)
 
 # ## 2√3 × 2√3 supercell
 
@@ -191,10 +193,10 @@ let bravais_lattice = [], a_sites = [], b_sites = []
     scatter!(b_sites[1,:], b_sites[2,:], color="blue", markerstrokewidth=0, markersize=3, label="B")
     xlims!(extent[1], extent[2])
     ylims!(extent[3], extent[4])
-    savefig(img, "example_honeycomb_kspace/realspace-2root3x2root3.svg")
+    savefig(img, "example_little_symmetry_kspace_honeycomb/realspace-2root3x2root3.svg")
 end
 
-# ![](example_honeycomb_kspace/realspace-2root3x2root3.svg)
+# ![](example_little_symmetry_kspace_honeycomb/realspace-2root3x2root3.svg)
 
 
 # ### Symmetries
@@ -249,7 +251,8 @@ let
             if within(k...)
                 push!(kpoints, k)
                 push!(littlegroupnames, psym_little.hermann_mauguinn)
-                push!(generatornames, join(psym_little.element_names[psym_little.generators], "<br>"))
+                #push!(generatornames, join(psym_little.element_names[psym_little.generators], "<br>"))
+                push!(generatornames, join(simplifyname.(psym_little.element_names[psym_little.generators]), "\n"))
                 push!(kpointnames, "$tsym_irrep_index")
             end
         end
@@ -262,17 +265,17 @@ let
              markershape=:circle, markersize=6, markercolor=RGBA(1,1,1,0), markerstrokecolor=RGBA(1,0,0,1), label="reciprocal lattice")
     scatter!(kpoints[1,:], kpoints[2,:],
              markershape=:circle, markersize=4, markercolor=RGBA(0,0,1,0.5), markerstrokecolor=RGBA(0,0,1,0.5),
-             series_annotations=[Plots.text("k<sub>$x</sub>", 10, :left, :bottom) for x in kpointnames], label="momentum points")
+             series_annotations=[Plots.text("k[$x]", 8, :left, :bottom) for x in kpointnames], label="momentum points")
     scatter!(kpoints[1,:], kpoints[2,:],
              markershape=:circle, markersize=0, color=RGBA(0,0,0,0),
              series_annotations=[Plots.text("$x ", 8, :right, :top) for x in littlegroupnames], label="")
     scatter!(kpoints[1,:], kpoints[2,:],
              markershape=:circle, markersize=0, color=RGBA(0,0,0,0),
-             series_annotations=[Plots.text("<br>$x", 8, :left, :top) for x in generatornames], label="")
-    savefig(img, "example_honeycomb_kspace/momentumspace-2root3x2root3.svg")
+             series_annotations=[Plots.text("$x", 6, :left, :top) for x in generatornames], label="")
+    savefig(img, "example_little_symmetry_kspace_honeycomb/momentumspace-2root3x2root3.svg")
 end
 
-# ![](example_honeycomb_kspace/momentumspace-2root3x2root3.svg)
+# ![](example_little_symmetry_kspace_honeycomb/momentumspace-2root3x2root3.svg)
 
 # ## 6 × 6 supercell
 
@@ -304,10 +307,10 @@ let bravais_lattice = [], a_sites = [], b_sites = []
     scatter!(b_sites[1,:], b_sites[2,:], color="blue", markerstrokewidth=0, markersize=3, label="B")
     xlims!(extent[1], extent[2])
     ylims!(extent[3], extent[4])
-    savefig(img, "example_honeycomb_kspace/realspace-6x6.svg")
+    savefig(img, "example_little_symmetry_kspace_honeycomb/realspace-6x6.svg")
 end
 
-# ![](example_honeycomb_kspace/realspace-6x6.svg)
+# ![](example_little_symmetry_kspace_honeycomb/realspace-6x6.svg)
 
 
 # ### Symmetries
@@ -362,7 +365,8 @@ let
             if within(k...)
                 push!(kpoints, k)
                 push!(littlegroupnames, psym_little.hermann_mauguinn)
-                push!(generatornames, join(psym_little.element_names[psym_little.generators], "<br>"))
+                #push!(generatornames, join(psym_little.element_names[psym_little.generators], "<br>"))
+                push!(generatornames, join(simplifyname.(psym_little.element_names[psym_little.generators]), "\n"))
                 push!(kpointnames, "$tsym_irrep_index")
             end
         end
@@ -375,14 +379,14 @@ let
              markershape=:circle, markersize=6, markercolor=RGBA(1,1,1,0), markerstrokecolor=RGBA(1,0,0,1), label="reciprocal lattice")
     scatter!(kpoints[1,:], kpoints[2,:],
              markershape=:circle, markersize=4, markercolor=RGBA(0,0,1,0.5), markerstrokecolor=RGBA(0,0,1,0.5),
-             series_annotations=[Plots.text("k<sub>$x</sub>", 10, :left, :bottom) for x in kpointnames], label="momentum points")
+             series_annotations=[Plots.text("k[$x]", 8, :left, :bottom) for x in kpointnames], label="momentum points")
     scatter!(kpoints[1,:], kpoints[2,:],
              markershape=:circle, markersize=0, color=RGBA(0,0,0,0),
              series_annotations=[Plots.text("$x ", 8, :right, :top) for x in littlegroupnames], label="")
     scatter!(kpoints[1,:], kpoints[2,:],
              markershape=:circle, markersize=0, color=RGBA(0,0,0,0),
-             series_annotations=[Plots.text("<br>$x", 8, :left, :top) for x in generatornames], label="")
-    savefig(img, "example_honeycomb_kspace/momentumspace-6x6.svg")
+             series_annotations=[Plots.text("$x", 6, :left, :top) for x in generatornames], label="")
+    savefig(img, "example_little_symmetry_kspace_honeycomb/momentumspace-6x6.svg")
 end
 
-# ![](example_honeycomb_kspace/momentumspace-6x6.svg)
+# ![](example_little_symmetry_kspace_honeycomb/momentumspace-6x6.svg)

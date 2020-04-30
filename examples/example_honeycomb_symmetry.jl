@@ -4,8 +4,11 @@
 using TightBindingLattice
 using LinearAlgebra
 using Plots
-plotly()
 
+simplifyname(s::AbstractString) = (
+                    s |> (x-> replace(x, r"<sup>(.+?)</sup>" => s"\1"))
+                      |> (x-> replace(x, r"<sub>(.+?)</sub>" => s"[\1]"))
+                )
 mkpath("example_honeycomb_symmetry")
 extent = [-2.5, 2.5, -2.5, 2.5]
 within(r) = (extent[1] <= r[1] <= extent[2] && extent[3] <= r[2] <= extent[4]);
@@ -95,7 +98,7 @@ end
 
 for (i_elem, perm) in enumerate(elements(psymbed))
     elname = element_name(psym, i_elem)
-    fig = plot(title=elname, aspect=1, size=(200, 250), grid=false, titlefont=Plots.font("sans-serif", pointsize=8))
+    fig = plot(title=simplifyname(elname), aspect=1, size=(200, 250), grid=false, titlefont=Plots.font("sans-serif", pointsize=8))
     orbcoords = []
     orbnames = []
 

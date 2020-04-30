@@ -7,12 +7,8 @@ function display_matrix(io::IO, matrix::AbstractMatrix; prefix::AbstractString="
     width = ceil(Int, maximum(length("$item") for item in matrix)/4)*4
     for row in eachrow(matrix)
         for (icol, col) in enumerate(row)
-            if icol == 1
-                print(io, prefix)
-                printfmt(io, "{:>$(width)s}", "$col")
-            else
-                printfmt(io, " {:>$(width)s}", "$col")
-            end
+            print(io, icol == 1 ? prefix : " ")
+            printfmt(io, "{:>$(width)s}", "$col")
         end
         println(io)
     end
