@@ -74,7 +74,7 @@ GKS: can&#39;t connect to GKS socket application
 GKS: Open failed in routine OPEN_WS
 GKS: GKS not in proper state. GKS must be either in the state WSOP or WSAC in routine ACTIVATE_WS</code></pre><p><img src="realspace-root3xroot3.svg" alt/></p><h3 id="Symmetries-1"><a class="docs-heading-anchor" href="#Symmetries-1">Symmetries</a><a class="docs-heading-anchor-permalink" href="#Symmetries-1" title="Permalink"></a></h3><pre><code class="language-julia">tsym = TranslationSymmetry(lattice)
 psym = project(PointSymmetryDatabase.get(25), [1 0 0; 0 1 0])
-println(&quot;point symmetry (Hermann Mauguinn): $(psym.hermann_mauguinn)&quot;)
+println(&quot;point symmetry (Hermann Mauguin): $(psym.hermann_mauguin)&quot;)
 println(&quot;translation symmetry compatible with point symmetry? &quot;, iscompatible(tsym, psym))
 
 println(&quot;irreducible representations:&quot;)
@@ -96,8 +96,8 @@ for tsym_irrep_index in 1:num_irreps(tsym)
     end
     print(&quot;]\n&quot;)
     print(&quot;  is point symmetry compatible with momentum: $(iscompatible(tsym, tsym_irrep_index, psym))\n&quot;)
-    print(&quot;  little point symmetry: $(psym_little.hermann_mauguinn)\n&quot;)
-end</code></pre><pre><code class="language-none">point symmetry (Hermann Mauguinn): 6mm
+    print(&quot;  little point symmetry: $(psym_little.hermann_mauguin)\n&quot;)
+end</code></pre><pre><code class="language-none">point symmetry (Hermann Mauguin): 6mm
 translation symmetry compatible with point symmetry? true
 irreducible representations:
 - irrep index: 1
@@ -134,7 +134,7 @@ irreducible representations:
             k = G + kc
             if within(k...)
                 push!(kpoints, k)
-                push!(littlegroupnames, psym_little.hermann_mauguinn)
+                push!(littlegroupnames, psym_little.hermann_mauguin)
                 push!(generatornames, join(simplifyname.(psym_little.element_names[psym_little.generators]), &quot;\n&quot;))
                 push!(kpointnames, &quot;$tsym_irrep_index&quot;)
             end
@@ -193,7 +193,7 @@ GKS: can&#39;t connect to GKS socket application
 GKS: Open failed in routine OPEN_WS
 GKS: GKS not in proper state. GKS must be either in the state WSOP or WSAC in routine ACTIVATE_WS</code></pre><p><img src="realspace-2root3x2root3.svg" alt/></p><h3 id="Symmetries-2"><a class="docs-heading-anchor" href="#Symmetries-2">Symmetries</a><a class="docs-heading-anchor-permalink" href="#Symmetries-2" title="Permalink"></a></h3><pre><code class="language-julia">tsym = TranslationSymmetry(lattice)
 psym = project(PointSymmetryDatabase.get(25), [1 0 0; 0 1 0])
-println(&quot;point symmetry (Hermann Mauguinn): $(psym.hermann_mauguinn)&quot;)
+println(&quot;point symmetry (Hermann Mauguin): $(psym.hermann_mauguin)&quot;)
 println(&quot;translation symmetry compatible with point symmetry? &quot;, iscompatible(tsym, psym))
 
 println(&quot;irreducible representations:&quot;)
@@ -215,8 +215,8 @@ for tsym_irrep_index in 1:num_irreps(tsym)
     end
     print(&quot;]\n&quot;)
     print(&quot;  is point symmetry compatible with momentum: $(iscompatible(tsym, tsym_irrep_index, psym))\n&quot;)
-    print(&quot;  little point symmetry: $(psym_little.hermann_mauguinn)\n&quot;)
-end</code></pre><pre><code class="language-none">point symmetry (Hermann Mauguinn): 6mm
+    print(&quot;  little point symmetry: $(psym_little.hermann_mauguin)\n&quot;)
+end</code></pre><pre><code class="language-none">point symmetry (Hermann Mauguin): 6mm
 translation symmetry compatible with point symmetry? true
 irreducible representations:
 - irrep index: 1
@@ -299,7 +299,7 @@ irreducible representations:
             k = G + kc
             if within(k...)
                 push!(kpoints, k)
-                push!(littlegroupnames, psym_little.hermann_mauguinn)
+                push!(littlegroupnames, psym_little.hermann_mauguin)
                 #push!(generatornames, join(psym_little.element_names[psym_little.generators], &quot;&lt;br&gt;&quot;))
                 push!(generatornames, join(simplifyname.(psym_little.element_names[psym_little.generators]), &quot;\n&quot;))
                 push!(kpointnames, &quot;$tsym_irrep_index&quot;)
@@ -359,7 +359,7 @@ GKS: can&#39;t connect to GKS socket application
 GKS: Open failed in routine OPEN_WS
 GKS: GKS not in proper state. GKS must be either in the state WSOP or WSAC in routine ACTIVATE_WS</code></pre><p><img src="realspace-6x6.svg" alt/></p><h3 id="Symmetries-3"><a class="docs-heading-anchor" href="#Symmetries-3">Symmetries</a><a class="docs-heading-anchor-permalink" href="#Symmetries-3" title="Permalink"></a></h3><pre><code class="language-julia">tsym = TranslationSymmetry(lattice)
 psym = project(PointSymmetryDatabase.get(25), [1 0 0; 0 1 0])
-println(&quot;point symmetry (Hermann Mauguinn): $(psym.hermann_mauguinn)&quot;)
+println(&quot;point symmetry (Hermann Mauguin): $(psym.hermann_mauguin)&quot;)
 println(&quot;translation symmetry compatible with point symmetry? &quot;, iscompatible(tsym, psym))
 
 println(&quot;irreducible representations:&quot;)
@@ -381,8 +381,8 @@ for tsym_irrep_index in 1:num_irreps(tsym)
     end
     print(&quot;]\n&quot;)
     print(&quot;  is point symmetry compatible with momentum: $(iscompatible(tsym, tsym_irrep_index, psym))\n&quot;)
-    print(&quot;  little point symmetry: $(psym_little.hermann_mauguinn)\n&quot;)
-end</code></pre><pre><code class="language-none">point symmetry (Hermann Mauguinn): 6mm
+    print(&quot;  little point symmetry: $(psym_little.hermann_mauguin)\n&quot;)
+end</code></pre><pre><code class="language-none">point symmetry (Hermann Mauguin): 6mm
 translation symmetry compatible with point symmetry? true
 irreducible representations:
 - irrep index: 1
@@ -585,7 +585,7 @@ irreducible representations:
             k = G + kc
             if within(k...)
                 push!(kpoints, k)
-                push!(littlegroupnames, psym_little.hermann_mauguinn)
+                push!(littlegroupnames, psym_little.hermann_mauguin)
                 #push!(generatornames, join(psym_little.element_names[psym_little.generators], &quot;&lt;br&gt;&quot;))
                 push!(generatornames, join(simplifyname.(psym_little.element_names[psym_little.generators]), &quot;\n&quot;))
                 push!(kpointnames, &quot;$tsym_irrep_index&quot;)
@@ -613,4 +613,4 @@ connect: Connection refused
 GKS: can&#39;t connect to GKS socket application
 
 GKS: Open failed in routine OPEN_WS
-GKS: GKS not in proper state. GKS must be either in the state WSOP or WSAC in routine ACTIVATE_WS</code></pre><p><img src="momentumspace-6x6.svg" alt/></p><hr/><p><em>This page was generated using <a href="https://github.com/fredrikekre/Literate.jl">Literate.jl</a>.</em></p></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../example_honeycomb_symmetry/">« Honeycomb lattice</a><a class="docs-footer-nextpage" href="../example_kagome_symmetry/">Kagome lattice »</a></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> on <span class="colophon-date" title="Tuesday 5 May 2020 12:54">Tuesday 5 May 2020</span>. Using Julia version 1.4.1.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
+GKS: GKS not in proper state. GKS must be either in the state WSOP or WSAC in routine ACTIVATE_WS</code></pre><p><img src="momentumspace-6x6.svg" alt/></p><hr/><p><em>This page was generated using <a href="https://github.com/fredrikekre/Literate.jl">Literate.jl</a>.</em></p></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../example_honeycomb_symmetry/">« Honeycomb lattice</a><a class="docs-footer-nextpage" href="../example_kagome_symmetry/">Kagome lattice »</a></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> on <span class="colophon-date" title="Tuesday 5 May 2020 13:06">Tuesday 5 May 2020</span>. Using Julia version 1.4.1.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
