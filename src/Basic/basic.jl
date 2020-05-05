@@ -1,8 +1,8 @@
 export ExactLinearAlgebra
 
-import Base._round_rational
+if VERSION < v"1.5"
+    import Base._round_rational
 
-if !applicable(_round_rational, Int, 1//2, RoundToZero)
     function _round_rational(::Type{T}, x::Rational{Tr}, ::RoundingMode{:ToZero}) where {T,Tr}
         if denominator(x) == zero(Tr) && T <: Integer
             throw(DivideError())
@@ -11,9 +11,7 @@ if !applicable(_round_rational, Int, 1//2, RoundToZero)
         end
         convert(T,div(x.num,x.den))
     end
-end
 
-if !applicable(_round_rational, Int, 1//2, RoundDown)
     function _round_rational(::Type{T}, x::Rational{Tr}, ::RoundingMode{:Down}) where {T,Tr}
         if denominator(x) == zero(Tr) && T <: Integer
             throw(DivideError())
@@ -22,9 +20,7 @@ if !applicable(_round_rational, Int, 1//2, RoundDown)
         end
         convert(T,fld(x.num,x.den))
     end
-end
 
-if !applicable(_round_rational, Int, 1//2, RoundUp)
     function _round_rational(::Type{T}, x::Rational{Tr}, ::RoundingMode{:Up}) where {T,Tr}
         if denominator(x) == zero(Tr) && T <: Integer
             throw(DivideError())
