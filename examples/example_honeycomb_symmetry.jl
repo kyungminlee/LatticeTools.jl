@@ -28,7 +28,7 @@ tsym = symmetry(tsymbed)
 psym = project(PointSymmetryDatabase.get(25), [1 0 0; 0 1 0])
 psymbed = embed(lattice, psym)
 
-print("Point group: ", psym.hermann_mauguinn)
+print("Point group: ", psym.hermann_mauguin)
 
 
 

@@ -90,7 +90,7 @@ end
 # ### Symmetries
 tsym = TranslationSymmetry(lattice)
 psym = project(PointSymmetryDatabase.get(25), [1 0 0; 0 1 0])
-println("point symmetry (Hermann Mauguinn): $(psym.hermann_mauguinn)")
+println("point symmetry (Hermann Mauguin): $(psym.hermann_mauguin)")
 println("translation symmetry compatible with point symmetry? ", iscompatible(tsym, psym))
 
 println("irreducible representations:")
@@ -112,7 +112,7 @@ for tsym_irrep_index in 1:num_irreps(tsym)
     end
     print("]\n")
     print("  is point symmetry compatible with momentum: $(iscompatible(tsym, tsym_irrep_index, psym))\n")
-    print("  little point symmetry: $(psym_little.hermann_mauguinn)\n")
+    print("  little point symmetry: $(psym_little.hermann_mauguin)\n")
 end
 
 
@@ -137,7 +137,7 @@ let
             k = G + kc
             if within(k...)
                 push!(kpoints, k)
-                push!(littlegroupnames, psym_little.hermann_mauguinn)
+                push!(littlegroupnames, psym_little.hermann_mauguin)
                 push!(generatornames, join(simplifyname.(psym_little.element_names[psym_little.generators]), "\n"))
                 push!(kpointnames, "$tsym_irrep_index")
             end
@@ -202,7 +202,7 @@ end
 # ### Symmetries
 tsym = TranslationSymmetry(lattice)
 psym = project(PointSymmetryDatabase.get(25), [1 0 0; 0 1 0])
-println("point symmetry (Hermann Mauguinn): $(psym.hermann_mauguinn)")
+println("point symmetry (Hermann Mauguin): $(psym.hermann_mauguin)")
 println("translation symmetry compatible with point symmetry? ", iscompatible(tsym, psym))
 
 println("irreducible representations:")
@@ -224,7 +224,7 @@ for tsym_irrep_index in 1:num_irreps(tsym)
     end
     print("]\n")
     print("  is point symmetry compatible with momentum: $(iscompatible(tsym, tsym_irrep_index, psym))\n")
-    print("  little point symmetry: $(psym_little.hermann_mauguinn)\n")
+    print("  little point symmetry: $(psym_little.hermann_mauguin)\n")
 end
 
 
@@ -250,7 +250,7 @@ let
             k = G + kc
             if within(k...)
                 push!(kpoints, k)
-                push!(littlegroupnames, psym_little.hermann_mauguinn)
+                push!(littlegroupnames, psym_little.hermann_mauguin)
                 #push!(generatornames, join(psym_little.element_names[psym_little.generators], "<br>"))
                 push!(generatornames, join(simplifyname.(psym_little.element_names[psym_little.generators]), "\n"))
                 push!(kpointnames, "$tsym_irrep_index")
@@ -316,7 +316,7 @@ end
 # ### Symmetries
 tsym = TranslationSymmetry(lattice)
 psym = project(PointSymmetryDatabase.get(25), [1 0 0; 0 1 0])
-println("point symmetry (Hermann Mauguinn): $(psym.hermann_mauguinn)")
+println("point symmetry (Hermann Mauguin): $(psym.hermann_mauguin)")
 println("translation symmetry compatible with point symmetry? ", iscompatible(tsym, psym))
 
 println("irreducible representations:")
@@ -338,7 +338,7 @@ for tsym_irrep_index in 1:num_irreps(tsym)
     end
     print("]\n")
     print("  is point symmetry compatible with momentum: $(iscompatible(tsym, tsym_irrep_index, psym))\n")
-    print("  little point symmetry: $(psym_little.hermann_mauguinn)\n")
+    print("  little point symmetry: $(psym_little.hermann_mauguin)\n")
 end
 
 
@@ -364,7 +364,7 @@ let
             k = G + kc
             if within(k...)
                 push!(kpoints, k)
-                push!(littlegroupnames, psym_little.hermann_mauguinn)
+                push!(littlegroupnames, psym_little.hermann_mauguin)
                 #push!(generatornames, join(psym_little.element_names[psym_little.generators], "<br>"))
                 push!(generatornames, join(simplifyname.(psym_little.element_names[psym_little.generators]), "\n"))
                 push!(kpointnames, "$tsym_irrep_index")

@@ -21,7 +21,7 @@ end
 
 # ## Irreps of 4mm
 point_symmetry = project(PointSymmetryDatabase.get(13), [1 0 0; 0 1 0])
-println("symmetry: ", point_symmetry.hermann_mauguinn)
+println("symmetry: ", point_symmetry.hermann_mauguin)
 println("order: ", group_order(point_symmetry))
 println("irreducible_representations:")
 for irrep_index in 1:num_irreps(point_symmetry)

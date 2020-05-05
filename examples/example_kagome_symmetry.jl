@@ -121,7 +121,7 @@ psym = symmetry(psymbed)
 println("Point Symmetry")
 println("==============")
 println()
-println("Point group: ", psym.hermann_mauguinn)
+println("Point group: ", psym.hermann_mauguin)
 println("Number of elements: ", group_order(psym))
 println("Number of irreps: ", num_irreps(psym))
 

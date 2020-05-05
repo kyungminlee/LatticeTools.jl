@@ -78,7 +78,7 @@ for tsic in get_irrep_components(tsym)
     psym_little = little_symmetry(tsym, idx, psym)
     println("- irrep_index: $(idx)")
     println("  momentum: $(k)")
-    println("  little_point_group: { name: \"$(psym_little.hermann_mauguinn)\", order: $(group_order(psym_little)) }")
+    println("  little_point_group: { name: \"$(psym_little.hermann_mauguin)\", order: $(group_order(psym_little)) }")
     println("  is_psym_compatible: $(iscompatible(tsym, idx, psym))")
     println("  is_psym_little_compatible: $(iscompatible(tsym, idx, psym_little))")
 end

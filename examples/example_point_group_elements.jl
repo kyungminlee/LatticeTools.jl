@@ -12,7 +12,7 @@ for i in 1:32
         if !haskey(all_elements, elname)
             all_elements[elname] = []
         end
-        push!(all_elements[elname], (matrep, psym.hermann_mauguinn))
+        push!(all_elements[elname], (matrep, psym.hermann_mauguin))
     end
 end
 println()

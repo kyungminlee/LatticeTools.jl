@@ -44,7 +44,7 @@ struct SymmetryEmbedding{SymmetryType}<:AbstractSymmetryEmbedding
                 for i in 1:32
                     target_symmetry = PointSymmetryDatabase.get(i)
                     if !isnothing(group_isomorphism(reduced_group, target_symmetry.group))
-                        push!(isomorphic_group_names, target_symmetry.hermann_mauguinn)
+                        push!(isomorphic_group_names, target_symmetry.hermann_mauguin)
                     end
                 end
                 @warn "Lattice $(lattice.orthocube.shape_matrix) is too small for $(symmetry_name(symmetry)) (embedding not faithful).\n"*

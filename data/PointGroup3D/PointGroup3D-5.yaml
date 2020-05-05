@@ -10,7 +10,7 @@ ConjugacyClasses:
 - [4]
 ElementNames: ['1', 2<sub>010</sub>, '-1', m<sub>010</sub>]
 Generators: [2, 3]
-HermannMauguinn: 2/m
+HermannMauguin: 2/m
 Schoenflies: C<sub>2h</sub>
 IrreducibleRepresentations:
 - [1, 1, 1, 1]

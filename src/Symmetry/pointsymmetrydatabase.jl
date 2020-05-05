@@ -66,7 +66,7 @@ end
 function find2d(group_name::AbstractString)
     for i in 1:NUM_POINT_SYMMETRIES_2D
         psym = get2d(i)
-        if group_name == psym.hermann_mauguinn
+        if group_name == psym.hermann_mauguin
             return psym
         end
     end
@@ -76,7 +76,7 @@ end
 function find3d(group_name::AbstractString)
     for i in 1:NUM_POINT_SYMMETRIES_3D
         psym = get3d(i)
-        if group_name == psym.hermann_mauguinn
+        if group_name == psym.hermann_mauguin
             return psym
         end
     end

@@ -52,7 +52,7 @@ using LinearAlgebra
             # |       |                 |       |
             # o - 1 - . - 3 -           o - 6 - . - 2 -
             psym = project(PointSymmetryDatabase.get(13), [1 0 0; 0 1 0])
-            @test psym.hermann_mauguinn == "4mm"
+            @test psym.hermann_mauguin == "4mm"
             psymbed = embed(lattice, psym)
 
             let n = lowercase(symmetry_name(psymbed))
@@ -73,11 +73,11 @@ using LinearAlgebra
 
             @test iscompatible(tsymbed, psymbed)
 
-            @test little_symmetry(tsymbed, psymbed).symmetry.hermann_mauguinn == "4mm"
-            @test little_symmetry(tsymbed, 1, psymbed).symmetry.hermann_mauguinn == "4mm"
-            @test little_symmetry(tsymbed, 2, psymbed).symmetry.hermann_mauguinn == "mm2"
-            @test little_symmetry(tsymbed, 3, psymbed).symmetry.hermann_mauguinn == "mm2"
-            @test little_symmetry(tsymbed, 4, psymbed).symmetry.hermann_mauguinn == "4mm"
+            @test little_symmetry(tsymbed, psymbed).symmetry.hermann_mauguin == "4mm"
+            @test little_symmetry(tsymbed, 1, psymbed).symmetry.hermann_mauguin == "4mm"
+            @test little_symmetry(tsymbed, 2, psymbed).symmetry.hermann_mauguin == "mm2"
+            @test little_symmetry(tsymbed, 3, psymbed).symmetry.hermann_mauguin == "mm2"
+            @test little_symmetry(tsymbed, 4, psymbed).symmetry.hermann_mauguin == "4mm"
 
             @test little_group_elements(tsymbed, psymbed) == 1:group_order(psymbed)
             @test little_group_elements(tsymbed, 1, psymbed) == 1:group_order(psymbed)

@@ -12,7 +12,7 @@ ConjugacyClasses:
 - [3, 4]
 ElementNames: ['1', '2', 4<sup>+</sup>, 4<sup>-</sup>, m<sub>01</sub>, m<sub>10</sub>, m<sub>11</sub>, m<sub>1-1</sub>]
 Generators: [2, 3, 5]
-HermannMauguinn: 4mm
+HermannMauguin: 4mm
 Schoenflies: C<sub>4v</sub>
 IrreducibleRepresentations:
 - [1, 1, 1, 1, 1, 1, 1, 1]

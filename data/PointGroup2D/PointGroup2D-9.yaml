@@ -8,7 +8,7 @@ ConjugacyClasses:
 - [2, 3]
 ElementNames: ['1', 3<sup>+</sup>, 3<sup>-</sup>, m<sub>1-1</sub>, m<sub>12</sub>, m<sub>21</sub>]
 Generators: [2, 4]
-HermannMauguinn: 31m
+HermannMauguin: 31m
 Schoenflies: C<sub>3v</sub>
 IrreducibleRepresentations:
 - [1, 1, 1, 1, 1, 1]

@@ -26,7 +26,7 @@ Examples are: [`TranslationSymmetry`](@ref), [`PointSymmetry`](@ref). Members ar
 [`PointSymmetry`](@ref) has additional info
 - matrix_representations (i.e. representation in units of lattice vectors)
 - Schoenflies
-- Hermann Mauguinn
+- Hermann Mauguin
 
 
 ### Symmorphic Space Symmetry
