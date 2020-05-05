@@ -349,4 +349,23 @@ end # @testset "PointSymmetry"
     @test psym2.hermann_mauguinn == "4mm"
     @test_throws ArgumentError PointSymmetryDatabase.get(999)
     @test isnothing(PointSymmetryDatabase.find("blah blah"))
+    @test dimension(psym1) == dimension(psym2) == 3
+
+    psym1p = PointSymmetryDatabase.get3d(13)
+    psym2p = PointSymmetryDatabase.find3d("4mm")
+    @test length(psym1p) == length(psym2p) == 8
+    @test psym1p.hermann_mauguinn == "4mm"
+    @test psym2p.hermann_mauguinn == "4mm"
+    @test_throws ArgumentError PointSymmetryDatabase.get3d(999)
+    @test isnothing(PointSymmetryDatabase.find3d("blah blah"))
+    @test dimension(psym1p) == dimension(psym2p) == 3
+
+    psym1p = PointSymmetryDatabase.get2d(6)
+    psym2p = PointSymmetryDatabase.find2d("4mm")
+    @test length(psym1p) == length(psym2p) == 8
+    @test psym1p.hermann_mauguinn == "4mm"
+    @test psym2p.hermann_mauguinn == "4mm"
+    @test_throws ArgumentError PointSymmetryDatabase.get2d(999)
+    @test isnothing(PointSymmetryDatabase.find2d("blah blah"))
+    @test dimension(psym1p) == dimension(psym2p) == 2
 end
