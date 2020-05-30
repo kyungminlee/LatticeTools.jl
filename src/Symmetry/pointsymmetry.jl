@@ -39,7 +39,7 @@ struct PointSymmetry <: AbstractSymmetry{PointOperation{Int}}
     element_names::Vector{String}
 
     matrix_representations::Vector{Matrix{Int}}
-    hermann_mauguinn::String
+    hermann_mauguin::String
     schoenflies::String
 
     function PointSymmetry(
@@ -50,7 +50,7 @@ struct PointSymmetry <: AbstractSymmetry{PointOperation{Int}}
             irreps::AbstractVector{<:AbstractVector{<:AbstractMatrix{<:Number}}},
             element_names::AbstractVector{<:AbstractString},
             matrix_representations::AbstractVector{<:AbstractMatrix{<:Integer}},
-            hermann_mauguinn::AbstractString,
+            hermann_mauguin::AbstractString,
             schoenflies::AbstractString)
         tol = Base.rtoldefault(Float64)
         # number counting check
@@ -115,7 +115,7 @@ struct PointSymmetry <: AbstractSymmetry{PointOperation{Int}}
                    irreps,
                    element_names,
                    matrix_representations,
-                   hermann_mauguinn,
+                   hermann_mauguin,
                    schoenflies)
     end
 end
@@ -138,11 +138,11 @@ function read_point_symmetry(data::AbstractDict)
                    for item in data["IrreducibleRepresentations"] ]
     element_names = data["ElementNames"]
     matrix_representations = Matrix{Int}[read_matrix(x) for x in data["MatrixRepresentations"]]
-    hermann_mauguinn = data["HermannMauguinn"]
+    hermann_mauguin = data["HermannMauguin"]
     schoenflies = data["Schoenflies"]
     PointSymmetry(group, generators,
                   conjugacy_classes, character_table, irreps,
-                  element_names, matrix_representations, hermann_mauguinn, schoenflies)
+                  element_names, matrix_representations, hermann_mauguin, schoenflies)
 end
 
 
@@ -166,7 +166,7 @@ function project(psym::PointSymmetry,
                          psym.irreps,
                          psym.element_names,
                          new_matrix_representations,
-                         psym.hermann_mauguinn,
+                         psym.hermann_mauguin,
                          psym.schoenflies)
 end
 
@@ -200,7 +200,7 @@ irrep_dimension(sym::PointSymmetry, idx::Integer) = size(first(irrep(sym, idx)),
 generator_indices(sym::PointSymmetry) = sym.generators
 generator_elements(sym::PointSymmetry) = element(sym, sym.generators)
 
-symmetry_name(sym::PointSymmetry) = "PointSymmetry[$(sym.hermann_mauguinn)]"
+symmetry_name(sym::PointSymmetry) = "PointSymmetry[$(sym.hermann_mauguin)]"
 
 
 """
@@ -331,8 +331,8 @@ length(sym::PointSymmetry) = length(elements(sym))
 #     return (main_str, isnothing(chiral_str) ? "" : chiral_str, axis)
 # end
 
-# export get_hermann_mauguinn
-# function get_hermann_mauguinn(group::FiniteGroup,
+# export get_hermann_mauguin
+# function get_hermann_mauguin(group::FiniteGroup,
 #                               element_names::AbstractVector{<:AbstractString})
 #     # 1. find principal
 #     is_rotation = [startswith(name, r"-?[2346]") for name in element_names]

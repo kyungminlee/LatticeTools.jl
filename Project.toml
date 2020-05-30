@@ -1,7 +1,7 @@
 name = "TightBindingLattice"
 uuid = "f0da6d2f-861b-4198-860c-d50f6f65dfeb"
 author = "Kyungmin Lee"
-version = "0.4.4"
+version = "0.4.5"
 
 [deps]
 FileIO = "5789e2e9-d7fb-5bc7-8068-2c6fae9b9549"
@@ -11,11 +11,3 @@ YAML = "ddb6d928-2868-570f-bddf-ab3f9cf99eb6"
 
 [compat]
 julia = ">= 1.4"
-
-[extras]
-Literate = "98b081ad-f1c9-55d3-8b20-4c87d4299306"
-Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
-
-[targets]
-example = ["Literate"]
-test = ["Test"]

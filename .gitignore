@@ -5,3 +5,6 @@ Manifest.toml
 _research/
 .vscode/
 *.code-workspace
+
+docs/build/
+docs/src/generated/

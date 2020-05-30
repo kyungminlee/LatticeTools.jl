@@ -4,7 +4,8 @@ ConjugacyClasses:
 - [1]
 ElementNames: ['1']
 Generators: [1]
-HermannMauguinn: '1'
+HermannMauguin: '1'
+Schoenflies: C<sub>1</sub>
 IrreducibleRepresentations:
 - [1]
 MatrixRepresentations:

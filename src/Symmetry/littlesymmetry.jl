@@ -85,7 +85,7 @@ function little_symmetry(tsym::TranslationSymmetry,
                   psym2.irreps,
                   lg_element_names,
                   lg_matrep,
-                  psym2.hermann_mauguinn,
+                  psym2.hermann_mauguin,
                   psym2.schoenflies)
 end
 
@@ -131,7 +131,7 @@ function little_symmetry(tsym::TranslationSymmetry, tsym_irrep::Integer, psym::P
                   psym2.irreps,
                   lg_element_names,
                   lg_matrep,
-                  psym2.hermann_mauguinn,
+                  psym2.hermann_mauguin,
                   psym2.schoenflies)
 end
 
@@ -158,7 +158,7 @@ function little_symmetry_iso(tsym::TranslationSymmetry, tsym_irrep_index::Intege
     end
 
     generators = minimal_generating_set(lg_irrep.group)
-    hermann_mauguinn = join(lg_element_names[generators])
+    hermann_mauguin = join(lg_element_names[generators])
     schoenflies = "unknown"
 
     simple_element_names = sort(simplify_name.(lg_element_names))
@@ -166,7 +166,7 @@ function little_symmetry_iso(tsym::TranslationSymmetry, tsym_irrep_index::Intege
         psym = PointSymmetryDatabase.get(i)
         if ( sort(simplify_name.(psym.element_names)) == simple_element_names )
              #&& !isnothing(group_isomorphism(lg_irrep.group, psym.group)) )
-            hermann_mauguinn = psym.hermann_mauguinn
+            hermann_mauguin = psym.hermann_mauguin
             break
         end
     end
@@ -178,6 +178,6 @@ function little_symmetry_iso(tsym::TranslationSymmetry, tsym_irrep_index::Intege
                   lg_irrep.irreps,
                   lg_element_names,
                   lg_matrep,
-                  hermann_mauguinn,
+                  hermann_mauguin,
                   schoenflies)
 end

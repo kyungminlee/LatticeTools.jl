@@ -1,15 +1,25 @@
-using TightBindingLattice
-using Combinatorics
+# # Group isomorphism
 
-println("Group Isomorphism")
-println("=================")
-println()
+# ## Set up basic functions
+using TightBindingLattice
+using Formatting
+function display_matrix(io::IO, matrix::AbstractMatrix; prefix::AbstractString="")
+    width = ceil(Int, maximum(length("$item") for item in matrix)/4)*4
+    for row in eachrow(matrix)
+        for (icol, col) in enumerate(row)
+            print(io, icol == 1 ? prefix : " ")
+            printfmt(io, "{:>$(width)s}", "$col")
+        end
+        println(io)
+    end
+end
+
+# ## Generate two isomorphic groups
 
 group1 = FiniteGroup([1 2 3 4;
                       2 1 4 3;
                       3 4 2 1;
-                      4 3 1 2])
-
+                      4 3 1 2]);
 group2 = let mtab1 = group1.multiplication_table,
              mtab2 = zeros(Int, (4, 4)),
              mapping = [1, 3, 2, 4]
@@ -17,25 +27,29 @@ group2 = let mtab1 = group1.multiplication_table,
                  mtab2[mapping[i], mapping[j]] = mapping[mtab1[i,j]]
              end
              FiniteGroup(mtab2)
-         end
+         end;
 
-println("Group G₁")
-println("--------")
-display(group_multiplication_table(group1))
-println()
+
+# ## Group multiplication tables
+
+println("Multiplication table of G₁")
+println("--------------------------")
+display_matrix(stdout, group_multiplication_table(group1))
 println()
 
-println("Group G₂")
-println("--------")
-display(group_multiplication_table(group2))
+println("Multiplication table of G₂")
+println("--------------------------")
+display_matrix(stdout, group_multiplication_table(group2))
 println()
-println()
+
+
+# ## Group isomorphism
 
 println("Group isomorphism  ϕ: G₁ → G₂")
 println("-----------------------------")
 ϕ = group_isomorphism(group1, group2)
 for g in 1:group_order(group1)
-    println("  $g ↦ $(ϕ[g])")
+    println("  ϕ($g) = $(ϕ[g])")
 end
 println()
 
@@ -46,8 +60,7 @@ end
 
 println("Multiplication table of ϕ(G₁)")
 println("-----------------------------")
+display_matrix(stdout, mtab2)
+println()
 println("  ϕ(g)⋅ϕ(h) = ϕ(g⋅h)")
-println("  ϕ(G₁) = G₂ should hold.")
-println()
-display(mtab2)
-println()
+println("  ϕ(G₁) ≡ G₂ should hold.")

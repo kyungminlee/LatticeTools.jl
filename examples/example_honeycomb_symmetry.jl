@@ -1,11 +1,20 @@
-using TightBindingLattice
+# # Honeycomb lattice
 
-using YAML
+# ## Preamble
+using TightBindingLattice
 using LinearAlgebra
 using Plots
 
+simplifyname(s::AbstractString) = (
+                    s |> (x-> replace(x, r"<sup>(.+?)</sup>" => s"\1"))
+                      |> (x-> replace(x, r"<sub>(.+?)</sub>" => s"[\1]"))
+                )
+mkpath("example_honeycomb_symmetry")
+extent = [-2.5, 2.5, -2.5, 2.5]
+within(r) = (extent[1] <= r[1] <= extent[2] && extent[3] <= r[2] <= extent[4]);
 
-scale_matrix = [4 -2; 2 2]
+# ## Set up lattice and symmetry
+scale_matrix = [2 2; -2 4]
 @assert det(scale_matrix) ≈ 12
 
 unitcell = make_unitcell([1 -0.5; 0 0.5*sqrt(3.0)])
@@ -16,32 +25,35 @@ lattice = make_lattice(unitcell, scale_matrix)
 
 tsymbed = translation_symmetry_embedding(lattice)
 tsym = symmetry(tsymbed)
-psym = project(PointSymmetryDatabase.get(19), [1 0 0; 0 1 0])
+psym = project(PointSymmetryDatabase.get(25), [1 0 0; 0 1 0])
 psymbed = embed(lattice, psym)
 
-println("# Translation permutations")
+print("Point group: ", psym.hermann_mauguin)
+
+
+
+# ## Permutations
+println("Translation permutations")
+println("------------------------")
+
 for t in tsymbed
     println(t)
 end
 println()
 
-println("# Point permutations")
+println("Point permutations")
+println("------------------")
 for p in psymbed
     println(p)
 end
 println()
 
 
-# ## Plots
-
-extent = [-2.5, 2.5, -2.5, 2.5]
-within(r) = (extent[1] <= r[1] <= extent[2] && extent[3] <= r[2] <= extent[4])
-
-println("# Plotting translation symmetry embeddings")
+# ## Plots for translation symmetry embeddings
 
 for (i_elem, perm) in enumerate(elements(tsymbed))
     elname = element_name(tsym, i_elem)
-    fig = plot(title=elname, aspect=1, size=(500, 500), grid=false)
+    fig = plot(title=elname, aspect=1, size=(200, 250), grid=false, titlefont=Plots.font("sans-serif", pointsize=8))
     orbcoords = []
     orbnames = []
 
@@ -61,18 +73,32 @@ for (i_elem, perm) in enumerate(elements(tsymbed))
                  orbcoords[2,idx_filt] .+ LR[2],
                  color="blue",
                  markerstrokecolor="blue",
-                 series_annotations=[Plots.text(x, 12, :left, :bottom) for x in orbnames[idx_filt]], label=nothing)
+                 series_annotations=[Plots.text(x, 6, :left, :bottom) for x in orbnames[idx_filt]], label=nothing)
     end
     xlims!(extent[1], extent[2])
     ylims!(extent[3], extent[4])
-    savefig(fig, "translation_symmetry-$i_elem.html")
+    savefig(fig, "example_honeycomb_symmetry/translation_symmetry-$i_elem.svg")
 end
 
-println("# Plotting point symmetry embeddings")
+# ![](example_honeycomb_symmetry/translation_symmetry-1.svg)
+# ![](example_honeycomb_symmetry/translation_symmetry-2.svg)
+# ![](example_honeycomb_symmetry/translation_symmetry-3.svg)
+# ![](example_honeycomb_symmetry/translation_symmetry-4.svg)
+# ![](example_honeycomb_symmetry/translation_symmetry-5.svg)
+# ![](example_honeycomb_symmetry/translation_symmetry-6.svg)
+# ![](example_honeycomb_symmetry/translation_symmetry-7.svg)
+# ![](example_honeycomb_symmetry/translation_symmetry-8.svg)
+# ![](example_honeycomb_symmetry/translation_symmetry-9.svg)
+# ![](example_honeycomb_symmetry/translation_symmetry-10.svg)
+# ![](example_honeycomb_symmetry/translation_symmetry-11.svg)
+# ![](example_honeycomb_symmetry/translation_symmetry-12.svg)
+
+
+# ## Plots for point symmetry embeddings
 
 for (i_elem, perm) in enumerate(elements(psymbed))
     elname = element_name(psym, i_elem)
-    fig = plot(title=elname, aspect=1, size=(500, 500), grid=false)
+    fig = plot(title=simplifyname(elname), aspect=1, size=(200, 250), grid=false, titlefont=Plots.font("sans-serif", pointsize=8))
     orbcoords = []
     orbnames = []
 
@@ -92,9 +118,22 @@ for (i_elem, perm) in enumerate(elements(psymbed))
                  orbcoords[2,idx_filt] .+ LR[2],
                  color="blue",
                  markerstrokecolor="blue",
-                 series_annotations=[Plots.text(x, 12, :left, :bottom) for x in orbnames[idx_filt]], label=nothing)
+                 series_annotations=[Plots.text(x, 6, :left, :bottom) for x in orbnames[idx_filt]], label=nothing)
     end
     xlims!(extent[1], extent[2])
     ylims!(extent[3], extent[4])
-    savefig(fig, "point_symmetry-$i_elem.html")
+    savefig(fig, "example_honeycomb_symmetry/point_symmetry-$i_elem.svg")
 end
+
+# ![](example_honeycomb_symmetry/point_symmetry-1.svg)
+# ![](example_honeycomb_symmetry/point_symmetry-2.svg)
+# ![](example_honeycomb_symmetry/point_symmetry-3.svg)
+# ![](example_honeycomb_symmetry/point_symmetry-4.svg)
+# ![](example_honeycomb_symmetry/point_symmetry-5.svg)
+# ![](example_honeycomb_symmetry/point_symmetry-6.svg)
+# ![](example_honeycomb_symmetry/point_symmetry-7.svg)
+# ![](example_honeycomb_symmetry/point_symmetry-8.svg)
+# ![](example_honeycomb_symmetry/point_symmetry-9.svg)
+# ![](example_honeycomb_symmetry/point_symmetry-10.svg)
+# ![](example_honeycomb_symmetry/point_symmetry-11.svg)
+# ![](example_honeycomb_symmetry/point_symmetry-12.svg)

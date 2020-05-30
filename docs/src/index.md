@@ -1,36 +1,16 @@
-# TightBindingLattice
+# Welcome to TightBindingLattice
 
-Lattice.
+## Overview
 
-
-`Group` has group structure. Examples are `FiniteAbelianGroup`, `GenericGroup`
-- Multiplication table
-- order (period length) of every element
+TightBindingLattice is a package that provides funtionalities for (1) defining a lattice system, and (2) symmetry analysis.
 
 
-Symmetry is the "presentation" of group.
+## Installation
 
-
-`Symmetry` on the other hand, is a representation of the group structure in some space.
-Examples are: `TranslationSymmetry`, `PointSymmetry`. Members are
-- group
-- generators
-- conjugacy_classes
-- character_table
-- irreps
-- element names
-
-`PointSymmetry` has additional info
-- matrix_representations (i.e. representation in units of lattice vectors)
-- Schoenflies
-- Hermann Mauguinn
-
-
-
-
-
-
-
-```@autodocs
-Modules = [TightBindingLattice]
+TightBindingLattice is currently not included in Julia's default package registry.
+To install, first add the package registry `KyugminLeeRegistry` and then install TightBindingLattice.
+```julia-repl
+(@v1.4) pkg> registry add https://github.com/kyungminlee/KyungminLeeRegistry.git
+(@v1.4) pkg> add TightBindingLattice
 ```
+

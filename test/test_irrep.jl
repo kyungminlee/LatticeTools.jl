@@ -113,7 +113,7 @@ using TightBindingLattice
             @test group_order(ssic) == group_order(tsic) * group_order(psic)
 
             @test tsic.symmetry.orthocube == ssic.normal.symmetry.orthocube
-            @test psic.symmetry.hermann_mauguinn == ssic.rest.symmetry.hermann_mauguinn
+            @test psic.symmetry.hermann_mauguin == ssic.rest.symmetry.hermann_mauguin
             @test tsic.irrep_index == ssic.normal.irrep_index
             @test psic.irrep_index == ssic.rest.irrep_index
             @test tsic.irrep_component == ssic.normal.irrep_component

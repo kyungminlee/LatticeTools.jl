@@ -2,21 +2,18 @@
 
 using LinearAlgebra
 using Plots
-pyplot()
-import DisplayAs
-
 using TightBindingLattice
 
-latexify(s::AbstractString) = "\$" * (
-                    s |> (x-> replace(x, r"<sup>(.+?)</sup>" => s"^{\1}"))
-                      |> (x-> replace(x, r"<sub>(.+?)</sub>" => s"_{\1}"))
-                      |> (x-> replace(x, r"-(\d)" => s"\\overline{\1}"))
-                )* "\$"
-
+simplifyname(s::AbstractString) = (
+                    s |> (x-> replace(x, r"<sup>(.+?)</sup>" => s"\1"))
+                      |> (x-> replace(x, r"<sub>(.+?)</sub>" => s"[\1]"))
+                )
 function makewithin(extent::AbstractVector{<:Real})
     a, b, c, d = extent
     (x::Real, y::Real) -> ((a <= x <= b) && (c <= y <= d))
 end
+mkpath("example_little_symmetry_kspace_honeycomb")
+
 
 # ## Honeycome lattice
 
@@ -49,8 +46,10 @@ let bravais_lattice = [], a_sites = [], b_sites = []
     scatter!(b_sites[1,:], b_sites[2,:], color="blue", markerstrokewidth=0, markersize=5, label="B")
     xlims!(extent[1], extent[2])
     ylims!(extent[3], extent[4])
-    img
+    savefig(img, "example_little_symmetry_kspace_honeycomb/realspace.svg")
 end
+
+# ![](example_little_symmetry_kspace_honeycomb/realspace.svg)
 
 # ## √3 × √3 supercell
 
@@ -82,17 +81,19 @@ let bravais_lattice = [], a_sites = [], b_sites = []
     scatter!(b_sites[1,:], b_sites[2,:], color="blue", markerstrokewidth=0, markersize=5, label="B")
     xlims!(extent[1], extent[2])
     ylims!(extent[3], extent[4])
-    img
+    savefig(img, "example_little_symmetry_kspace_honeycomb/realspace-root3xroot3.svg")
 end
+
+# ![](example_little_symmetry_kspace_honeycomb/realspace-root3xroot3.svg)
 
 
 # ### Symmetries
 tsym = TranslationSymmetry(lattice)
 psym = project(PointSymmetryDatabase.get(25), [1 0 0; 0 1 0])
-println("point symmetry (Hermann Mauguinn): $(psym.hermann_mauguinn)")
+println("point symmetry (Hermann Mauguin): $(psym.hermann_mauguin)")
 println("translation symmetry compatible with point symmetry? ", iscompatible(tsym, psym))
 
-println("irreducible represnetations:")
+println("irreducible representations:")
 for tsym_irrep_index in 1:num_irreps(tsym)
     kf = tsym.fractional_momenta[tsym_irrep_index]
     kc = lattice.unitcell.reducedreciprocallatticevectors * kf
@@ -111,20 +112,21 @@ for tsym_irrep_index in 1:num_irreps(tsym)
     end
     print("]\n")
     print("  is point symmetry compatible with momentum: $(iscompatible(tsym, tsym_irrep_index, psym))\n")
-    print("  little point symmetry: $(psym_little.hermann_mauguinn)\n")
+    print("  little point symmetry: $(psym_little.hermann_mauguin)\n")
 end
 
 
 # ### Plot momentum space
 let
-    extent = [-1.2, 1.2, -1.6, 1.6]
+    extent = [-1.1, 1.1, -1.4, 1.4]
     within = makewithin(extent)
 
     reciprocallatticepoints = []
     kpoints = []
     littlegroupnames = String[]
     generatornames = String[]
-    kpointnames = String[]    
+    kpointnames = String[]
+
     for tsym_irrep_index in 1:num_irreps(tsym)
         psym_little = little_symmetry(tsym, tsym_irrep_index, psym)
         kf = tsym.fractional_momenta[tsym_irrep_index]
@@ -135,8 +137,8 @@ let
             k = G + kc
             if within(k...)
                 push!(kpoints, k)
-                push!(littlegroupnames, psym_little.hermann_mauguinn)
-                push!(generatornames, join(latexify.(psym_little.element_names[psym_little.generators]), "\n"))
+                push!(littlegroupnames, psym_little.hermann_mauguin)
+                push!(generatornames, join(simplifyname.(psym_little.element_names[psym_little.generators]), "\n"))
                 push!(kpointnames, "$tsym_irrep_index")
             end
         end
@@ -144,25 +146,27 @@ let
     reciprocallatticepoints = hcat(reciprocallatticepoints...)
     kpoints = hcat(kpoints...)
 
-    img = plot(aspect_ratio=1, size=(300, 400))
-    scatter!(kpoints[1,:], kpoints[2,:], markershape=:circle, markersize=4, color="blue",markerstrokecolor="blue", 
-             series_annotations=[Plots.text("$x ", 8, :right, :top) for x in littlegroupnames], label="momentum points")
-    scatter!(kpoints[1,:], kpoints[2,:], markershape=:circle, markersize=0,
-             series_annotations=[Plots.text("$x", 8, :left, :top) for x in generatornames], label="")
-    scatter!(kpoints[1,:], kpoints[2,:], markershape=:circle, markersize=0,
-             series_annotations=[Plots.text("\$\\mathbf{k}_{$x}\$", 12, :left, :bottom) for x in kpointnames], label="")
-    scatter!(reciprocallatticepoints[1,:], reciprocallatticepoints[2,:], markershape=:circle, markersize=6, color="red", markerstrokecolor="red", label="reciprocal lattice")
-    xlims!(extent[1] - 0.1, extent[2] + 0.1)
-    ylims!(extent[3] - 0.1, extent[4] + 0.1)
-    savefig(img, "momentumspace-root3xroot3.pdf")
+    img = plot(size=(400, 500), xlims=(extent[1]-0.1, extent[2]+0.1), ylims=(extent[3]-0.1, extent[4]+0.1), aspect_ratio=1)
+    scatter!(reciprocallatticepoints[1,:], reciprocallatticepoints[2,:],
+             markershape=:circle, markersize=6, markercolor=RGBA(1,1,1,0), markerstrokecolor=RGBA(1,0,0,1), label="reciprocal lattice")
+    scatter!(kpoints[1,:], kpoints[2,:],
+             markershape=:circle, markersize=4, markercolor=RGBA(0,0,1,0.5), markerstrokecolor=RGBA(0,0,1,0.5),
+             series_annotations=[Plots.text("k[$x]", 8, :left, :bottom) for x in kpointnames], label="momentum points")
+    scatter!(kpoints[1,:], kpoints[2,:],
+             markershape=:circle, markersize=0, color=RGBA(0,0,0,0),
+             series_annotations=[Plots.text("$x ", 8, :right, :top) for x in littlegroupnames], label="")
+    scatter!(kpoints[1,:], kpoints[2,:],
+             markershape=:circle, markersize=0, color=RGBA(0,0,0,0),
+             series_annotations=[Plots.text("$x", 6, :left, :top) for x in generatornames], label="")
+    savefig(img, "example_little_symmetry_kspace_honeycomb/momentumspace-root3xroot3.svg")
 end
 
-
+# ![](example_little_symmetry_kspace_honeycomb/momentumspace-root3xroot3.svg)
 
 # ## 2√3 × 2√3 supercell
 
 # ### Make Superlattice
-shape = [4 -2; 2 2]
+shape = [2 2; -2 4]
 lattice = make_lattice(unitcell, shape)
 
 # ### Plot lattice
@@ -189,16 +193,19 @@ let bravais_lattice = [], a_sites = [], b_sites = []
     scatter!(b_sites[1,:], b_sites[2,:], color="blue", markerstrokewidth=0, markersize=3, label="B")
     xlims!(extent[1], extent[2])
     ylims!(extent[3], extent[4])
+    savefig(img, "example_little_symmetry_kspace_honeycomb/realspace-2root3x2root3.svg")
 end
+
+# ![](example_little_symmetry_kspace_honeycomb/realspace-2root3x2root3.svg)
 
 
 # ### Symmetries
 tsym = TranslationSymmetry(lattice)
 psym = project(PointSymmetryDatabase.get(25), [1 0 0; 0 1 0])
-println("point symmetry (Hermann Mauguinn): $(psym.hermann_mauguinn)")
+println("point symmetry (Hermann Mauguin): $(psym.hermann_mauguin)")
 println("translation symmetry compatible with point symmetry? ", iscompatible(tsym, psym))
 
-println("irreducible represnetations:")
+println("irreducible representations:")
 for tsym_irrep_index in 1:num_irreps(tsym)
     kf = tsym.fractional_momenta[tsym_irrep_index]
     kc = lattice.unitcell.reducedreciprocallatticevectors * kf
@@ -217,13 +224,14 @@ for tsym_irrep_index in 1:num_irreps(tsym)
     end
     print("]\n")
     print("  is point symmetry compatible with momentum: $(iscompatible(tsym, tsym_irrep_index, psym))\n")
-    print("  little point symmetry: $(psym_little.hermann_mauguinn)\n")
+    print("  little point symmetry: $(psym_little.hermann_mauguin)\n")
 end
 
 
 # ### Plot momentum space
 let
     extent = [-1.2, 1.2, -1.6, 1.6]
+    extent = [-1.1, 1.1, -1.4, 1.4]
     within = makewithin(extent)
 
     reciprocallatticepoints = []
@@ -242,8 +250,9 @@ let
             k = G + kc
             if within(k...)
                 push!(kpoints, k)
-                push!(littlegroupnames, psym_little.hermann_mauguinn)
-                push!(generatornames, join(latexify.(psym_little.element_names[psym_little.generators]), "\n"))
+                push!(littlegroupnames, psym_little.hermann_mauguin)
+                #push!(generatornames, join(psym_little.element_names[psym_little.generators], "<br>"))
+                push!(generatornames, join(simplifyname.(psym_little.element_names[psym_little.generators]), "\n"))
                 push!(kpointnames, "$tsym_irrep_index")
             end
         end
@@ -251,19 +260,22 @@ let
     reciprocallatticepoints = hcat(reciprocallatticepoints...)
     kpoints = hcat(kpoints...)
 
-    img = plot(aspect_ratio=1, size=(600, 800))
-    scatter!(kpoints[1,:], kpoints[2,:], markershape=:circle, markersize=4, color="blue",markerstrokecolor="blue", 
-             series_annotations=[Plots.text("$x ", 8, :right, :top) for x in littlegroupnames], label="momentum points")
-    scatter!(kpoints[1,:], kpoints[2,:], markershape=:circle, markersize=0,
-             series_annotations=[Plots.text("$x", 8, :left, :top) for x in generatornames], label="")
-    scatter!(kpoints[1,:], kpoints[2,:], markershape=:circle, markersize=0,
-             series_annotations=[Plots.text("\$\\mathbf{k}_{$x}\$", 12, :left, :bottom) for x in kpointnames], label="")
-    scatter!(reciprocallatticepoints[1,:], reciprocallatticepoints[2,:], markershape=:circle, markersize=6, color="red", markerstrokecolor="red", label="reciprocal lattice")
-    xlims!(extent[1]-0.1, extent[2]+0.1)
-    ylims!(extent[3]-0.1, extent[4]+0.1)
-    savefig(img, "momentumspace-2root3x2root3.pdf")
+    img = plot(size=(600, 750), xlims=(extent[1]-0.1, extent[2]+0.1), ylims=(extent[3]-0.1, extent[4]+0.1), aspect_ratio=1)
+    scatter!(reciprocallatticepoints[1,:], reciprocallatticepoints[2,:],
+             markershape=:circle, markersize=6, markercolor=RGBA(1,1,1,0), markerstrokecolor=RGBA(1,0,0,1), label="reciprocal lattice")
+    scatter!(kpoints[1,:], kpoints[2,:],
+             markershape=:circle, markersize=4, markercolor=RGBA(0,0,1,0.5), markerstrokecolor=RGBA(0,0,1,0.5),
+             series_annotations=[Plots.text("k[$x]", 8, :left, :bottom) for x in kpointnames], label="momentum points")
+    scatter!(kpoints[1,:], kpoints[2,:],
+             markershape=:circle, markersize=0, color=RGBA(0,0,0,0),
+             series_annotations=[Plots.text("$x ", 8, :right, :top) for x in littlegroupnames], label="")
+    scatter!(kpoints[1,:], kpoints[2,:],
+             markershape=:circle, markersize=0, color=RGBA(0,0,0,0),
+             series_annotations=[Plots.text("$x", 6, :left, :top) for x in generatornames], label="")
+    savefig(img, "example_little_symmetry_kspace_honeycomb/momentumspace-2root3x2root3.svg")
 end
 
+# ![](example_little_symmetry_kspace_honeycomb/momentumspace-2root3x2root3.svg)
 
 # ## 6 × 6 supercell
 
@@ -295,17 +307,19 @@ let bravais_lattice = [], a_sites = [], b_sites = []
     scatter!(b_sites[1,:], b_sites[2,:], color="blue", markerstrokewidth=0, markersize=3, label="B")
     xlims!(extent[1], extent[2])
     ylims!(extent[3], extent[4])
-    img
+    savefig(img, "example_little_symmetry_kspace_honeycomb/realspace-6x6.svg")
 end
+
+# ![](example_little_symmetry_kspace_honeycomb/realspace-6x6.svg)
 
 
 # ### Symmetries
 tsym = TranslationSymmetry(lattice)
 psym = project(PointSymmetryDatabase.get(25), [1 0 0; 0 1 0])
-println("point symmetry (Hermann Mauguinn): $(psym.hermann_mauguinn)")
+println("point symmetry (Hermann Mauguin): $(psym.hermann_mauguin)")
 println("translation symmetry compatible with point symmetry? ", iscompatible(tsym, psym))
 
-println("irreducible represnetations:")
+println("irreducible representations:")
 for tsym_irrep_index in 1:num_irreps(tsym)
     kf = tsym.fractional_momenta[tsym_irrep_index]
     kc = lattice.unitcell.reducedreciprocallatticevectors * kf
@@ -324,13 +338,14 @@ for tsym_irrep_index in 1:num_irreps(tsym)
     end
     print("]\n")
     print("  is point symmetry compatible with momentum: $(iscompatible(tsym, tsym_irrep_index, psym))\n")
-    print("  little point symmetry: $(psym_little.hermann_mauguinn)\n")
+    print("  little point symmetry: $(psym_little.hermann_mauguin)\n")
 end
 
 
 # ### Plot momentum space
 let
     extent = [-1.2, 1.2, -1.6, 1.6]
+    extent = [-1.1, 1.1, -1.4, 1.4]
     within = makewithin(extent)
 
     reciprocallatticepoints = []
@@ -349,8 +364,9 @@ let
             k = G + kc
             if within(k...)
                 push!(kpoints, k)
-                push!(littlegroupnames, psym_little.hermann_mauguinn)
-                push!(generatornames, join(latexify.(psym_little.element_names[psym_little.generators]), "\n"))
+                push!(littlegroupnames, psym_little.hermann_mauguin)
+                #push!(generatornames, join(psym_little.element_names[psym_little.generators], "<br>"))
+                push!(generatornames, join(simplifyname.(psym_little.element_names[psym_little.generators]), "\n"))
                 push!(kpointnames, "$tsym_irrep_index")
             end
         end
@@ -358,16 +374,19 @@ let
     reciprocallatticepoints = hcat(reciprocallatticepoints...)
     kpoints = hcat(kpoints...)
 
-    img = plot(aspect_ratio=1, size=(900, 1200))
-    scatter!(kpoints[1,:], kpoints[2,:], markershape=:circle, markersize=4, color="blue",markerstrokecolor="blue", 
-             series_annotations=[Plots.text("$x ", 8, :right, :top) for x in littlegroupnames], label="momentum points")
-    scatter!(kpoints[1,:], kpoints[2,:], markershape=:circle, markersize=0,
-             series_annotations=[Plots.text("$x", 8, :left, :top) for x in generatornames], label="")
-    scatter!(kpoints[1,:], kpoints[2,:], markershape=:circle, markersize=0,
-             series_annotations=[Plots.text("\$\\mathbf{k}_{$x}\$", 12, :left, :bottom) for x in kpointnames], label="")
-    scatter!(reciprocallatticepoints[1,:], reciprocallatticepoints[2,:], markershape=:circle, markersize=6, color="red", markerstrokecolor="red", label="reciprocal lattice")
-    xlims!(extent[1] - 0.1, extent[2] + 0.1)
-    ylims!(extent[3] - 0.1, extent[4] + 0.1)
-    savefig(img, "momentumspace-6x6.pdf")
+    img = plot(size=(800, 1000), xlims=(extent[1]-0.1, extent[2]+0.1), ylims=(extent[3]-0.1, extent[4]+0.1), aspect_ratio=1)
+    scatter!(reciprocallatticepoints[1,:], reciprocallatticepoints[2,:],
+             markershape=:circle, markersize=6, markercolor=RGBA(1,1,1,0), markerstrokecolor=RGBA(1,0,0,1), label="reciprocal lattice")
+    scatter!(kpoints[1,:], kpoints[2,:],
+             markershape=:circle, markersize=4, markercolor=RGBA(0,0,1,0.5), markerstrokecolor=RGBA(0,0,1,0.5),
+             series_annotations=[Plots.text("k[$x]", 8, :left, :bottom) for x in kpointnames], label="momentum points")
+    scatter!(kpoints[1,:], kpoints[2,:],
+             markershape=:circle, markersize=0, color=RGBA(0,0,0,0),
+             series_annotations=[Plots.text("$x ", 8, :right, :top) for x in littlegroupnames], label="")
+    scatter!(kpoints[1,:], kpoints[2,:],
+             markershape=:circle, markersize=0, color=RGBA(0,0,0,0),
+             series_annotations=[Plots.text("$x", 6, :left, :top) for x in generatornames], label="")
+    savefig(img, "example_little_symmetry_kspace_honeycomb/momentumspace-6x6.svg")
 end
 
+# ![](example_little_symmetry_kspace_honeycomb/momentumspace-6x6.svg)

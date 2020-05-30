@@ -18,6 +18,11 @@ export group_isomorphism
 export ishomomorphic
 
 
+"""
+    FiniteGroup
+
+Finite group.
+"""
 struct FiniteGroup <: AbstractGroup
     multiplication_table::Matrix{Int}
 
@@ -25,6 +30,9 @@ struct FiniteGroup <: AbstractGroup
     inverses::Vector{Int}
     conjugacy_classes::Vector{Vector{Int}}
 
+    """
+        FiniteGroup(multiplication_table)
+    """
     function FiniteGroup(mtab::AbstractMatrix{<:Integer})
         n_elem = size(mtab, 1)
         size(mtab, 2) != n_elem && throw(ArgumentError("Multiplication table should be a square matrix"))

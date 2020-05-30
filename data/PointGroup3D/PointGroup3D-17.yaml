@@ -14,7 +14,7 @@ ConjugacyClasses:
 - [5]
 ElementNames: ['1', 3<sup>+</sup><sub>001</sub>, 3<sup>-</sup><sub>001</sub>, '-1', -3<sup>+</sup><sub>001</sub>, -3<sup>-</sup><sub>001</sub>]
 Generators: [2, 4]
-HermannMauguinn: '-3'
+HermannMauguin: '-3'
 Schoenflies: C<sub>3i</sub>
 IrreducibleRepresentations:
 - [1, 1, 1, 1, 1, 1]

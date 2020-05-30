@@ -273,7 +273,13 @@ using TightBindingLattice
             @test promote_type(TranslationOperation{Int}, SpaceOperation{Int, Int}) == SpaceOperation{Int, Int}
             @test promote_type(PointOperation{Int}, SpaceOperation{Int, Int}) == SpaceOperation{Int, Int}
 
-            arr = SpaceOperation{Int, Int}[]
+            @test promote_type(IdentityOperation{Int}, SpaceOperation{Int, Rational{Int}}) == SpaceOperation{Int, Rational{Int}}
+            @test promote_type(TranslationOperation{Int}, SpaceOperation{Int, Rational{Int}}) == SpaceOperation{Int, Rational{Int}}
+            @test promote_type(PointOperation{Int}, SpaceOperation{Int, Rational{Int}}) == SpaceOperation{Int, Rational{Int}}
+            
+            @test promote_type(SpaceOperation{Int, Int}, SpaceOperation{Int, Rational{Int}}) == SpaceOperation{Int, Rational{Int}}
+
+            arr = SpaceOperation{Int, Rational{Int}}[]
             push!(arr, PointOperation([0 1; 1 0]))
             push!(arr, TranslationOperation([1, 0]))
             push!(arr, IdentityOperation(Int, 2))

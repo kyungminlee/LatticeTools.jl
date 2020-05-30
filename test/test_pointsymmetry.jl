@@ -26,12 +26,12 @@ using YAML
         ]
         element_names = ["1", "-1"]
         matrix_representations = [[1 0; 0 1], [-1 0; 0 -1]]
-        hermann_mauguinn = "-1"
+        hermann_mauguin = "-1"
         schoenflies = "C<sub>i</sub>"
         psym = PointSymmetry(group, generators,
                              conjugacy_classes, character_table, irreps,
                              element_names, matrix_representations,
-                             hermann_mauguinn, schoenflies)
+                             hermann_mauguin, schoenflies)
 
         let TBL = TightBindingLattice
             @test eltype(psym) == PointOperation{Int}
@@ -55,24 +55,24 @@ using YAML
         let generators = [1]
             @test_throws ArgumentError PointSymmetry(group, generators,
                         conjugacy_classes, character_table, irreps,
-                        element_names, matrix_representations, hermann_mauguinn, schoenflies)
+                        element_names, matrix_representations, hermann_mauguin, schoenflies)
         end
         let conjugacy_classes = [[1], [1,2]]
             @test_throws ArgumentError PointSymmetry(group, generators,
                         conjugacy_classes, character_table, irreps,
-                        element_names, matrix_representations, hermann_mauguinn, schoenflies)
+                        element_names, matrix_representations, hermann_mauguin, schoenflies)
         end
         let character_table = [1 2 3; 4 5 6; 7 8 9]
             @test_throws ArgumentError PointSymmetry(group, generators,
                         conjugacy_classes, character_table, irreps,
-                        element_names, matrix_representations, hermann_mauguinn, schoenflies)
+                        element_names, matrix_representations, hermann_mauguin, schoenflies)
         end
         let irreps = [
                     [ones(ComplexF64, 1, 1), ones(ComplexF64, 1, 1)],
             ]
             @test_throws ArgumentError PointSymmetry(group, generators,
                         conjugacy_classes, character_table, irreps,
-                        element_names, matrix_representations, hermann_mauguinn, schoenflies)
+                        element_names, matrix_representations, hermann_mauguin, schoenflies)
         end
         let irreps = [
                     [ones(ComplexF64, 1, 1), ones(ComplexF64, 1, 1)],
@@ -80,7 +80,7 @@ using YAML
             ]
             @test_throws ArgumentError PointSymmetry(group, generators,
                         conjugacy_classes, character_table, irreps,
-                        element_names, matrix_representations, hermann_mauguinn, schoenflies)
+                        element_names, matrix_representations, hermann_mauguin, schoenflies)
         end
         let irreps = [
                     [ones(ComplexF64, 1, 1), ones(ComplexF64, 1, 1)],
@@ -88,7 +88,7 @@ using YAML
             ]
             @test_throws ArgumentError PointSymmetry(group, generators,
                         conjugacy_classes, character_table, irreps,
-                        element_names, matrix_representations, hermann_mauguinn, schoenflies)
+                        element_names, matrix_representations, hermann_mauguin, schoenflies)
         end
         let irreps = [
                     [ones(ComplexF64, 1, 1), ones(ComplexF64, 1, 1)],
@@ -96,7 +96,7 @@ using YAML
             ]
             @test_throws ArgumentError PointSymmetry(group, generators,
                         conjugacy_classes, character_table, irreps,
-                        element_names, matrix_representations, hermann_mauguinn, schoenflies)
+                        element_names, matrix_representations, hermann_mauguin, schoenflies)
         end
         let irreps = [
                     [ones(ComplexF64, 1, 1), ones(ComplexF64, 1, 1)],
@@ -104,32 +104,32 @@ using YAML
             ]
             @test_throws ArgumentError PointSymmetry(group, generators,
                         conjugacy_classes, character_table, irreps,
-                        element_names, matrix_representations, hermann_mauguinn, schoenflies)
+                        element_names, matrix_representations, hermann_mauguin, schoenflies)
         end
         let element_names = ["1", "2", "3"]
             @test_throws ArgumentError PointSymmetry(group, generators,
                         conjugacy_classes, character_table, irreps,
-                        element_names, matrix_representations, hermann_mauguinn, schoenflies)
+                        element_names, matrix_representations, hermann_mauguin, schoenflies)
         end
         let matrix_representations = [[1 0; 0 1], [-1 0 0; 0 -1 0]]
             @test_throws ArgumentError PointSymmetry(group, generators,
                         conjugacy_classes, character_table, irreps,
-                        element_names, matrix_representations, hermann_mauguinn, schoenflies)
+                        element_names, matrix_representations, hermann_mauguin, schoenflies)
         end
         let matrix_representations = [[1 0 0; 1 0 0], [-1 0 0; -1 0 0]]
             @test_throws ArgumentError PointSymmetry(group, generators,
                         conjugacy_classes, character_table, irreps,
-                        element_names, matrix_representations, hermann_mauguinn, schoenflies)
+                        element_names, matrix_representations, hermann_mauguin, schoenflies)
         end
         let matrix_representations = [[1 0 0; 1 0 0]]
             @test_throws ArgumentError PointSymmetry(group, generators,
                         conjugacy_classes, character_table, irreps,
-                        element_names, matrix_representations, hermann_mauguinn, schoenflies)
+                        element_names, matrix_representations, hermann_mauguin, schoenflies)
         end
         let matrix_representations = [[1 0 ; 0 1], [1 0; 0 1]]
             @test_throws ArgumentError PointSymmetry(group, generators,
                         conjugacy_classes, character_table, irreps,
-                        element_names, matrix_representations, hermann_mauguinn, schoenflies)
+                        element_names, matrix_representations, hermann_mauguin, schoenflies)
         end
     end
 
@@ -252,9 +252,9 @@ using YAML
         @test !iscompatible(hc2, psym_proj)
         @test iscompatible(tsym1, psym_proj)
         @test !iscompatible(tsym2, psym_proj)
-        @test little_symmetry(tsym1, psym_proj).hermann_mauguinn == "422"
-        @test little_symmetry(tsym2, psym_proj).hermann_mauguinn == "222"
-        @test little_symmetry(TranslationSymmetry([4 1; 0 3]), psym_proj).hermann_mauguinn == "2"
+        @test little_symmetry(tsym1, psym_proj).hermann_mauguin == "422"
+        @test little_symmetry(tsym2, psym_proj).hermann_mauguin == "222"
+        @test little_symmetry(TranslationSymmetry([4 1; 0 3]), psym_proj).hermann_mauguin == "2"
         @test_throws ArgumentError little_symmetry(tsym2, 1, psym_proj) # when specifying irrep, tsym and psym have to be compatible
     end
 
@@ -345,8 +345,27 @@ end # @testset "PointSymmetry"
     psym1 = PointSymmetryDatabase.get(13)
     psym2 = PointSymmetryDatabase.find("4mm")
     @test length(psym1) == length(psym2) == 8
-    @test psym1.hermann_mauguinn == "4mm"
-    @test psym2.hermann_mauguinn == "4mm"
+    @test psym1.hermann_mauguin == "4mm"
+    @test psym2.hermann_mauguin == "4mm"
     @test_throws ArgumentError PointSymmetryDatabase.get(999)
     @test isnothing(PointSymmetryDatabase.find("blah blah"))
+    @test dimension(psym1) == dimension(psym2) == 3
+
+    psym1p = PointSymmetryDatabase.get3d(13)
+    psym2p = PointSymmetryDatabase.find3d("4mm")
+    @test length(psym1p) == length(psym2p) == 8
+    @test psym1p.hermann_mauguin == "4mm"
+    @test psym2p.hermann_mauguin == "4mm"
+    @test_throws ArgumentError PointSymmetryDatabase.get3d(999)
+    @test isnothing(PointSymmetryDatabase.find3d("blah blah"))
+    @test dimension(psym1p) == dimension(psym2p) == 3
+
+    psym1p = PointSymmetryDatabase.get2d(6)
+    psym2p = PointSymmetryDatabase.find2d("4mm")
+    @test length(psym1p) == length(psym2p) == 8
+    @test psym1p.hermann_mauguin == "4mm"
+    @test psym2p.hermann_mauguin == "4mm"
+    @test_throws ArgumentError PointSymmetryDatabase.get2d(999)
+    @test isnothing(PointSymmetryDatabase.find2d("blah blah"))
+    @test dimension(psym1p) == dimension(psym2p) == 2
 end

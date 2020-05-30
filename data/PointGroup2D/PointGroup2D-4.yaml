@@ -8,9 +8,10 @@ ConjugacyClasses:
 - [2]
 - [4]
 - [3]
-ElementNames: ['1', 2, m<sub>01</sub>, m<sub>10</sub>]
+ElementNames: ['1', '2', m<sub>10</sub>, m<sub>01</sub>]
 Generators: [2, 3]
-HermannMauguinn: mm2
+HermannMauguin: 2mm
+Schoenflies: C<sub>2v</sub>
 IrreducibleRepresentations:
 - [1, 1, 1, 1]
 - [1, 1, -1, -1]
@@ -21,10 +22,10 @@ MatrixRepresentations:
   - [0, 1]
 - - [-1, 0]
   - [0, -1]
-- - [1, 0]
-  - [0, -1]
 - - [-1, 0]
   - [0, 1]
+- - [1, 0]
+  - [0, -1]
 MultiplicationTable:
 - [1, 2, 3, 4]
 - [2, 1, 4, 3]

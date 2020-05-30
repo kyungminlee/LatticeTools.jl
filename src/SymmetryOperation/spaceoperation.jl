@@ -23,8 +23,8 @@ struct SpaceOperation{Tp<:Real, Tt<:Real} <:AbstractSymmetryOperation{Tt}
         new{Tp, Tt}(Matrix{Tp}(LinearAlgebra.I, dim, dim), zeros(Tt, dim))
     end
 
-    function SpaceOperation{Tp, Tt}(matrix::AbstractMatrix{Tp},
-                                    displacement::AbstractVector{Tt}) where {Tp<:Real, Tt<:Real}
+    function SpaceOperation{Tp, Tt}(matrix::AbstractMatrix,
+                                    displacement::AbstractVector) where {Tp<:Real, Tt<:Real}
         dim = size(matrix, 1)
         if size(matrix, 2) != dim
             throw(DimensionMismatch("matrix is not square: dimensions are $(size(matrix))"))
@@ -57,40 +57,65 @@ end
 
 
 import Base.convert
-function convert(::Type{SpaceOperation{Tp, Tt}}, op::IdentityOperation{<:Union{Tp, Tt}}) where {Tp, Tt}
-    return SpaceOperation(Tp, Tt, dimension(op))
+function convert(::Type{SpaceOperation{Tp1, Tt1}}, arg::SpaceOperation{Tp2, Tt2}) where {Tp1, Tt1, Tp2, Tt2}
+    return SpaceOperation(convert(Matrix{Tp1}, arg.matrix), convert(Vector{Tt1}, arg.displacement))
 end
 
-function convert(::Type{SpaceOperation{Tp, Tt}}, op::PointOperation{Tp}) where {Tp, Tt}
-    return SpaceOperation(op)
+function convert(::Type{SpaceOperation{Tp1, Tt1}}, op::IdentityOperation{T}) where {Tp1, Tt1, T}
+    dim = dimension(op)
+    mat = Matrix{Tp1}(LinearAlgebra.I, (dim, dim))
+    dis = zeros(Tt1, size(mat, 1))
+    return SpaceOperation(mat, dis)
 end
 
-function convert(::Type{SpaceOperation{Tp, Tt}}, op::TranslationOperation{Tt}) where {Tp, Tt}
-    return SpaceOperation(op)
+function convert(::Type{SpaceOperation{Tp1, Tt1}}, op::PointOperation{Tp2}) where {Tp1, Tt1, Tp2}
+    dim = dimension(op)
+    mat = convert(Matrix{Tp1}, op.matrix)
+    dis = zeros(Tt1, dim)
+    return SpaceOperation(mat, dis)
 end
 
-function convert(::Type{SpaceOperation{Tp, Tt}}, arg::AbstractVector{Tt}) where {Tp, Tt}
+function convert(::Type{SpaceOperation{Tp1, Tt1}}, op::TranslationOperation{Tt2}) where {Tp1, Tt1, Tt2}
+    dim = dimension(op)
+    mat = Matrix{Tp1}(LinearAlgebra.I, (dim, dim))
+    dis = convert(Vector{Tt1}, op.displacement)
+    return SpaceOperation(mat, dis)
+end
+
+function convert(::Type{SpaceOperation{Tp1, Tt1}}, arg::AbstractVector{Tt2}) where {Tp1, Tt1, Tt2}
     dim = length(arg)
-    return SpaceOperation(Matrix{Int}(LinearAlgebra.I, dim, dim), arg)
+    mat = Matrix{Tp1}(LinearAlgebra.I, (dim, dim))
+    dis = convert(Vector{Tt1}, arg)
+    return SpaceOperation(mat, dis)
 end
 
-function convert(::Type{SpaceOperation{Tp, Tt}}, arg::AbstractMatrix{Tp}) where {Tp, Tt}
+function convert(::Type{SpaceOperation{Tp1, Tt1}}, arg::AbstractMatrix{Tp2}) where {Tp1, Tt1, Tp2}
     dim = size(arg, 1)
-    return SpaceOperation(arg, zeros(Tp, dim))
+    mat = convert(Matrix{Tp1}, arg)
+    dis = zeros(Tt1, dim)
+    return SpaceOperation(mat, dis)
 end
 
 
 import Base.promote_rule
-function promote_rule(::Type{SpaceOperation{Tp, Tt}}, ::Type{<:IdentityOperation{<:Union{Tp, Tt}}}) where {Tp, Tt}
+function promote_rule(::Type{SpaceOperation{Tp1, Tt1}}, ::Type{SpaceOperation{Tp2, Tt2}}) where {Tp1, Tt1, Tp2, Tt2}
+    Tp = promote_type(Tp1, Tp2)
+    Tt = promote_type(Tt1, Tt2)
     return SpaceOperation{Tp, Tt}
 end
 
-function promote_rule(::Type{SpaceOperation{Tp, Tt}}, ::Type{TranslationOperation{Tt}}) where {Tp, Tt}
+function promote_rule(::Type{SpaceOperation{Tp, Tt}}, ::Type{IdentityOperation{T}}) where {Tp, Tt, T}
     return SpaceOperation{Tp, Tt}
 end
 
-function promote_rule(::Type{SpaceOperation{Tp, Tt}}, ::Type{PointOperation{Tp}}) where {Tp, Tt}
-    return SpaceOperation{Tp, Tt}
+function promote_rule(::Type{SpaceOperation{Tp1, Tt1}}, ::Type{TranslationOperation{Tt2}}) where {Tp1, Tt1, Tt2}
+    Tt = promote_type(Tt1, Tt2)
+    return SpaceOperation{Tp1, Tt}
+end
+
+function promote_rule(::Type{SpaceOperation{Tp1, Tt1}}, ::Type{PointOperation{Tp2}}) where {Tp1, Tt1, Tp2}
+    Tp = promote_type(Tp1, Tp2)
+    return SpaceOperation{Tp, Tt1}
 end
 
 function promote_rule(::Type{TranslationOperation{Tt}}, ::Type{PointOperation{Tp}}) where {Tp, Tt}

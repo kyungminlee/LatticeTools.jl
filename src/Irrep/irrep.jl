@@ -340,7 +340,7 @@ end
 #         tsym_irrep_index = tsic.irrep_index
 #         psym = psic.symmetry
 #         if !iscompatible(tsym, tsym_irrep_index, psym)
-#             throw(ArgumentError("point symmetry $(psym.hermann_mauguinn) is not compatible with translation symmetry $(tsym.hypercube.scale_matrix) at irrep $tsym_irrep_index"))
+#             throw(ArgumentError("point symmetry $(psym.hermann_mauguin) is not compatible with translation symmetry $(tsym.hypercube.scale_matrix) at irrep $tsym_irrep_index"))
 #         end
 #         return new(tsic, psic)
 #     end
