@@ -1,6 +1,6 @@
 export ExactLinearAlgebra
 
-if VERSION < v"1.5"
+if VERSION < v"1.5-"
     import Base._round_rational
 
     function _round_rational(::Type{T}, x::Rational{Tr}, ::RoundingMode{:ToZero}) where {T,Tr}
