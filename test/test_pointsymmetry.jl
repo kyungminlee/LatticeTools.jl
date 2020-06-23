@@ -268,16 +268,16 @@ using YAML
 
     @testset "two-band model" begin
         unitcell = make_unitcell([1.0 0.0; 0.0 1.0]; OrbitalType=String)
-        addorbital!(unitcell, "Ox", FractCoord([0,0], [0.5, 0.0]))
-        addorbital!(unitcell, "Oy", FractCoord([0,0], [0.0, 0.5]))
+        addsite!(unitcell, "Ox", FractCoord([0,0], [0.5, 0.0]))
+        addsite!(unitcell, "Oy", FractCoord([0,0], [0.0, 0.5]))
 
         psym = project(PointSymmetryDatabase.get(13), [1 0 0; 0 1 0])
 
         @testset "lattice permutations" begin
             idx_C4 = 3
             @test element_name(psym, idx_C4) == "4<sup>+</sup><sub>001</sub>"
-            @test findorbitalmap(unitcell, element(psym,idx_C4)) == [(2, [0,0]), (1, [-1,0])]
-            @test findorbitalmap(unitcell, psym)[idx_C4] == [(2, [0,0]), (1, [-1,0])]
+            @test findsitemap(unitcell, element(psym,idx_C4)) == [(2, [0,0]), (1, [-1,0])]
+            @test findsitemap(unitcell, psym)[idx_C4] == [(2, [0,0]), (1, [-1,0])]
 
             lattice = make_lattice(unitcell, [2 0; 0 2])
             psymbed = embed(lattice, psym)
@@ -291,7 +291,7 @@ using YAML
             perms2 = SitePermutation[]
             for pop in elements(psym)
                 push!(perms2, embed(lattice, pop))
-                #push!(perms2, SitePermutation(get_orbital_permutation(lattice, mat, map)))
+                #push!(perms2, SitePermutation(get_site_permutation(lattice, mat, map)))
             end
             @test perms == perms2
 

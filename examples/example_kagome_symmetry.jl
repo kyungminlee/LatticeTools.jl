@@ -18,9 +18,9 @@ within(r) = (extent[1] <= r[1] <= extent[2] && extent[3] <= r[2] <= extent[4])
 function make_kagome_lattice(size_matrix ::AbstractMatrix{<:Integer})
     latticevectors = [1 -0.5; 0 0.5*sqrt(3.0)];
     unitcell = make_unitcell(latticevectors, OrbitalType=String)
-    addorbital!(unitcell, "A", carte2fract(unitcell, [0.5, 0.0]))
-    addorbital!(unitcell, "B", carte2fract(unitcell, [0.25, 0.25*sqrt(3.0)]))
-    addorbital!(unitcell, "C", carte2fract(unitcell, [0.5+0.25, 0.25*sqrt(3.0)]))
+    addsite!(unitcell, "A", carte2fract(unitcell, [0.5, 0.0]))
+    addsite!(unitcell, "B", carte2fract(unitcell, [0.25, 0.25*sqrt(3.0)]))
+    addsite!(unitcell, "C", carte2fract(unitcell, [0.5+0.25, 0.25*sqrt(3.0)]))
 
     nnbondtypes = [
         ([ 0, 0], "A", [ 0, 0], "B", 1),
@@ -58,8 +58,8 @@ function make_kagome_lattice(size_matrix ::AbstractMatrix{<:Integer})
             R_col, r_col = orthocube.wrap(r .+ colvec)
             roworb_super = (roworb, r_row)
             colorb_super = (colorb, r_col)
-            irow = get(supercell.orbitalindices, roworb_super, -1)
-            icol = get(supercell.orbitalindices, colorb_super, -1)
+            irow = get(supercell.siteindices, roworb_super, -1)
+            icol = get(supercell.siteindices, colorb_super, -1)
             push!(nnbonds, ((irow, icol), R_col-R_row, bondsign))
         end
         for (rowvec, roworb, colvec, colorb, bondsign) in nnnbondtypes
@@ -67,8 +67,8 @@ function make_kagome_lattice(size_matrix ::AbstractMatrix{<:Integer})
             R_col, r_col = orthocube.wrap(r .+ colvec)
             roworb_super = (roworb, r_row)
             colorb_super = (colorb, r_col)
-            irow = get(supercell.orbitalindices, roworb_super, -1)
-            icol = get(supercell.orbitalindices, colorb_super, -1)
+            irow = get(supercell.siteindices, roworb_super, -1)
+            icol = get(supercell.siteindices, colorb_super, -1)
             push!(nnnbonds, ((irow, icol), R_col-R_row, bondsign))
         end
     end
@@ -81,8 +81,8 @@ function make_kagome_lattice(size_matrix ::AbstractMatrix{<:Integer})
         R_col, r_col = orthocube.wrap(r .+ colvec)
         roworb_super = (roworb, r_row)
         colorb_super = (colorb, r_col)
-        irow = get(supercell.orbitalindices, roworb_super, -1)
-        icol = get(supercell.orbitalindices, colorb_super, -1)
+        irow = get(supercell.siteindices, roworb_super, -1)
+        icol = get(supercell.siteindices, colorb_super, -1)
         push!(triangle, ((irow, icol), R_col-R_row))
       end
       push!(nn_triangles, (triangle, 1))
@@ -93,8 +93,8 @@ function make_kagome_lattice(size_matrix ::AbstractMatrix{<:Integer})
         R_col, r_col = orthocube.wrap(r .+ colvec)
         roworb_super = (roworb, r_row)
         colorb_super = (colorb, r_col)
-        irow = get(supercell.orbitalindices, roworb_super, -1)
-        icol = get(supercell.orbitalindices, colorb_super, -1)
+        irow = get(supercell.siteindices, roworb_super, -1)
+        icol = get(supercell.siteindices, colorb_super, -1)
         push!(triangle, ((irow, icol), R_col-R_row))
       end
       push!(nn_triangles, (triangle, -1))
@@ -128,13 +128,13 @@ println("Number of irreps: ", num_irreps(psym))
 
 # ## Orbital map
 
-orbital_map = findorbitalmap(kagome.lattice.unitcell, psym)
+site_map = findsitemap(kagome.lattice.unitcell, psym)
 
 println("Orbital map")
 println("-----------")
 println()
 
-for (n, map) in zip(element_names(psym), orbital_map)
+for (n, map) in zip(element_names(psym), site_map)
     @printf("%32s:", n)
     for (i_elem, (j_elem, R)) in enumerate(map)
         @printf("  %d ↦ %d, %-8s", i_elem, j_elem, string(R))
@@ -152,8 +152,8 @@ for (i_elem, perm) in enumerate(elements(tsymbed))
     orbcoords = []
     orbnames = []
 
-    for iorb in eachindex(kagome.lattice.supercell.orbitals)
-        orbfc = getorbitalcoord(kagome.lattice.supercell, perm(iorb))
+    for iorb in eachindex(kagome.lattice.supercell.sites)
+        orbfc = getsitecoord(kagome.lattice.supercell, perm(iorb))
         orbcc = fract2carte(kagome.lattice.supercell, orbfc)
         push!(orbnames, "$iorb")
         push!(orbcoords, orbcc)
@@ -197,8 +197,8 @@ for (i_elem, perm) in enumerate(elements(psymbed))
     orbcoords = []
     orbnames = []
 
-    for iorb in eachindex(kagome.lattice.supercell.orbitals)
-        orbfc = getorbitalcoord(kagome.lattice.supercell, perm(iorb))
+    for iorb in eachindex(kagome.lattice.supercell.sites)
+        orbfc = getsitecoord(kagome.lattice.supercell, perm(iorb))
         orbcc = fract2carte(kagome.lattice.supercell, orbfc)
         push!(orbnames, "$iorb")
         push!(orbcoords, orbcc)

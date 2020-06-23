@@ -1,20 +1,20 @@
 export UnitCell
 export make_unitcell
 export dimension,
-       numorbital,
-       hasorbital,
-       addorbital!,
-       getorbital,
-       getorbitalindex,
-       getorbitalcoord,
-       getorbitalindexcoord,
-       getorbitalname,
+       numsite,
+       hassite,
+       addsite!,
+       getsite,
+       getsiteindex,
+       getsitecoord,
+       getsiteindexcoord,
+       getsitename,
        carte2fract,
        fract2carte,
        whichunitcell,
        momentumgrid
 
-export findorbitalindex
+export findsiteindex
 
 using LinearAlgebra
 
@@ -23,36 +23,36 @@ using LinearAlgebra
     UnitCell{O}
 
 # Parameters
-* `O`: type of "orbital". Any type can be used, but we recommend using `String` or tuple of `String` and `Int`
+* `O`: type of "site". Any type can be used, but we recommend using `String` or tuple of `String` and `Int`
        for compatibility with JSON.
 
 # Members
 * `latticevectors ::Array{Float64, 2}`: Lattice vectors
 * `reducedreciprocallatticevectors ::Array{Float64, 2}`: Reduced reciprocal lattice vectors (transpose of inverse of `latticevectors`)
 * `reciprocallatticevectors ::Array{Float64, 2}`: Reciprocal lattice vectors. `2π * reducedreciprocallatticevectors`
-* `orbitals ::Vector{Tuple{T, FractCoord}}`: List of orbitals within unit cell
-* `orbitalindices ::Dict{T, Int}`: Indices of orbitals
+* `sites ::Vector{Tuple{T, FractCoord}}`: List of sites within unit cell
+* `siteindices ::Dict{T, Int}`: Indices of sites
 """
 mutable struct UnitCell{O}
     latticevectors ::Array{Float64, 2}
-    orbitals ::Vector{Tuple{O, FractCoord}}
+    sites ::Vector{Tuple{O, FractCoord}}
 
     reducedreciprocallatticevectors ::Array{Float64, 2}
     reciprocallatticevectors ::Array{Float64, 2}
-    orbitalindices ::Dict{O, Int}
+    siteindices ::Dict{O, Int}
     function UnitCell{O}(latticevectors ::AbstractArray{<:Real, 2},
-                         orbitals ::AbstractVector{Tuple{O, FractCoord}},
+                         sites ::AbstractVector{Tuple{O, FractCoord}},
                          reducedreciprocallatticevectors ::AbstractArray{<:Real, 2},
                          reciprocallatticevectors ::AbstractArray{<:Real, 2},
-                         orbitalindices ::AbstractDict{O, Int}) where {O}
+                         siteindices ::AbstractDict{O, Int}) where {O}
         if (O <: Integer)
             throw(ArgumentError("OrbitalType should not be integer to avoid confusion"))
         end
         new{O}(latticevectors,
-               orbitals,
+               sites,
                reducedreciprocallatticevectors,
                reciprocallatticevectors,
-               orbitalindices)
+               siteindices)
     end
 end
 
@@ -64,7 +64,7 @@ Construct a one-dimensional lattice.
 
 # Arguments
 * `latticeconstant ::Float64`: Lattice constant
-* `OrbitalType`: List of orbitals
+* `OrbitalType`: List of sites
 
 # Optional Arguments
 * `tol=√ϵ`: Tolerance
@@ -102,10 +102,10 @@ function make_unitcell(latticevectors ::AbstractArray{<:Real, 2};
     end
 
     reduced_rlv = transpose(inv(latticevectors))
-    orbitals = Tuple{OrbitalType, FractCoord}[]
-    orbitalindices = Dict{OrbitalType, Int}()
-    return UnitCell{OrbitalType}(latticevectors, orbitals,
-                                 reduced_rlv, 2*π*reduced_rlv, orbitalindices)
+    sites = Tuple{OrbitalType, FractCoord}[]
+    siteindices = Dict{OrbitalType, Int}()
+    return UnitCell{OrbitalType}(latticevectors, sites,
+                                 reduced_rlv, 2*π*reduced_rlv, siteindices)
 end
 
 
@@ -128,93 +128,93 @@ end
 
 
 """
-    numorbital
+    numsite
 
-Number of orbitals of the unit cell.
+Number of sites of the unit cell.
 
 # Arguments
 * `uc ::UnitCell`
 """
-function numorbital(uc ::UnitCell)
-    return length(uc.orbitals)
+function numsite(uc ::UnitCell)
+    return length(uc.sites)
 end
 
 
 """
-    addorbital!
+    addsite!
 
-Add an orbital to the unit cell.
+Add an site to the unit cell.
 
 # Arguments
 * `uc ::UnitCell{T}`
-* `orbitalname ::{T}`
-* `orbitalcoord ::FractCoord`
+* `sitename ::{T}`
+* `sitecoord ::FractCoord`
 """
-function addorbital!(uc ::UnitCell{O},
-                     orbitalname ::O,
-                     orbitalcoord ::FractCoord) where {O}
+function addsite!(uc ::UnitCell{O},
+                     sitename ::O,
+                     sitecoord ::FractCoord) where {O}
     (ndim, ndim_) = size(uc.latticevectors)
-    if dimension(orbitalcoord) != ndim
-        throw(ArgumentError("orbitalcoord has wrong dimension"))
-    elseif haskey(uc.orbitalindices, orbitalname)
-        throw(ArgumentError( "duplicate orbital name"))
+    if dimension(sitecoord) != ndim
+        throw(ArgumentError("sitecoord has wrong dimension"))
+    elseif haskey(uc.siteindices, sitename)
+        throw(ArgumentError( "duplicate site name"))
     end
-    push!(uc.orbitals, (orbitalname, orbitalcoord))
-    index = length(uc.orbitalindices)+1
-    uc.orbitalindices[orbitalname] = index
+    push!(uc.sites, (sitename, sitecoord))
+    index = length(uc.siteindices)+1
+    uc.siteindices[sitename] = index
     return index
 end
 
 
 """
-    hasorbital{T}
+    hassite{T}
 
-Test whether the unit cell contains the orbital of given name.
-
-# Arguments
-* `uc ::UnitCell{O}`
-* `name ::O`
-"""
-function hasorbital(uc ::UnitCell{O}, name ::O) where {O}
-    return haskey(uc.orbitalindices, name)
-end
-
-
-"""
-    getorbitalindex
-
-Get index of the given orbital.
+Test whether the unit cell contains the site of given name.
 
 # Arguments
 * `uc ::UnitCell{O}`
 * `name ::O`
 """
-function getorbitalindex(uc ::UnitCell{O}, name ::O) where {O}
-    return uc.orbitalindices[name]
+function hassite(uc ::UnitCell{O}, name ::O) where {O}
+    return haskey(uc.siteindices, name)
 end
 
 
 """
-    getorbital
+    getsiteindex
 
-Get the orbital (its orbital name and its fractional coordinates) with the given name.
+Get index of the given site.
+
+# Arguments
+* `uc ::UnitCell{O}`
+* `name ::O`
+"""
+function getsiteindex(uc ::UnitCell{O}, name ::O) where {O}
+    return uc.siteindices[name]
+end
+
+
+"""
+    getsite
+
+Get the site (its site name and its fractional coordinates) with the given name.
 
 # Arguments
 * `uc ::UnitCell{O}`
 * `name ::O`
 
 # Return
-* `(orbitalname, fractcoord)`
+* `(sitename, fractcoord)`
 """
-function getorbital(uc ::UnitCell{O}, name ::O) where {O}
-    return uc.orbitals[ uc.orbitalindices[name] ]
+function getsite(uc ::UnitCell{O}, name ::O) where {O}
+    return uc.sites[ uc.siteindices[name] ]
 end
 
 
 """
-    getorbitalcoord
+    getsitecoord
 
-Get the fractional coordinates of the orbital with the given name.
+Get the fractional coordinates of the site with the given name.
 
 # Arguments
 * `uc ::UnitCell{O}`
@@ -223,13 +223,13 @@ Get the fractional coordinates of the orbital with the given name.
 # Return
 * `fractcoord`
 """
-function getorbitalcoord(uc ::UnitCell{O}, name ::O) where {O}
-    return getorbital(uc, name)[2]
+function getsitecoord(uc ::UnitCell{O}, name ::O) where {O}
+    return getsite(uc, name)[2]
 end
 
 
 """
-    getorbitalindexcoord
+    getsiteindexcoord
 
 # Arguments
 * `uc ::UnitCell{T}`
@@ -238,45 +238,45 @@ end
 # Return
 * `(index, fractcoord)`
 """
-function getorbitalindexcoord(uc ::UnitCell{O}, name::O) where {O}
-    index = getorbitalindex(uc, name)
-    coord = getorbitalcoord(uc, index)
+function getsiteindexcoord(uc ::UnitCell{O}, name::O) where {O}
+    index = getsiteindex(uc, name)
+    coord = getsitecoord(uc, index)
     return (index, coord)
 end
 
 
 """
-    getorbital
+    getsite
 
 # Arguments
 * `uc ::UnitCell{T}`
 * `index ::Integer`
 
 # Return
-* `(orbitalname, fractcoord)`
+* `(sitename, fractcoord)`
 """
-function getorbital(uc ::UnitCell, index::Integer)
-    return uc.orbitals[index]
+function getsite(uc ::UnitCell, index::Integer)
+    return uc.sites[index]
 end
 
 
 """
-    getorbitalname
+    getsitename
 
 # Arguments
 * `uc ::UnitCell`
 * `index ::Integer`
 
 # Return
-* `orbitalname`
+* `sitename`
 """
-function getorbitalname(uc ::UnitCell, index ::Integer)
-    return uc.orbitals[index][1]
+function getsitename(uc ::UnitCell, index ::Integer)
+    return uc.sites[index][1]
 end
 
 
 """
-    getorbitalcoord
+    getsitecoord
 
 # Arguments
 * `uc ::UnitCell`
@@ -285,8 +285,8 @@ end
 # Return
 * `fractcoord`
 """
-function getorbitalcoord(uc ::UnitCell, index ::Integer)
-    return uc.orbitals[index][2]
+function getsitecoord(uc ::UnitCell, index ::Integer)
+    return uc.sites[index][2]
 end
 
 
@@ -331,11 +331,11 @@ end
     whichunitcell
 
 # Return
-* `R ::Vector{Int}`: which unit cell the specificied orbital/cartesian coordinates belongs to.
+* `R ::Vector{Int}`: which unit cell the specificied site/cartesian coordinates belongs to.
 """
 function whichunitcell(uc::UnitCell{O}, name::O, cc::CarteCoord;
                        tol::Real=Base.rtoldefault(Float64)) where {O}
-    fc1 = getorbitalcoord(uc, name)
+    fc1 = getsitecoord(uc, name)
     fc2 = carte2fract(uc, cc)
     if !isapprox(fc1.fraction, fc2.fraction; atol=tol)
         throw(ArgumentError("$(fc1.fraction) != $(fc2.fraction) [tol=$(tol)]"))
@@ -349,11 +349,11 @@ end
     whichunitcell
 
 # Return
-* `R ::Vector{Int}`: which unit cell the specificied orbital/cartesian coordinates belongs to.
+* `R ::Vector{Int}`: which unit cell the specificied site/cartesian coordinates belongs to.
 """
 function whichunitcell(uc::UnitCell{O}, name::O, fc::FractCoord;
                        tol::Real=Base.rtoldefault(Float64)) where {O}
-    fc1 = getorbitalcoord(uc, name)
+    fc1 = getsitecoord(uc, name)
     fc2 = fc
     if !isapprox(fc1.fraction, fc2.fraction; atol=tol)
         throw(ArgumentError("$(fc1.fraction) != $(fc2.fraction) [tol=$(tol)]"))
@@ -364,7 +364,7 @@ end
 
 #=
 function zero(uc::UnitCell; dtype::DataType=ComplexF64)
-    norb = numorbital(uc)
+    norb = numsite(uc)
     return Base.zeros(dtype, (norb, norb))
 end
 =#
@@ -391,20 +391,20 @@ import Base.==
 function (==)(lhs::UnitCell{O}, rhs::UnitCell{O}) where O
   return (
     lhs.latticevectors == rhs.latticevectors &&
-    lhs.orbitals == rhs.orbitals
+    lhs.sites == rhs.sites
   )
 end
 
 
 """
-    findorbitalindex
+    findsiteindex
 
-Returns (orbital_index, unitcell_vector), or `(-1, [])` if not found.
+Returns (site_index, unitcell_vector), or `(-1, [])` if not found.
 """
-function findorbitalindex(unitcell::UnitCell, fc::FractCoord; tol=Base.rtoldefault(Float64))
-    i = findfirst(x -> isapprox(x, fc.fraction; atol=tol), [orbfc.fraction for (orbname, orbfc) in unitcell.orbitals])
+function findsiteindex(unitcell::UnitCell, fc::FractCoord; tol=Base.rtoldefault(Float64))
+    i = findfirst(x -> isapprox(x, fc.fraction; atol=tol), [orbfc.fraction for (orbname, orbfc) in unitcell.sites])
     if i !== nothing
-        (orbname, orbfc) = unitcell.orbitals[i]
+        (orbname, orbfc) = unitcell.sites[i]
         return (i, fc.whole - orbfc.whole)
     else
         return (-1, Int[])

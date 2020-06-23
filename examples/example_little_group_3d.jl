@@ -3,8 +3,8 @@
 using TightBindingLattice
 
 unitcell = make_unitcell([1.0 0.0 0.0; 0.0 1.0 0.0; 0 0 1]; OrbitalType=String)
-addorbital!(unitcell, "Ox", FractCoord([0,0,0], [0.5, 0.0, 0.0]))
-addorbital!(unitcell, "Oy", FractCoord([0,0,0], [0.0, 0.5, 0.0]))
+addsite!(unitcell, "Ox", FractCoord([0,0,0], [0.5, 0.0, 0.0]))
+addsite!(unitcell, "Oy", FractCoord([0,0,0], [0.0, 0.5, 0.0]))
 
 # Currently, make_lattice in three-dimension is unsupported
 

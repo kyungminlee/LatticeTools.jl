@@ -44,51 +44,51 @@ using TightBindingLattice
         uc = make_unitcell(latticevectors)
         fc1 = FractCoord([0, 0], [0.5, 0.0])
         fc2 = FractCoord([0, 0], [0.0, 0.5])
-        index1 = addorbital!(uc, "Ox", fc1)
-        index2 = addorbital!(uc, "Oy", fc2)
+        index1 = addsite!(uc, "Ox", fc1)
+        index2 = addsite!(uc, "Oy", fc2)
         @test index1 == 1
         @test index2 == 2
 
         @test dimension(uc) == 2
-        @test numorbital(uc) == 2
-        @test hasorbital(uc, "Ox")
-        @test hasorbital(uc, "Oy")
-        @test !hasorbital(uc, "Oz")
-        @test getorbitalindex(uc, "Ox") == 1
-        @test getorbitalindex(uc, "Oy") == 2
-        @test getorbital(uc, "Ox") == ("Ox", fc1)
-        @test getorbital(uc, "Oy") == ("Oy", fc2)
-        @test getorbitalcoord(uc, "Ox") == fc1
-        @test getorbitalcoord(uc, "Oy") == fc2
-        @test getorbitalindexcoord(uc, "Ox") == (1, fc1)
-        @test getorbitalindexcoord(uc, "Oy") == (2, fc2)
+        @test numsite(uc) == 2
+        @test hassite(uc, "Ox")
+        @test hassite(uc, "Oy")
+        @test !hassite(uc, "Oz")
+        @test getsiteindex(uc, "Ox") == 1
+        @test getsiteindex(uc, "Oy") == 2
+        @test getsite(uc, "Ox") == ("Ox", fc1)
+        @test getsite(uc, "Oy") == ("Oy", fc2)
+        @test getsitecoord(uc, "Ox") == fc1
+        @test getsitecoord(uc, "Oy") == fc2
+        @test getsiteindexcoord(uc, "Ox") == (1, fc1)
+        @test getsiteindexcoord(uc, "Oy") == (2, fc2)
 
-        @test getorbital(uc, 1) == ("Ox", fc1)
-        @test getorbital(uc, 2) == ("Oy", fc2)
-        @test getorbitalname(uc, 1) == "Ox"
-        @test getorbitalname(uc, 2) == "Oy"
-        @test getorbitalcoord(uc, 1) == fc1
-        @test getorbitalcoord(uc, 2) == fc2
+        @test getsite(uc, 1) == ("Ox", fc1)
+        @test getsite(uc, 2) == ("Oy", fc2)
+        @test getsitename(uc, 1) == "Ox"
+        @test getsitename(uc, 2) == "Oy"
+        @test getsitecoord(uc, 1) == fc1
+        @test getsitecoord(uc, 2) == fc2
     end
 
     @testset "Methods Exceptions" begin
         uc = make_unitcell(latticevectors; OrbitalType=String)
-        addorbital!(uc, "Ox", FractCoord([0, 0], [0.0, 0.0]))
-        @test_throws ArgumentError addorbital!(uc, "Oy", FractCoord([0], [0.5]))
-        @test_throws ArgumentError addorbital!(uc, "Ox", FractCoord([0, 0], [0.0, 0.0]))
+        addsite!(uc, "Ox", FractCoord([0, 0], [0.0, 0.0]))
+        @test_throws ArgumentError addsite!(uc, "Oy", FractCoord([0], [0.5]))
+        @test_throws ArgumentError addsite!(uc, "Ox", FractCoord([0, 0], [0.0, 0.0]))
     end
 
     @testset "Type" begin
         uc = make_unitcell(latticevectors; OrbitalType=typeof((:up, "A")))
         fc = Dict("Ox" => FractCoord([0, 0], [0.5, 0.0]),
                             "Oy" => FractCoord([0, 0], [0.0, 0.5]))
-        for orbital in ["Ox", "Oy"]
+        for site in ["Ox", "Oy"]
             for spin in [:up, :dn]
-                addorbital!(uc, (spin, orbital), fc[orbital])
+                addsite!(uc, (spin, site), fc[site])
             end
         end
-        @test getorbitalname(uc, 1) == (:up, "Ox")
-        @test getorbitalname(uc, 2) == (:dn, "Ox")
+        @test getsitename(uc, 1) == (:up, "Ox")
+        @test getsitename(uc, 2) == (:dn, "Ox")
     end
 
     @testset "fract2carte/carte2fract" begin
@@ -148,21 +148,21 @@ using TightBindingLattice
 
     @testset "whichunitcell" begin
         uc = make_unitcell([1.0 0.0; 0.0 1.0]; OrbitalType=String)
-        addorbital!(uc, "A", FractCoord([0,0], [0.1, 0.1]))
-        addorbital!(uc, "B", FractCoord([0,0], [0.2, 0.2]))
+        addsite!(uc, "A", FractCoord([0,0], [0.1, 0.1]))
+        addsite!(uc, "B", FractCoord([0,0], [0.2, 0.2]))
         @test whichunitcell(uc, "A", [1.1, 2.1]) == [1, 2]
         @test whichunitcell(uc, "A", FractCoord([1,2], [0.1, 0.1])) == [1, 2]
         @test_throws ArgumentError whichunitcell(uc, "B", [1.1, 2.1])
         @test_throws ArgumentError whichunitcell(uc, "B", FractCoord([1,2], [0.1, 0.1]))
     end
 
-    @testset "findorbitalindex" begin
+    @testset "findsiteindex" begin
         uc = make_unitcell([1.0 0.0; 0.0 1.0]; OrbitalType=String)
-        addorbital!(uc, "A", FractCoord([0, 0], [0.0, 0.0]))
-        @test findorbitalindex(uc, FractCoord([0,0], [0.0, 0.0])) == (1, [0,0])
-        @test findorbitalindex(uc, FractCoord([1,0], [0.0, 0.0])) == (1, [1,0])
+        addsite!(uc, "A", FractCoord([0, 0], [0.0, 0.0]))
+        @test findsiteindex(uc, FractCoord([0,0], [0.0, 0.0])) == (1, [0,0])
+        @test findsiteindex(uc, FractCoord([1,0], [0.0, 0.0])) == (1, [1,0])
 
-        @test findorbitalindex(uc, FractCoord([0,0], [0.2, 0.2])) == (-1, Int[])
+        @test findsiteindex(uc, FractCoord([0,0], [0.2, 0.2])) == (-1, Int[])
     end
 
 end

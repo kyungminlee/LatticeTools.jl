@@ -113,7 +113,7 @@ using TightBindingLattice
 
     @testset "lattice-symmetry" begin
         unitcell = make_unitcell([1.0 0.0; 0.0 1.0]; OrbitalType=String)
-        addorbital!(unitcell, "X", FractCoord([0, 0], [0.5, 0.0]))
+        addsite!(unitcell, "X", FractCoord([0, 0], [0.5, 0.0]))
         
         lattice = make_lattice(unitcell, [2 0; 0 2])
         @test_throws DimensionMismatch iscompatible(lattice, TranslationOperation([1,2,3]))

@@ -4,8 +4,8 @@ using TightBindingLattice
 
 @testset "irrep" begin
     unitcell = make_unitcell([1.0 0.0; 0.0 1.0]; OrbitalType=String)
-    addorbital!(unitcell, "Ox", FractCoord([0,0], [0.5, 0.0]))
-    addorbital!(unitcell, "Oy", FractCoord([0,0], [0.0, 0.5]))
+    addsite!(unitcell, "Ox", FractCoord([0,0], [0.5, 0.0]))
+    addsite!(unitcell, "Oy", FractCoord([0,0], [0.0, 0.5]))
 
     lattice = make_lattice(unitcell, [4 0; 0 4])
     tsym = TranslationSymmetry(lattice)
