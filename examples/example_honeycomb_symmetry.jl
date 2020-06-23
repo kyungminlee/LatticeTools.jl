@@ -18,8 +18,8 @@ scale_matrix = [2 2; -2 4]
 @assert det(scale_matrix) ≈ 12
 
 unitcell = make_unitcell([1 -0.5; 0 0.5*sqrt(3.0)])
-addorbital!(unitcell, "A", carte2fract(unitcell, [0.5, 0.5/sqrt(3)]))
-addorbital!(unitcell, "B", carte2fract(unitcell, [0.5,-0.5/sqrt(3)]))
+addsite!(unitcell, "A", carte2fract(unitcell, [0.5, 0.5/sqrt(3)]))
+addsite!(unitcell, "B", carte2fract(unitcell, [0.5,-0.5/sqrt(3)]))
 
 lattice = make_lattice(unitcell, scale_matrix)
 
@@ -57,8 +57,8 @@ for (i_elem, perm) in enumerate(elements(tsymbed))
     orbcoords = []
     orbnames = []
 
-    for iorb in eachindex(lattice.supercell.orbitals)
-        orbfc = getorbitalcoord(lattice.supercell, perm(iorb))
+    for iorb in eachindex(lattice.supercell.sites)
+        orbfc = getsitecoord(lattice.supercell, perm(iorb))
         orbcc = fract2carte(lattice.supercell, orbfc)
         push!(orbnames, "$iorb")
         push!(orbcoords, orbcc)
@@ -102,8 +102,8 @@ for (i_elem, perm) in enumerate(elements(psymbed))
     orbcoords = []
     orbnames = []
 
-    for iorb in eachindex(lattice.supercell.orbitals)
-        orbfc = getorbitalcoord(lattice.supercell, perm(iorb))
+    for iorb in eachindex(lattice.supercell.sites)
+        orbfc = getsitecoord(lattice.supercell, perm(iorb))
         orbcc = fract2carte(lattice.supercell, orbfc)
         push!(orbnames, "$iorb")
         push!(orbcoords, orbcc)

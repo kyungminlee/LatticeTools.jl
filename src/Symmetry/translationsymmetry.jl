@@ -111,14 +111,14 @@ struct TranslationSymmetry <: AbstractSymmetry{TranslationOperation{Int}}
         conjugacy_classes = [[i] for (i,x) in enumerate(element_names)]
 
         momentum(oc::AbstractVector{<:Integer}) = [2π * x / d for (x, d) in zip(oc, orthogonal_shape)]
-        character_table = ComplexF64[cis(-dot(momentum(kd), t))
+        character_table = ComplexF64[cis(-LinearAlgebra.dot(momentum(kd), t))
                                      for kd in orthogonal_coordinates,
                                           t in orthogonal_coordinates]
 
         character_table = cleanup_number(character_table, tol)
         
         let 
-            χ = ComplexF64[cis(-2π * dot(k, t)) for k in fractional_momenta, t in coordinates]
+            χ = ComplexF64[cis(-2π * LinearAlgebra.dot(k, t)) for k in fractional_momenta, t in coordinates]
             @assert isapprox(character_table, χ; atol=tol)
         end
 
@@ -279,7 +279,7 @@ function isbragg(fractional_momentum::AbstractVector{<:Rational{<:Integer}},
     if length(fractional_momentum) != length(translation)
         throw(DimensionMismatch("lengths of momentum and translation do not match"))
     end
-    value = dot(fractional_momentum, translation)
+    value = LinearAlgebra.dot(fractional_momentum, translation)
     return mod(value, 1) == 0
 end
 
@@ -391,7 +391,7 @@ end
 #         throw(ArgumentError("lattice and translation symmetry not consistent"))
 #     end
 #     n_uc = length(lattice.hypercube.coordinates)
-#     n_orb = numorbital(lattice.unitcell)
+#     n_orb = numsite(lattice.unitcell)
 #     dim = dimension(lattice)
 #     permutations = Permutation[]
 #     trans_ortho = zeros(Int, dim)
@@ -400,11 +400,11 @@ end
 #         trans_ortho[d] = 1
 #         trans_coord = tsym.orthogonal_to_coordinate_map[trans_ortho]
 #         p = zeros(Int, n_uc * n_orb)
-#         for (orbital_index1, ((orbital_name1, uc_coord1), _)) in enumerate(lattice.supercell.orbitals)
+#         for (site_index1, ((site_name1, uc_coord1), _)) in enumerate(lattice.supercell.sites)
 #             _, uc_coord2 = lattice.hypercube.wrap(uc_coord1 + trans_coord)
-#             orbital_index1 = getorbitalindex(lattice.supercell, (orbital_name1, uc_coord1))
-#             orbital_index2 = getorbitalindex(lattice.supercell, (orbital_name1, uc_coord2))
-#             p[orbital_index1] = orbital_index2
+#             site_index1 = getsiteindex(lattice.supercell, (site_name1, uc_coord1))
+#             site_index2 = getsiteindex(lattice.supercell, (site_name1, uc_coord2))
+#             p[site_index1] = site_index2
 #         end
 #         push!(permutations, Permutation(p))
 #     end
@@ -491,7 +491,7 @@ end
     #     conjugacy_classes = [[i] for (i,x) in enumerate(element_names)]
 
     #     momentum(oc::AbstractVector{<:Integer}) = [2π * x / d for (x, d) in zip(oc, orthogonal_shape)]
-    #     character_table = ComplexF64[cis(-dot(momentum(kd), t))
+    #     character_table = ComplexF64[cis(-LinearAlgebra.dot(momentum(kd), t))
     #                                  for kd in orthogonal_coordinates,
     #                                       t in orthogonal_coordinates]
 

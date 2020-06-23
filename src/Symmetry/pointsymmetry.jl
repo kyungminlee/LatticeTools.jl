@@ -87,7 +87,7 @@ struct PointSymmetry <: AbstractSymmetry{PointOperation{Int}}
                 throw(ArgumentError("wrong number of matrices in irrep $rep"))
             end
             d = size(rep[1], 1)
-            if !isapprox(rep[1], Matrix(I, (d,d)); atol=tol)
+            if !isapprox(rep[1], Matrix(LinearAlgebra.I, (d,d)); atol=tol)
                 throw(ArgumentError("matrix representation of identity should be identity"))
             end
             for m in rep
@@ -229,25 +229,25 @@ import Base.length
 length(sym::PointSymmetry) = length(elements(sym))
 
 # """
-#     get_orbital_permutation(lattice, matrix_representation, orbital_map)
+#     get_site_permutation(lattice, matrix_representation, site_map)
 #
 # Get a list of `Permutation` which represents the element of the point group
-# specified by the `matrix_representation` and `orbital_map`, which respectively
+# specified by the `matrix_representation` and `site_map`, which respectively
 # contain information about how the Bravais lattice transforms, and how the
 # basis sites transforms.
 # """
-# function get_orbital_permutation(
+# function get_site_permutation(
 #             lattice::Lattice,
 #             matrix_representation::AbstractMatrix{<:Integer},
-#             orbital_map::AbstractVector{<:Tuple{<:Integer, <:AbstractVector{<:Integer}}})
-#     p = zeros(Int, numorbital(lattice.supercell))
-#     for (i, (j, dR)) in enumerate(orbital_map)
-#         namei = getorbitalname(lattice.unitcell, i)
-#         namej = getorbitalname(lattice.unitcell, j)
+#             site_map::AbstractVector{<:Tuple{<:Integer, <:AbstractVector{<:Integer}}})
+#     p = zeros(Int, numsite(lattice.supercell))
+#     for (i, (j, dR)) in enumerate(site_map)
+#         namei = getsitename(lattice.unitcell, i)
+#         namej = getsitename(lattice.unitcell, j)
 #         for Ri in lattice.hypercube.coordinates
 #             _, Rj = lattice.hypercube.wrap(matrix_representation * Ri + dR)
-#             i_super = lattice.supercell.orbitalindices[(namei, Ri)]
-#             j_super = lattice.supercell.orbitalindices[(namej, Rj)]
+#             i_super = lattice.supercell.siteindices[(namei, Ri)]
+#             j_super = lattice.supercell.siteindices[(namej, Rj)]
 #             p[i_super] = j_super
 #         end
 #     end
@@ -255,23 +255,23 @@ length(sym::PointSymmetry) = length(elements(sym))
 # end
 
 
-# function get_orbital_permutations(lattice::Lattice, point_symmetry::PointSymmetry)
-#     # orbitalmap contains how orbitals of the "unitcell" transform under
+# function get_site_permutations(lattice::Lattice, point_symmetry::PointSymmetry)
+#     # sitemap contains how sites of the "unitcell" transform under
 #     # every point group operations. Uses heuristics
-#     orbitalmap = findorbitalmap(lattice.unitcell, point_symmetry)
+#     sitemap = findsitemap(lattice.unitcell, point_symmetry)
 
 #     permutations = Permutation[]
 #     sizehint!(permutations, group_order(point_symmetry))
 
-#     for (i_elem, (matrep, orbmap)) in enumerate(zip(point_symmetry.matrix_representations, orbitalmap))
-#         p = zeros(Int, numorbital(lattice.supercell))
+#     for (i_elem, (matrep, orbmap)) in enumerate(zip(point_symmetry.matrix_representations, sitemap))
+#         p = zeros(Int, numsite(lattice.supercell))
 #         for (i, (j, dR)) in enumerate(orbmap)
-#             namei = getorbitalname(lattice.unitcell, i)
-#             namej = getorbitalname(lattice.unitcell, j)
+#             namei = getsitename(lattice.unitcell, i)
+#             namej = getsitename(lattice.unitcell, j)
 #             for Ri in lattice.hypercube.coordinates
 #                 _, Rj = lattice.hypercube.wrap(matrep * Ri + dR)
-#                 i_super = lattice.supercell.orbitalindices[(namei, Ri)]
-#                 j_super = lattice.supercell.orbitalindices[(namej, Rj)]
+#                 i_super = lattice.supercell.siteindices[(namei, Ri)]
+#                 j_super = lattice.supercell.siteindices[(namej, Rj)]
 #                 p[i_super] = j_super
 #             end
 #         end
@@ -296,11 +296,11 @@ length(sym::PointSymmetry) = length(elements(sym))
 #     end
 #     #@assert iscompatible(tsym, psym)
 #
-#     tsym_permutations = get_orbital_permutations(lattice, tsym)
+#     tsym_permutations = get_site_permutations(lattice, tsym)
 #     tsym_irrep = irrep(tsym, tsym_irrep_index)
 #     tsym_irrep_components = [m[tsym_irrep_compo, tsym_irrep_compo] for m in tsym_irrep]
 #
-#     psym_permutations = get_orbital_permutations(lattice, psym)
+#     psym_permutations = get_site_permutations(lattice, psym)
 #
 #     psym_irrep = irrep(psym, psym_irrep_index)
 #     psym_irrep_components = [m[psym_irrep_compo, psym_irrep_compo] for m in psym_irrep]

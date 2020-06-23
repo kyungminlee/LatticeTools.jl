@@ -19,8 +19,8 @@ mkpath("example_little_symmetry_kspace_square")
 
 # ### Define Unitcell
 latticevectors = [1.0 0.0; 0.0 1.0];
-unitcell = make_unitcell(latticevectors; OrbitalType=String);
-addorbital!(unitcell, "A", carte2fract(unitcell, [0.0, 0.0]));
+unitcell = make_unitcell(latticevectors; SiteType=String);
+addsite!(unitcell, "A", carte2fract(unitcell, [0.0, 0.0]));
 
 # # ### Plot lattice
 # let bravais_lattice = [], sites = []
@@ -29,7 +29,7 @@ addorbital!(unitcell, "A", carte2fract(unitcell, [0.0, 0.0]));
 #     for i1 in -5:5, i2 in -5:5
 #         R = latticevectors * [i1, i2]
 #         within(R...) && push!(bravais_lattice, R)
-#         for (orb_name, orb_fc) in unitcell.orbitals
+#         for (orb_name, orb_fc) in unitcell.sites
 #             orb_cc = fract2carte(unitcell, orb_fc)
 #             r = R + orb_cc
 #             within(r...) && push!(sites, r)
@@ -62,7 +62,7 @@ let bravais_lattice = [], sites = []
     for i1 in -5:5, i2 in -5:5
         R = lattice.supercell.latticevectors * [i1, i2]
         within(R...) && push!(bravais_lattice, R)
-        for (orb_name, orb_fc) in lattice.supercell.orbitals
+        for (orb_name, orb_fc) in lattice.supercell.sites
             orb_cc = fract2carte(lattice.supercell, orb_fc)
             r = R + orb_cc
             within(r...) && push!(sites, r)

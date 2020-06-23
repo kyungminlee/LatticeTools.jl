@@ -6,9 +6,9 @@ using LinearAlgebra
 
 @testset "embedding" begin
     @testset "two-band" begin
-        unitcell = make_unitcell([1.0 0.0; 0.0 1.0]; OrbitalType=String)
-        addorbital!(unitcell, "Ox", FractCoord([0,0], [0.5, 0.0]))
-        addorbital!(unitcell, "Oy", FractCoord([0,0], [0.0, 0.5]))
+        unitcell = make_unitcell([1.0 0.0; 0.0 1.0]; SiteType=String)
+        addsite!(unitcell, "Ox", FractCoord([0,0], [0.5, 0.0]))
+        addsite!(unitcell, "Oy", FractCoord([0,0], [0.0, 0.5]))
         @testset "square" begin
             lattice = make_lattice(unitcell, [2 0; 0 2])
             
