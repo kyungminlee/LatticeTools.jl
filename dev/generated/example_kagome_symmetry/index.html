@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Kagome lattice · TightBindingLattice.jl</title><link href="https://fonts.googleapis.com/css?family=Lato|Roboto+Mono" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.11.1/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL="../.."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../../assets/documenter.js"></script><script src="../../siteinfo.js"></script><script src="../../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/documenter-dark.css" data-theme-name="documenter-dark"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../../assets/themeswap.js"></script></head><body><div id="documenter"><nav class="docs-sidebar"><div class="docs-package-name"><span class="docs-autofit">TightBindingLattice.jl</span></div><form class="docs-search" action="../../search/"><input class="docs-search-query" id="documenter-search-query" name="q" type="text" placeholder="Search docs"/></form><ul class="docs-menu"><li><a class="tocitem" href="../../">Home</a></li><li><a class="tocitem" href="../../lattice/">Lattice</a></li><li><a class="tocitem" href="../../symmetry/">Symmetry Analysis</a></li><li><span class="tocitem">Examples</span><ul><li><a class="tocitem" href="../example_group_isomorphism/">Group isomorphism</a></li><li><a class="tocitem" href="../example_orthocube/">Orthocube</a></li><li><a class="tocitem" href="../example_point_group_elements/">Point group elements</a></li><li><a class="tocitem" href="../example_point_group_4mm/">Point group 4mm (C₄ᵥ)</a></li><li><a class="tocitem" href="../example_little_group_2d/">Little group in 2d</a></li><li><a class="tocitem" href="../example_little_group_3d/">Little group in 3d</a></li><li><a class="tocitem" href="../example_honeycomb_symmetry/">Honeycomb lattice</a></li><li><a class="tocitem" href="../example_little_symmetry_kspace_honeycomb/">Honeycomb lattice in k-space</a></li><li class="is-active"><a class="tocitem" href>Kagome lattice</a><ul class="internal"><li><a class="tocitem" href="#Preamble-1"><span>Preamble</span></a></li><li><a class="tocitem" href="#Generate-Kagome-Lattice-1"><span>Generate Kagome Lattice</span></a></li><li><a class="tocitem" href="#Symmetry-analysis-1"><span>Symmetry analysis</span></a></li><li><a class="tocitem" href="#Orbital-map-1"><span>Orbital map</span></a></li><li><a class="tocitem" href="#Plot-Translation-Symmetry-1"><span>Plot Translation Symmetry</span></a></li><li><a class="tocitem" href="#Plot-Point-Symmetry-1"><span>Plot Point Symmetry</span></a></li></ul></li></ul></li><li><a class="tocitem" href="../../api/">API</a></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><nav class="breadcrumb"><ul class="is-hidden-mobile"><li><a class="is-disabled">Examples</a></li><li class="is-active"><a href>Kagome lattice</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>Kagome lattice</a></li></ul></nav><div class="docs-right"><a class="docs-edit-link" href="https://github.com/kyungminlee/TightBindingLattice.jl/blob/master/examples/example_kagome_symmetry.jl" title="Edit on GitHub"><span class="docs-icon fab"></span><span class="docs-label is-hidden-touch">Edit on GitHub</span></a><a class="docs-settings-button fas fa-cog" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-sidebar-button fa fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a></div></header><article class="content" id="documenter-page"><h1 id="Kagome-Lattice-1"><a class="docs-heading-anchor" href="#Kagome-Lattice-1">Kagome Lattice</a><a class="docs-heading-anchor-permalink" href="#Kagome-Lattice-1" title="Permalink"></a></h1><h2 id="Preamble-1"><a class="docs-heading-anchor" href="#Preamble-1">Preamble</a><a class="docs-heading-anchor-permalink" href="#Preamble-1" title="Permalink"></a></h2><pre><code class="language-julia">using TightBindingLattice
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Kagome lattice · TightBindingLattice.jl</title><link href="https://fonts.googleapis.com/css?family=Lato|Roboto+Mono" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.11.1/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL="../.."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../../assets/documenter.js"></script><script src="../../siteinfo.js"></script><script src="../../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/documenter-dark.css" data-theme-name="documenter-dark"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../../assets/themeswap.js"></script></head><body><div id="documenter"><nav class="docs-sidebar"><div class="docs-package-name"><span class="docs-autofit">TightBindingLattice.jl</span></div><form class="docs-search" action="../../search/"><input class="docs-search-query" id="documenter-search-query" name="q" type="text" placeholder="Search docs"/></form><ul class="docs-menu"><li><a class="tocitem" href="../../">Home</a></li><li><a class="tocitem" href="../../lattice/">Lattice</a></li><li><a class="tocitem" href="../../symmetry/">Symmetry Analysis</a></li><li><span class="tocitem">Examples</span><ul><li><a class="tocitem" href="../example_group_isomorphism/">Group isomorphism</a></li><li><a class="tocitem" href="../example_orthocube/">Orthocube</a></li><li><a class="tocitem" href="../example_point_group_elements/">Point group elements</a></li><li><a class="tocitem" href="../example_point_group_4mm/">Point group 4mm (C₄ᵥ)</a></li><li><a class="tocitem" href="../example_little_group_2d/">Little group in 2d</a></li><li><a class="tocitem" href="../example_little_group_3d/">Little group in 3d</a></li><li><a class="tocitem" href="../example_honeycomb_symmetry/">Honeycomb lattice</a></li><li><a class="tocitem" href="../example_little_symmetry_kspace_honeycomb/">Honeycomb lattice in k-space</a></li><li class="is-active"><a class="tocitem" href>Kagome lattice</a><ul class="internal"><li><a class="tocitem" href="#Preamble-1"><span>Preamble</span></a></li><li><a class="tocitem" href="#Generate-Kagome-Lattice-1"><span>Generate Kagome Lattice</span></a></li><li><a class="tocitem" href="#Symmetry-analysis-1"><span>Symmetry analysis</span></a></li><li><a class="tocitem" href="#Site-map-1"><span>Site map</span></a></li><li><a class="tocitem" href="#Plot-Translation-Symmetry-1"><span>Plot Translation Symmetry</span></a></li><li><a class="tocitem" href="#Plot-Point-Symmetry-1"><span>Plot Point Symmetry</span></a></li></ul></li></ul></li><li><a class="tocitem" href="../../api/">API</a></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><nav class="breadcrumb"><ul class="is-hidden-mobile"><li><a class="is-disabled">Examples</a></li><li class="is-active"><a href>Kagome lattice</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>Kagome lattice</a></li></ul></nav><div class="docs-right"><a class="docs-edit-link" href="https://github.com/kyungminlee/TightBindingLattice.jl/blob/master/examples/example_kagome_symmetry.jl" title="Edit on GitHub"><span class="docs-icon fab"></span><span class="docs-label is-hidden-touch">Edit on GitHub</span></a><a class="docs-settings-button fas fa-cog" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-sidebar-button fa fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a></div></header><article class="content" id="documenter-page"><h1 id="Kagome-Lattice-1"><a class="docs-heading-anchor" href="#Kagome-Lattice-1">Kagome Lattice</a><a class="docs-heading-anchor-permalink" href="#Kagome-Lattice-1" title="Permalink"></a></h1><h2 id="Preamble-1"><a class="docs-heading-anchor" href="#Preamble-1">Preamble</a><a class="docs-heading-anchor-permalink" href="#Preamble-1" title="Permalink"></a></h2><pre><code class="language-julia">using TightBindingLattice
 using LinearAlgebra
 using Printf
 using Plots
@@ -11,10 +11,10 @@ mkpath(&quot;example_kagome_symmetry&quot;)
 extent = [-2, 2, -2, 2]
 within(r) = (extent[1] &lt;= r[1] &lt;= extent[2] &amp;&amp; extent[3] &lt;= r[2] &lt;= extent[4])</code></pre><pre><code class="language-none">within (generic function with 1 method)</code></pre><h2 id="Generate-Kagome-Lattice-1"><a class="docs-heading-anchor" href="#Generate-Kagome-Lattice-1">Generate Kagome Lattice</a><a class="docs-heading-anchor-permalink" href="#Generate-Kagome-Lattice-1" title="Permalink"></a></h2><pre><code class="language-julia">function make_kagome_lattice(size_matrix ::AbstractMatrix{&lt;:Integer})
     latticevectors = [1 -0.5; 0 0.5*sqrt(3.0)];
-    unitcell = make_unitcell(latticevectors, OrbitalType=String)
-    addorbital!(unitcell, &quot;A&quot;, carte2fract(unitcell, [0.5, 0.0]))
-    addorbital!(unitcell, &quot;B&quot;, carte2fract(unitcell, [0.25, 0.25*sqrt(3.0)]))
-    addorbital!(unitcell, &quot;C&quot;, carte2fract(unitcell, [0.5+0.25, 0.25*sqrt(3.0)]))
+    unitcell = make_unitcell(latticevectors, SiteType=String)
+    addsite!(unitcell, &quot;A&quot;, carte2fract(unitcell, [0.5, 0.0]))
+    addsite!(unitcell, &quot;B&quot;, carte2fract(unitcell, [0.25, 0.25*sqrt(3.0)]))
+    addsite!(unitcell, &quot;C&quot;, carte2fract(unitcell, [0.5+0.25, 0.25*sqrt(3.0)]))
 
     nnbondtypes = [
         ([ 0, 0], &quot;A&quot;, [ 0, 0], &quot;B&quot;, 1),
@@ -52,8 +52,8 @@ within(r) = (extent[1] &lt;= r[1] &lt;= extent[2] &amp;&amp; extent[3] &lt;= r[2
             R_col, r_col = orthocube.wrap(r .+ colvec)
             roworb_super = (roworb, r_row)
             colorb_super = (colorb, r_col)
-            irow = get(supercell.orbitalindices, roworb_super, -1)
-            icol = get(supercell.orbitalindices, colorb_super, -1)
+            irow = get(supercell.siteindices, roworb_super, -1)
+            icol = get(supercell.siteindices, colorb_super, -1)
             push!(nnbonds, ((irow, icol), R_col-R_row, bondsign))
         end
         for (rowvec, roworb, colvec, colorb, bondsign) in nnnbondtypes
@@ -61,8 +61,8 @@ within(r) = (extent[1] &lt;= r[1] &lt;= extent[2] &amp;&amp; extent[3] &lt;= r[2
             R_col, r_col = orthocube.wrap(r .+ colvec)
             roworb_super = (roworb, r_row)
             colorb_super = (colorb, r_col)
-            irow = get(supercell.orbitalindices, roworb_super, -1)
-            icol = get(supercell.orbitalindices, colorb_super, -1)
+            irow = get(supercell.siteindices, roworb_super, -1)
+            icol = get(supercell.siteindices, colorb_super, -1)
             push!(nnnbonds, ((irow, icol), R_col-R_row, bondsign))
         end
     end
@@ -75,8 +75,8 @@ within(r) = (extent[1] &lt;= r[1] &lt;= extent[2] &amp;&amp; extent[3] &lt;= r[2
         R_col, r_col = orthocube.wrap(r .+ colvec)
         roworb_super = (roworb, r_row)
         colorb_super = (colorb, r_col)
-        irow = get(supercell.orbitalindices, roworb_super, -1)
-        icol = get(supercell.orbitalindices, colorb_super, -1)
+        irow = get(supercell.siteindices, roworb_super, -1)
+        icol = get(supercell.siteindices, colorb_super, -1)
         push!(triangle, ((irow, icol), R_col-R_row))
       end
       push!(nn_triangles, (triangle, 1))
@@ -87,8 +87,8 @@ within(r) = (extent[1] &lt;= r[1] &lt;= extent[2] &amp;&amp; extent[3] &lt;= r[2
         R_col, r_col = orthocube.wrap(r .+ colvec)
         roworb_super = (roworb, r_row)
         colorb_super = (colorb, r_col)
-        irow = get(supercell.orbitalindices, roworb_super, -1)
-        icol = get(supercell.orbitalindices, colorb_super, -1)
+        irow = get(supercell.siteindices, roworb_super, -1)
+        icol = get(supercell.siteindices, colorb_super, -1)
         push!(triangle, ((irow, icol), R_col-R_row))
       end
       push!(nn_triangles, (triangle, -1))
@@ -117,20 +117,20 @@ println(&quot;Number of irreps: &quot;, num_irreps(psym))</code></pre><pre><code
 
 Point group: 6mm
 Number of elements: 12
-Number of irreps: 6</code></pre><h2 id="Orbital-map-1"><a class="docs-heading-anchor" href="#Orbital-map-1">Orbital map</a><a class="docs-heading-anchor-permalink" href="#Orbital-map-1" title="Permalink"></a></h2><pre><code class="language-julia">orbital_map = findorbitalmap(kagome.lattice.unitcell, psym)
+Number of irreps: 6</code></pre><h2 id="Site-map-1"><a class="docs-heading-anchor" href="#Site-map-1">Site map</a><a class="docs-heading-anchor-permalink" href="#Site-map-1" title="Permalink"></a></h2><pre><code class="language-julia">site_map = findsitemap(kagome.lattice.unitcell, psym)
 
-println(&quot;Orbital map&quot;)
+println(&quot;Site map&quot;)
 println(&quot;-----------&quot;)
 println()
 
-for (n, map) in zip(element_names(psym), orbital_map)
+for (n, map) in zip(element_names(psym), site_map)
     @printf(&quot;%32s:&quot;, n)
     for (i_elem, (j_elem, R)) in enumerate(map)
         @printf(&quot;  %d ↦ %d, %-8s&quot;, i_elem, j_elem, string(R))
     end
     println()
 end
-println()</code></pre><pre><code class="language-none">Orbital map
+println()</code></pre><pre><code class="language-none">Site map
 -----------
 
                                1:  1 ↦ 1, [0, 0]    2 ↦ 2, [0, 0]    3 ↦ 3, [0, 0]
@@ -150,8 +150,8 @@ println()</code></pre><pre><code class="language-none">Orbital map
     orbcoords = []
     orbnames = []
 
-    for iorb in eachindex(kagome.lattice.supercell.orbitals)
-        orbfc = getorbitalcoord(kagome.lattice.supercell, perm(iorb))
+    for iorb in eachindex(kagome.lattice.supercell.sites)
+        orbfc = getsitecoord(kagome.lattice.supercell, perm(iorb))
         orbcc = fract2carte(kagome.lattice.supercell, orbfc)
         push!(orbnames, &quot;$iorb&quot;)
         push!(orbcoords, orbcc)
@@ -171,73 +171,73 @@ println()</code></pre><pre><code class="language-none">Orbital map
     xlims!(extent[1], extent[2])
     ylims!(extent[3], extent[4])
     savefig(fig, &quot;example_kagome_symmetry/translation_symmetry-$i_elem.svg&quot;)
-end</code></pre><pre><code class="language-none">/home/travis/.julia/packages/GR/cRdXQ/src/../deps/gr/bin/gksqt: error while loading shared libraries: libQt5Widgets.so.5: cannot open shared object file: No such file or directory
+end</code></pre><pre><code class="language-none">/home/travis/.julia/packages/GR/Atztx/src/../deps/gr/bin/gksqt: error while loading shared libraries: libQt5Widgets.so.5: cannot open shared object file: No such file or directory
 connect: Connection refused
 GKS: can&#39;t connect to GKS socket application
 
 GKS: Open failed in routine OPEN_WS
 GKS: GKS not in proper state. GKS must be either in the state WSOP or WSAC in routine ACTIVATE_WS
-/home/travis/.julia/packages/GR/cRdXQ/src/../deps/gr/bin/gksqt: error while loading shared libraries: libQt5Widgets.so.5: cannot open shared object file: No such file or directory
+/home/travis/.julia/packages/GR/Atztx/src/../deps/gr/bin/gksqt: error while loading shared libraries: libQt5Widgets.so.5: cannot open shared object file: No such file or directory
 connect: Connection refused
 GKS: can&#39;t connect to GKS socket application
 
 GKS: Open failed in routine OPEN_WS
 GKS: GKS not in proper state. GKS must be either in the state WSOP or WSAC in routine ACTIVATE_WS
-/home/travis/.julia/packages/GR/cRdXQ/src/../deps/gr/bin/gksqt: error while loading shared libraries: libQt5Widgets.so.5: cannot open shared object file: No such file or directory
+/home/travis/.julia/packages/GR/Atztx/src/../deps/gr/bin/gksqt: error while loading shared libraries: libQt5Widgets.so.5: cannot open shared object file: No such file or directory
 connect: Connection refused
 GKS: can&#39;t connect to GKS socket application
 
 GKS: Open failed in routine OPEN_WS
 GKS: GKS not in proper state. GKS must be either in the state WSOP or WSAC in routine ACTIVATE_WS
-/home/travis/.julia/packages/GR/cRdXQ/src/../deps/gr/bin/gksqt: error while loading shared libraries: libQt5Widgets.so.5: cannot open shared object file: No such file or directory
+/home/travis/.julia/packages/GR/Atztx/src/../deps/gr/bin/gksqt: error while loading shared libraries: libQt5Widgets.so.5: cannot open shared object file: No such file or directory
 connect: Connection refused
 GKS: can&#39;t connect to GKS socket application
 
 GKS: Open failed in routine OPEN_WS
 GKS: GKS not in proper state. GKS must be either in the state WSOP or WSAC in routine ACTIVATE_WS
-/home/travis/.julia/packages/GR/cRdXQ/src/../deps/gr/bin/gksqt: error while loading shared libraries: libQt5Widgets.so.5: cannot open shared object file: No such file or directory
+/home/travis/.julia/packages/GR/Atztx/src/../deps/gr/bin/gksqt: error while loading shared libraries: libQt5Widgets.so.5: cannot open shared object file: No such file or directory
 connect: Connection refused
 GKS: can&#39;t connect to GKS socket application
 
 GKS: Open failed in routine OPEN_WS
 GKS: GKS not in proper state. GKS must be either in the state WSOP or WSAC in routine ACTIVATE_WS
-/home/travis/.julia/packages/GR/cRdXQ/src/../deps/gr/bin/gksqt: error while loading shared libraries: libQt5Widgets.so.5: cannot open shared object file: No such file or directory
+/home/travis/.julia/packages/GR/Atztx/src/../deps/gr/bin/gksqt: error while loading shared libraries: libQt5Widgets.so.5: cannot open shared object file: No such file or directory
 connect: Connection refused
 GKS: can&#39;t connect to GKS socket application
 
 GKS: Open failed in routine OPEN_WS
 GKS: GKS not in proper state. GKS must be either in the state WSOP or WSAC in routine ACTIVATE_WS
-/home/travis/.julia/packages/GR/cRdXQ/src/../deps/gr/bin/gksqt: error while loading shared libraries: libQt5Widgets.so.5: cannot open shared object file: No such file or directory
+/home/travis/.julia/packages/GR/Atztx/src/../deps/gr/bin/gksqt: error while loading shared libraries: libQt5Widgets.so.5: cannot open shared object file: No such file or directory
 connect: Connection refused
 GKS: can&#39;t connect to GKS socket application
 
 GKS: Open failed in routine OPEN_WS
 GKS: GKS not in proper state. GKS must be either in the state WSOP or WSAC in routine ACTIVATE_WS
-/home/travis/.julia/packages/GR/cRdXQ/src/../deps/gr/bin/gksqt: error while loading shared libraries: libQt5Widgets.so.5: cannot open shared object file: No such file or directory
+/home/travis/.julia/packages/GR/Atztx/src/../deps/gr/bin/gksqt: error while loading shared libraries: libQt5Widgets.so.5: cannot open shared object file: No such file or directory
 connect: Connection refused
 GKS: can&#39;t connect to GKS socket application
 
 GKS: Open failed in routine OPEN_WS
 GKS: GKS not in proper state. GKS must be either in the state WSOP or WSAC in routine ACTIVATE_WS
-/home/travis/.julia/packages/GR/cRdXQ/src/../deps/gr/bin/gksqt: error while loading shared libraries: libQt5Widgets.so.5: cannot open shared object file: No such file or directory
+/home/travis/.julia/packages/GR/Atztx/src/../deps/gr/bin/gksqt: error while loading shared libraries: libQt5Widgets.so.5: cannot open shared object file: No such file or directory
 connect: Connection refused
 GKS: can&#39;t connect to GKS socket application
 
 GKS: Open failed in routine OPEN_WS
 GKS: GKS not in proper state. GKS must be either in the state WSOP or WSAC in routine ACTIVATE_WS
-/home/travis/.julia/packages/GR/cRdXQ/src/../deps/gr/bin/gksqt: error while loading shared libraries: libQt5Widgets.so.5: cannot open shared object file: No such file or directory
+/home/travis/.julia/packages/GR/Atztx/src/../deps/gr/bin/gksqt: error while loading shared libraries: libQt5Widgets.so.5: cannot open shared object file: No such file or directory
 connect: Connection refused
 GKS: can&#39;t connect to GKS socket application
 
 GKS: Open failed in routine OPEN_WS
 GKS: GKS not in proper state. GKS must be either in the state WSOP or WSAC in routine ACTIVATE_WS
-/home/travis/.julia/packages/GR/cRdXQ/src/../deps/gr/bin/gksqt: error while loading shared libraries: libQt5Widgets.so.5: cannot open shared object file: No such file or directory
+/home/travis/.julia/packages/GR/Atztx/src/../deps/gr/bin/gksqt: error while loading shared libraries: libQt5Widgets.so.5: cannot open shared object file: No such file or directory
 connect: Connection refused
 GKS: can&#39;t connect to GKS socket application
 
 GKS: Open failed in routine OPEN_WS
 GKS: GKS not in proper state. GKS must be either in the state WSOP or WSAC in routine ACTIVATE_WS
-/home/travis/.julia/packages/GR/cRdXQ/src/../deps/gr/bin/gksqt: error while loading shared libraries: libQt5Widgets.so.5: cannot open shared object file: No such file or directory
+/home/travis/.julia/packages/GR/Atztx/src/../deps/gr/bin/gksqt: error while loading shared libraries: libQt5Widgets.so.5: cannot open shared object file: No such file or directory
 connect: Connection refused
 GKS: can&#39;t connect to GKS socket application
 
@@ -248,8 +248,8 @@ GKS: GKS not in proper state. GKS must be either in the state WSOP or WSAC in ro
     orbcoords = []
     orbnames = []
 
-    for iorb in eachindex(kagome.lattice.supercell.orbitals)
-        orbfc = getorbitalcoord(kagome.lattice.supercell, perm(iorb))
+    for iorb in eachindex(kagome.lattice.supercell.sites)
+        orbfc = getsitecoord(kagome.lattice.supercell, perm(iorb))
         orbcc = fract2carte(kagome.lattice.supercell, orbfc)
         push!(orbnames, &quot;$iorb&quot;)
         push!(orbcoords, orbcc)
@@ -269,75 +269,75 @@ GKS: GKS not in proper state. GKS must be either in the state WSOP or WSAC in ro
     xlims!(extent[1], extent[2])
     ylims!(extent[3], extent[4])
     savefig(fig, &quot;example_kagome_symmetry/point_symmetry-$i_elem.svg&quot;)
-end</code></pre><pre><code class="language-none">/home/travis/.julia/packages/GR/cRdXQ/src/../deps/gr/bin/gksqt: error while loading shared libraries: libQt5Widgets.so.5: cannot open shared object file: No such file or directory
+end</code></pre><pre><code class="language-none">/home/travis/.julia/packages/GR/Atztx/src/../deps/gr/bin/gksqt: error while loading shared libraries: libQt5Widgets.so.5: cannot open shared object file: No such file or directory
 connect: Connection refused
 GKS: can&#39;t connect to GKS socket application
 
 GKS: Open failed in routine OPEN_WS
 GKS: GKS not in proper state. GKS must be either in the state WSOP or WSAC in routine ACTIVATE_WS
-/home/travis/.julia/packages/GR/cRdXQ/src/../deps/gr/bin/gksqt: error while loading shared libraries: libQt5Widgets.so.5: cannot open shared object file: No such file or directory
+/home/travis/.julia/packages/GR/Atztx/src/../deps/gr/bin/gksqt: error while loading shared libraries: libQt5Widgets.so.5: cannot open shared object file: No such file or directory
 connect: Connection refused
 GKS: can&#39;t connect to GKS socket application
 
 GKS: Open failed in routine OPEN_WS
 GKS: GKS not in proper state. GKS must be either in the state WSOP or WSAC in routine ACTIVATE_WS
-/home/travis/.julia/packages/GR/cRdXQ/src/../deps/gr/bin/gksqt: error while loading shared libraries: libQt5Widgets.so.5: cannot open shared object file: No such file or directory
+/home/travis/.julia/packages/GR/Atztx/src/../deps/gr/bin/gksqt: error while loading shared libraries: libQt5Widgets.so.5: cannot open shared object file: No such file or directory
 connect: Connection refused
 GKS: can&#39;t connect to GKS socket application
 
 GKS: Open failed in routine OPEN_WS
 GKS: GKS not in proper state. GKS must be either in the state WSOP or WSAC in routine ACTIVATE_WS
-/home/travis/.julia/packages/GR/cRdXQ/src/../deps/gr/bin/gksqt: error while loading shared libraries: libQt5Widgets.so.5: cannot open shared object file: No such file or directory
+/home/travis/.julia/packages/GR/Atztx/src/../deps/gr/bin/gksqt: error while loading shared libraries: libQt5Widgets.so.5: cannot open shared object file: No such file or directory
 connect: Connection refused
 GKS: can&#39;t connect to GKS socket application
 
 GKS: Open failed in routine OPEN_WS
 GKS: GKS not in proper state. GKS must be either in the state WSOP or WSAC in routine ACTIVATE_WS
-/home/travis/.julia/packages/GR/cRdXQ/src/../deps/gr/bin/gksqt: error while loading shared libraries: libQt5Widgets.so.5: cannot open shared object file: No such file or directory
+/home/travis/.julia/packages/GR/Atztx/src/../deps/gr/bin/gksqt: error while loading shared libraries: libQt5Widgets.so.5: cannot open shared object file: No such file or directory
 connect: Connection refused
 GKS: can&#39;t connect to GKS socket application
 
 GKS: Open failed in routine OPEN_WS
 GKS: GKS not in proper state. GKS must be either in the state WSOP or WSAC in routine ACTIVATE_WS
-/home/travis/.julia/packages/GR/cRdXQ/src/../deps/gr/bin/gksqt: error while loading shared libraries: libQt5Widgets.so.5: cannot open shared object file: No such file or directory
+/home/travis/.julia/packages/GR/Atztx/src/../deps/gr/bin/gksqt: error while loading shared libraries: libQt5Widgets.so.5: cannot open shared object file: No such file or directory
 connect: Connection refused
 GKS: can&#39;t connect to GKS socket application
 
 GKS: Open failed in routine OPEN_WS
 GKS: GKS not in proper state. GKS must be either in the state WSOP or WSAC in routine ACTIVATE_WS
-/home/travis/.julia/packages/GR/cRdXQ/src/../deps/gr/bin/gksqt: error while loading shared libraries: libQt5Widgets.so.5: cannot open shared object file: No such file or directory
+/home/travis/.julia/packages/GR/Atztx/src/../deps/gr/bin/gksqt: error while loading shared libraries: libQt5Widgets.so.5: cannot open shared object file: No such file or directory
 connect: Connection refused
 GKS: can&#39;t connect to GKS socket application
 
 GKS: Open failed in routine OPEN_WS
 GKS: GKS not in proper state. GKS must be either in the state WSOP or WSAC in routine ACTIVATE_WS
-/home/travis/.julia/packages/GR/cRdXQ/src/../deps/gr/bin/gksqt: error while loading shared libraries: libQt5Widgets.so.5: cannot open shared object file: No such file or directory
+/home/travis/.julia/packages/GR/Atztx/src/../deps/gr/bin/gksqt: error while loading shared libraries: libQt5Widgets.so.5: cannot open shared object file: No such file or directory
 connect: Connection refused
 GKS: can&#39;t connect to GKS socket application
 
 GKS: Open failed in routine OPEN_WS
 GKS: GKS not in proper state. GKS must be either in the state WSOP or WSAC in routine ACTIVATE_WS
-/home/travis/.julia/packages/GR/cRdXQ/src/../deps/gr/bin/gksqt: error while loading shared libraries: libQt5Widgets.so.5: cannot open shared object file: No such file or directory
+/home/travis/.julia/packages/GR/Atztx/src/../deps/gr/bin/gksqt: error while loading shared libraries: libQt5Widgets.so.5: cannot open shared object file: No such file or directory
 connect: Connection refused
 GKS: can&#39;t connect to GKS socket application
 
 GKS: Open failed in routine OPEN_WS
 GKS: GKS not in proper state. GKS must be either in the state WSOP or WSAC in routine ACTIVATE_WS
-/home/travis/.julia/packages/GR/cRdXQ/src/../deps/gr/bin/gksqt: error while loading shared libraries: libQt5Widgets.so.5: cannot open shared object file: No such file or directory
+/home/travis/.julia/packages/GR/Atztx/src/../deps/gr/bin/gksqt: error while loading shared libraries: libQt5Widgets.so.5: cannot open shared object file: No such file or directory
 connect: Connection refused
 GKS: can&#39;t connect to GKS socket application
 
 GKS: Open failed in routine OPEN_WS
 GKS: GKS not in proper state. GKS must be either in the state WSOP or WSAC in routine ACTIVATE_WS
-/home/travis/.julia/packages/GR/cRdXQ/src/../deps/gr/bin/gksqt: error while loading shared libraries: libQt5Widgets.so.5: cannot open shared object file: No such file or directory
+/home/travis/.julia/packages/GR/Atztx/src/../deps/gr/bin/gksqt: error while loading shared libraries: libQt5Widgets.so.5: cannot open shared object file: No such file or directory
 connect: Connection refused
 GKS: can&#39;t connect to GKS socket application
 
 GKS: Open failed in routine OPEN_WS
 GKS: GKS not in proper state. GKS must be either in the state WSOP or WSAC in routine ACTIVATE_WS
-/home/travis/.julia/packages/GR/cRdXQ/src/../deps/gr/bin/gksqt: error while loading shared libraries: libQt5Widgets.so.5: cannot open shared object file: No such file or directory
+/home/travis/.julia/packages/GR/Atztx/src/../deps/gr/bin/gksqt: error while loading shared libraries: libQt5Widgets.so.5: cannot open shared object file: No such file or directory
 connect: Connection refused
 GKS: can&#39;t connect to GKS socket application
 
 GKS: Open failed in routine OPEN_WS
-GKS: GKS not in proper state. GKS must be either in the state WSOP or WSAC in routine ACTIVATE_WS</code></pre><p><img src="point_symmetry-1.svg" alt/> <img src="point_symmetry-2.svg" alt/> <img src="point_symmetry-3.svg" alt/> <img src="point_symmetry-4.svg" alt/> <img src="point_symmetry-5.svg" alt/> <img src="point_symmetry-6.svg" alt/> <img src="point_symmetry-7.svg" alt/> <img src="point_symmetry-8.svg" alt/> <img src="point_symmetry-9.svg" alt/> <img src="point_symmetry-10.svg" alt/> <img src="point_symmetry-11.svg" alt/> <img src="point_symmetry-12.svg" alt/></p><hr/><p><em>This page was generated using <a href="https://github.com/fredrikekre/Literate.jl">Literate.jl</a>.</em></p></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../example_little_symmetry_kspace_honeycomb/">« Honeycomb lattice in k-space</a><a class="docs-footer-nextpage" href="../../api/">API »</a></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> on <span class="colophon-date" title="Saturday 30 May 2020 05:13">Saturday 30 May 2020</span>. Using Julia version 1.4.2.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
+GKS: GKS not in proper state. GKS must be either in the state WSOP or WSAC in routine ACTIVATE_WS</code></pre><p><img src="point_symmetry-1.svg" alt/> <img src="point_symmetry-2.svg" alt/> <img src="point_symmetry-3.svg" alt/> <img src="point_symmetry-4.svg" alt/> <img src="point_symmetry-5.svg" alt/> <img src="point_symmetry-6.svg" alt/> <img src="point_symmetry-7.svg" alt/> <img src="point_symmetry-8.svg" alt/> <img src="point_symmetry-9.svg" alt/> <img src="point_symmetry-10.svg" alt/> <img src="point_symmetry-11.svg" alt/> <img src="point_symmetry-12.svg" alt/></p><hr/><p><em>This page was generated using <a href="https://github.com/fredrikekre/Literate.jl">Literate.jl</a>.</em></p></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../example_little_symmetry_kspace_honeycomb/">« Honeycomb lattice in k-space</a><a class="docs-footer-nextpage" href="../../api/">API »</a></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> on <span class="colophon-date" title="Tuesday 23 June 2020 06:03">Tuesday 23 June 2020</span>. Using Julia version 1.4.2.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
