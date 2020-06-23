@@ -39,7 +39,6 @@ export numorbital,
 @deprecate getorbitalname(args...) getsitename(args...)
 
 
-
 """
     UnitCell{O}
 
@@ -91,10 +90,11 @@ Construct a one-dimensional lattice.
 * `tol=√ϵ`: Tolerance
 """
 function make_unitcell(latticeconstant ::Real;
-                       SiteType::DataType=Any,
+                       SiteType::DataType=Any,  
+                       OrbitalType::DataType=Any,
                        tol::Real=Base.rtoldefault(Float64))
     return make_unitcell(reshape([latticeconstant], (1,1));
-                         SiteType=SiteType, tol=tol)
+                         SiteType=SiteType, OrbitalType=OrbitalType, tol=tol)
 end
 
 
@@ -112,7 +112,17 @@ Construct an n-dimensional lattice.
 """
 function make_unitcell(latticevectors ::AbstractArray{<:Real, 2};
                        SiteType::DataType=Any,
+                       OrbitalType::DataType=Any,
                        tol ::Real=Base.rtoldefault(Float64))
+    if OrbitalType != Any
+        @warn "OrbitalType is deprecated. use SiteType instead"
+        if SiteType == Any
+            SiteType = OrbitalType
+        else
+            @error "Cannot specify OrbitalType and SiteType simultaneously"
+        end
+    end
+
     (ndim, ndim_) = size(latticevectors)
     if ndim != ndim_
         throw(ArgumentError("lattice vectors has dimension ($(ndim), $(ndim_))"))
@@ -126,7 +136,7 @@ function make_unitcell(latticevectors ::AbstractArray{<:Real, 2};
     sites = Tuple{SiteType, FractCoord}[]
     siteindices = Dict{SiteType, Int}()
     return UnitCell{SiteType}(latticevectors, sites,
-                                 reduced_rlv, 2*π*reduced_rlv, siteindices)
+                              reduced_rlv, 2*π*reduced_rlv, siteindices)
 end
 
 
