@@ -37,7 +37,7 @@ export numorbital,
 @deprecate getorbitalcoord(args...) getsitecoord(args...)
 @deprecate getorbitalindexcoord(args...) getsiteindexcoord(args...)
 @deprecate getorbitalname(args...) getsitename(args...)
-
+@deprecate findorbitalindex(args...; kwargs...) findsiteindex(args...; kwargs...)
 
 """
     UnitCell{O}
@@ -432,7 +432,7 @@ end
 
 Returns (site_index, unitcell_vector), or `(-1, [])` if not found.
 """
-function findsiteindex(unitcell::UnitCell, fc::FractCoord; tol=Base.rtoldefault(Float64))
+function findsiteindex(unitcell::UnitCell, fc::FractCoord; tol::Real=Base.rtoldefault(Float64))
     i = findfirst(x -> isapprox(x, fc.fraction; atol=tol), [orbfc.fraction for (orbname, orbfc) in unitcell.sites])
     if i !== nothing
         (orbname, orbfc) = unitcell.sites[i]
