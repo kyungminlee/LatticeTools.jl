@@ -3,7 +3,7 @@ using TightBindingLattice
 
 
 @testset "irrep" begin
-    unitcell = make_unitcell([1.0 0.0; 0.0 1.0]; OrbitalType=String)
+    unitcell = make_unitcell([1.0 0.0; 0.0 1.0]; SiteType=String)
     addsite!(unitcell, "Ox", FractCoord([0,0], [0.5, 0.0]))
     addsite!(unitcell, "Oy", FractCoord([0,0], [0.0, 0.5]))
 

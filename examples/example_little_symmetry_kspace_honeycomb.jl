@@ -19,7 +19,7 @@ mkpath("example_little_symmetry_kspace_honeycomb")
 
 # ### Define Unitcell
 latticevectors = [1 -0.5; 0 sqrt(3)*0.5];
-unitcell = make_unitcell(latticevectors; OrbitalType=String);
+unitcell = make_unitcell(latticevectors; SiteType=String);
 addsite!(unitcell, "A", carte2fract(unitcell, [0.5, 0.5 / sqrt(3)]));
 addsite!(unitcell, "B", carte2fract(unitcell, [0.5, -0.5 / sqrt(3)]));
 

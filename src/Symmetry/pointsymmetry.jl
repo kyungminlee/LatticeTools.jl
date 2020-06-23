@@ -87,7 +87,7 @@ struct PointSymmetry <: AbstractSymmetry{PointOperation{Int}}
                 throw(ArgumentError("wrong number of matrices in irrep $rep"))
             end
             d = size(rep[1], 1)
-            if !isapprox(rep[1], Matrix(I, (d,d)); atol=tol)
+            if !isapprox(rep[1], Matrix(LinearAlgebra.I, (d,d)); atol=tol)
                 throw(ArgumentError("matrix representation of identity should be identity"))
             end
             for m in rep

@@ -19,7 +19,7 @@ mkpath("example_little_symmetry_kspace_square")
 
 # ### Define Unitcell
 latticevectors = [1.0 0.0; 0.0 1.0];
-unitcell = make_unitcell(latticevectors; OrbitalType=String);
+unitcell = make_unitcell(latticevectors; SiteType=String);
 addsite!(unitcell, "A", carte2fract(unitcell, [0.0, 0.0]));
 
 # # ### Plot lattice

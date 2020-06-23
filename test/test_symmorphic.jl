@@ -58,7 +58,7 @@ using TightBindingLattice
     # get_irrep_components(ssym)
 
     @testset "embedding" begin
-        unitcell = make_unitcell([1.0 0.0; 0.0 1.0]; OrbitalType=String)
+        unitcell = make_unitcell([1.0 0.0; 0.0 1.0]; SiteType=String)
         addsite!(unitcell, "A", FractCoord([0, 0], [0.5, 0.0]))
         addsite!(unitcell, "B", FractCoord([0, 0], [0.0, 0.5]))
         lattice = make_lattice(unitcell, [4 0; 0 4])
@@ -122,7 +122,7 @@ using TightBindingLattice
         
     end
     @testset "fractional_momentum" begin
-        unitcell = make_unitcell([1.0 0.0; 0.0 1.0]; OrbitalType=String)
+        unitcell = make_unitcell([1.0 0.0; 0.0 1.0]; SiteType=String)
         addsite!(unitcell, "A", FractCoord([0, 0], [0.5, 0.0]))
         addsite!(unitcell, "B", FractCoord([0, 0], [0.0, 0.5]))
         lattice = make_lattice(unitcell, [4 0; 0 4])

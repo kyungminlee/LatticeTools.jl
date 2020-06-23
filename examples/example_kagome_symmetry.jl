@@ -17,7 +17,7 @@ within(r) = (extent[1] <= r[1] <= extent[2] && extent[3] <= r[2] <= extent[4])
 
 function make_kagome_lattice(size_matrix ::AbstractMatrix{<:Integer})
     latticevectors = [1 -0.5; 0 0.5*sqrt(3.0)];
-    unitcell = make_unitcell(latticevectors, OrbitalType=String)
+    unitcell = make_unitcell(latticevectors, SiteType=String)
     addsite!(unitcell, "A", carte2fract(unitcell, [0.5, 0.0]))
     addsite!(unitcell, "B", carte2fract(unitcell, [0.25, 0.25*sqrt(3.0)]))
     addsite!(unitcell, "C", carte2fract(unitcell, [0.5+0.25, 0.25*sqrt(3.0)]))
@@ -126,11 +126,11 @@ println("Number of elements: ", group_order(psym))
 println("Number of irreps: ", num_irreps(psym))
 
 
-# ## Orbital map
+# ## Site map
 
 site_map = findsitemap(kagome.lattice.unitcell, psym)
 
-println("Orbital map")
+println("Site map")
 println("-----------")
 println()
 

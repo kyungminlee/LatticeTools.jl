@@ -1,22 +1,43 @@
 export UnitCell
 export make_unitcell
-export dimension,
-       numsite,
+export dimension
+
+export numsite,
        hassite,
        addsite!,
        getsite,
        getsiteindex,
        getsitecoord,
        getsiteindexcoord,
-       getsitename,
-       carte2fract,
+       getsitename
+
+export carte2fract,
        fract2carte,
        whichunitcell,
        momentumgrid
 
 export findsiteindex
 
-using LinearAlgebra
+import LinearAlgebra
+
+export numorbital,
+       hasorbital,
+       addorbital!,
+       getorbital,
+       getorbitalindex,
+       getorbitalcoord,
+       getorbitalindexcoord,
+       getorbitalname
+
+@deprecate numorbital(args...) numsite(args...)
+@deprecate hasorbital(args...) hassite(args...)
+@deprecate addorbital!(args...) addsite!(args...)
+@deprecate getorbital(args...) getsite(args...)
+@deprecate getorbitalindex(args...) getsiteindex(args...)
+@deprecate getorbitalcoord(args...) getsitecoord(args...)
+@deprecate getorbitalindexcoord(args...) getsiteindexcoord(args...)
+@deprecate getorbitalname(args...) getsitename(args...)
+
 
 
 """
@@ -46,7 +67,7 @@ mutable struct UnitCell{O}
                          reciprocallatticevectors ::AbstractArray{<:Real, 2},
                          siteindices ::AbstractDict{O, Int}) where {O}
         if (O <: Integer)
-            throw(ArgumentError("OrbitalType should not be integer to avoid confusion"))
+            throw(ArgumentError("SiteType should not be integer to avoid confusion"))
         end
         new{O}(latticevectors,
                sites,
@@ -64,16 +85,16 @@ Construct a one-dimensional lattice.
 
 # Arguments
 * `latticeconstant ::Float64`: Lattice constant
-* `OrbitalType`: List of sites
+* `SiteType`: List of sites
 
 # Optional Arguments
 * `tol=√ϵ`: Tolerance
 """
 function make_unitcell(latticeconstant ::Real;
-                       OrbitalType::DataType=Any,
+                       SiteType::DataType=Any,
                        tol::Real=Base.rtoldefault(Float64))
     return make_unitcell(reshape([latticeconstant], (1,1));
-                         OrbitalType=OrbitalType, tol=tol)
+                         SiteType=SiteType, tol=tol)
 end
 
 
@@ -84,36 +105,36 @@ Construct an n-dimensional lattice.
 
 # Arguments
 * `latticevectors ::AbstractArray{<:AbstractFloat, 2}`: Lattice vectors
-* `OrbitalType::DataType`
+* `SiteType::DataType`
 
 # Optional Arguments
 * `tol=√ϵ`: Epsilon
 """
 function make_unitcell(latticevectors ::AbstractArray{<:Real, 2};
-                       OrbitalType::DataType=Any,
+                       SiteType::DataType=Any,
                        tol ::Real=Base.rtoldefault(Float64))
     (ndim, ndim_) = size(latticevectors)
     if ndim != ndim_
         throw(ArgumentError("lattice vectors has dimension ($(ndim), $(ndim_))"))
-    elseif abs(det(latticevectors)) <= tol
+    elseif abs(LinearAlgebra.det(latticevectors)) <= tol
         throw(ArgumentError("lattice vectors define zero volume $(latticevectors)"))
     elseif tol < 0
         throw(ArgumentError("tol must be non-negative"))
     end
 
     reduced_rlv = transpose(inv(latticevectors))
-    sites = Tuple{OrbitalType, FractCoord}[]
-    siteindices = Dict{OrbitalType, Int}()
-    return UnitCell{OrbitalType}(latticevectors, sites,
+    sites = Tuple{SiteType, FractCoord}[]
+    siteindices = Dict{SiteType, Int}()
+    return UnitCell{SiteType}(latticevectors, sites,
                                  reduced_rlv, 2*π*reduced_rlv, siteindices)
 end
 
 
 function make_unitcell(latticevectors::AbstractVector{<:AbstractVector};
-                       OrbitalType::DataType=Any,
+                       SiteType::DataType=Any,
                        tol::Real=Base.rtoldefault(Float64))
     lv = hcat(latticevectors...)
-    return make_unitcell(lv; OrbitalType=OrbitalType, tol=tol)
+    return make_unitcell(lv; SiteType=SiteType, tol=tol)
 end
 
 

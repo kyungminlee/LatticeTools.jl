@@ -13,20 +13,20 @@ using TightBindingLattice
 
         uc2 = make_unitcell([[0.5,0.0], [0.0,1.0]])
 
-        @test_throws ArgumentError make_unitcell(latticevectors; OrbitalType=Int)
-        @test_throws ArgumentError make_unitcell([1.0 0.0;]; OrbitalType=String)
-        @test_throws ArgumentError make_unitcell([1.0 0.0; 1.0 0.0]; OrbitalType=String)
-        @test_throws ArgumentError make_unitcell([1.0 0.0; 0.0 1.0]; OrbitalType=String, tol=-1E-8)
+        @test_throws ArgumentError make_unitcell(latticevectors; SiteType=Int)
+        @test_throws ArgumentError make_unitcell([1.0 0.0;]; SiteType=String)
+        @test_throws ArgumentError make_unitcell([1.0 0.0; 1.0 0.0]; SiteType=String)
+        @test_throws ArgumentError make_unitcell([1.0 0.0; 0.0 1.0]; SiteType=String, tol=-1E-8)
 
         uc1d = make_unitcell(2.0)
         uc1d.latticevectors == 2.0 * ones(Float64, 1, 1)
     end
 
     @testset "Equality" begin
-        uc1 = make_unitcell([2.0 0.0; 1.0 2.0]; OrbitalType=String)
-        uc2 = make_unitcell([2.0 0.0; 1.0 2.0]; OrbitalType=String)
-        uc3 = make_unitcell([2.0 0.0; 1.0 2.0]; OrbitalType=Tuple{String, Int})
-        uc4 = make_unitcell([2.0 0.0; 0.0 2.0]; OrbitalType=String)
+        uc1 = make_unitcell([2.0 0.0; 1.0 2.0]; SiteType=String)
+        uc2 = make_unitcell([2.0 0.0; 1.0 2.0]; SiteType=String)
+        uc3 = make_unitcell([2.0 0.0; 1.0 2.0]; SiteType=Tuple{String, Int})
+        uc4 = make_unitcell([2.0 0.0; 0.0 2.0]; SiteType=String)
         @test uc1 == uc2
         @test uc1 != uc3
         @test uc1 != uc4
@@ -72,14 +72,14 @@ using TightBindingLattice
     end
 
     @testset "Methods Exceptions" begin
-        uc = make_unitcell(latticevectors; OrbitalType=String)
+        uc = make_unitcell(latticevectors; SiteType=String)
         addsite!(uc, "Ox", FractCoord([0, 0], [0.0, 0.0]))
         @test_throws ArgumentError addsite!(uc, "Oy", FractCoord([0], [0.5]))
         @test_throws ArgumentError addsite!(uc, "Ox", FractCoord([0, 0], [0.0, 0.0]))
     end
 
     @testset "Type" begin
-        uc = make_unitcell(latticevectors; OrbitalType=typeof((:up, "A")))
+        uc = make_unitcell(latticevectors; SiteType=typeof((:up, "A")))
         fc = Dict("Ox" => FractCoord([0, 0], [0.5, 0.0]),
                             "Oy" => FractCoord([0, 0], [0.0, 0.5]))
         for site in ["Ox", "Oy"]
@@ -134,7 +134,7 @@ using TightBindingLattice
     end
 
     @testset "momentumgrid" begin
-        uc = make_unitcell([1.0 0.0; 0.0 1.0]; OrbitalType=String)
+        uc = make_unitcell([1.0 0.0; 0.0 1.0]; SiteType=String)
 
         @test_throws ArgumentError momentumgrid(uc, [2,])
         @test_throws ArgumentError momentumgrid(uc, [2,3,4])
@@ -147,7 +147,7 @@ using TightBindingLattice
     end
 
     @testset "whichunitcell" begin
-        uc = make_unitcell([1.0 0.0; 0.0 1.0]; OrbitalType=String)
+        uc = make_unitcell([1.0 0.0; 0.0 1.0]; SiteType=String)
         addsite!(uc, "A", FractCoord([0,0], [0.1, 0.1]))
         addsite!(uc, "B", FractCoord([0,0], [0.2, 0.2]))
         @test whichunitcell(uc, "A", [1.1, 2.1]) == [1, 2]
@@ -157,7 +157,7 @@ using TightBindingLattice
     end
 
     @testset "findsiteindex" begin
-        uc = make_unitcell([1.0 0.0; 0.0 1.0]; OrbitalType=String)
+        uc = make_unitcell([1.0 0.0; 0.0 1.0]; SiteType=String)
         addsite!(uc, "A", FractCoord([0, 0], [0.0, 0.0]))
         @test findsiteindex(uc, FractCoord([0,0], [0.0, 0.0])) == (1, [0,0])
         @test findsiteindex(uc, FractCoord([1,0], [0.0, 0.0])) == (1, [1,0])

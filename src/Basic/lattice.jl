@@ -33,7 +33,7 @@ function make_lattice(unitcell::UnitCell{O}, shape_matrix::AbstractMatrix{<:Inte
     
     new_latticevectors = unitcell.latticevectors * orthocube.shape_matrix
 
-    new_unitcell = make_unitcell(new_latticevectors; OrbitalType=Tuple{O, Vector{Int}})
+    new_unitcell = make_unitcell(new_latticevectors; SiteType=Tuple{O, Vector{Int}})
     for uc in unitcell_coordinates, (orbname, orbcoord) in unitcell.sites
         cc = fract2carte(unitcell, orbcoord)
         new_cc = cc + unitcell.latticevectors * uc
@@ -57,7 +57,7 @@ function make_lattice(unitcell::UnitCell{O}, shape_matrix::AbstractMatrix{<:Inte
     
     new_latticevectors = unitcell.latticevectors * orthocube.shape_matrix
 
-    new_unitcell = make_unitcell(new_latticevectors; OrbitalType=Tuple{O, Vector{Int}})
+    new_unitcell = make_unitcell(new_latticevectors; SiteType=Tuple{O, Vector{Int}})
     for uc in unitcell_coordinates, (orbname, orbcoord) in unitcell.sites
         cc = fract2carte(unitcell, orbcoord)
         new_cc = cc + unitcell.latticevectors * uc
