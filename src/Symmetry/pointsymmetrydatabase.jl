@@ -5,6 +5,7 @@ using YAML
 using JLD2
 using FileIO
 using Serialization
+#import Pkg
 
 import ..TightBindingLattice: PointSymmetry, read_point_symmetry, simplify_name
 
@@ -19,40 +20,48 @@ POINT_SYMMETRY_DATABASE_3D = Vector{PointSymmetry}(undef, NUM_POINT_SYMMETRIES_3
 POINT_SYMMETRY_LOOKUP_3D = Dict{Vector{String}, Int}()
 
 
-function load()
-    let data_directory = abspath(joinpath(@__DIR__, "..", "..", "data", "PointGroup2D")),
-        filepath = joinpath(data_directory, "cache.data")
-        if isfile(filepath)
-            db = deserialize(filepath)
-            global POINT_SYMMETRY_DATABASE_2D = db.database
-            global POINT_SYMMETRY_LOOKUP_2D = db.lookup
-        else
-            for group_index in 1:NUM_POINT_SYMMETRIES_2D
-                psym = load_group_2d(group_index)
-                global POINT_SYMMETRY_DATABASE_2D[group_index] = psym
-                global POINT_SYMMETRY_LOOKUP_2D[sort(simplify_name.(psym.element_names))] = group_index
-            end
-            serialize(filepath,
-                      (database=POINT_SYMMETRY_DATABASE_2D,
-                       lookup=POINT_SYMMETRY_LOOKUP_2D))
-        end
+function load_yaml()
+    for group_index in 1:NUM_POINT_SYMMETRIES_2D
+        psym = load_group_2d(group_index)
+        global POINT_SYMMETRY_DATABASE_2D[group_index] = psym
+        global POINT_SYMMETRY_LOOKUP_2D[sort(simplify_name.(psym.element_names))] = group_index
     end
-    let data_directory = abspath(joinpath(@__DIR__, "..", "..", "data", "PointGroup3D")),
-        filepath = joinpath(data_directory, "cache.data")
-        if isfile(filepath)
-            db = deserialize(filepath)
-            global POINT_SYMMETRY_DATABASE_3D = db.database
-            global POINT_SYMMETRY_LOOKUP_3D = db.lookup
-        else
-            for group_index in 1:NUM_POINT_SYMMETRIES_3D
-                psym = load_group_3d(group_index)
-                global POINT_SYMMETRY_DATABASE_3D[group_index] = psym
-                global POINT_SYMMETRY_LOOKUP_3D[sort(simplify_name.(psym.element_names))] = group_index
-            end
-            serialize(filepath,
-                      (database=POINT_SYMMETRY_DATABASE_3D,
-                       lookup=POINT_SYMMETRY_LOOKUP_3D))
-        end
+    for group_index in 1:NUM_POINT_SYMMETRIES_3D
+        psym = load_group_3d(group_index)
+        global POINT_SYMMETRY_DATABASE_3D[group_index] = psym
+        global POINT_SYMMETRY_LOOKUP_3D[sort(simplify_name.(psym.element_names))] = group_index
+    end
+    global loaded = true
+end
+
+function load()
+    #mutable_artifacts_toml = joinpath(@__DIR__, "..", "..", "MutableArtifacts.toml")
+    #cache_hash = Pkg.Artifacts.artifact_hash("PointSymmetryDatabase", mutable_artifacts_toml)
+    cache_filepath = joinpath(@__DIR__, "..", "..", "data", "PointSymmetryDatabase.cache")
+    if isfile(cache_filepath)
+        cache = deserialize(cache_filepath)
+        global POINT_SYMMETRY_DATABASE_2D = cache.database2d
+        global POINT_SYMMETRY_DATABASE_3D = cache.database3d
+        global POINT_SYMMETRY_LOOKUP_2D = cache.lookup2d
+        global POINT_SYMMETRY_LOOKUP_3D = cache.lookup3d
+    else
+        #isnothing(cache_hash)
+        load_yaml()
+        #cache_hash = Pkg.Artifacts.create_artifact() do directory
+        global POINT_SYMMETRY_DATABASE_2D
+        global POINT_SYMMETRY_DATABASE_3D
+        global POINT_SYMMETRY_LOOKUP_2D
+        global POINT_SYMMETRY_LOOKUP_3D
+
+        serialize(cache_filepath,
+                    (database2d=POINT_SYMMETRY_DATABASE_2D,
+                    lookup2d=POINT_SYMMETRY_LOOKUP_2D,
+                    database3d=POINT_SYMMETRY_DATABASE_3D,
+                    lookup3d=POINT_SYMMETRY_LOOKUP_3D))
+        #end
+        #Pkg.Artifacts.bind_artifact!(mutable_artifacts_toml,
+        #                             "PointSymmetryDatabase",
+        #                             cache_hash)
     end
     global loaded = true
 end
@@ -63,6 +72,7 @@ function __init__()
     if !loaded
         load()
     end
+    global loaded = true
 end
 
 function load_group_2d(group_index::Integer)

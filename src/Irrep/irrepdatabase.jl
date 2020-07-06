@@ -42,17 +42,18 @@ function load_yaml()
         end
         push!(IRREP_DATABASE, IrrepData(group, conjugacy_classes, character_table, irreps))
     end
+    global loaded = true
 end
 
 
 function load()
-    data_directory = abspath(joinpath(@__DIR__, "..", "..", "data", "Irreps"))
-    filepath = joinpath(data_directory, "cache.data")
-    if isfile(filepath)
-        global IRREP_DATABASE = deserialize(filepath)
+    cache_filepath = joinpath(@__DIR__, "..", "..", "data", "IrrepDatabase.cache")
+    if isfile(cache_filepath)
+        global IRREP_DATABASE = deserialize(cache_filepath)
     else
         load_yaml()
-        serialize(filepath, IRREP_DATABASE)
+        global IRREP_DATABASE
+        serialize(cache_filepath, IRREP_DATABASE)
     end
     global loaded = true
 end
