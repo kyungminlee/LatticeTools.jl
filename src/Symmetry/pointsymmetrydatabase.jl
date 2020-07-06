@@ -17,7 +17,6 @@ POINT_SYMMETRY_LOOKUP_3D = Dict{Vector{String}, Int}()
 
 
 function __init__()
-    #=
     for i in 1:NUM_POINT_SYMMETRIES_2D
         psym = get2d(i)
         POINT_SYMMETRY_LOOKUP_2D[sort(simplify_name.(psym.element_names))] = i
@@ -26,7 +25,6 @@ function __init__()
         psym = get3d(i)
         POINT_SYMMETRY_LOOKUP_3D[sort(simplify_name.(psym.element_names))] = i
     end
-    =#
 end
 
 function load_group_2d(group_index::Integer)

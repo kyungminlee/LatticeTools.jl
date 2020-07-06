@@ -32,9 +32,8 @@ include("Irrep/irrep.jl")
 
 export PointSymmetryDatabase
 include("Symmetry/pointsymmetrydatabase.jl")
-
-#export IrrepDatabase
-#include("Irrep/irrepdatabase.jl")
+export IrrepDatabase
+include("Irrep/irrepdatabase.jl")
 
 include("Symmorphic/symmorphicsymmetry.jl")
 include("Symmorphic/symmorphicsymmetryembedding.jl")
