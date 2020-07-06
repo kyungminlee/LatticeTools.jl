@@ -1,24 +1,21 @@
-export IrrepDatabase
 module IrrepDatabase
 
-using Serialization
+import Pkg
+import Serialization
+using LinearAlgebra
 
 using YAML
-using LinearAlgebra
 
 using ..TightBindingLattice: FiniteGroup, IrrepData
 using ..TightBindingLattice: cleanup_number, parse_expr, group_isomorphism, group_multiplication_table, simplify_name
 
 
-loaded = false
 IRREP_DATABASE = IrrepData[]
 
 
 function load_yaml()
     tol = Base.rtoldefault(Float64)
-
     global IRREP_DATABASE
-    
     data_directory = abspath(joinpath(@__DIR__, "..", "..", "data", "Irreps"))
     database_raw = YAML.load_file(joinpath(data_directory, "irrep_database.yaml"))
 
@@ -42,28 +39,29 @@ function load_yaml()
         end
         push!(IRREP_DATABASE, IrrepData(group, conjugacy_classes, character_table, irreps))
     end
-    global loaded = true
 end
 
 
 function load()
-    cache_filepath = joinpath(@__DIR__, "..", "..", "data", "IrrepDatabase.cache")
-    if isfile(cache_filepath)
-        global IRREP_DATABASE = deserialize(cache_filepath)
-    else
+    mutable_artifacts_toml = joinpath(@__DIR__, "..", "..", "MutableArtifacts.toml")
+    cache_hash = Pkg.Artifacts.artifact_hash("IrrepDatabase", mutable_artifacts_toml)
+    if isnothing(cache_hash) || !Pkg.Artifacts.artifact_exists(cache_hash)
         load_yaml()
-        global IRREP_DATABASE
-        serialize(cache_filepath, IRREP_DATABASE)
+        cache_hash = Pkg.Artifacts.create_artifact() do cache_directory
+            global IRREP_DATABASE
+            cache_filepath = joinpath(cache_directory, "IrrepDatabase.cache")
+            Serialization.serialize(cache_filepath, IRREP_DATABASE)
+        end
+        Pkg.Artifacts.bind_artifact!(mutable_artifacts_toml, "IrrepDatabase", cache_hash; force=true)
+    else
+        cache_filepath = joinpath(Pkg.Artifacts.artifact_path(cache_hash), "IrrepDatabase.cache")
+        global IRREP_DATABASE = Serialization.deserialize(cache_filepath)
     end
-    global loaded = true
 end
 
 
 function __init__()
-    global loaded
-    if !loaded
-        load()
-    end
+    load()
 end
 
 
