@@ -2,10 +2,10 @@ using TightBindingLattice
 
 function make_kagome_lattice(size_matrix ::AbstractMatrix{<:Integer}; compute_symmetry::Bool=false)
     latticevectors = [1 -0.5; 0 0.5*sqrt(3.0)];
-    unitcell = make_unitcell(latticevectors, OrbitalType=String)
-    addorbital!(unitcell, "A", carte2fract(unitcell, [0.5, 0.0]))
-    addorbital!(unitcell, "B", carte2fract(unitcell, [0.25, 0.25*sqrt(3.0)]))
-    addorbital!(unitcell, "C", carte2fract(unitcell, [0.5+0.25, 0.25*sqrt(3.0)]))
+    unitcell = make_unitcell(latticevectors, SiteType=String)
+    addsite!(unitcell, "A", carte2fract(unitcell, [0.5, 0.0]))
+    addsite!(unitcell, "B", carte2fract(unitcell, [0.25, 0.25*sqrt(3.0)]))
+    addsite!(unitcell, "C", carte2fract(unitcell, [0.5+0.25, 0.25*sqrt(3.0)]))
 
     nnbondtypes = [
         ([ 0, 0], "A", [ 0, 0], "B", 1),
@@ -40,8 +40,8 @@ function make_kagome_lattice(size_matrix ::AbstractMatrix{<:Integer}; compute_sy
             R_col, r_col = orthocube.wrap(r .+ colvec)
             roworb_super = (roworb, r_row)
             colorb_super = (colorb, r_col)
-            irow = get(supercell.orbitalindices, roworb_super, -1)
-            icol = get(supercell.orbitalindices, colorb_super, -1)
+            irow = get(supercell.siteindices, roworb_super, -1)
+            icol = get(supercell.siteindices, colorb_super, -1)
             push!(nnbonds, ((irow, icol), R_col-R_row, bondsign))
         end
         for (rowvec, roworb, colvec, colorb, bondsign) in nnnbondtypes
@@ -49,8 +49,8 @@ function make_kagome_lattice(size_matrix ::AbstractMatrix{<:Integer}; compute_sy
             R_col, r_col = orthocube.wrap(r .+ colvec)
             roworb_super = (roworb, r_row)
             colorb_super = (colorb, r_col)
-            irow = get(supercell.orbitalindices, roworb_super, -1)
-            icol = get(supercell.orbitalindices, colorb_super, -1)
+            irow = get(supercell.siteindices, roworb_super, -1)
+            icol = get(supercell.siteindices, colorb_super, -1)
             push!(nnnbonds, ((irow, icol), R_col-R_row, bondsign))
         end
     end
@@ -63,8 +63,8 @@ function make_kagome_lattice(size_matrix ::AbstractMatrix{<:Integer}; compute_sy
         R_col, r_col = orthocube.wrap(r .+ colvec)
         roworb_super = (roworb, r_row)
         colorb_super = (colorb, r_col)
-        irow = get(supercell.orbitalindices, roworb_super, -1)
-        icol = get(supercell.orbitalindices, colorb_super, -1)
+        irow = get(supercell.siteindices, roworb_super, -1)
+        icol = get(supercell.siteindices, colorb_super, -1)
         push!(triangle, ((irow, icol), R_col-R_row))
       end
       push!(nn_triangles, (triangle, 1))
@@ -75,8 +75,8 @@ function make_kagome_lattice(size_matrix ::AbstractMatrix{<:Integer}; compute_sy
         R_col, r_col = orthocube.wrap(r .+ colvec)
         roworb_super = (roworb, r_row)
         colorb_super = (colorb, r_col)
-        irow = get(supercell.orbitalindices, roworb_super, -1)
-        icol = get(supercell.orbitalindices, colorb_super, -1)
+        irow = get(supercell.siteindices, roworb_super, -1)
+        icol = get(supercell.siteindices, colorb_super, -1)
         push!(triangle, ((irow, icol), R_col-R_row))
       end
       push!(nn_triangles, (triangle, -1))

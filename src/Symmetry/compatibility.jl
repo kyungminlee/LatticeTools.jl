@@ -107,7 +107,7 @@ end
 """
 function iscompatible(lattice::Lattice, op::PointOperation{<:Integer})
     return iscompatible(lattice.orthocube, op) &&
-           !isnothing(findorbitalmap(lattice.unitcell, op))
+           !isnothing(findsitemap(lattice.unitcell, op))
 end
 
 
@@ -129,7 +129,7 @@ end
 """
 function iscompatible(lattice::Lattice, psym::PointSymmetry)::Bool
     return iscompatible(lattice.orthocube, psym) &&
-           all(!isnothing(findorbitalmap(lattice.unitcell, pop))
+           all(!isnothing(findsitemap(lattice.unitcell, pop))
                    for pop in generator_elements(psym))
 end
 

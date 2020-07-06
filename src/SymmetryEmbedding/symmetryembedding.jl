@@ -236,7 +236,7 @@ end
 
 
 function symmetry_name(arg::SymmetryEmbedding)
-    return "Embed[$(symmetry_name(symmetry(arg))) on $(arg.lattice.orthocube.shape_matrix) with $(numorbital(arg.lattice.unitcell)) orbitals]"
+    return "Embed[$(symmetry_name(symmetry(arg))) on $(arg.lattice.orthocube.shape_matrix) with $(numsite(arg.lattice.unitcell)) sites]"
 end
 
 

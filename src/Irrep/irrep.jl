@@ -244,7 +244,7 @@ end
 #                             sic::TranslationSymmetryIrrepComponent)
 #                             #tol::Real=Base.rtoldefault(Float64))
 #     sym = sic.symmetry
-#     permutations = get_orbital_permutations(lattice, sym)
+#     permutations = get_site_permutations(lattice, sym)
 #     irrep_components = let sym_irrep = irrep(sym, sic.irrep_index),
 #                            c = sic.irrep_component
 #                            [m[c, c] for m in sym_irrep]
@@ -300,7 +300,7 @@ end
 #                             sic::PointSymmetryIrrepComponent)
 #                             #tol::Real=Base.rtoldefault(Float64))
 #     sym = sic.symmetry
-#     permutations = get_orbital_permutations(lattice, sym)
+#     permutations = get_site_permutations(lattice, sym)
 #     irrep_components = let irrep = irrep(sym, sic.irrep_index),
 #                            c = sic.irrep_component
 #                            [m[c, c] for m in irrep]
@@ -362,11 +362,11 @@ end
 #     psym_irrep_index = ssic.point.irrep_index
 #     psym_irrep_compo = ssic.point.irrep_component
 
-#     tsym_permutations = get_orbital_permutations(lattice, tsym)
+#     tsym_permutations = get_site_permutations(lattice, tsym)
 #     tsym_irrep = irrep(tsym, tsym_irrep_index)
 #     tsym_irrep_components = [m[tsym_irrep_compo, tsym_irrep_compo] for m in tsym_irrep]
 
-#     psym_permutations = get_orbital_permutations(lattice, psym)
+#     psym_permutations = get_site_permutations(lattice, psym)
 #     psym_irrep = irrep(psym, psym_irrep_index)
 #     psym_irrep_components = [m[psym_irrep_compo, psym_irrep_compo] for m in psym_irrep]
 

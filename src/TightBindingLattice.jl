@@ -24,7 +24,7 @@ include("Symmetry/compatibility.jl")
 include("Symmetry/littlesymmetry.jl")
 
 include("SymmetryEmbedding/sitepermutation.jl")
-include("SymmetryEmbedding/orbitalmap.jl")
+include("SymmetryEmbedding/sitemap.jl")
 include("SymmetryEmbedding/localunitary.jl")
 include("SymmetryEmbedding/symmetryembedding.jl")
 

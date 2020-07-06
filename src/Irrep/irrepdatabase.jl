@@ -1,19 +1,21 @@
-export IrrepDatabase
 module IrrepDatabase
 
-using YAML
+import Pkg
+import Serialization
 using LinearAlgebra
+
+using YAML
 
 using ..TightBindingLattice: FiniteGroup, IrrepData
 using ..TightBindingLattice: cleanup_number, parse_expr, group_isomorphism, group_multiplication_table, simplify_name
 
+
 IRREP_DATABASE = IrrepData[]
 
-function __init__()
-    tol = Base.rtoldefault(Float64)
 
+function load_yaml()
+    tol = Base.rtoldefault(Float64)
     global IRREP_DATABASE
-    
     data_directory = abspath(joinpath(@__DIR__, "..", "..", "data", "Irreps"))
     database_raw = YAML.load_file(joinpath(data_directory, "irrep_database.yaml"))
 
@@ -37,6 +39,35 @@ function __init__()
         end
         push!(IRREP_DATABASE, IrrepData(group, conjugacy_classes, character_table, irreps))
     end
+end
+
+
+function load()
+    mutable_artifacts_toml = joinpath(@__DIR__, "..", "..", "MutableArtifacts.toml")
+    try
+        cache_hash = Pkg.Artifacts.artifact_hash("IrrepDatabase", mutable_artifacts_toml)
+        if !isnothing(cache_hash) && Pkg.Artifacts.artifact_exists(cache_hash)
+            cache_filepath = joinpath(Pkg.Artifacts.artifact_path(cache_hash), "IrrepDatabase.cache")
+            global IRREP_DATABASE = Serialization.deserialize(cache_filepath)
+            return
+        end
+    catch e
+        @warn "Failed to load IrrepDatabase."
+        @warn "$e"
+        @warn "Loading YAML"
+    end
+    load_yaml()
+    cache_hash = Pkg.Artifacts.create_artifact() do cache_directory
+        global IRREP_DATABASE
+        cache_filepath = joinpath(cache_directory, "IrrepDatabase.cache")
+        Serialization.serialize(cache_filepath, IRREP_DATABASE)
+    end
+    Pkg.Artifacts.bind_artifact!(mutable_artifacts_toml, "IrrepDatabase", cache_hash; force=true)
+end
+
+
+function __init__()
+    load()
 end
 
 

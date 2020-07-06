@@ -35,7 +35,7 @@ Examples are: [`TranslationSymmetry`](@ref), [`PointSymmetry`](@ref). Members ar
 
 ## Symmetry Embedding
 
-Orbital mapping
+Site mapping
 
 ```
      T ⋊ P →  E(L,P)

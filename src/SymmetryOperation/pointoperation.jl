@@ -23,7 +23,7 @@ end
 import Base.convert
 function convert(::Type{PointOperation{S}}, obj::IdentityOperation{S}) where S
     dim = dimension(obj)
-    return PointOperation{S}(Matrix(I, dim, dim))
+    return PointOperation{S}(Matrix(LinearAlgebra.I, dim, dim))
 end
 
 function convert(::Type{PointOperation{S}}, matrix::AbstractMatrix{S}) where S

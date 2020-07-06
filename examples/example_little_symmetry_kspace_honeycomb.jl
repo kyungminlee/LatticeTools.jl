@@ -19,9 +19,9 @@ mkpath("example_little_symmetry_kspace_honeycomb")
 
 # ### Define Unitcell
 latticevectors = [1 -0.5; 0 sqrt(3)*0.5];
-unitcell = make_unitcell(latticevectors; OrbitalType=String);
-addorbital!(unitcell, "A", carte2fract(unitcell, [0.5, 0.5 / sqrt(3)]));
-addorbital!(unitcell, "B", carte2fract(unitcell, [0.5, -0.5 / sqrt(3)]));
+unitcell = make_unitcell(latticevectors; SiteType=String);
+addsite!(unitcell, "A", carte2fract(unitcell, [0.5, 0.5 / sqrt(3)]));
+addsite!(unitcell, "B", carte2fract(unitcell, [0.5, -0.5 / sqrt(3)]));
 
 # ### Plot lattice
 let bravais_lattice = [], a_sites = [], b_sites = []
@@ -30,7 +30,7 @@ let bravais_lattice = [], a_sites = [], b_sites = []
     for i1 in -5:5, i2 in -5:5
         R = latticevectors * [i1, i2]
         within(R...) && push!(bravais_lattice, R)
-        for (orb_name, orb_fc) in unitcell.orbitals
+        for (orb_name, orb_fc) in unitcell.sites
             orb_cc = fract2carte(unitcell, orb_fc)
             r = R + orb_cc
             within(r...) && push!(orb_name == "A" ? a_sites : b_sites, r)
@@ -65,7 +65,7 @@ let bravais_lattice = [], a_sites = [], b_sites = []
     for i1 in -5:5, i2 in -5:5
         R = lattice.supercell.latticevectors * [i1, i2]
         within(R...) && push!(bravais_lattice, R)
-        for (orb_name, orb_fc) in lattice.supercell.orbitals
+        for (orb_name, orb_fc) in lattice.supercell.sites
             orb_cc = fract2carte(lattice.supercell, orb_fc)
             r = R + orb_cc
             within(r...) && push!(orb_name[1] == "A" ? a_sites : b_sites, r)
@@ -177,7 +177,7 @@ let bravais_lattice = [], a_sites = [], b_sites = []
     for i1 in -5:5, i2 in -5:5
         R = lattice.supercell.latticevectors * [i1, i2]
         within(R...) && push!(bravais_lattice, R)
-        for (orb_name, orb_fc) in lattice.supercell.orbitals
+        for (orb_name, orb_fc) in lattice.supercell.sites
             orb_cc = fract2carte(lattice.supercell, orb_fc)
             r = R + orb_cc
             within(r...) && push!(orb_name[1] == "A" ? a_sites : b_sites, r)
@@ -291,7 +291,7 @@ let bravais_lattice = [], a_sites = [], b_sites = []
     for i1 in -5:5, i2 in -5:5
         R = lattice.supercell.latticevectors * [i1, i2]
         within(R...) && push!(bravais_lattice, R)
-        for (orb_name, orb_fc) in lattice.supercell.orbitals
+        for (orb_name, orb_fc) in lattice.supercell.sites
             orb_cc = fract2carte(lattice.supercell, orb_fc)
             r = R + orb_cc
             within(r...) && push!(orb_name[1] == "A" ? a_sites : b_sites, r)
