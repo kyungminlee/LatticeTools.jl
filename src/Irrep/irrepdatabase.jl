@@ -44,19 +44,25 @@ end
 
 function load()
     mutable_artifacts_toml = joinpath(@__DIR__, "..", "..", "MutableArtifacts.toml")
-    cache_hash = Pkg.Artifacts.artifact_hash("IrrepDatabase", mutable_artifacts_toml)
-    if isnothing(cache_hash) || !Pkg.Artifacts.artifact_exists(cache_hash)
-        load_yaml()
-        cache_hash = Pkg.Artifacts.create_artifact() do cache_directory
-            global IRREP_DATABASE
-            cache_filepath = joinpath(cache_directory, "IrrepDatabase.cache")
-            Serialization.serialize(cache_filepath, IRREP_DATABASE)
+    try
+        cache_hash = Pkg.Artifacts.artifact_hash("IrrepDatabase", mutable_artifacts_toml)
+        if !isnothing(cache_hash) && Pkg.Artifacts.artifact_exists(cache_hash)
+            cache_filepath = joinpath(Pkg.Artifacts.artifact_path(cache_hash), "IrrepDatabase.cache")
+            global IRREP_DATABASE = Serialization.deserialize(cache_filepath)
+            return
         end
-        Pkg.Artifacts.bind_artifact!(mutable_artifacts_toml, "IrrepDatabase", cache_hash; force=true)
-    else
-        cache_filepath = joinpath(Pkg.Artifacts.artifact_path(cache_hash), "IrrepDatabase.cache")
-        global IRREP_DATABASE = Serialization.deserialize(cache_filepath)
+    catch e
+        @warn "Failed to load IrrepDatabase."
+        @warn "$e"
+        @warn "Loading YAML"
     end
+    load_yaml()
+    cache_hash = Pkg.Artifacts.create_artifact() do cache_directory
+        global IRREP_DATABASE
+        cache_filepath = joinpath(cache_directory, "IrrepDatabase.cache")
+        Serialization.serialize(cache_filepath, IRREP_DATABASE)
+    end
+    Pkg.Artifacts.bind_artifact!(mutable_artifacts_toml, "IrrepDatabase", cache_hash; force=true)
 end
 
 

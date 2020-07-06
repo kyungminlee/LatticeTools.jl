@@ -36,30 +36,37 @@ end
 
 function load()
     mutable_artifacts_toml = joinpath(@__DIR__, "..", "..", "MutableArtifacts.toml")
-    cache_hash = Pkg.Artifacts.artifact_hash("PointSymmetryDatabase", mutable_artifacts_toml)
-    if isnothing(cache_hash) || !Pkg.Artifacts.artifact_exists(cache_hash)
-        load_yaml()
-        cache_hash = Pkg.Artifacts.create_artifact() do cache_directory
-            global POINT_SYMMETRY_DATABASE_2D
-            global POINT_SYMMETRY_DATABASE_3D
-            global POINT_SYMMETRY_LOOKUP_2D
-            global POINT_SYMMETRY_LOOKUP_3D
-            cache_filepath = joinpath(cache_directory, "PointSymmetryDatabase.cache")
-            Serialization.serialize(cache_filepath,
-                                    (database2d=POINT_SYMMETRY_DATABASE_2D,
-                                     lookup2d=POINT_SYMMETRY_LOOKUP_2D,
-                                     database3d=POINT_SYMMETRY_DATABASE_3D,
-                                     lookup3d=POINT_SYMMETRY_LOOKUP_3D))
+    try
+        cache_hash = Pkg.Artifacts.artifact_hash("PointSymmetryDatabase", mutable_artifacts_toml)
+        if !isnothing(cache_hash) && Pkg.Artifacts.artifact_exists(cache_hash)
+            cache_filepath = joinpath(Pkg.Artifacts.artifact_path(cache_hash), "PointSymmetryDatabase.cache")
+            cache = Serialization.deserialize(cache_filepath)
+            global POINT_SYMMETRY_DATABASE_2D = cache.database2d
+            global POINT_SYMMETRY_DATABASE_3D = cache.database3d
+            global POINT_SYMMETRY_LOOKUP_2D = cache.lookup2d
+            global POINT_SYMMETRY_LOOKUP_3D = cache.lookup3d
+            return
         end
-        Pkg.Artifacts.bind_artifact!(mutable_artifacts_toml, "PointSymmetryDatabase", cache_hash; force=true)
-    else
-        cache_filepath = joinpath(Pkg.Artifacts.artifact_path(cache_hash), "PointSymmetryDatabase.cache")
-        cache = Serialization.deserialize(cache_filepath)
-        global POINT_SYMMETRY_DATABASE_2D = cache.database2d
-        global POINT_SYMMETRY_DATABASE_3D = cache.database3d
-        global POINT_SYMMETRY_LOOKUP_2D = cache.lookup2d
-        global POINT_SYMMETRY_LOOKUP_3D = cache.lookup3d
+    catch e
+        @warn "Failed to load PointSymmetryDatabase."
+        @warn "$e"
+        @warn "Loading YAML"
     end
+
+    load_yaml()
+    cache_hash = Pkg.Artifacts.create_artifact() do cache_directory
+        global POINT_SYMMETRY_DATABASE_2D
+        global POINT_SYMMETRY_DATABASE_3D
+        global POINT_SYMMETRY_LOOKUP_2D
+        global POINT_SYMMETRY_LOOKUP_3D
+        cache_filepath = joinpath(cache_directory, "PointSymmetryDatabase.cache")
+        Serialization.serialize(cache_filepath,
+                                (database2d=POINT_SYMMETRY_DATABASE_2D,
+                                    lookup2d=POINT_SYMMETRY_LOOKUP_2D,
+                                    database3d=POINT_SYMMETRY_DATABASE_3D,
+                                    lookup3d=POINT_SYMMETRY_LOOKUP_3D))
+    end
+    Pkg.Artifacts.bind_artifact!(mutable_artifacts_toml, "PointSymmetryDatabase", cache_hash; force=true)
 end
 
 
