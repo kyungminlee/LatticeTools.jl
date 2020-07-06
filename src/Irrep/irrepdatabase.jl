@@ -1,15 +1,20 @@
 export IrrepDatabase
 module IrrepDatabase
 
+using Serialization
+
 using YAML
 using LinearAlgebra
 
 using ..TightBindingLattice: FiniteGroup, IrrepData
 using ..TightBindingLattice: cleanup_number, parse_expr, group_isomorphism, group_multiplication_table, simplify_name
 
+
+loaded = false
 IRREP_DATABASE = IrrepData[]
 
-function __init__()
+
+function load_yaml()
     tol = Base.rtoldefault(Float64)
 
     global IRREP_DATABASE
@@ -36,6 +41,27 @@ function __init__()
             push!(irreps, matrices)
         end
         push!(IRREP_DATABASE, IrrepData(group, conjugacy_classes, character_table, irreps))
+    end
+end
+
+
+function load()
+    data_directory = abspath(joinpath(@__DIR__, "..", "..", "data", "Irreps"))
+    filepath = joinpath(data_directory, "cache.data")
+    if isfile(filepath)
+        global IRREP_DATABASE = deserialize(filepath)
+    else
+        load_yaml()
+        serialize(filepath, IRREP_DATABASE)
+    end
+    global loaded = true
+end
+
+
+function __init__()
+    global loaded
+    if !loaded
+        load()
     end
 end
 
