@@ -1,8 +1,8 @@
 export UnitCell
-export make_unitcell
+export make_unitcell, makeunitcell
 export dimension
 
-export numsite,
+export numsite, sitecount,
        hassite,
        addsite!,
        getsite,
@@ -148,6 +148,9 @@ function make_unitcell(latticevectors::AbstractVector{<:AbstractVector};
 end
 
 
+makeunitcell = make_unitcell
+
+
 """
     dimension
 
@@ -169,6 +172,18 @@ Number of sites of the unit cell.
 function numsite(uc ::UnitCell)
     return length(uc.sites)
 end
+
+
+
+"""
+    sitecount
+
+Number of sites of the unit cell.
+
+# Arguments
+* `uc ::UnitCell`
+"""
+sitecount(uc ::UnitCell) = length(uc.sites)
 
 
 """

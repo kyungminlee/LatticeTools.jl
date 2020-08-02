@@ -1,4 +1,4 @@
-export make_lattice
+export make_lattice, makelattice
 export Lattice
 export dimension
 
@@ -68,6 +68,9 @@ function make_lattice(unitcell::UnitCell{O}, shape_matrix::AbstractMatrix{<:Inte
 
     return Lattice{O}(unitcell, orthocube, unitcell_coordinates, new_unitcell)
 end
+
+
+makelattice = make_lattice
 
 
 dimension(lattice::Lattice) = dimension(lattice.unitcell)
