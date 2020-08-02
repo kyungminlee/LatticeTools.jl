@@ -10,7 +10,7 @@ function display_matrix(io::IO, matrix::AbstractMatrix; prefix::AbstractString=&
         end
         println(io)
     end
-end</code></pre><pre><code class="language-none">display_matrix (generic function with 1 method)</code></pre><h2 id="Generate-two-isomorphic-groups"><a class="docs-heading-anchor" href="#Generate-two-isomorphic-groups">Generate two isomorphic groups</a><a id="Generate-two-isomorphic-groups-1"></a><a class="docs-heading-anchor-permalink" href="#Generate-two-isomorphic-groups" title="Permalink"></a></h2><pre><code class="language-julia">group1 = FiniteGroup([1 2 3 4;
+end</code></pre><pre class="documenter-example-output">display_matrix (generic function with 1 method)</pre><h2 id="Generate-two-isomorphic-groups"><a class="docs-heading-anchor" href="#Generate-two-isomorphic-groups">Generate two isomorphic groups</a><a id="Generate-two-isomorphic-groups-1"></a><a class="docs-heading-anchor-permalink" href="#Generate-two-isomorphic-groups" title="Permalink"></a></h2><pre><code class="language-julia">group1 = FiniteGroup([1 2 3 4;
                       2 1 4 3;
                       3 4 2 1;
                       4 3 1 2]);
@@ -29,7 +29,7 @@ println()
 println(&quot;Multiplication table of G₂&quot;)
 println(&quot;--------------------------&quot;)
 display_matrix(stdout, group_multiplication_table(group2))
-println()</code></pre><pre><code class="language-none">Multiplication table of G₁
+println()</code></pre><pre class="documenter-example-output">Multiplication table of G₁
 --------------------------
    1    2    3    4
    2    1    4    3
@@ -41,7 +41,7 @@ Multiplication table of G₂
    1    2    3    4
    2    3    4    1
    3    4    1    2
-   4    1    2    3</code></pre><h2 id="Group-isomorphism-2"><a class="docs-heading-anchor" href="#Group-isomorphism-2">Group isomorphism</a><a class="docs-heading-anchor-permalink" href="#Group-isomorphism-2" title="Permalink"></a></h2><pre><code class="language-julia">println(&quot;Group isomorphism  ϕ: G₁ → G₂&quot;)
+   4    1    2    3</pre><h2 id="Group-isomorphism-2"><a class="docs-heading-anchor" href="#Group-isomorphism-2">Group isomorphism</a><a class="docs-heading-anchor-permalink" href="#Group-isomorphism-2" title="Permalink"></a></h2><pre><code class="language-julia">println(&quot;Group isomorphism  ϕ: G₁ → G₂&quot;)
 println(&quot;-----------------------------&quot;)
 ϕ = group_isomorphism(group1, group2)
 for g in 1:group_order(group1)
@@ -59,7 +59,7 @@ println(&quot;-----------------------------&quot;)
 display_matrix(stdout, mtab2)
 println()
 println(&quot;  ϕ(g)⋅ϕ(h) = ϕ(g⋅h)&quot;)
-println(&quot;  ϕ(G₁) ≡ G₂ should hold.&quot;)</code></pre><pre><code class="language-none">Group isomorphism  ϕ: G₁ → G₂
+println(&quot;  ϕ(G₁) ≡ G₂ should hold.&quot;)</code></pre><pre class="documenter-example-output">Group isomorphism  ϕ: G₁ → G₂
 -----------------------------
   ϕ(1) = 1
   ϕ(2) = 3
@@ -74,4 +74,4 @@ Multiplication table of ϕ(G₁)
    4    1    2    3
 
   ϕ(g)⋅ϕ(h) = ϕ(g⋅h)
-  ϕ(G₁) ≡ G₂ should hold.</code></pre><hr/><p><em>This page was generated using <a href="https://github.com/fredrikekre/Literate.jl">Literate.jl</a>.</em></p></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../../symmetry/">« Symmetry Analysis</a><a class="docs-footer-nextpage" href="../example_orthocube/">Orthocube »</a></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> on <span class="colophon-date" title="Monday 6 July 2020 17:09">Monday 6 July 2020</span>. Using Julia version 1.4.2.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
+  ϕ(G₁) ≡ G₂ should hold.</pre><hr/><p><em>This page was generated using <a href="https://github.com/fredrikekre/Literate.jl">Literate.jl</a>.</em></p></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../../symmetry/">« Symmetry Analysis</a><a class="docs-footer-nextpage" href="../example_orthocube/">Orthocube »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> on <span class="colophon-date" title="Sunday 2 August 2020 22:34">Sunday 2 August 2020</span>. Using Julia version 1.4.2.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>

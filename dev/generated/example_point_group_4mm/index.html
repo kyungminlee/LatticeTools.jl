@@ -15,7 +15,7 @@ function display_matrix(io::IO, matrix::AbstractMatrix; prefix::AbstractString=&
         end
         println(io)
     end
-end</code></pre><pre><code class="language-none">display_matrix (generic function with 1 method)</code></pre><h2 id="Irreps-of-4mm"><a class="docs-heading-anchor" href="#Irreps-of-4mm">Irreps of 4mm</a><a id="Irreps-of-4mm-1"></a><a class="docs-heading-anchor-permalink" href="#Irreps-of-4mm" title="Permalink"></a></h2><pre><code class="language-julia">point_symmetry = project(PointSymmetryDatabase.get(13), [1 0 0; 0 1 0])
+end</code></pre><pre class="documenter-example-output">display_matrix (generic function with 1 method)</pre><h2 id="Irreps-of-4mm"><a class="docs-heading-anchor" href="#Irreps-of-4mm">Irreps of 4mm</a><a id="Irreps-of-4mm-1"></a><a class="docs-heading-anchor-permalink" href="#Irreps-of-4mm" title="Permalink"></a></h2><pre><code class="language-julia">point_symmetry = project(PointSymmetryDatabase.get(13), [1 0 0; 0 1 0])
 println(&quot;symmetry: &quot;, point_symmetry.hermann_mauguin)
 println(&quot;order: &quot;, group_order(point_symmetry))
 println(&quot;irreducible_representations:&quot;)
@@ -32,7 +32,7 @@ for irrep_index in 1:num_irreps(point_symmetry)
             display_matrix(stdout, m; prefix=&quot;      &quot;)
         end
     end
-end</code></pre><pre><code class="language-none">symmetry: 4mm
+end</code></pre><pre class="documenter-example-output">symmetry: 4mm
 order: 8
 irreducible_representations:
 - name: GM(1)
@@ -140,4 +140,4 @@ irreducible_representations:
   - name: &quot;m&lt;sub&gt;1-10&lt;/sub&gt;&quot;
     matrix: |-
         -1    0
-         0    1</code></pre><hr/><p><em>This page was generated using <a href="https://github.com/fredrikekre/Literate.jl">Literate.jl</a>.</em></p></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../example_point_group_elements/">« Point group elements</a><a class="docs-footer-nextpage" href="../example_little_group_2d/">Little group in 2d »</a></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> on <span class="colophon-date" title="Monday 6 July 2020 17:09">Monday 6 July 2020</span>. Using Julia version 1.4.2.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
+         0    1</pre><hr/><p><em>This page was generated using <a href="https://github.com/fredrikekre/Literate.jl">Literate.jl</a>.</em></p></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../example_point_group_elements/">« Point group elements</a><a class="docs-footer-nextpage" href="../example_little_group_2d/">Little group in 2d »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> on <span class="colophon-date" title="Sunday 2 August 2020 22:34">Sunday 2 August 2020</span>. Using Julia version 1.4.2.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>

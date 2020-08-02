@@ -15,7 +15,7 @@ function display_matrix(io::IO, matrix::AbstractMatrix; prefix::AbstractString=&
         end
         println(io)
     end
-end</code></pre><pre><code class="language-none">display_matrix (generic function with 1 method)</code></pre><h2 id="Set-up-lattice-and-symmetry"><a class="docs-heading-anchor" href="#Set-up-lattice-and-symmetry">Set up lattice and symmetry</a><a id="Set-up-lattice-and-symmetry-1"></a><a class="docs-heading-anchor-permalink" href="#Set-up-lattice-and-symmetry" title="Permalink"></a></h2><pre><code class="language-julia">unitcell = make_unitcell([1.0 0.0; 0.0 1.0]; SiteType=String);
+end</code></pre><pre class="documenter-example-output">display_matrix (generic function with 1 method)</pre><h2 id="Set-up-lattice-and-symmetry"><a class="docs-heading-anchor" href="#Set-up-lattice-and-symmetry">Set up lattice and symmetry</a><a id="Set-up-lattice-and-symmetry-1"></a><a class="docs-heading-anchor-permalink" href="#Set-up-lattice-and-symmetry" title="Permalink"></a></h2><pre><code class="language-julia">unitcell = make_unitcell([1.0 0.0; 0.0 1.0]; SiteType=String);
 addsite!(unitcell, &quot;Ox&quot;, FractCoord([0,0], [0.5, 0.0]));
 addsite!(unitcell, &quot;Oy&quot;, FractCoord([0,0], [0.0, 0.5]));
 
@@ -29,11 +29,11 @@ display_matrix(stdout, group_multiplication_table(lg))
 
 
 lg_matrep = psym.matrix_representations[lge]
-println(&quot;Matrix representations: $lg_matrep&quot;)</code></pre><pre><code class="language-none">Little group
+println(&quot;Matrix representations: $lg_matrep&quot;)</code></pre><pre class="documenter-example-output">Little group
 ------------
    1    2
    2    1
-Matrix representations: [[1 0; 0 1], [1 0; 0 -1]]</code></pre><h2 id="Finding-point-groups-isomorphic-to-the-little-group"><a class="docs-heading-anchor" href="#Finding-point-groups-isomorphic-to-the-little-group">Finding point groups isomorphic to the little group</a><a id="Finding-point-groups-isomorphic-to-the-little-group-1"></a><a class="docs-heading-anchor-permalink" href="#Finding-point-groups-isomorphic-to-the-little-group" title="Permalink"></a></h2><pre><code class="language-julia">little_symmetry_candidates = Tuple{PointSymmetry, Vector{Int}}[]
+Matrix representations: [[1 0; 0 1], [1 0; 0 -1]]</pre><h2 id="Finding-point-groups-isomorphic-to-the-little-group"><a class="docs-heading-anchor" href="#Finding-point-groups-isomorphic-to-the-little-group">Finding point groups isomorphic to the little group</a><a id="Finding-point-groups-isomorphic-to-the-little-group-1"></a><a class="docs-heading-anchor-permalink" href="#Finding-point-groups-isomorphic-to-the-little-group" title="Permalink"></a></h2><pre><code class="language-julia">little_symmetry_candidates = Tuple{PointSymmetry, Vector{Int}}[]
 for i in 1:32
     ps = PointSymmetryDatabase.get(i)
     ϕ = group_isomorphism(lg, ps.group)
@@ -44,7 +44,7 @@ end
 (psym2, ϕ) = first(little_symmetry_candidates)
 
 lg_matrep2 = lg_matrep[ϕ]
-println(&quot;Matrix representations (isomorphic): $lg_matrep2&quot;)</code></pre><pre><code class="language-none">Matrix representations (isomorphic): [[1 0; 0 1], [1 0; 0 -1]]</code></pre><h2 id="Multiplication-Tables"><a class="docs-heading-anchor" href="#Multiplication-Tables">Multiplication Tables</a><a id="Multiplication-Tables-1"></a><a class="docs-heading-anchor-permalink" href="#Multiplication-Tables" title="Permalink"></a></h2><pre><code class="language-julia">println(&quot;Parent point group&quot;)
+println(&quot;Matrix representations (isomorphic): $lg_matrep2&quot;)</code></pre><pre class="documenter-example-output">Matrix representations (isomorphic): [[1 0; 0 1], [1 0; 0 -1]]</pre><h2 id="Multiplication-Tables"><a class="docs-heading-anchor" href="#Multiplication-Tables">Multiplication Tables</a><a id="Multiplication-Tables-1"></a><a class="docs-heading-anchor-permalink" href="#Multiplication-Tables" title="Permalink"></a></h2><pre><code class="language-julia">println(&quot;Parent point group&quot;)
 println(&quot;------------------&quot;)
 display_matrix(stdout, group_multiplication_table(psym2))
 println(&quot;Little group&quot;)
@@ -52,7 +52,7 @@ println(&quot;------------&quot;)
 display_matrix(stdout, group_multiplication_table(lg_matrep))
 println(&quot;Isomorphic little group&quot;)
 println(&quot;-----------------------&quot;)
-display_matrix(stdout, group_multiplication_table(lg_matrep2))</code></pre><pre><code class="language-none">Parent point group
+display_matrix(stdout, group_multiplication_table(lg_matrep2))</code></pre><pre class="documenter-example-output">Parent point group
 ------------------
    1    2
    2    1
@@ -63,7 +63,7 @@ Little group
 Isomorphic little group
 -----------------------
    1    2
-   2    1</code></pre><h2 id="Irreps-and-Little-Groups"><a class="docs-heading-anchor" href="#Irreps-and-Little-Groups">Irreps and Little Groups</a><a id="Irreps-and-Little-Groups-1"></a><a class="docs-heading-anchor-permalink" href="#Irreps-and-Little-Groups" title="Permalink"></a></h2><pre><code class="language-julia">println(&quot;Irreps and Little Groups&quot;)
+   2    1</pre><h2 id="Irreps-and-Little-Groups"><a class="docs-heading-anchor" href="#Irreps-and-Little-Groups">Irreps and Little Groups</a><a id="Irreps-and-Little-Groups-1"></a><a class="docs-heading-anchor-permalink" href="#Irreps-and-Little-Groups" title="Permalink"></a></h2><pre><code class="language-julia">println(&quot;Irreps and Little Groups&quot;)
 println(&quot;------------------------&quot;)
 for tsic in get_irrep_components(tsym)
     idx = tsic.irrep_index
@@ -75,7 +75,7 @@ for tsic in get_irrep_components(tsym)
     println(&quot;  little_point_group: { name: \&quot;$(psym_little.hermann_mauguin)\&quot;, order: $(group_order(psym_little)) }&quot;)
     println(&quot;  is_psym_compatible: $(iscompatible(tsym, idx, psym))&quot;)
     println(&quot;  is_psym_little_compatible: $(iscompatible(tsym, idx, psym_little))&quot;)
-end</code></pre><pre><code class="language-none">Irreps and Little Groups
+end</code></pre><pre class="documenter-example-output">Irreps and Little Groups
 ------------------------
 - irrep_index: 1
   momentum: [0.0, 0.0]
@@ -156,4 +156,4 @@ end</code></pre><pre><code class="language-none">Irreps and Little Groups
   momentum: [0.75, 0.75]
   little_point_group: { name: &quot;m&quot;, order: 2 }
   is_psym_compatible: false
-  is_psym_little_compatible: true</code></pre><hr/><p><em>This page was generated using <a href="https://github.com/fredrikekre/Literate.jl">Literate.jl</a>.</em></p></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../example_point_group_4mm/">« Point group 4mm (C₄ᵥ)</a><a class="docs-footer-nextpage" href="../example_little_group_3d/">Little group in 3d »</a></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> on <span class="colophon-date" title="Monday 6 July 2020 17:09">Monday 6 July 2020</span>. Using Julia version 1.4.2.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
+  is_psym_little_compatible: true</pre><hr/><p><em>This page was generated using <a href="https://github.com/fredrikekre/Literate.jl">Literate.jl</a>.</em></p></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../example_point_group_4mm/">« Point group 4mm (C₄ᵥ)</a><a class="docs-footer-nextpage" href="../example_little_group_3d/">Little group in 3d »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> on <span class="colophon-date" title="Sunday 2 August 2020 22:34">Sunday 2 August 2020</span>. Using Julia version 1.4.2.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
