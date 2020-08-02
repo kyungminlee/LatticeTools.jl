@@ -4,6 +4,7 @@ export generate_coordinates
 export volume
 export isequiv
 
+
 struct OrthoCube
     shape_matrix::Matrix{Int}
     inverse_shape_matrix::Matrix{Rational{Int}}
@@ -11,7 +12,10 @@ struct OrthoCube
 
     function OrthoCube(shape_matrix::AbstractMatrix{<:Integer})
         dim, dim2 = size(shape_matrix)
-        dim != dim2 && throw(DimensionMismatch("scale_matrix is not square: dimensions are ($dim, $dim2)"))
+        if dim != dim2
+            msg = "scale_matrix is not square: dimensions are ($dim, $dim2)"
+            throw(DimensionMismatch(msg))
+        end
         det = ExactLinearAlgebra.determinant(shape_matrix)
         det == 0 && throw(ArgumentError("scale matrix null"))
 
@@ -22,16 +26,15 @@ struct OrthoCube
             r2 = r - shape_matrix * R
             return R, r2
         end
-        new(shape_matrix, inverse_shape_matrix, wrap)
+        return new(shape_matrix, inverse_shape_matrix, wrap)
     end
 end
 
 dimension(ortho::OrthoCube) = size(ortho.shape_matrix, 1)
 volume(ortho::OrthoCube) = ExactLinearAlgebra.determinant(ortho.shape_matrix)
 
-import Base.(==)
 
-function (==)(lhs::OrthoCube, rhs::OrthoCube)
+function Base.:(==)(lhs::OrthoCube, rhs::OrthoCube)
     return (lhs.shape_matrix == rhs.shape_matrix)
 end
 
@@ -53,6 +56,7 @@ end
 #     return all(isinteger.(inv_lhs * rhs.shape_matrix)) && all(isinteger.(inv_rhs * lhs.shape_matrix))
 # end
 
+
 function find_generators(ortho::OrthoCube)
     if dimension(ortho) == 1
         return ones(Int, 1, 1)
@@ -69,8 +73,11 @@ function find_generators_2d(ortho::OrthoCube)
 
     orthovolume = abs(volume(ortho))
     allowed_pairs = [[1,0]]
-    append!(allowed_pairs, [x, y] for y in 1:orthovolume, x in 0:orthovolume if gcd(x,y) == 1)
-    
+    append!(
+        allowed_pairs,
+        [x, y] for y in 1:orthovolume, x in 0:orthovolume if gcd(x,y) == 1
+    )
+
     function make_loop(t::Vector{Int})
         axis = Vector{Int}[zero(t)]
         r = ortho.wrap(t)[2]
@@ -100,8 +107,10 @@ function find_generators_2d(ortho::OrthoCube)
 end
 
 
-function generate_coordinates(ortho::OrthoCube,
-                              generator_translations::AbstractMatrix{<:Integer})
+function generate_coordinates(
+    ortho::OrthoCube,
+    generator_translations::AbstractMatrix{<:Integer},
+)
     let dim = dimension(ortho)
         if size(generator_translations) != (dim, dim)
             throw(DimensionMismatch("OrthoCube and generator_translations have different dimensions"))
@@ -122,7 +131,9 @@ function generate_coordinates(ortho::OrthoCube,
     coordinates = vec([ortho.wrap(sum(x))[2] for x in Iterators.product(axes...)])
 
     if length(coordinates) != abs(volume(ortho))
-        throw(ArgumentError("translations $generator_translations generates $(length(coordinates)) coordinates, while the volume is $(abs(volume(ortho)))"))
+        msg = "translations $generator_translations generates $(length(coordinates)) " *
+            "coordinates, while the volume is $(abs(volume(ortho)))"
+        throw(ArgumentError(msg))
     end
     @assert allunique(coordinates)
     return coordinates

@@ -15,26 +15,24 @@ struct SitePermutation <:AbstractSymmetryOperationEmbedding
 end
 
 
-import Base.==
-(==)(lhs::SitePermutation, rhs::SitePermutation) = lhs.permutation == rhs.permutation
-
-import Base.*
-(*)(lhs::SitePermutation, rhs::SitePermutation) = SitePermutation(lhs.permutation * rhs.permutation)
-
-import Base.^
-(^)(lhs::SitePermutation, rhs::Integer) = SitePermutation(lhs.permutation^rhs)
+function Base.:(==)(lhs::SitePermutation, rhs::SitePermutation)
+    return lhs.permutation == rhs.permutation
+end
+function Base.:(*)(lhs::SitePermutation, rhs::SitePermutation)
+    return SitePermutation(lhs.permutation * rhs.permutation)
+end
+function Base.:(^)(lhs::SitePermutation, rhs::Integer)
+    return SitePermutation(lhs.permutation^rhs)
+end
 
 # import Base.isless
 # isless(lhs::SitePermutation, rhs::SitePermutation) = isless(lhs.permutation, rhs.permutation)
 
-import Base.hash
-
-function hash(arg::SitePermutation, h::UInt=UInt(0x0))
+function Base.hash(arg::SitePermutation, h::UInt=UInt(0x0))
     return hash(arg.permutation, hash(SitePermutation, h))
 end
 
-import Base.inv
-inv(sp::SitePermutation) = SitePermutation(inv(sp.permutation))
+Base.inv(sp::SitePermutation) = SitePermutation(inv(sp.permutation))
 
 (p::SitePermutation)(i::Integer) = p.permutation(i)
 

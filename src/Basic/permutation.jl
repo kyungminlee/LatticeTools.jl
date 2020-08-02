@@ -27,8 +27,11 @@ struct Permutation
         let # check for duplicates
             duplicates = Set{Int}()
             for j in perms
-                (1 <= j <= n) || throw(ArgumentError("argument not a proper permutation (target != universe)"))
-                j in duplicates && throw(ArgumentError("argument not a proper permutation (contains duplicates)"))
+                if !(1 <= j <= n)
+                    throw(ArgumentError("argument not a proper permutation (target != universe)"))
+                elseif j in duplicates
+                    throw(ArgumentError("argument not a proper permutation (contains duplicates)"))
+                end
                 push!(duplicates, j)
             end
         end
@@ -49,7 +52,6 @@ struct Permutation
 end
 
 
-import Base.*
 """
         *(p1 ::Permutation, p2 ::Permutation)
 
@@ -68,7 +70,7 @@ julia> Permutation([1,3,2]) * Permutation([2,1,3])
 Permutation([3, 1, 2], 3)
 ```
 """
-function (*)(p1 ::Permutation, p2 ::Permutation)
+function Base.:(*)(p1 ::Permutation, p2 ::Permutation)
     if length(p1.map) != length(p2.map)
         throw(ArgumentError("permutations of different universes"))
     end
@@ -77,21 +79,19 @@ function (*)(p1 ::Permutation, p2 ::Permutation)
 end
 
 #=
-import Base.*
-function (*)(lhs ::AbstractSet{Permutation}, rhs::Permutation)
-        return generate_group(lhs..., rhs)
+function Base.:(*)(lhs ::AbstractSet{Permutation}, rhs::Permutation)
+    return generate_group(lhs..., rhs)
 end
 
-function (*)(lhs ::Permutation, rhs::AbstractSet{Permutation})
-        return generate_group(lhs, rhs...)
+function Base.:(*)(lhs ::Permutation, rhs::AbstractSet{Permutation})
+    return generate_group(lhs, rhs...)
 end
 
-function (*)(lhs ::AbstractSet{Permutation}, rhs::AbstractSet{Permutation})
-        return generate_group(lhs..., rhs...)
+function Base.:(*)(lhs ::AbstractSet{Permutation}, rhs::AbstractSet{Permutation})
+    return generate_group(lhs..., rhs...)
 end
 =#
 
-import Base.^
 """
     ^(perm ::Permutation, pow ::Integer)
 
@@ -105,7 +105,7 @@ julia> Permutation([2,3,4,1])^2
 Permutation([3, 4, 1, 2], 2)
 ```
 """
-function (^)(perm ::Permutation, pow ::Integer)
+function Base.:(^)(perm ::Permutation, pow ::Integer)
     p = mod(pow, perm.order)
     out = collect(1:length(perm.map))
     for i in 1:p
@@ -114,8 +114,8 @@ function (^)(perm ::Permutation, pow ::Integer)
     return Permutation(out)
 end
 
-import Base.inv
-function inv(perm::Permutation)
+
+function Base.inv(perm::Permutation)
     out = zeros(Int, length(perm.map))
     for (i, x) in enumerate(perm.map)
         out[x] = i
@@ -124,20 +124,18 @@ function inv(perm::Permutation)
 end
 
 
-import Base.==
-(==)(p1 ::Permutation, p2::Permutation) = p1.map == p2.map
+Base.:(==)(p1 ::Permutation, p2::Permutation) = p1.map == p2.map
 
 (p::Permutation)(i::Integer) = p.map[i]
 
-import Base.isless
-function isless(p1 ::Permutation, p2::Permutation)
-    return isless(p1.order, p2.order) || ((p1.order == p2.order) && isless(p1.map, p2.map))
+
+function Base.isless(p1 ::Permutation, p2::Permutation)
+    return Base.isless(p1.order, p2.order) || ((p1.order == p2.order) && Base.isless(p1.map, p2.map))
 end
 
 
-import Base.hash
-function hash(p::Permutation, h::UInt=UInt(0x0))
-    return hash(p.map, hash(Permutation, h))
+function Base.hash(p::Permutation, h::UInt=UInt(0x0))
+    return Base.hash(p.map, hash(Permutation, h))
 end
 
 function generate_group(generators::Permutation...)

@@ -79,16 +79,16 @@ using TightBindingLattice
     end
 
     @testset "Type" begin
-        uc = make_unitcell(latticevectors; OrbitalType=typeof((:up, "A")))
-        fc = Dict("Ox" => FractCoord([0, 0], [0.5, 0.0]),
-                            "Oy" => FractCoord([0, 0], [0.0, 0.5]))
+        uc = make_unitcell(latticevectors; OrbitalType=String)
+        fc = Dict(
+            "Ox" => FractCoord([0, 0], [0.5, 0.0]),
+            "Oy" => FractCoord([0, 0], [0.0, 0.5]),
+        )
         for orbital in ["Ox", "Oy"]
-            for spin in [:up, :dn]
-                addorbital!(uc, (spin, orbital), fc[orbital])
-            end
+            addorbital!(uc, orbital, fc[orbital])
         end
-        @test getorbitalname(uc, 1) == (:up, "Ox")
-        @test getorbitalname(uc, 2) == (:dn, "Ox")
+        @test getorbitalname(uc, 1) == "Ox"
+        @test getorbitalname(uc, 2) == "Oy"
     end
 
     @testset "fract2carte/carte2fract" begin

@@ -79,16 +79,14 @@ using TightBindingLattice
     end
 
     @testset "Type" begin
-        uc = make_unitcell(latticevectors; SiteType=typeof((:up, "A")))
+        uc = make_unitcell(latticevectors; SiteType=String)
         fc = Dict("Ox" => FractCoord([0, 0], [0.5, 0.0]),
-                            "Oy" => FractCoord([0, 0], [0.0, 0.5]))
+                  "Oy" => FractCoord([0, 0], [0.0, 0.5]))
         for site in ["Ox", "Oy"]
-            for spin in [:up, :dn]
-                addsite!(uc, (spin, site), fc[site])
-            end
+            addsite!(uc, site, fc[site])
         end
-        @test getsitename(uc, 1) == (:up, "Ox")
-        @test getsitename(uc, 2) == (:dn, "Ox")
+        @test getsitename(uc, 1) == "Ox"
+        @test getsitename(uc, 2) == "Oy"
     end
 
     @testset "fract2carte/carte2fract" begin

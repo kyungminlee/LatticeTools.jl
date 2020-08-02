@@ -54,16 +54,16 @@ function ⋉(rest::AbstractSymmetry, normal::AbstractSymmetry)
     return SymmorphicSymmetry(normal, rest)
 end
 
-import Base.==
-function (==)(lhs::SymmorphicSymmetry{S1, S2, E}, rhs::SymmorphicSymmetry{S1, S2, E}) where {S1, S2, E}
+function Base.:(==)(lhs::SymmorphicSymmetry{S1, S2, E}, rhs::SymmorphicSymmetry{S1, S2, E}) where {S1, S2, E}
     return lhs.normal == rhs.normal && lhs.rest == rhs.rest
 end
 
 """
     symmetry_product(sym::SymmorphicSymmetry{TranslationSymmetry,PointSymmetry,S}) where {S<:SpaceOperation{<:Integer}}
 """
-function symmetry_product(sym::SymmorphicSymmetry{TranslationSymmetry,PointSymmetry,S}
-            ) where {S<:SpaceOperation{<:Integer}}
+function symmetry_product(
+    sym::SymmorphicSymmetry{TranslationSymmetry,PointSymmetry,S},
+) where {S<:SpaceOperation{<:Integer}}
     function product(lhs::SpaceOperation{<:Integer}, rhs::SpaceOperation{<:Integer})
         foo = lhs * rhs
         return S(foo.matrix, sym.normal.orthocube.wrap(foo.displacement)[2])
@@ -71,14 +71,21 @@ function symmetry_product(sym::SymmorphicSymmetry{TranslationSymmetry,PointSymme
     return product
 end
 
-group(sym::SymmorphicSymmetry) = FiniteGroup(group_multiplication_table(vec(sym.elements), symmetry_product(sym)))
-group_order(sym::SymmorphicSymmetry) = group_order(sym.normal) * group_order(sym.rest)
-group_multiplication_table(sym::SymmorphicSymmetry) = group_multiplication_table(vec(sym.elements), symmetry_product(sym))
 
-import Base.eltype
-eltype(sym::SymmorphicSymmetry{S1, S2, E}) where {S1, S2, E} = E
-import Base.valtype
-valtype(sym::SymmorphicSymmetry{S1, S2, E}) where {S1, S2, E} = E
+function group(sym::SymmorphicSymmetry)
+    return FiniteGroup(group_multiplication_table(vec(sym.elements), symmetry_product(sym)))
+end
+
+function group_order(sym::SymmorphicSymmetry)
+    return group_order(sym.normal) * group_order(sym.rest)
+end
+
+function group_multiplication_table(sym::SymmorphicSymmetry)
+    return group_multiplication_table(vec(sym.elements), symmetry_product(sym))
+end
+
+Base.eltype(sym::SymmorphicSymmetry{S1, S2, E}) where {S1, S2, E} = E
+Base.valtype(sym::SymmorphicSymmetry{S1, S2, E}) where {S1, S2, E} = E
 
 element(sym::SymmorphicSymmetry, g...) = sym.elements[g...]
 elements(sym::SymmorphicSymmetry) = sym.elements
@@ -111,7 +118,7 @@ end
 """
     generator_elements(sym::SymmorphicSymmetry)
 """
-function generator_elements(sym::SymmorphicSymmetry) 
+function generator_elements(sym::SymmorphicSymmetry)
     g = generator_indices(sym)
     return element(sym, g)
 end

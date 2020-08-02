@@ -9,11 +9,11 @@ export isidentity, istranslation, ispoint
 """
 struct IdentityOperation{S<:Real} <: AbstractSymmetryOperation{S}
     dimension::Int
-    function IdentityOperation{S}(dim::Integer) where {S<:Real} 
-        new{S}(dim)
+    function IdentityOperation{S}(dim::Integer) where {S<:Real}
+        return new{S}(dim)
     end
-    function IdentityOperation(::Type{S}, dim::Integer) where {S<:Real} 
-        new{S}(dim)
+    function IdentityOperation(::Type{S}, dim::Integer) where {S<:Real}
+        return new{S}(dim)
     end
 end
 
@@ -25,46 +25,43 @@ ispoint(arg::IdentityOperation) = true
 
 dimension(arg::IdentityOperation) = arg.dimension
 
-import Base.hash
-hash(arg::IdentityOperation{S}) where S = hash(arg.dimension, hash(IdentityOperation{S}))
+
+function Base.hash(arg::IdentityOperation{S}) where S
+    return hash(arg.dimension, hash(IdentityOperation{S}))
+end
 
 
 ## operators
-import Base.==
-function (==)(lhs::IdentityOperation{S}, rhs::IdentityOperation{S}) where S 
+function Base.:(==)(lhs::IdentityOperation{S}, rhs::IdentityOperation{S}) where S
     lhs.dimension == rhs.dimension
 end
 
-
-import Base.*
-function (*)(lhs::IdentityOperation{S}, rhs::IdentityOperation{S}) where S
-    if dimension(lhs) != dimension(rhs) 
+function Base.:(*)(lhs::IdentityOperation{S}, rhs::IdentityOperation{S}) where S
+    if dimension(lhs) != dimension(rhs)
         throw(DimensionMismatch("dimensions mismatch"))
     end
     return lhs
 end
 
-function (*)(lhs::AbstractSymmetryOperation{S}, rhs::IdentityOperation{S}) where S
-    if dimension(lhs) != dimension(rhs) 
+function Base.:(*)(lhs::AbstractSymmetryOperation{S}, rhs::IdentityOperation{S}) where S
+    if dimension(lhs) != dimension(rhs)
         throw(DimensionMismatch("dimensions mismatch"))
     end
     return lhs
 end
 
-function (*)(lhs::IdentityOperation{S}, rhs::AbstractSymmetryOperation{S}) where S
-    if dimension(lhs) != dimension(rhs) 
+function Base.:(*)(lhs::IdentityOperation{S}, rhs::AbstractSymmetryOperation{S}) where S
+    if dimension(lhs) != dimension(rhs)
         throw(DimensionMismatch("dimensions mismatch"))
     end
     return rhs
 end
 
 
-import Base.^
-(^)(lhs::IdentityOperation, rhs::Integer) = lhs
+Base.:(^)(lhs::IdentityOperation, rhs::Integer) = lhs
 
 
-import Base.inv
-inv(arg::IdentityOperation) = arg
+Base.inv(arg::IdentityOperation) = arg
 
 
 ## apply
@@ -80,7 +77,7 @@ function apply_operation(symop::IdentityOperation{S}, arg::AbstractArray{S}) whe
     return arg
 end
 
-function (symop::IdentityOperation{S})(arg::AbstractArray{S}) where {S<:Real} 
+function (symop::IdentityOperation{S})(arg::AbstractArray{S}) where {S<:Real}
     if dimension(symop) != size(arg, 1)
         throw(DimensionMismatch("dimension mismatch"))
     end

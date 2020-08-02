@@ -1,50 +1,53 @@
 export ExactLinearAlgebra
 
 if VERSION < v"1.5-"
-    import Base._round_rational
-
-    function _round_rational(::Type{T}, x::Rational{Tr}, ::RoundingMode{:ToZero}) where {T,Tr}
+    function Base._round_rational(::Type{T}, x::Rational{Tr}, ::RoundingMode{:ToZero}) where {T,Tr}
         if denominator(x) == zero(Tr) && T <: Integer
             throw(DivideError())
         elseif denominator(x) == zero(Tr)
             return convert(T, copysign(one(Tr)//zero(Tr), numerator(x)))
         end
-        convert(T,div(x.num,x.den))
+        return convert(T,div(x.num,x.den))
     end
 
-    function _round_rational(::Type{T}, x::Rational{Tr}, ::RoundingMode{:Down}) where {T,Tr}
+    function Base._round_rational(::Type{T}, x::Rational{Tr}, ::RoundingMode{:Down}) where {T,Tr}
         if denominator(x) == zero(Tr) && T <: Integer
             throw(DivideError())
         elseif denominator(x) == zero(Tr)
             return convert(T, copysign(one(Tr)//zero(Tr), numerator(x)))
         end
-        convert(T,fld(x.num,x.den))
+        return convert(T,fld(x.num,x.den))
     end
 
-    function _round_rational(::Type{T}, x::Rational{Tr}, ::RoundingMode{:Up}) where {T,Tr}
+    function Base._round_rational(::Type{T}, x::Rational{Tr}, ::RoundingMode{:Up}) where {T,Tr}
         if denominator(x) == zero(Tr) && T <: Integer
             throw(DivideError())
         elseif denominator(x) == zero(Tr)
             return convert(T, copysign(one(Tr)//zero(Tr), numerator(x)))
         end
-        convert(T,cld(x.num,x.den))
+        return convert(T,cld(x.num,x.den))
     end
 end
 
 module ExactLinearAlgebra
     import LinearAlgebra
-    
-    ScalarType = Union{Integer,Complex{<:Integer},<:Rational,Complex{<:Rational}}
 
-    function get_cofactor_matrix_unsafe!(out ::AbstractMatrix{I1}, mat ::AbstractMatrix{I2}, row ::Integer, col ::Integer) where {I1<:ScalarType, I2<:ScalarType}
+    ScalarType = Union{Integer, Complex{<:Integer}, <:Rational, Complex{<:Rational}}
+
+    function get_cofactor_matrix_unsafe!(
+        out::AbstractMatrix{I1},
+        mat::AbstractMatrix{I2},
+        row::Integer,
+        col::Integer,
+    ) where {I1<:ScalarType, I2<:ScalarType}
         out[1:row-1, 1:col-1] = mat[1:row-1, 1:col-1]
         out[1:row-1, col:end] = mat[1:row-1, col+1:end]
         out[row:end, 1:col-1] = mat[row+1:end, 1:col-1]
         out[row:end, col:end] = mat[row+1:end, col+1:end]
-        out
+        return out
     end
 
-    function determinant_unsafe(mat ::AbstractMatrix{S}) where {S<:ScalarType}
+    function determinant_unsafe(mat::AbstractMatrix{S}) where {S<:ScalarType}
         n = size(mat)[1]
         n == 1 && return mat[1]
         out = Matrix{S}(undef, (n-1, n-1))
@@ -168,7 +171,12 @@ function cleanup_number(x::AbstractFloat, tol::Real)
 end
 
 cleanup_number(x::Integer, tol::Real) = x
-cleanup_number(x::Complex, tol::Real) = cleanup_number(real(x), tol) + im * cleanup_number(imag(x), tol)
+cleanup_number(x::Rational{<:Integer}, tol::Real) = x
+
+function cleanup_number(x::Complex, tol::Real)
+    return cleanup_number(real(x), tol) + im * cleanup_number(imag(x), tol)
+end
+
 cleanup_number(x::AbstractArray, tol::Real) = [cleanup_number(y, tol) for y in x]
 
 

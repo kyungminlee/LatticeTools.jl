@@ -15,19 +15,17 @@ struct TranslationOperation{S<:Real} <:AbstractSymmetryOperation{S}
 end
 
 
-import Base.convert
-function convert(::Type{TranslationOperation{S}}, obj::IdentityOperation{S}) where S
+function Base.convert(::Type{TranslationOperation{S}}, obj::IdentityOperation{S}) where S
     dim = dimension(obj)
     return TranslationOperation{S}(zeros(S, dim))
 end
 
-function convert(::Type{TranslationOperation{S}}, displacement::AbstractVector{S}) where S
+function Base.convert(::Type{TranslationOperation{S}}, displacement::AbstractVector{S}) where S
     return TranslationOperation{S}(displacement)
 end
 
 
-import Base.promote_rule
-function promote_rule(::Type{TranslationOperation{S}}, ::Type{IdentityOperation{S}}) where S
+function Base.promote_rule(::Type{TranslationOperation{S}}, ::Type{IdentityOperation{S}}) where S
     return TranslationOperation{S}
 end
 
@@ -38,37 +36,33 @@ isidentity(arg::TranslationOperation) = iszero(arg.displacement)
 istranslation(arg::TranslationOperation) = true
 ispoint(arg::TranslationOperation) = iszero(arg.displacement)
 
-import Base.hash
-hash(arg::TranslationOperation{S}) where S = hash(arg.displacement, hash(TranslationOperation{S}))
+
+Base.hash(arg::TranslationOperation{S}) where S = hash(arg.displacement, hash(TranslationOperation{S}))
 
 
 ## operators
-import Base.==
-function (==)(lhs::TranslationOperation{S}, rhs::TranslationOperation{S}) where S
+function Base.:(==)(lhs::TranslationOperation{S}, rhs::TranslationOperation{S}) where S
     lhs.displacement == rhs.displacement
 end
-function (==)(top::TranslationOperation{S}, iden::IdentityOperation{S}) where S
+function Base.:(==)(top::TranslationOperation{S}, iden::IdentityOperation{S}) where S
     iszero(top.displacement)
 end
-function (==)(iden::IdentityOperation{S}, top::TranslationOperation{S}) where S
+function Base.:(==)(iden::IdentityOperation{S}, top::TranslationOperation{S}) where S
     iszero(top.displacement)
 end
 
 
-import Base.*
-function (*)(lhs::TranslationOperation{S}, rhs::TranslationOperation{S}) where S
+function Base.:(*)(lhs::TranslationOperation{S}, rhs::TranslationOperation{S}) where S
     TranslationOperation{S}(lhs.displacement .+ rhs.displacement)
 end
 
 
-import Base.^
-function (^)(lhs::TranslationOperation{S}, rhs::Real) where S
+function Base.:(^)(lhs::TranslationOperation{S}, rhs::Real) where S
     TranslationOperation{S}(lhs.displacement .* rhs)
 end
 
 
-import Base.inv
-function inv(arg::TranslationOperation{S}) where S
+function Base.inv(arg::TranslationOperation{S}) where S
     TranslationOperation{S}(-arg.displacement)
 end
 
@@ -85,4 +79,3 @@ end
 function (symop::TranslationOperation{S})(coord::AbstractVector{S}) where S
     return coord .+ symop.displacement
 end
-
