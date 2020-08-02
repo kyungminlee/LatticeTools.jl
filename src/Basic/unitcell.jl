@@ -182,13 +182,19 @@ Add an site to the unit cell.
 * `sitecoord ::FractCoord`
 """
 function addsite!(uc ::UnitCell{O},
-                     sitename ::O,
-                     sitecoord ::FractCoord) where {O}
+                  sitename ::O,
+                  sitecoord ::FractCoord) where {O}
     (ndim, ndim_) = size(uc.latticevectors)
     if dimension(sitecoord) != ndim
         throw(ArgumentError("sitecoord has wrong dimension"))
     elseif haskey(uc.siteindices, sitename)
         throw(ArgumentError( "duplicate site name"))
+    end
+
+    for site in uc.sites
+        if isapprox(site[2].fraction, sitecoord.fraction)
+            throw(ArgumentError("site $(site[1]) is already at $(sitecoord.fraction)"))
+        end
     end
     push!(uc.sites, (sitename, sitecoord))
     index = length(uc.siteindices)+1
