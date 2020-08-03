@@ -43,39 +43,43 @@ export numorbital,
     UnitCell{O}
 
 # Parameters
-* `O`: type of "site". Any type can be used, but we recommend using `String` or tuple of `String` and `Int`
-       for compatibility with JSON.
+- `O`: type of "site". Any type can be used, but we recommend using `String`
+  or tuple of `String` and `Int` for compatibility with JSON.
 
-# Members
+# Fields
 - `latticevectors ::Array{Float64, 2}`: Lattice vectors
 - `reducedreciprocallatticevectors ::Array{Float64, 2}`: Reduced reciprocal lattice vectors
    (transpose of inverse of `latticevectors`)
-- `reciprocallatticevectors ::Array{Float64, 2}`: Reciprocal lattice vectors. `2π * reducedreciprocallatticevectors`
+- `reciprocallatticevectors ::Array{Float64, 2}`: Reciprocal lattice vectors.
+  `2π * reducedreciprocallatticevectors`
 - `sites ::Vector{Tuple{T, FractCoord}}`: List of sites within unit cell
 - `siteindices ::Dict{T, Int}`: Indices of sites
 """
-mutable struct UnitCell{O}
+mutable struct UnitCell{S}
     latticevectors::Array{Float64, 2}
-    sites::Vector{Tuple{O, FractCoord}}
+    sites::Vector{Tuple{S, FractCoord}}
 
     reducedreciprocallatticevectors::Array{Float64, 2}
     reciprocallatticevectors::Array{Float64, 2}
-    siteindices::Dict{O, Int}
-    function UnitCell{O}(
+    siteindices::Dict{S, Int}
+
+    function UnitCell{S}(
         latticevectors::AbstractArray{<:Real, 2},
-        sites::AbstractVector{Tuple{O, FractCoord}},
+        sites::AbstractVector{Tuple{S, FractCoord}},
         reducedreciprocallatticevectors::AbstractArray{<:Real, 2},
         reciprocallatticevectors::AbstractArray{<:Real, 2},
-        siteindices::AbstractDict{O, Int}
-    ) where {O}
-        if (O <: Integer)
-            throw(ArgumentError("SiteType should not be integer to avoid confusion"))
+        siteindices::AbstractDict{S, Int}
+    ) where {S}
+        if (S <: Integer)
+            throw(ArgumentError("Integer SiteType is disallowed to avoid confusion"))
         end
-        new{O}(latticevectors,
-               sites,
-               reducedreciprocallatticevectors,
-               reciprocallatticevectors,
-               siteindices)
+        new{S}(
+            latticevectors,
+            sites,
+            reducedreciprocallatticevectors,
+            reciprocallatticevectors,
+            siteindices,
+        )
     end
 end
 
@@ -86,7 +90,7 @@ end
 Construct a one-dimensional lattice.
 
 # Arguments
-* `latticeconstant ::Float64`: Lattice constant
+* `latticeconstant::Real`: Lattice constant
 * `SiteType`: List of sites
 
 # Optional Arguments
@@ -118,7 +122,7 @@ Construct an n-dimensional lattice.
 * `tol=√ϵ`: Epsilon
 """
 function make_unitcell(
-    latticevectors ::AbstractArray{<:Real, 2};
+    latticevectors::AbstractArray{<:Real, 2};
     SiteType::DataType=Any,
     OrbitalType::DataType=Nothing,
     tol::Real=Base.rtoldefault(Float64)
@@ -342,7 +346,7 @@ end
 # Return
 * `fractcoord`
 """
-function getsitecoord(uc::UnitCell, index ::Integer)::FractCoord
+function getsitecoord(uc::UnitCell, index::Integer)::FractCoord
     return uc.sites[index][2]
 end
 
@@ -390,7 +394,8 @@ end
     whichunitcell
 
 # Return
-* `R ::Vector{Int}`: which unit cell the specificied site/cartesian coordinates belongs to.
+- `Vector{Int}`: the integer coordinate of the unitcell that the specified site/cartesian
+  coordinate belongs to.
 """
 function whichunitcell(
     uc::UnitCell{O},
@@ -412,7 +417,8 @@ end
     whichunitcell
 
 # Return
-* `R ::Vector{Int}`: which unit cell the specificied site/cartesian coordinates belongs to.
+- `Vector{Int}`: the integer coordinate of the unitcell that the specified site/fractional
+  coordinate belongs to.
 """
 function whichunitcell(
     uc::UnitCell{O},
@@ -471,9 +477,16 @@ end
 
 
 """
-    findsiteindex
+    findsiteindex(unitcell::UnitCell, fc::FractCoord; tol=√ϵ)
 
-Returns (site_index, unitcell_vector), or `(-1, [])` if not found.
+Find the index of the site, and the unitcell coordinate at the specified fractional coordinate.
+
+# Arguments
+- `unitcell::UnitCell`
+- `fc::FractCoord`
+
+# Returns
+- `(site_index, unitcell_vector)`, or `(-1, [])` if not found.
 """
 function findsiteindex(
     unitcell::UnitCell,

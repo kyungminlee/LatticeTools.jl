@@ -42,28 +42,28 @@ Base.hash(arg::TranslationOperation{S}) where S = hash(arg.displacement, hash(Tr
 
 ## operators
 function Base.:(==)(lhs::TranslationOperation{S}, rhs::TranslationOperation{S}) where S
-    lhs.displacement == rhs.displacement
+    return lhs.displacement == rhs.displacement
 end
 function Base.:(==)(top::TranslationOperation{S}, iden::IdentityOperation{S}) where S
-    iszero(top.displacement)
+    return iszero(top.displacement)
 end
 function Base.:(==)(iden::IdentityOperation{S}, top::TranslationOperation{S}) where S
-    iszero(top.displacement)
+    return iszero(top.displacement)
 end
 
 
 function Base.:(*)(lhs::TranslationOperation{S}, rhs::TranslationOperation{S}) where S
-    TranslationOperation{S}(lhs.displacement .+ rhs.displacement)
+    return TranslationOperation{S}(lhs.displacement .+ rhs.displacement)
 end
 
 
 function Base.:(^)(lhs::TranslationOperation{S}, rhs::Real) where S
-    TranslationOperation{S}(lhs.displacement .* rhs)
+    return TranslationOperation{S}(lhs.displacement .* rhs)
 end
 
 
 function Base.inv(arg::TranslationOperation{S}) where S
-    TranslationOperation{S}(-arg.displacement)
+    return TranslationOperation{S}(-arg.displacement)
 end
 
 

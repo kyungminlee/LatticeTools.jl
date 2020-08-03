@@ -33,7 +33,7 @@ end
 
 ## operators
 function Base.:(==)(lhs::IdentityOperation{S}, rhs::IdentityOperation{S}) where S
-    lhs.dimension == rhs.dimension
+    return lhs.dimension == rhs.dimension
 end
 
 function Base.:(*)(lhs::IdentityOperation{S}, rhs::IdentityOperation{S}) where S

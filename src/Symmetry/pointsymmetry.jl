@@ -144,7 +144,7 @@ function read_point_symmetry(data::AbstractDict)
     matrix_representations = Matrix{Int}[read_matrix(x) for x in data["MatrixRepresentations"]]
     hermann_mauguin = data["HermannMauguin"]
     schoenflies = data["Schoenflies"]
-    PointSymmetry(
+    return PointSymmetry(
         group, generators,
         conjugacy_classes, character_table, irreps,
         element_names, matrix_representations, hermann_mauguin, schoenflies,

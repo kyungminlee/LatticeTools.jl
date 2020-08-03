@@ -83,7 +83,7 @@ end
     embed(lattice, sop::SpaceOperation{<:Integer, <:Integer})
 """
 function embed(lattice::Lattice, sop::SpaceOperation{<:Integer, <:Integer})
-    embed(lattice, PointOperation(sop.matrix)) * embed(lattice, TranslationOperation(sop.displacement))
+    return embed(lattice, PointOperation(sop.matrix)) * embed(lattice, TranslationOperation(sop.displacement))
 end
 
 

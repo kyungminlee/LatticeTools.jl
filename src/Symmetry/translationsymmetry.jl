@@ -53,15 +53,19 @@ struct TranslationSymmetry <: AbstractSymmetry{TranslationOperation{Int}}
         return TranslationSymmetry(lattice.orthocube)
     end
 
-    function TranslationSymmetry(orthocube::OrthoCube;
-                                 tol::Real=Base.rtoldefault(Float64))
+    function TranslationSymmetry(
+        orthocube::OrthoCube;
+        tol::Real=Base.rtoldefault(Float64),
+    )
         generator_translations = find_generators(orthocube)
         return TranslationSymmetry(orthocube, generator_translations; tol=tol)
     end
 
-    function TranslationSymmetry(orthocube::OrthoCube,
-                                 generator_translations::AbstractMatrix{<:Integer};
-                                 tol::Real=Base.rtoldefault(Float64))
+    function TranslationSymmetry(
+        orthocube::OrthoCube,
+        generator_translations::AbstractMatrix{<:Integer};
+        tol::Real=Base.rtoldefault(Float64),
+    )
         if ExactLinearAlgebra.determinant(generator_translations) != 1
             throw(ArgumentError("generator translation is not unimodular"))
         end
@@ -132,14 +136,16 @@ struct TranslationSymmetry <: AbstractSymmetry{TranslationOperation{Int}}
             push!(irreps, matrices)
         end
 
-        return new(orthocube, elements, group, generators,
-                   conjugacy_classes, character_table, irreps, element_names,
-                   generator_translations,
-                   coordinates,
-                   orthogonal_shape, orthogonal_coordinates,
-                   orthogonal_to_coordinate_map, coordinate_to_orthogonal_map,
-                   orthogonal_shape_matrix, orthogonal_reduced_reciprocal_shape_matrix,
-                   fractional_momenta)
+        return new(
+            orthocube, elements, group, generators,
+            conjugacy_classes, character_table, irreps, element_names,
+            generator_translations,
+            coordinates,
+            orthogonal_shape, orthogonal_coordinates,
+            orthogonal_to_coordinate_map, coordinate_to_orthogonal_map,
+            orthogonal_shape_matrix, orthogonal_reduced_reciprocal_shape_matrix,
+            fractional_momenta,
+        )
     end
 end
 

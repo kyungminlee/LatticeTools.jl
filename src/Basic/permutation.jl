@@ -155,6 +155,4 @@ function generate_group(generators::Permutation...)
 end
 
 
-function isidentity(perm::Permutation)
-    return perm.map == 1:length(perm.map)
-end
+isidentity(perm::Permutation) = perm.map == 1:length(perm.map)

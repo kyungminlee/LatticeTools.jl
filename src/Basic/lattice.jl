@@ -21,7 +21,7 @@ end
 
 
 function make_lattice(unitcell::UnitCell, scale::Integer)
-    make_lattice(unitcell, scale*ones(Int, (1,1)))
+    return make_lattice(unitcell, scale*ones(Int, (1,1)))
 end
 
 function make_lattice(
