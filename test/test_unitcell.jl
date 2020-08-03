@@ -75,7 +75,9 @@ using TightBindingLattice
         uc = make_unitcell(latticevectors; SiteType=String)
         addsite!(uc, "Ox", FractCoord([0, 0], [0.0, 0.0]))
         @test_throws ArgumentError addsite!(uc, "Oy", FractCoord([0], [0.5]))
-        @test_throws ArgumentError addsite!(uc, "Ox", FractCoord([0, 0], [0.0, 0.0]))
+        @test_throws ArgumentError addsite!(uc, "Ox", FractCoord([0, 0], [0.0, 0.5]))
+        @test_throws ArgumentError addsite!(uc, "Ox2", FractCoord([0, 0], [0.0, 0.0]))
+        @test_throws ArgumentError addsite!(uc, "Ox2", FractCoord([1, 0], [0.0, 0.0]))
     end
 
     @testset "Type" begin

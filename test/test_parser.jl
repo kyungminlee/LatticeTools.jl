@@ -43,4 +43,5 @@ end
     @test cleanup_number(1.5 + 1E-12, 1E-8) == 1.5
     @test cleanup_number([1.0 + 1E-12, 2.0 - 1E-12, 3.0], 1E-8) == [1.0, 2.0, 3.0]
     @test cleanup_number(0.1234567, 1E-8) == 0.1234567
+    @test cleanup_number(-1//3, 1E-8) == -1//3
 end
