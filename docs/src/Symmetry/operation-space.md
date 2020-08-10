@@ -39,6 +39,8 @@ julia> apply_operation(t, [3, 4])
 ## Point Operation
 
 ```@example
+julia> using TightBindingLattice
+
 julia> p = PointOperation([0 1; 1 0])
 PointOperation{Int64}([0 1; 1 0])
 
