@@ -10,6 +10,7 @@ CurrentModule = TightBindingLattice
 TightBindingLattice.FractCoord
 ```
 
+### Functions
 ```@docs
 TightBindingLattice.fract2carte
 TightBindingLattice.carte2fract
@@ -19,10 +20,10 @@ TightBindingLattice.carte2fract
 
 ```@docs
 TightBindingLattice.UnitCell
-TightBindingLattice.make_unitcell
 TightBindingLattice.makeunitcell
 ```
 
+### Functions
 ```@docs
 TightBindingLattice.dimension
 TightBindingLattice.numsite
@@ -34,11 +35,10 @@ TightBindingLattice.getsiteindex
 TightBindingLattice.getsitecoord
 TightBindingLattice.getsiteindexcoord
 TightBindingLattice.getsitename
-TightBindingLattice.getsitecoord
-TightBindingLattice.carte2fract
-TightBindingLattice.fract2carte
+TightBindingLattice.carte2fract(::UnitCell, ::CarteCoord)
+TightBindingLattice.fract2carte(::UnitCell, ::FractCoord)
 TightBindingLattice.whichunitcell
-TightBindingLattice.momentumgrid
+TightBindingLattice.momentumgrid(::UnitCell, ::AbstractVector{<:Integer})
 TightBindingLattice.findsiteindex
 ```
 

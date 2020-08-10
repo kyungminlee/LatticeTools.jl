@@ -42,18 +42,22 @@ export numorbital,
 """
     UnitCell{O}
 
+Represent a unitcell of a lattice, which contains sites at fixed locations
+(does not yet implement multiple orbitals per site). It is recommended to use `makeunitcell`
+rather than the constructor to make a UnitCell object.
+
 # Parameters
 - `O`: type of "site". Any type can be used, but we recommend using `String`
   or tuple of `String` and `Int` for compatibility with JSON.
 
 # Fields
-- `latticevectors ::Array{Float64, 2}`: Lattice vectors
-- `reducedreciprocallatticevectors ::Array{Float64, 2}`: Reduced reciprocal lattice vectors
+- `latticevectors::Array{Float64, 2}`: Lattice vectors
+- `reducedreciprocallatticevectors::Array{Float64, 2}`: Reduced reciprocal lattice vectors
    (transpose of inverse of `latticevectors`)
 - `reciprocallatticevectors ::Array{Float64, 2}`: Reciprocal lattice vectors.
   `2π * reducedreciprocallatticevectors`
-- `sites ::Vector{Tuple{T, FractCoord}}`: List of sites within unit cell
-- `siteindices ::Dict{T, Int}`: Indices of sites
+- `sites::Vector{Tuple{T, FractCoord}}`: List of sites within unit cell
+- `siteindices::Dict{T, Int}`: Indices of sites
 """
 mutable struct UnitCell{S}
     latticevectors::Array{Float64, 2}
@@ -85,43 +89,19 @@ end
 
 
 """
-    UnitCell
-
-Construct a one-dimensional lattice.
-
-# Arguments
-* `latticeconstant::Real`: Lattice constant
-* `SiteType`: List of sites
-
-# Optional Arguments
-* `tol=√ϵ`: Tolerance
-"""
-function make_unitcell(
-    latticeconstant::Real;
-    SiteType::DataType=Any,
-    OrbitalType::DataType=Nothing,
-    tol::Real=Base.rtoldefault(Float64),
-)
-    return make_unitcell(
-        reshape([latticeconstant], (1,1));
-        SiteType=SiteType, OrbitalType=OrbitalType, tol=tol,
-    )
-end
-
-
-"""
-    UnitCell
+    makeunitcell(latticevectors; SiteType=Any, tol=√ϵ)
 
 Construct an n-dimensional lattice.
 
 # Arguments
-* `latticevectors ::AbstractArray{<:AbstractFloat, 2}`: Lattice vectors
-* `SiteType::DataType`
+* `latticevectors`: Lattice vectors. Can be a nested array of lattice vectors,
+  or a two-dimensional array whose columns are lattice vectors, or a real number.
 
 # Optional Arguments
+* `SiteType::DataType`
 * `tol=√ϵ`: Epsilon
 """
-function make_unitcell(
+function makeunitcell(
     latticevectors::AbstractArray{<:Real, 2};
     SiteType::DataType=Any,
     OrbitalType::DataType=Nothing,
@@ -151,18 +131,29 @@ function make_unitcell(
     return UnitCell{SiteType}(latticevectors, sites, reduced_rlv, 2*π*reduced_rlv, siteindices)
 end
 
-
-function make_unitcell(
+function makeunitcell(
     latticevectors::AbstractVector{<:AbstractVector};
     SiteType::DataType=Any,
     tol::Real=Base.rtoldefault(Float64)
 )
     lv = hcat(latticevectors...)
-    return make_unitcell(lv; SiteType=SiteType, tol=tol)
+    return makeunitcell(lv; SiteType=SiteType, tol=tol)
+end
+
+function makeunitcell(
+    latticeconstant::Real;
+    SiteType::DataType=Any,
+    OrbitalType::DataType=Nothing,
+    tol::Real=Base.rtoldefault(Float64),
+)
+    return makeunitcell(
+        reshape([latticeconstant], (1,1));
+        SiteType=SiteType, OrbitalType=OrbitalType, tol=tol,
+    )
 end
 
 
-makeunitcell = make_unitcell
+make_unitcell = makeunitcell
 
 
 """
@@ -337,7 +328,7 @@ end
 
 
 """
-    getsitecoord(unitcell::UnitCell, index::Integer)
+    getsitecoord(unitcell, index)
 
 # Arguments
 * `unitcell::UnitCell`
