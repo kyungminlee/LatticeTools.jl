@@ -166,7 +166,7 @@ makeunitcell = make_unitcell
 
 
 """
-    dimension
+    dimension(uc)
 
 Spatial dimension of the unit cell.
 """
@@ -174,19 +174,19 @@ dimension(uc::UnitCell) = size(uc.latticevectors, 1)
 
 
 """
-    numsite
+    numsite(unitcell)
 
 Number of sites of the unit cell.
 
 # Arguments
 * `uc ::UnitCell`
 """
-numsite(uc ::UnitCell) = length(uc.sites)
+numsite(uc::UnitCell) = length(uc.sites)
 
 
 
 """
-    sitecount
+    sitecount(unitcell)
 
 Number of sites of the unit cell.
 
@@ -197,7 +197,7 @@ sitecount(uc::UnitCell) = length(uc.sites)
 
 
 """
-    addsite!
+    addsite!(unitcell, sitename, sitecoord)
 
 Add an site to the unit cell.
 
@@ -228,13 +228,13 @@ end
 
 
 """
-    hassite{T}
+    hassite(unitcell, name)
 
 Test whether the unit cell contains the site of given name.
 
 # Arguments
-* `uc ::UnitCell{O}`
-* `name ::O`
+* `unitcell::UnitCell{O}`
+* `name::O`
 """
 function hassite(uc::UnitCell{O}, name::O) where {O}
     return haskey(uc.siteindices, name)
@@ -242,13 +242,13 @@ end
 
 
 """
-    getsiteindex
+    getsiteindex(unitcell, name)
 
 Get index of the given site.
 
 # Arguments
-* `uc ::UnitCell{O}`
-* `name ::O`
+* `unitcell::UnitCell{O}`
+* `name::O`
 """
 function getsiteindex(uc::UnitCell{O}, name::O) where {O}
     return uc.siteindices[name]
@@ -256,13 +256,13 @@ end
 
 
 """
-    getsite
+    getsite(unitcell, name)
 
 Get the site (its site name and its fractional coordinates) with the given name.
 
 # Arguments
-* `uc ::UnitCell{O}`
-* `name ::O`
+* `unitcell::UnitCell{O}`
+* `name::O`
 
 # Return
 * `(sitename, fractcoord)`
@@ -273,7 +273,7 @@ end
 
 
 """
-    getsitecoord
+    getsitecoord(unitcell, name)
 
 Get the fractional coordinates of the site with the given name.
 
@@ -290,11 +290,11 @@ end
 
 
 """
-    getsiteindexcoord
+    getsiteindexcoord(unitcell, name)
 
 # Arguments
-* `uc ::UnitCell{T}`
-* `name ::T`
+* `unitcell::UnitCell{T}`
+* `name::T`
 
 # Return
 * `(index, fractcoord)`
@@ -307,11 +307,11 @@ end
 
 
 """
-    getsite
+    getsite(unitcell, index)
 
 # Arguments
-* `uc ::UnitCell{T}`
-* `index ::Integer`
+* `unitcell::UnitCell`
+* `index::Integer`
 
 # Return
 * `(sitename, fractcoord)`
@@ -322,11 +322,11 @@ end
 
 
 """
-    getsitename
+    getsitename(unitcell, index)
 
 # Arguments
-* `uc ::UnitCell`
-* `index ::Integer`
+* `uc::UnitCell`
+* `index::Integer`
 
 # Return
 * `sitename`
@@ -337,27 +337,26 @@ end
 
 
 """
-    getsitecoord
+    getsitecoord(unitcell::UnitCell, index::Integer)
 
 # Arguments
-* `uc ::UnitCell`
-* `idx ::Integer`
+* `unitcell::UnitCell`
+* `index::Integer`
 
 # Return
-* `fractcoord`
+* `FractCoord`
 """
 function getsitecoord(uc::UnitCell, index::Integer)::FractCoord
     return uc.sites[index][2]
 end
 
 
-
 """
-    fract2carte
+    fract2carte(unitcell, fractcoord)
 
 # Arguments
-* `latticevectors ::Array{Float64, 2}`
-* `fc ::FractCoord`
+* `unitcell::UnitCell`
+* `fractcoord::FractCoord`
 """
 function fract2carte(unitcell::UnitCell, fc::FractCoord)::CarteCoord
     if dimension(unitcell) != dimension(fc)
@@ -370,11 +369,12 @@ end
 
 
 """
-    carte2fract
+    carte2fract(unitcell, cartecoord; tol=√ϵ)
 
 # Arguments
-* `latticevectors ::Array{Float64, 2}`
-* `cc ::CarteCoord`
+* `unitcell::UnitCell`
+* `cc::CarteCoord`
+* `tol::Real=Base.rtoldefault(Float64)`
 """
 function carte2fract(
     unitcell::UnitCell, cc::CarteCoord;
@@ -391,7 +391,7 @@ end
 
 
 """
-    whichunitcell
+whichunitcell(unitcell, name, cartecoord; tol=√ϵ)
 
 # Return
 - `Vector{Int}`: the integer coordinate of the unitcell that the specified site/cartesian
@@ -414,7 +414,7 @@ end
 
 
 """
-    whichunitcell
+    whichunitcell(unitcell, name, fractcoord; tol=√ϵ)
 
 # Return
 - `Vector{Int}`: the integer coordinate of the unitcell that the specified site/fractional
@@ -445,7 +445,7 @@ end
 
 
 raw"""
-    momentumgrid
+    momentumgrid(unitcell, shape)
 
 Generate an n-dimensional grid of momenta of given shape.
 

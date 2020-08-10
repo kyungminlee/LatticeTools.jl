@@ -5,7 +5,6 @@ export isidentity, istranslation, ispoint
 
 import LinearAlgebra
 
-
 """
     SpaceOperation{Tp<:Real, Tt<:Real}
 

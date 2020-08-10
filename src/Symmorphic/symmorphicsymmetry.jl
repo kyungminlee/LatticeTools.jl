@@ -60,6 +60,9 @@ end
 
 """
     symmetry_product(sym::SymmorphicSymmetry{TranslationSymmetry,PointSymmetry,S}) where {S<:SpaceOperation{<:Integer}}
+
+# Arguments
+* `sym::SymmorphicSymmetry{TranslationSymmetry,PointSymmetry,S})`
 """
 function symmetry_product(
     sym::SymmorphicSymmetry{TranslationSymmetry,PointSymmetry,S},
@@ -103,7 +106,6 @@ element_names(sym::SymmorphicSymmetry) = sym.element_names
 function fractional_momentum(sym::SymmorphicSymmetry{<:TranslationSymmetry, S2, E}, args...) where {S2, E}
     return fractional_momentum(sym.normal, args...)
 end
-
 
 
 """

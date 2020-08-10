@@ -42,7 +42,10 @@ makedocs(
             "Honeycomb lattice in k-space" => "generated/example_little_symmetry_kspace_honeycomb.md",
             "Kagome lattice" => "generated/example_kagome_symmetry.md",
         ],
-        "api.md",
+        "API Reference" => [
+            "Basic" => "API/basic.md",
+            "All API" => "api.md"
+        ]
     ]
 )
 

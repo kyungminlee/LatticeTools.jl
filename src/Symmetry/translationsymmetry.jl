@@ -18,6 +18,35 @@ export translation_symmetry_embedding
 
 """
     TranslationSymmetry
+
+Represent lattice translation symmetry.
+
+```
+julia> TranslationSymmetry([3 0; 0 2])
+```
+
+# Fields
+* `orthocube::OrthoCube`
+* `elements::Vector{TranslationOperation{Int}}`
+* `group::FiniteGroup`
+
+# Additional Fields
+* `generators::Vector{Int}`
+* `conjugacy_classes::Vector{Vector{Int}}`
+* `character_table::Matrix{ComplexF64}`
+* `irreps::Vector{Vector{Matrix{ComplexF64}}}`
+* `element_names::Vector{String}`
+
+# Cache Fields
+* `generator_translations::Matrix{Int}`
+* `coordinates::Vector{Vector{Int}}`
+* `orthogonal_shape::Vector{Int}`
+* `orthogonal_coordinates::Vector{Vector{Int}}`
+* `orthogonal_to_coordinate_map::Dict{Vector{Int}, Vector{Int}}`
+* `coordinate_to_orthogonal_map::Dict{Vector{Int}, Vector{Int}}`
+* `orthogonal_shape_matrix::Matrix{Int}`
+* `orthogonal_reduced_reciprocal_shape_matrix::Matrix{Rational{Int}}`
+* `fractional_momenta::Vector{Vector{Rational{Int}}}`
 """
 struct TranslationSymmetry <: AbstractSymmetry{TranslationOperation{Int}}
 
@@ -179,6 +208,20 @@ generator_elements(sym::TranslationSymmetry) = element(sym, sym.generators)
 
 """
     symmetry_product(tsym::TranslationSymmetry)
+
+Return a binary function which combines two translation operations, with the given periodic
+boundary condition.
+
+```jldoctest
+julia> using TightBindingLattice
+
+julia> tsym = TranslationSymmetry([3 0; 0 4]);
+
+julia> p = symmetry_product(tsym);
+
+julia> p(TranslationOperation([2, 1]), TranslationOperation([2, 3]))
+TranslationOperation{Int64}([1, 0])
+```
 """
 function symmetry_product(sym::TranslationSymmetry)
     function product(lhs::TranslationOperation, rhs::TranslationOperation)
@@ -209,7 +252,11 @@ Base.iterate(sym::TranslationSymmetry, i) = iterate(elements(sym), i)
 
 Base.length(sym::TranslationSymmetry) = length(elements(sym))
 
+"""
+    symmetry_name(sym::TranslationSymmetry)
 
+Name of the translation symmetry. Return `TranslationSymmetry[(n11,n21)x(n12,n22)]`.
+"""
 function symmetry_name(sym::TranslationSymmetry)
     n11 = sym.orthocube.shape_matrix[1,1]
     n12 = sym.orthocube.shape_matrix[1,2]
@@ -225,7 +272,7 @@ end
 
 
 raw"""
-    isbragg(orthogonal_shape, orthogonal_momentum, identity_translation)
+    isbragg(shape, integer_momentum, identity_translation)
 
 Test whether an orthogonal momentum is compatible with the identity translation.
 Since identity translation can only be in the trivial representation
@@ -262,7 +309,9 @@ end
 
 
 raw"""
-    isbragg(orthogonal_shape, orthogonal_momentum, identity_translations)
+    isbragg(shape, integer_momentum, identity_translations)
+
+Check for Bragg condition at the `integer momentum` for all the `identity translations`.
 """
 function isbragg(
     shape::AbstractVector{<:Integer},
@@ -293,6 +342,8 @@ end
 
 raw"""
     isbragg(k, translations)
+
+Check for Bragg condition at `k` for all the translations.
 """
 function isbragg(
     fractional_momentum::AbstractVector{<:Rational{<:Integer}},
@@ -304,6 +355,8 @@ end
 
 """
     isbragg(tsym, tsym_irrep_index, translation)
+
+Check for Bragg condition at momentum given by the `tsym_irrep_index`.
 """
 function isbragg(
     tsym::TranslationSymmetry,
@@ -316,6 +369,8 @@ end
 
 """
     isbragg(tsym, tsym_irrep_index, translations)
+
+Check for Bragg condition at momentum given by the `tsym_irrep_index` for all translations.
 """
 function isbragg(
     tsym::TranslationSymmetry,

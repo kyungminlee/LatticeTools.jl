@@ -3,6 +3,17 @@ export Lattice
 export dimension
 
 
+"""
+    Lattice{O}
+
+Represent a lattice.
+
+# Arguments
+* `unitcell::UnitCell{O}`
+* `orthocube::OrthoCube`
+* `bravais_coordinates::Vector{Vector{Int}}`
+* `supercell::UnitCell{Tuple{O, Vector{Int}}}`
+"""
 struct Lattice{O}
     unitcell::UnitCell{O}
     orthocube::OrthoCube

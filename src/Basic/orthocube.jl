@@ -30,7 +30,18 @@ struct OrthoCube
     end
 end
 
+"""
+    dimension(ortho::OrthoCube)
+
+Return the spatial dimension of the orthocube.
+"""
 dimension(ortho::OrthoCube) = size(ortho.shape_matrix, 1)
+
+"""
+    volume(ortho::OrthoCube)
+
+Return the signed volume of the orthocube, defined by the determinant of the shape.
+"""
 volume(ortho::OrthoCube) = ExactLinearAlgebra.determinant(ortho.shape_matrix)
 
 
@@ -39,6 +50,11 @@ function Base.:(==)(lhs::OrthoCube, rhs::OrthoCube)
 end
 
 
+"""
+    isequiv(lhs::OrthoCube, rhs::OrthoCube)
+
+Check whether the two orthocubes are equivalent.
+"""
 function isequiv(lhs::OrthoCube, rhs::OrthoCube)
     R, r = lhs.wrap(rhs.shape_matrix)
     if abs(ExactLinearAlgebra.determinant(R)) != 1 || !iszero(r)
@@ -107,6 +123,15 @@ function find_generators_2d(ortho::OrthoCube)
 end
 
 
+"""
+    generate_coordinates(ortho, generators)
+
+Generate a list of coordinates of the orthocube
+
+# Arguments
+* `ortho::OrthoCube`
+* `generator_translations::AbstractMatrix{<:Integer}`
+"""
 function generate_coordinates(
     ortho::OrthoCube,
     generator_translations::AbstractMatrix{<:Integer},

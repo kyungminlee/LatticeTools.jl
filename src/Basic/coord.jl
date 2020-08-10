@@ -66,12 +66,12 @@ end
 
 
 """
-    dimension
+    dimension(fc::FractCoord)
 
 Dimension of the fractional coordinates
 
 # Arguments
-* `fc ::FractCoord`: Fractional coordinates.
+* `fc::FractCoord`: Fractional coordinates.
 """
 dimension(fc::FractCoord) = length(fc.whole)
 
@@ -127,11 +127,11 @@ end
 
 
 """
-    fract2carte
+    fract2carte(latticevectors, fc)
 
 # Arguments
-* `latticevectors ::AbstractArray{<:Real, 2}`: square matrix whose columns are lattice vectors.
-* `fc ::FractCoord`: fractional coordinates
+* `latticevectors::AbstractArray{<:Real, 2}`: square matrix whose columns are lattice vectors.
+* `fc::FractCoord`: fractional coordinates
 """
 function fract2carte(latticevectors::AbstractMatrix{<:Real}, fc::FractCoord)::CarteCoord
     d1, d2 = size(latticevectors)
@@ -148,12 +148,12 @@ end
 
 
 """
-    carte2fract
+    carte2fract(latticevectors, cc; tol=√ϵ)
 
 # Arguments
-* `latticevectors ::AbstractArray{<:Real, 2}`: square matrix whose columns are lattice vectors.
-* `cc ::CarteCoord`: cartesian coordinates
-* `tol ::Real=Base.rtoldefault(Float64)`: tolerance
+* `latticevectors::AbstractArray{<:Real, 2}`: square matrix whose columns are lattice vectors.
+* `cc::CarteCoord`: cartesian coordinates
+* `tol::Real=Base.rtoldefault(Float64)`: tolerance
 """
 function carte2fract(
     latticevectors::AbstractMatrix{<:Real},

@@ -4,8 +4,6 @@ export little_symmetry
 export little_symmetry_iso
 
 
-## Symmetry reduction (little group etc.)
-
 """
     little_group_elements(tsym, psym)
 
@@ -18,6 +16,7 @@ function little_group_elements(tsym::TranslationSymmetry, psym::PointSymmetry)
         if iscompatible(tsym, elem)
     ]
 end
+
 
 """
     little_group_elements(tsym, tsym_irrep_index, psym)
@@ -72,6 +71,18 @@ function little_group(
 end
 
 
+"""
+    little_symmetry(tsym, psym, lg_elements)
+
+Generate a little symmetry.
+First generate a little group with `lg_elements`, look up `PointSymmetryDatabase` using
+the names of the elements, and then checks for group isomorphism.
+
+# Arguments
+* `tsym::TranslationSymmetry`: translation symmetry
+* `psym::PointSymmetry`: point symmetry
+* `lg_elements::AbstractVector{<:Integer}`: indices of the elements of the little group
+"""
 function little_symmetry(
     tsym::TranslationSymmetry,
     psym::PointSymmetry,

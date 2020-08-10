@@ -7,8 +7,15 @@ export ⋉, ⋊
 
 export fractional_momentum
 
-struct SymmorphicSymmetryEmbedding{S1<:AbstractSymmetry,
-                                   S2<:AbstractSymmetry}<:AbstractSymmetryEmbedding
+"""
+    SymmorphicSymmetryEmbedding{S1<:AbstractSymmetry, S2<:AbstractSymmetry}<:AbstractSymmetryEmbedding
+
+
+"""
+struct SymmorphicSymmetryEmbedding{
+    S1<:AbstractSymmetry,
+    S2<:AbstractSymmetry
+}<:AbstractSymmetryEmbedding
     lattice::Lattice
     normal::SymmetryEmbedding{S1}
     rest::SymmetryEmbedding{S2}

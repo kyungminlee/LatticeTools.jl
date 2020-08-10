@@ -132,7 +132,7 @@ function iscompatible(
     tsym_irrep_index::Integer,
     psymbed::SymmetryEmbedding{PointSymmetry},
 )::Bool
-    ! iscompatible(tsymbed, psymbed) && return false
+    !iscompatible(tsymbed, psymbed) && return false
     return little_group_elements(tsymbed, tsym_irrep_index, psymbed) == 1:group_order(psymbed)
 end
 
