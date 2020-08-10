@@ -6,8 +6,13 @@ export isidentity, istranslation, ispoint
 
 """
     PointOperation{S<:Real}
+
+Represents point symmetry operation
+
+# Fields
+* `matrix`: rotation/mirror/inversion matrix
 """
-struct PointOperation{S<:Real} <:AbstractSymmetryOperation{S}
+struct PointOperation{S<:Real} <:AbstractSpaceSymmetryOperation{S}
     matrix::Matrix{S}
     function PointOperation(matrix::AbstractMatrix{S}) where {S<:Real}
         return PointOperation{S}(matrix)

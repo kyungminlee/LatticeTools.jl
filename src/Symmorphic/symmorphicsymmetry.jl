@@ -19,7 +19,7 @@ export generator_indices, generator_elements
 """
 struct SymmorphicSymmetry{S1<:SymmetryOrEmbedding,
                           S2<:SymmetryOrEmbedding,
-                          E<:AbstractSymmetryOperation}<:AbstractSymmetry{E}
+                          E<:AbstractSpaceSymmetryOperation}<:AbstractSymmetry{E}
     normal::S1   # e.g.) Translation Symmetry
     rest::S2     # e.g.) Point Symmetry
     elements::Array{E}

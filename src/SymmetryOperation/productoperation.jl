@@ -9,7 +9,7 @@
 # struct ProductOperation{S<:Real, F<:Tuple}
 #     dimension::Int
 #     factors::F
-#     function ProductOperation(factors::AbstractSymmetryOperation...)
+#     function ProductOperation(factors::AbstractSpaceSymmetryOperation...)
 #         F = typeof(factors)
 #         dim = 0
 #         S = Bool
@@ -29,7 +29,7 @@
 #         new{S, F}(dim, factors)
 #     end
 
-#     function ProductOperation{S}(factors::AbstractSymmetryOperation...) where {S<:Real}
+#     function ProductOperation{S}(factors::AbstractSpaceSymmetryOperation...) where {S<:Real}
 #         F = typeof(factors)
 #         dim = 0
 #         for f in factors
@@ -70,15 +70,15 @@
 # end
 
 # import Base.*
-# function (*)(lhs::AbstractSymmetryOperation, rhs::AbstractSymmetryOperation)
+# function (*)(lhs::AbstractSpaceSymmetryOperation, rhs::AbstractSpaceSymmetryOperation)
 #     return ProductOperation(lhs, rhs)
 # end
 
-# function (*)(lhs::ProductOperation, rhs::AbstractSymmetryOperation)
+# function (*)(lhs::ProductOperation, rhs::AbstractSpaceSymmetryOperation)
 #     return ProductOperation(lhs.factors..., rhs)
 # end
 
-# function (*)(lhs::AbstractSymmetryOperation, rhs::ProductOperation)
+# function (*)(lhs::AbstractSpaceSymmetryOperation, rhs::ProductOperation)
 #     return ProductOperation(lhs, rhs.factors...)
 # end
 
@@ -123,8 +123,8 @@
 # end
 
 # function canonize(arg::ProductOperation)
-#     _reorder(lhs::IdentityOperation, rhs::AbstractSymmetryOperation) = (rhs, lhs)
-#     _reorder(lhs::AbstractSymmetryOperation, rhs::IdentityOperation) = (lhs, rhs)
+#     _reorder(lhs::IdentityOperation, rhs::AbstractSpaceSymmetryOperation) = (rhs, lhs)
+#     _reorder(lhs::AbstractSpaceSymmetryOperation, rhs::IdentityOperation) = (lhs, rhs)
 #     _reorder(lhs::TranslationOperation, rhs::TranslationOperation) = (lhs, rhs)
 #     _reorder(lhs::PointOperation, rhs::PointOperation) = (lhs, rhs)
 #     _reorder(lhs::PointOperation, rhs::TranslationOperation) = (lhs, rhs)
@@ -141,7 +141,7 @@
 #         factors[i], factors[i+1] = _reorder(factors[i], factors[i+1])
 #     end
 
-#     new_factors = AbstractSymmetryOperation[]
+#     new_factors = AbstractSpaceSymmetryOperation[]
 #     op = IdentityOperation()
 #     for f in factors
 #         if combinable(op, f)
@@ -154,7 +154,7 @@
 #     end
 #     op = canonize(op)
 #     op != IdentityOperation() && push!(new_factors, op)
-    
+
 #     if length(new_factors) == 0
 #         return IdentityOperation()
 #     elseif length(new_factors) == 1
@@ -163,4 +163,3 @@
 #         return ProductOperation(new_factors...)
 #     end
 # end
-

@@ -9,9 +9,15 @@ import LinearAlgebra
 """
     SpaceOperation{Tp<:Real, Tt<:Real}
 
+Represents a spatial symmetry operation of the following form:
+
     S: r ↦ M ⋅ ( r + R )
+
+# Fields
+* `matrix`: Rotation matrix
+* `displacement`: Displacement vector
 """
-struct SpaceOperation{Tp<:Real, Tt<:Real} <:AbstractSymmetryOperation{Tt}
+struct SpaceOperation{Tp<:Real, Tt<:Real} <:AbstractSpaceSymmetryOperation{Tt}
     matrix::Matrix{Tp}
     displacement::Vector{Tt}
 

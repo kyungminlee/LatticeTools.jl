@@ -1,6 +1,6 @@
-export AbstractSymmetryOperation
+export AbstractSpaceSymmetryOperation
 export domaintype
 
-abstract type AbstractSymmetryOperation{S<:Real} end
+abstract type AbstractSpaceSymmetryOperation{S<:Real} end
 
-domaintype(arg::AbstractSymmetryOperation{S}) where {S<:Real} = S
+domaintype(arg::AbstractSpaceSymmetryOperation{S}) where {S<:Real} = S

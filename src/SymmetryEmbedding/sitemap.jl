@@ -10,9 +10,12 @@ Find which site gets mapped to which site with what lattice displacement.
 Return a vector of tuples `(j, Rj)` at index `i`, representing that the site `i`
 gets mapped to site `j` with lattice displacement `Rj`.
 
-The overall transformation will be a combiation of (1) the result here, and
+Since periodic boundary condition is always assumed, the return value always exists.
+
+This function is used to find the mapping between sites under translation symmetry in a
+given lattice. The overall transformation will be a combiation of (1) the result here, and
 (2) Bravais lattice transformation. Since all the integer translations will be
-taken care of by the Bravais lattice transformation, Rj here is all zero vectors.
+taken care of by the Bravais lattice transformation, `Rj` here is all zero vectors.
 """
 function findsitemap(
     unitcell::UnitCell,
@@ -26,6 +29,9 @@ end
 
 """
     findsitemap(unitcell, translation_symmetry)
+
+Find the sitemap for every element of the translation symmetry.
+Return `[findsitemap(unitcell, m) for m in elements(translation_symmetry)]`.
 """
 function findsitemap(unitcell::UnitCell, tsym::TranslationSymmetry)
     return [findsitemap(unitcell, m) for m in elements(tsym)]
@@ -38,6 +44,7 @@ end
 Find which site gets mapped to which site with what lattice displacement.
 Return a vector of tuples `(j, Rj)` at index `i`, representing that the site `i`
 gets mapped to site `j` with lattice displacement `Rj`.
+If the unit cell is not compatible with the point operation, return `nothing`.
 """
 function findsitemap(
     unitcell::UnitCell,
@@ -56,6 +63,9 @@ end
 
 """
     findsitemap(unitcell, point_symmetry)
+
+Find the sitemap for every element of the point symmetry.
+Return `nothing` if the unit cell is incompatible with any element of the point symmetry.
 """
 function findsitemap(
     unitcell::UnitCell,

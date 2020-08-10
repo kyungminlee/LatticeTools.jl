@@ -21,7 +21,13 @@ export ishomomorphic
 """
     FiniteGroup
 
-Finite group.
+Finite group, with elements {1, 2, 3,..., n}. The identity element is always 1.
+
+# Fields
+* `multiplication_table::Matrix{Int}`: multiplication table
+* `period_lengths::Vector{Int}`: period length (order) of every element
+* `inverses::Vector{Int}`: inverse of every element
+* `conjugacy_classes::Vector{Vector{Int}}`: conjugacy classes
 """
 struct FiniteGroup <: AbstractGroup
     multiplication_table::Matrix{Int}
@@ -211,6 +217,10 @@ end
 
 """
     group_product(group, lhs, rhs)
+
+Return the result of group multiplication of `lhs` and `rhs`.
+If both `lhs` and `rhs` are integers, return an integer.
+If either of them is a set (`AbstractSet`) of integers, then return a `BitSet`.
 """
 function group_product(group::FiniteGroup, lhs::Integer, rhs::Integer)
     return group.multiplication_table[lhs, rhs]

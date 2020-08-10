@@ -5,9 +5,14 @@ export domaintype
 export isidentity, istranslation, ispoint
 
 """
-    IdentityOperation{S<:Real}
+    IdentityOperation{S<:Real} <: AbstractSpaceSymmetryOperation{S}
+
+Represents identity (space symmetry) operation
+
+# Fields
+* `dimension::Int`: dimension of the space on which the identity operation acts
 """
-struct IdentityOperation{S<:Real} <: AbstractSymmetryOperation{S}
+struct IdentityOperation{S<:Real} <: AbstractSpaceSymmetryOperation{S}
     dimension::Int
     function IdentityOperation{S}(dim::Integer) where {S<:Real}
         return new{S}(dim)
@@ -43,14 +48,14 @@ function Base.:(*)(lhs::IdentityOperation{S}, rhs::IdentityOperation{S}) where S
     return lhs
 end
 
-function Base.:(*)(lhs::AbstractSymmetryOperation{S}, rhs::IdentityOperation{S}) where S
+function Base.:(*)(lhs::AbstractSpaceSymmetryOperation{S}, rhs::IdentityOperation{S}) where S
     if dimension(lhs) != dimension(rhs)
         throw(DimensionMismatch("dimensions mismatch"))
     end
     return lhs
 end
 
-function Base.:(*)(lhs::IdentityOperation{S}, rhs::AbstractSymmetryOperation{S}) where S
+function Base.:(*)(lhs::IdentityOperation{S}, rhs::AbstractSpaceSymmetryOperation{S}) where S
     if dimension(lhs) != dimension(rhs)
         throw(DimensionMismatch("dimensions mismatch"))
     end

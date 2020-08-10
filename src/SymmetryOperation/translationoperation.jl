@@ -4,7 +4,27 @@ export apply_operation
 export domaintype
 export isidentity, istranslation, ispoint
 
-struct TranslationOperation{S<:Real} <:AbstractSymmetryOperation{S}
+
+"""
+    TranslationOperation{S<:Real}
+
+Represents translation symmetry operation
+
+# Fields
+* `displacement`: displacement vector
+
+# Examples
+```jldoctest
+using TightBindingLattice
+
+julia> TranslationOperation([1, 2])
+TranslationOperation{Int64}([1, 2])
+
+julia> TranslationOperation([0.5, 0.0, 0.5])
+TranslationOperation{Float64}([0.5, 0.0, 0.5])
+```
+"""
+struct TranslationOperation{S<:Real} <:AbstractSpaceSymmetryOperation{S}
     displacement::Vector{S}
     function TranslationOperation{S}(displacement::AbstractVector{<:Real}) where {S}
         new{S}(displacement)
@@ -31,9 +51,33 @@ end
 
 
 ## properties
+"""
+    dimension(arg::TranslationOperation)
+
+Spatial dimension of the translation operation
+"""
 dimension(arg::TranslationOperation) = length(arg.displacement)
+
+"""
+    isidentity(t::TranslationOperation)
+
+Return true if the translation operation is an identity, i.e. `iszero(t.displacement)`
+"""
 isidentity(arg::TranslationOperation) = iszero(arg.displacement)
+
+"""
+    istranslation(arg::TranslationOperation)
+
+Always return `true`, since `arg` is already a translation operation.
+"""
 istranslation(arg::TranslationOperation) = true
+
+"""
+    ispoint(arg::TranslationOperation)
+
+Return `true` if `arg` is a point operation. The only way this can be true is when `arg` is
+an identity operation.
+"""
 ispoint(arg::TranslationOperation) = iszero(arg.displacement)
 
 
@@ -70,11 +114,14 @@ end
 ## apply
 """
     apply_operation(symop::TranslationOperation{S}, coordinate::AbstractArray{S}) where S
+
+Return the translated coordinate.
 """
 function apply_operation(symop::TranslationOperation{S},
                          coord::AbstractArray{S}) where {S<:Real}
     return coord .+ symop.displacement
 end
+
 
 function (symop::TranslationOperation{S})(coord::AbstractVector{S}) where S
     return coord .+ symop.displacement

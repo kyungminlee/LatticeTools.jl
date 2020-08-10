@@ -1,5 +1,6 @@
 export ExactLinearAlgebra
 
+# COV_EXCL_START
 if VERSION < v"1.5-"
     function Base._round_rational(::Type{T}, x::Rational{Tr}, ::RoundingMode{:ToZero}) where {T,Tr}
         if denominator(x) == zero(Tr) && T <: Integer
@@ -28,6 +29,7 @@ if VERSION < v"1.5-"
         return convert(T,cld(x.num,x.den))
     end
 end
+# COV_EXCL_STOP
 
 module ExactLinearAlgebra
     import LinearAlgebra
@@ -90,7 +92,9 @@ module ExactLinearAlgebra
 
 end # module ExactLinearAlgebra
 
+
 module ExprParser
+
 export parse_expr
 
 SYMBOL_DATABASE = Dict(

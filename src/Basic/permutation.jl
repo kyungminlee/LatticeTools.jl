@@ -1,4 +1,4 @@
-export AbstractSymmetryOperation
+export AbstractSpaceSymmetryOperation
 
 export Permutation
 export generate_group
