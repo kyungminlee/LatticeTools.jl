@@ -10,8 +10,9 @@ import LinearAlgebra
     SpaceOperation{Tp<:Real, Tt<:Real}
 
 Represents a spatial symmetry operation of the following form:
-
-    S: r ↦ M ⋅ ( r + R )
+```math
+S: \\mathbf{r} \\mapsto M \\cdot ( \\mathbf{r} + \\mathbf{R} )
+```
 
 # Fields
 * `matrix`: Rotation matrix

@@ -27,7 +27,10 @@ makedocs(
     pages = [
         "Home" => "index.md",
         "lattice.md",
-        "symmetry.md",
+        "Symmetry" => [
+            "Symmetry/operation-space.md",
+            "Symmetry/symmetry-space.md",
+        ],
         "Examples" => [
             "Group isomorphism" => "generated/example_group_isomorphism.md",
             "Orthocube" => "generated/example_orthocube.md",
