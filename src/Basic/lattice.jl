@@ -31,11 +31,11 @@ function Base.:(==)(lhs::Lattice{O}, rhs::Lattice{O}) where O
 end
 
 
-function make_lattice(unitcell::UnitCell, scale::Integer)
-    return make_lattice(unitcell, scale*ones(Int, (1,1)))
+function makelattice(unitcell::UnitCell, scale::Integer)
+    return makelattice(unitcell, scale*ones(Int, (1,1)))
 end
 
-function make_lattice(
+function makelattice(
     unitcell::UnitCell{O},
     shape_matrix::AbstractMatrix{<:Integer}
 ) where O
@@ -50,7 +50,7 @@ function make_lattice(
 
     new_latticevectors = unitcell.latticevectors * orthocube.shape_matrix
 
-    new_unitcell = make_unitcell(new_latticevectors; SiteType=Tuple{O, Vector{Int}})
+    new_unitcell = makeunitcell(new_latticevectors; SiteType=Tuple{O, Vector{Int}})
     for uc in unitcell_coordinates, (orbname, orbcoord) in unitcell.sites
         cc = fract2carte(unitcell, orbcoord)
         new_cc = cc + unitcell.latticevectors * uc
@@ -64,7 +64,7 @@ end
 #TODO unit testing for lattice with wrong dimensions
 
 
-function make_lattice(
+function makelattice(
     unitcell::UnitCell{O},
     shape_matrix::AbstractMatrix{<:Integer},
     generator_translations::AbstractMatrix{<:Integer},
@@ -78,7 +78,7 @@ function make_lattice(
 
     new_latticevectors = unitcell.latticevectors * orthocube.shape_matrix
 
-    new_unitcell = make_unitcell(new_latticevectors; SiteType=Tuple{O, Vector{Int}})
+    new_unitcell = makeunitcell(new_latticevectors; SiteType=Tuple{O, Vector{Int}})
     for uc in unitcell_coordinates, (orbname, orbcoord) in unitcell.sites
         cc = fract2carte(unitcell, orbcoord)
         new_cc = cc + unitcell.latticevectors * uc
@@ -90,6 +90,6 @@ function make_lattice(
     return Lattice{O}(unitcell, orthocube, unitcell_coordinates, new_unitcell)
 end
 
-makelattice = make_lattice
+make_lattice = makelattice
 
 dimension(lattice::Lattice) = dimension(lattice.unitcell)
