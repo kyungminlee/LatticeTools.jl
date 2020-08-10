@@ -27,11 +27,11 @@ using TightBindingLattice
     end
 
     @testset "failures" begin
-            @test_throws ArgumentError FractCoord(-1)
-            @test_throws ArgumentError FractCoord(0)
-            @test_throws ArgumentError FractCoord([-1, 1], [0.0])
-            @test_throws ArgumentError FractCoord([-1, 1], [1.0, 2.0])
-            @test_throws ArgumentError FractCoord([-1, 1], [0.0, 0.0]; tol=-1)
+        @test_throws ArgumentError FractCoord(-1)
+        @test_throws ArgumentError FractCoord(0)
+        @test_throws ArgumentError FractCoord([-1, 1], [0.0])
+        @test_throws ArgumentError FractCoord([-1, 1], [1.0, 2.0])
+        @test_throws ArgumentError FractCoord([-1, 1], [0.0, 0.0]; tol=-1)
     end
 
     @testset "isapprox" begin

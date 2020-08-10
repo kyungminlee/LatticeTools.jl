@@ -2,39 +2,42 @@ export SitePermutation
 export embed
 export isidentity
 
-
-abstract type AbstractSymmetryOperationEmbedding <: AbstractSymmetryOperation{Int} end
+abstract type AbstractSymmetryOperationEmbedding end
+abstract type AbstractSpaceSymmetryOperationEmbedding <: AbstractSymmetryOperationEmbedding end
 
 """
     SitePermutation
+
+Represents a permutation of sites as a symmetry operation of a lattice.
+
+# Fields
+* `permutation::Permutation`: permutation
 """
-struct SitePermutation <:AbstractSymmetryOperationEmbedding
+struct SitePermutation <:AbstractSpaceSymmetryOperationEmbedding
     permutation::Permutation
     SitePermutation(p::Permutation) = new(p)
     SitePermutation(p::AbstractVector{<:Integer}) = new(Permutation(p))
 end
 
 
-import Base.==
-(==)(lhs::SitePermutation, rhs::SitePermutation) = lhs.permutation == rhs.permutation
-
-import Base.*
-(*)(lhs::SitePermutation, rhs::SitePermutation) = SitePermutation(lhs.permutation * rhs.permutation)
-
-import Base.^
-(^)(lhs::SitePermutation, rhs::Integer) = SitePermutation(lhs.permutation^rhs)
+function Base.:(==)(lhs::SitePermutation, rhs::SitePermutation)
+    return lhs.permutation == rhs.permutation
+end
+function Base.:(*)(lhs::SitePermutation, rhs::SitePermutation)
+    return SitePermutation(lhs.permutation * rhs.permutation)
+end
+function Base.:(^)(lhs::SitePermutation, rhs::Integer)
+    return SitePermutation(lhs.permutation^rhs)
+end
 
 # import Base.isless
 # isless(lhs::SitePermutation, rhs::SitePermutation) = isless(lhs.permutation, rhs.permutation)
 
-import Base.hash
-
-function hash(arg::SitePermutation, h::UInt=UInt(0x0))
+function Base.hash(arg::SitePermutation, h::UInt=UInt(0x0))
     return hash(arg.permutation, hash(SitePermutation, h))
 end
 
-import Base.inv
-inv(sp::SitePermutation) = SitePermutation(inv(sp.permutation))
+Base.inv(sp::SitePermutation) = SitePermutation(inv(sp.permutation))
 
 (p::SitePermutation)(i::Integer) = p.permutation(i)
 
@@ -85,7 +88,7 @@ end
     embed(lattice, sop::SpaceOperation{<:Integer, <:Integer})
 """
 function embed(lattice::Lattice, sop::SpaceOperation{<:Integer, <:Integer})
-    embed(lattice, PointOperation(sop.matrix)) * embed(lattice, TranslationOperation(sop.displacement))
+    return embed(lattice, PointOperation(sop.matrix)) * embed(lattice, TranslationOperation(sop.displacement))
 end
 
 

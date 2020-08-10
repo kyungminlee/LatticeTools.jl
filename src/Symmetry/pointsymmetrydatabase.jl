@@ -99,7 +99,9 @@ find(args...) = find3d(args...)
 
 
 function get2d(group_index::Integer)
-    (group_index < 1 || group_index > NUM_POINT_SYMMETRIES_2D) && throw(ArgumentError("Point group 2D #$group_index not found"))
+    if (group_index < 1) || (group_index > NUM_POINT_SYMMETRIES_2D)
+        throw(ArgumentError("Point group 2D #$group_index not found"))
+    end
     #if !isassigned(POINT_SYMMETRY_DATABASE_2D, group_index)
     #    POINT_SYMMETRY_DATABASE_2D[group_index] = load_group_2d(group_index)
     #end
@@ -108,7 +110,9 @@ end
 
 
 function get3d(group_index::Integer)
-    (group_index < 1 || group_index > NUM_POINT_SYMMETRIES_3D) && throw(ArgumentError("Point group 3D #$group_index not found"))
+    if (group_index < 1) || (group_index > NUM_POINT_SYMMETRIES_3D)
+        throw(ArgumentError("Point group 3D #$group_index not found"))
+    end
     # if !isassigned(POINT_SYMMETRY_DATABASE_3D, group_index)
     #     POINT_SYMMETRY_DATABASE_3D[group_index] = load_group_3d(group_index)
     # end

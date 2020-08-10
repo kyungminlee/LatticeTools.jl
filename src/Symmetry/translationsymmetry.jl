@@ -22,7 +22,7 @@ export translation_symmetry_embedding
 struct TranslationSymmetry <: AbstractSymmetry{TranslationOperation{Int}}
 
     orthocube::OrthoCube
-    
+
     elements::Vector{TranslationOperation{Int}}
     group::FiniteGroup
 
@@ -53,19 +53,23 @@ struct TranslationSymmetry <: AbstractSymmetry{TranslationOperation{Int}}
         return TranslationSymmetry(lattice.orthocube)
     end
 
-    function TranslationSymmetry(orthocube::OrthoCube;
-                                 tol::Real=Base.rtoldefault(Float64))
+    function TranslationSymmetry(
+        orthocube::OrthoCube;
+        tol::Real=Base.rtoldefault(Float64),
+    )
         generator_translations = find_generators(orthocube)
         return TranslationSymmetry(orthocube, generator_translations; tol=tol)
     end
-   
-    function TranslationSymmetry(orthocube::OrthoCube,
-                                 generator_translations::AbstractMatrix{<:Integer};
-                                 tol::Real=Base.rtoldefault(Float64))
+
+    function TranslationSymmetry(
+        orthocube::OrthoCube,
+        generator_translations::AbstractMatrix{<:Integer};
+        tol::Real=Base.rtoldefault(Float64),
+    )
         if ExactLinearAlgebra.determinant(generator_translations) != 1
             throw(ArgumentError("generator translation is not unimodular"))
         end
-        
+
         # BEGIN Orthogonal
         coordinates = generate_coordinates(orthocube, generator_translations)
         coordinate_indices = Dict(r => i for (i, r) in enumerate(coordinates))
@@ -98,7 +102,7 @@ struct TranslationSymmetry <: AbstractSymmetry{TranslationOperation{Int}}
                     [group_order(group, g) * v
                         for (g, v) in zip(generators, eachcol(generator_translations))]...)
         orthogonal_reduced_reciprocal_shape_matrix = ExactLinearAlgebra.inverse(transpose(orthogonal_shape_matrix))
-        
+
         elements = [TranslationOperation(r) for r in coordinates]
 
         fractional_momenta = let modunit = x -> mod(x, 1)
@@ -116,8 +120,8 @@ struct TranslationSymmetry <: AbstractSymmetry{TranslationOperation{Int}}
                                           t in orthogonal_coordinates]
 
         character_table = cleanup_number(character_table, tol)
-        
-        let 
+
+        let
             χ = ComplexF64[cis(-2π * LinearAlgebra.dot(k, t)) for k in fractional_momenta, t in coordinates]
             @assert isapprox(character_table, χ; atol=tol)
         end
@@ -132,14 +136,16 @@ struct TranslationSymmetry <: AbstractSymmetry{TranslationOperation{Int}}
             push!(irreps, matrices)
         end
 
-        return new(orthocube, elements, group, generators,
-                   conjugacy_classes, character_table, irreps, element_names,
-                   generator_translations,
-                   coordinates,
-                   orthogonal_shape, orthogonal_coordinates,
-                   orthogonal_to_coordinate_map, coordinate_to_orthogonal_map,
-                   orthogonal_shape_matrix, orthogonal_reduced_reciprocal_shape_matrix,
-                   fractional_momenta)
+        return new(
+            orthocube, elements, group, generators,
+            conjugacy_classes, character_table, irreps, element_names,
+            generator_translations,
+            coordinates,
+            orthogonal_shape, orthogonal_coordinates,
+            orthogonal_to_coordinate_map, coordinate_to_orthogonal_map,
+            orthogonal_shape_matrix, orthogonal_reduced_reciprocal_shape_matrix,
+            fractional_momenta,
+        )
     end
 end
 
@@ -150,11 +156,8 @@ group(sym::TranslationSymmetry) = sym.group
 group_order(sym::TranslationSymmetry, g...) = group_order(sym.group, g...)
 group_multiplication_table(psym::TranslationSymmetry) = group_multiplication_table(psym.group)
 
-import Base.eltype
-eltype(sym::TranslationSymmetry) = TranslationOperation{Int}
-
-import Base.valtype
-valtype(sym::TranslationSymmetry) = TranslationOperation{Int}
+Base.eltype(sym::TranslationSymmetry) = TranslationOperation{Int}
+Base.valtype(sym::TranslationSymmetry) = TranslationOperation{Int}
 
 
 element(sym::TranslationSymmetry, g) = sym.elements[g]
@@ -185,29 +188,26 @@ function symmetry_product(sym::TranslationSymmetry)
 end
 
 
-import Base.in
-in(item::Any, sym::TranslationSymmetry) = false
-function in(item::IdentityOperation, sym::TranslationSymmetry)
+Base.in(item::Any, sym::TranslationSymmetry) = false
+function Base.in(item::IdentityOperation, sym::TranslationSymmetry)
     dimension(item) == dimension(sym)
 end
-function in(item::TranslationOperation{<:Integer}, sym::TranslationSymmetry)
+function Base.in(item::TranslationOperation{<:Integer}, sym::TranslationSymmetry)
     dimension(item) == dimension(sym)
 end
-function in(item::PointOperation, sym::TranslationSymmetry) 
+function Base.in(item::PointOperation, sym::TranslationSymmetry)
     dimension(item) == dimension(sym) && istranslation(item)
 end
-function in(item::SpaceOperation{Tp, <:Integer}, sym::TranslationSymmetry) where {Tp}
+function Base.in(item::SpaceOperation{Tp, <:Integer}, sym::TranslationSymmetry) where {Tp}
     dimension(item) == dimension(sym) && istranslation(item)
 end
 
 
-import Base.iterate
-iterate(sym::TranslationSymmetry) = iterate(elements(sym))
-iterate(sym::TranslationSymmetry, i) = iterate(elements(sym), i)
+Base.iterate(sym::TranslationSymmetry) = iterate(elements(sym))
+Base.iterate(sym::TranslationSymmetry, i) = iterate(elements(sym), i)
 
 
-import Base.length
-length(sym::TranslationSymmetry) = length(elements(sym))
+Base.length(sym::TranslationSymmetry) = length(elements(sym))
 
 
 function symmetry_name(sym::TranslationSymmetry)
@@ -227,7 +227,8 @@ end
 raw"""
     isbragg(orthogonal_shape, orthogonal_momentum, identity_translation)
 
-Test whether the given orthogonal momentum is compatible with the given identity translation. Since identity translation can only be in the trivial representation
+Test whether an orthogonal momentum is compatible with the identity translation.
+Since identity translation can only be in the trivial representation
 (otherwise the phases cancel), this function tests whether the phase is unity.
 The orthogonal momentum is given as an integer vector.
 
@@ -240,9 +241,11 @@ The orthogonal momentum is given as an integer vector.
 When the orthogonal shape is [n₁, n₂, ...], orthogonal momentum is chosen from
 {0, 1, ..., n₁-1} × {0,1, ..., n₂-1} × ....
 """
-function isbragg(shape::AbstractVector{<:Integer},
-                 integer_momentum::AbstractVector{<:Integer},
-                 identity_translation::AbstractVector{<:Integer})
+function isbragg(
+    shape::AbstractVector{<:Integer},
+    integer_momentum::AbstractVector{<:Integer},
+    identity_translation::AbstractVector{<:Integer},
+)
     if length(integer_momentum) != length(shape)
         throw(DimensionMismatch("lengths of momentum and shape do not match"))
     elseif length(shape) != length(identity_translation)
@@ -261,9 +264,11 @@ end
 raw"""
     isbragg(orthogonal_shape, orthogonal_momentum, identity_translations)
 """
-function isbragg(shape::AbstractVector{<:Integer},
-                 integer_momentum::AbstractVector{<:Integer},
-                 identity_translations::AbstractVector{<:AbstractVector{<:Integer}})
+function isbragg(
+    shape::AbstractVector{<:Integer},
+    integer_momentum::AbstractVector{<:Integer},
+    identity_translations::AbstractVector{<:AbstractVector{<:Integer}},
+)
     return all(isbragg(shape, integer_momentum, t) for t in identity_translations)
 end
 
@@ -274,8 +279,10 @@ end
 Check for Bragg condition at momentum `k` and translation `t`.
 Fractional momentum is normalized to 1, i.e. lies within [0, 1)ⁿ
 """
-function isbragg(fractional_momentum::AbstractVector{<:Rational{<:Integer}},
-                 translation::AbstractVector{<:Integer})
+function isbragg(
+    fractional_momentum::AbstractVector{<:Rational{<:Integer}},
+    translation::AbstractVector{<:Integer},
+)
     if length(fractional_momentum) != length(translation)
         throw(DimensionMismatch("lengths of momentum and translation do not match"))
     end
@@ -287,8 +294,10 @@ end
 raw"""
     isbragg(k, translations)
 """
-function isbragg(fractional_momentum::AbstractVector{<:Rational{<:Integer}},
-                 translations::AbstractVector{<:AbstractVector{<:Integer}})
+function isbragg(
+    fractional_momentum::AbstractVector{<:Rational{<:Integer}},
+    translations::AbstractVector{<:AbstractVector{<:Integer}},
+)
     return all(isbragg(fractional_momentum, t) for t in translations)
 end
 
@@ -296,9 +305,11 @@ end
 """
     isbragg(tsym, tsym_irrep_index, translation)
 """
-function isbragg(tsym::TranslationSymmetry,
-                 tsym_irrep_index::Integer,
-                 translation::TranslationOperation{<:Integer})
+function isbragg(
+    tsym::TranslationSymmetry,
+    tsym_irrep_index::Integer,
+    translation::TranslationOperation{<:Integer},
+)
     fractional_momentum = tsym.fractional_momenta[tsym_irrep_index]
     return isbragg(fractional_momentum, translation.displacement)
 end
@@ -306,9 +317,11 @@ end
 """
     isbragg(tsym, tsym_irrep_index, translations)
 """
-function isbragg(tsym::TranslationSymmetry,
-                 tsym_irrep_index::Integer,
-                 translations::AbstractVector{<:TranslationOperation{<:Integer}})
+function isbragg(
+    tsym::TranslationSymmetry,
+    tsym_irrep_index::Integer,
+    translations::AbstractVector{<:TranslationOperation{<:Integer}},
+)
     fractional_momentum = tsym.fractional_momenta[tsym_irrep_index]
     return all(isbragg(fractional_momentum, t.displacement) for t in translations)
 end
@@ -434,7 +447,7 @@ end
     #     end
     # end
 
-    
+
     # function TranslationSymmetry(hypercube::HypercubicLattice,
     #                              generator_translations::AbstractMatrix{<:Integer};
     #                              tol::Real=Base.rtoldefault(Float64))
@@ -475,7 +488,7 @@ end
     #             )
     #     orthogonal_reduced_reciprocal_shape_matrix = ExactLinearAlgebra.inverse(transpose(orthogonal_shape_matrix))
     #     # END Orthogonal
-        
+
     #     elements = [TranslationOperation(orthogonal_to_coordinate_map[r_ortho])
     #                     for r_ortho in orthogonal_coordinates]
 

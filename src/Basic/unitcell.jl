@@ -1,8 +1,8 @@
 export UnitCell
-export make_unitcell
+export make_unitcell, makeunitcell
 export dimension
 
-export numsite,
+export numsite, sitecount,
        hassite,
        addsite!,
        getsite,
@@ -43,36 +43,43 @@ export numorbital,
     UnitCell{O}
 
 # Parameters
-* `O`: type of "site". Any type can be used, but we recommend using `String` or tuple of `String` and `Int`
-       for compatibility with JSON.
+- `O`: type of "site". Any type can be used, but we recommend using `String`
+  or tuple of `String` and `Int` for compatibility with JSON.
 
-# Members
-* `latticevectors ::Array{Float64, 2}`: Lattice vectors
-* `reducedreciprocallatticevectors ::Array{Float64, 2}`: Reduced reciprocal lattice vectors (transpose of inverse of `latticevectors`)
-* `reciprocallatticevectors ::Array{Float64, 2}`: Reciprocal lattice vectors. `2π * reducedreciprocallatticevectors`
-* `sites ::Vector{Tuple{T, FractCoord}}`: List of sites within unit cell
-* `siteindices ::Dict{T, Int}`: Indices of sites
+# Fields
+- `latticevectors ::Array{Float64, 2}`: Lattice vectors
+- `reducedreciprocallatticevectors ::Array{Float64, 2}`: Reduced reciprocal lattice vectors
+   (transpose of inverse of `latticevectors`)
+- `reciprocallatticevectors ::Array{Float64, 2}`: Reciprocal lattice vectors.
+  `2π * reducedreciprocallatticevectors`
+- `sites ::Vector{Tuple{T, FractCoord}}`: List of sites within unit cell
+- `siteindices ::Dict{T, Int}`: Indices of sites
 """
-mutable struct UnitCell{O}
-    latticevectors ::Array{Float64, 2}
-    sites ::Vector{Tuple{O, FractCoord}}
+mutable struct UnitCell{S}
+    latticevectors::Array{Float64, 2}
+    sites::Vector{Tuple{S, FractCoord}}
 
-    reducedreciprocallatticevectors ::Array{Float64, 2}
-    reciprocallatticevectors ::Array{Float64, 2}
-    siteindices ::Dict{O, Int}
-    function UnitCell{O}(latticevectors ::AbstractArray{<:Real, 2},
-                         sites ::AbstractVector{Tuple{O, FractCoord}},
-                         reducedreciprocallatticevectors ::AbstractArray{<:Real, 2},
-                         reciprocallatticevectors ::AbstractArray{<:Real, 2},
-                         siteindices ::AbstractDict{O, Int}) where {O}
-        if (O <: Integer)
-            throw(ArgumentError("SiteType should not be integer to avoid confusion"))
+    reducedreciprocallatticevectors::Array{Float64, 2}
+    reciprocallatticevectors::Array{Float64, 2}
+    siteindices::Dict{S, Int}
+
+    function UnitCell{S}(
+        latticevectors::AbstractArray{<:Real, 2},
+        sites::AbstractVector{Tuple{S, FractCoord}},
+        reducedreciprocallatticevectors::AbstractArray{<:Real, 2},
+        reciprocallatticevectors::AbstractArray{<:Real, 2},
+        siteindices::AbstractDict{S, Int}
+    ) where {S}
+        if (S <: Integer)
+            throw(ArgumentError("Integer SiteType is disallowed to avoid confusion"))
         end
-        new{O}(latticevectors,
-               sites,
-               reducedreciprocallatticevectors,
-               reciprocallatticevectors,
-               siteindices)
+        new{S}(
+            latticevectors,
+            sites,
+            reducedreciprocallatticevectors,
+            reciprocallatticevectors,
+            siteindices,
+        )
     end
 end
 
@@ -83,18 +90,22 @@ end
 Construct a one-dimensional lattice.
 
 # Arguments
-* `latticeconstant ::Float64`: Lattice constant
+* `latticeconstant::Real`: Lattice constant
 * `SiteType`: List of sites
 
 # Optional Arguments
 * `tol=√ϵ`: Tolerance
 """
-function make_unitcell(latticeconstant ::Real;
-                       SiteType::DataType=Any,  
-                       OrbitalType::DataType=Any,
-                       tol::Real=Base.rtoldefault(Float64))
-    return make_unitcell(reshape([latticeconstant], (1,1));
-                         SiteType=SiteType, OrbitalType=OrbitalType, tol=tol)
+function make_unitcell(
+    latticeconstant::Real;
+    SiteType::DataType=Any,
+    OrbitalType::DataType=Nothing,
+    tol::Real=Base.rtoldefault(Float64),
+)
+    return make_unitcell(
+        reshape([latticeconstant], (1,1));
+        SiteType=SiteType, OrbitalType=OrbitalType, tol=tol,
+    )
 end
 
 
@@ -110,11 +121,13 @@ Construct an n-dimensional lattice.
 # Optional Arguments
 * `tol=√ϵ`: Epsilon
 """
-function make_unitcell(latticevectors ::AbstractArray{<:Real, 2};
-                       SiteType::DataType=Any,
-                       OrbitalType::DataType=Any,
-                       tol ::Real=Base.rtoldefault(Float64))
-    if OrbitalType != Any
+function make_unitcell(
+    latticevectors::AbstractArray{<:Real, 2};
+    SiteType::DataType=Any,
+    OrbitalType::DataType=Nothing,
+    tol::Real=Base.rtoldefault(Float64)
+)
+    if OrbitalType != Nothing
         @warn "OrbitalType is deprecated. use SiteType instead"
         if SiteType == Any
             SiteType = OrbitalType
@@ -135,17 +148,21 @@ function make_unitcell(latticevectors ::AbstractArray{<:Real, 2};
     reduced_rlv = transpose(inv(latticevectors))
     sites = Tuple{SiteType, FractCoord}[]
     siteindices = Dict{SiteType, Int}()
-    return UnitCell{SiteType}(latticevectors, sites,
-                              reduced_rlv, 2*π*reduced_rlv, siteindices)
+    return UnitCell{SiteType}(latticevectors, sites, reduced_rlv, 2*π*reduced_rlv, siteindices)
 end
 
 
-function make_unitcell(latticevectors::AbstractVector{<:AbstractVector};
-                       SiteType::DataType=Any,
-                       tol::Real=Base.rtoldefault(Float64))
+function make_unitcell(
+    latticevectors::AbstractVector{<:AbstractVector};
+    SiteType::DataType=Any,
+    tol::Real=Base.rtoldefault(Float64)
+)
     lv = hcat(latticevectors...)
     return make_unitcell(lv; SiteType=SiteType, tol=tol)
 end
+
+
+makeunitcell = make_unitcell
 
 
 """
@@ -153,9 +170,7 @@ end
 
 Spatial dimension of the unit cell.
 """
-function dimension(uc ::UnitCell)
-    return size(uc.latticevectors, 1)
-end
+dimension(uc::UnitCell) = size(uc.latticevectors, 1)
 
 
 """
@@ -166,9 +181,19 @@ Number of sites of the unit cell.
 # Arguments
 * `uc ::UnitCell`
 """
-function numsite(uc ::UnitCell)
-    return length(uc.sites)
-end
+numsite(uc ::UnitCell) = length(uc.sites)
+
+
+
+"""
+    sitecount
+
+Number of sites of the unit cell.
+
+# Arguments
+* `uc ::UnitCell`
+"""
+sitecount(uc::UnitCell) = length(uc.sites)
 
 
 """
@@ -181,15 +206,20 @@ Add an site to the unit cell.
 * `sitename ::{T}`
 * `sitecoord ::FractCoord`
 """
-function addsite!(uc ::UnitCell{O},
-                     sitename ::O,
-                     sitecoord ::FractCoord) where {O}
+function addsite!(uc::UnitCell{O}, sitename::O, sitecoord::FractCoord) where {O}
     (ndim, ndim_) = size(uc.latticevectors)
     if dimension(sitecoord) != ndim
         throw(ArgumentError("sitecoord has wrong dimension"))
     elseif haskey(uc.siteindices, sitename)
         throw(ArgumentError( "duplicate site name"))
     end
+
+    for site in uc.sites
+        if isapprox(site[2].fraction, sitecoord.fraction)
+            throw(ArgumentError("site $(site[1]) is already at $(sitecoord.fraction)"))
+        end
+    end
+
     push!(uc.sites, (sitename, sitecoord))
     index = length(uc.siteindices)+1
     uc.siteindices[sitename] = index
@@ -206,7 +236,7 @@ Test whether the unit cell contains the site of given name.
 * `uc ::UnitCell{O}`
 * `name ::O`
 """
-function hassite(uc ::UnitCell{O}, name ::O) where {O}
+function hassite(uc::UnitCell{O}, name::O) where {O}
     return haskey(uc.siteindices, name)
 end
 
@@ -220,7 +250,7 @@ Get index of the given site.
 * `uc ::UnitCell{O}`
 * `name ::O`
 """
-function getsiteindex(uc ::UnitCell{O}, name ::O) where {O}
+function getsiteindex(uc::UnitCell{O}, name::O) where {O}
     return uc.siteindices[name]
 end
 
@@ -237,8 +267,8 @@ Get the site (its site name and its fractional coordinates) with the given name.
 # Return
 * `(sitename, fractcoord)`
 """
-function getsite(uc ::UnitCell{O}, name ::O) where {O}
-    return uc.sites[ uc.siteindices[name] ]
+function getsite(uc::UnitCell{O}, name::O) where {O}
+    return uc.sites[uc.siteindices[name]]
 end
 
 
@@ -254,7 +284,7 @@ Get the fractional coordinates of the site with the given name.
 # Return
 * `fractcoord`
 """
-function getsitecoord(uc ::UnitCell{O}, name ::O) where {O}
+function getsitecoord(uc::UnitCell{O}, name::O) where {O}
     return getsite(uc, name)[2]
 end
 
@@ -269,7 +299,7 @@ end
 # Return
 * `(index, fractcoord)`
 """
-function getsiteindexcoord(uc ::UnitCell{O}, name::O) where {O}
+function getsiteindexcoord(uc::UnitCell{O}, name::O) where {O}
     index = getsiteindex(uc, name)
     coord = getsitecoord(uc, index)
     return (index, coord)
@@ -286,7 +316,7 @@ end
 # Return
 * `(sitename, fractcoord)`
 """
-function getsite(uc ::UnitCell, index::Integer)
+function getsite(uc::UnitCell, index::Integer)
     return uc.sites[index]
 end
 
@@ -301,7 +331,7 @@ end
 # Return
 * `sitename`
 """
-function getsitename(uc ::UnitCell, index ::Integer)
+function getsitename(uc::UnitCell{O}, index::Integer)::O where {O}
     return uc.sites[index][1]
 end
 
@@ -316,7 +346,7 @@ end
 # Return
 * `fractcoord`
 """
-function getsitecoord(uc ::UnitCell, index ::Integer)
+function getsitecoord(uc::UnitCell, index::Integer)::FractCoord
     return uc.sites[index][2]
 end
 
@@ -329,7 +359,7 @@ end
 * `latticevectors ::Array{Float64, 2}`
 * `fc ::FractCoord`
 """
-function fract2carte(unitcell ::UnitCell, fc ::FractCoord)
+function fract2carte(unitcell::UnitCell, fc::FractCoord)::CarteCoord
     if dimension(unitcell) != dimension(fc)
         throw(ArgumentError("unitcell and fractcoord must have the same dimension"))
     end
@@ -346,8 +376,10 @@ end
 * `latticevectors ::Array{Float64, 2}`
 * `cc ::CarteCoord`
 """
-function carte2fract(unitcell::UnitCell, cc::CarteCoord;
-                     tol::Real=Base.rtoldefault(Float64))
+function carte2fract(
+    unitcell::UnitCell, cc::CarteCoord;
+    tol::Real=Base.rtoldefault(Float64)
+)
     if dimension(unitcell) != length(cc)
         throw(ArgumentError("unitcell and cartecoord must have the same dimension"))
     end
@@ -362,10 +394,15 @@ end
     whichunitcell
 
 # Return
-* `R ::Vector{Int}`: which unit cell the specificied site/cartesian coordinates belongs to.
+- `Vector{Int}`: the integer coordinate of the unitcell that the specified site/cartesian
+  coordinate belongs to.
 """
-function whichunitcell(uc::UnitCell{O}, name::O, cc::CarteCoord;
-                       tol::Real=Base.rtoldefault(Float64)) where {O}
+function whichunitcell(
+    uc::UnitCell{O},
+    name::O,
+    cc::CarteCoord;
+    tol::Real=Base.rtoldefault(Float64)
+) where {O}
     fc1 = getsitecoord(uc, name)
     fc2 = carte2fract(uc, cc)
     if !isapprox(fc1.fraction, fc2.fraction; atol=tol)
@@ -380,10 +417,15 @@ end
     whichunitcell
 
 # Return
-* `R ::Vector{Int}`: which unit cell the specificied site/cartesian coordinates belongs to.
+- `Vector{Int}`: the integer coordinate of the unitcell that the specified site/fractional
+  coordinate belongs to.
 """
-function whichunitcell(uc::UnitCell{O}, name::O, fc::FractCoord;
-                       tol::Real=Base.rtoldefault(Float64)) where {O}
+function whichunitcell(
+    uc::UnitCell{O},
+    name::O,
+    fc::FractCoord;
+    tol::Real=Base.rtoldefault(Float64)
+) where {O}
     fc1 = getsitecoord(uc, name)
     fc2 = fc
     if !isapprox(fc1.fraction, fc2.fraction; atol=tol)
@@ -393,6 +435,7 @@ function whichunitcell(uc::UnitCell{O}, name::O, fc::FractCoord;
     return R
 end
 
+
 #=
 function zero(uc::UnitCell; dtype::DataType=ComplexF64)
     norb = numsite(uc)
@@ -400,10 +443,17 @@ function zero(uc::UnitCell; dtype::DataType=ComplexF64)
 end
 =#
 
-"""
+
+raw"""
     momentumgrid
 
-Generate an n-dimensional grid of momenta of given shape
+Generate an n-dimensional grid of momenta of given shape.
+
+Returns an n-dimensional array of the following form:
+```math
+   k[i_1, i_2, \ldots ] = G \cdot ( \frac{i_1}{n_1}, \frac{i_2}{n_2}, \ldots )
+````
+where G is the reciprocal lattice vector
 """
 function momentumgrid(uc::UnitCell, shape::AbstractVector{<:Integer})
     if length(shape) != dimension(uc)
@@ -418,22 +468,35 @@ function momentumgrid(uc::UnitCell, shape::AbstractVector{<:Integer})
 end
 
 
-import Base.==
-function (==)(lhs::UnitCell{O}, rhs::UnitCell{O}) where O
-  return (
-    lhs.latticevectors == rhs.latticevectors &&
-    lhs.sites == rhs.sites
-  )
+function Base.:(==)(lhs::UnitCell{O}, rhs::UnitCell{O}) where O
+    return (
+        lhs.latticevectors == rhs.latticevectors &&
+        lhs.sites == rhs.sites
+    )
 end
 
 
 """
-    findsiteindex
+    findsiteindex(unitcell::UnitCell, fc::FractCoord; tol=√ϵ)
 
-Returns (site_index, unitcell_vector), or `(-1, [])` if not found.
+Find the index of the site, and the unitcell coordinate at the specified fractional coordinate.
+
+# Arguments
+- `unitcell::UnitCell`
+- `fc::FractCoord`
+
+# Returns
+- `(site_index, unitcell_vector)`, or `(-1, [])` if not found.
 """
-function findsiteindex(unitcell::UnitCell, fc::FractCoord; tol::Real=Base.rtoldefault(Float64))
-    i = findfirst(x -> isapprox(x, fc.fraction; atol=tol), [orbfc.fraction for (orbname, orbfc) in unitcell.sites])
+function findsiteindex(
+    unitcell::UnitCell,
+    fc::FractCoord;
+    tol::Real=Base.rtoldefault(Float64)
+)
+    i = findfirst(
+        x -> isapprox(x, fc.fraction; atol=tol),
+        [orbfc.fraction for (orbname, orbfc) in unitcell.sites]
+    )
     if i !== nothing
         (orbname, orbfc) = unitcell.sites[i]
         return (i, fc.whole - orbfc.whole)

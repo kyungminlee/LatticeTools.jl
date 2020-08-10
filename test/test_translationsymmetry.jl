@@ -112,8 +112,10 @@ using YAML
 
         @testset "symmetry_product" begin
             pro = symmetry_product(tsym)
-            @test all( pro(x,y).displacement == tsym.orthocube.wrap(x.displacement + y.displacement)[2]
-                       for x in tsym, y in tsym)
+            @test all(
+                pro(x,y).displacement == tsym.orthocube.wrap(x.displacement + y.displacement)[2]
+                for x in tsym, y in tsym
+            )
         end
 
         @testset "iterate/membership" begin

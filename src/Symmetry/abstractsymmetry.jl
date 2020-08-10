@@ -1,5 +1,5 @@
 export AbstractSymmetry
 # export AbstractUnitSymmetry
 
-abstract type AbstractSymmetry{OperationType<:AbstractSymmetryOperation} end
-# abstract type AbstractUnitSymmetry{OperationType<:AbstractSymmetryOperation} <: AbstractSymmetry{OperationType} end
+abstract type AbstractSymmetry{OperationType<:AbstractSpaceSymmetryOperation} end
+# abstract type AbstractUnitSymmetry{OperationType<:AbstractSpaceSymmetryOperation} <: AbstractSymmetry{OperationType} end

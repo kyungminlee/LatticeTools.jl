@@ -25,15 +25,17 @@ using TightBindingLattice
 
     els = elements(ssym)
     let product = symmetry_product(ssym)
-        @test all(let
-                      z1 = product(x, y)
-                      z2 = x * y
-                      z3 = SpaceOperation(z2.matrix, tsym.orthocube.wrap(z2.displacement)[2])
-                      z1 == z3
-                  end for x in els, y in els)
+        @test all(
+            let
+                z1 = product(x, y)
+                z2 = x * y
+                z3 = SpaceOperation(z2.matrix, tsym.orthocube.wrap(z2.displacement)[2])
+                z1 == z3
+            end for x in els, y in els
+        )
     end
     element_lookup = Dict(x => i for (i, x) in enumerate(elements(ssym)))
-    
+
     @test group_order(ssym) == group_order(psym) * group_order(tsym)
 
     let
@@ -42,7 +44,7 @@ using TightBindingLattice
             for (i, xi) in enumerate(els), (j, xj) in enumerate(els)
                 xk = product(xi, xj)
                 k = element_lookup[xk]
-                mtab[i,j] = k
+                mtab[i, j] = k
             end
         end
         G = group(ssym)
@@ -76,7 +78,7 @@ using TightBindingLattice
         ssymbed4 = SymmorphicSymmetryEmbedding(tsymbed, psymbed)
         @test_throws ArgumentError SymmorphicSymmetryEmbedding(psymbed, tsymbed)
         @test_throws ArgumentError SymmorphicSymmetryEmbedding(make_lattice(unitcell, [4 0; 0 3]), ssym)
-        
+
         let lattice2 = make_lattice(unitcell, [4 0; 0 3])
             tsymbed2 = translation_symmetry_embedding(lattice2)
             @test_throws ArgumentError tsymbed2 ⋊ psymbed
@@ -89,7 +91,7 @@ using TightBindingLattice
         @test valtype(ssymbed2) == SitePermutation
 
         @test ssymbed1 == ssymbed2 == ssymbed3 == ssymbed4
-        
+
         @test ssymbed1.lattice == lattice
         @test ssymbed1.normal.symmetry == tsymbed.symmetry
         @test ssymbed1.rest.symmetry == psymbed.symmetry
@@ -108,7 +110,6 @@ using TightBindingLattice
             @test_throws ArgumentError SymmorphicIrrepComponent(tsic2, psic1)
         end
 
-
         count = 0
         for tsic in get_irrep_components(tsymbed)
             psymbed_little = little_symmetry(tsic, psymbed)
@@ -119,7 +120,6 @@ using TightBindingLattice
         @test count == length(collect(get_irrep_components(ssymbed1)))
         @test all(isa(ssic.normal, IrrepComponent{SymmetryEmbedding{TranslationSymmetry}})
                       for ssic in get_irrep_components(ssymbed1))
-        
     end
     @testset "fractional_momentum" begin
         unitcell = make_unitcell([1.0 0.0; 0.0 1.0]; SiteType=String)
@@ -135,13 +135,15 @@ using TightBindingLattice
         ssym = tsym ⋊ psym
 
         kf = tsym.fractional_momenta
-        @test all(  let tidx = tsic.irrep_index
-                        kf[tidx] ==
-                            fractional_momentum(tsym, tidx) ==
-                            fractional_momentum(ssym, tidx) ==
-                            fractional_momentum(tsymbed, tidx) ==
-                            fractional_momentum(ssymbed, tidx)
-                    end for tsic in get_irrep_components(tsymbed) )
+        @test all(
+            let tidx = tsic.irrep_index
+                kf[tidx] ==
+                fractional_momentum(tsym, tidx) ==
+                fractional_momentum(ssym, tidx) ==
+                fractional_momentum(tsymbed, tidx) ==
+                fractional_momentum(ssymbed, tidx)
+            end
+            for tsic in get_irrep_components(tsymbed)
+        )
     end
-
 end

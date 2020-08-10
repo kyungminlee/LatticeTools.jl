@@ -7,7 +7,7 @@ using TightBindingLattice
 
     @testset "IdentityOperation" begin
         @test iden == IdentityOperation{Int}(2)
-       
+
         @test iden != IdentityOperation(Int, 3)
         @test iden * iden == iden
         n=0;  @test iden^n == iden
@@ -21,7 +21,7 @@ using TightBindingLattice
         @test dimension(iden) == 2
         @test hash(iden) == hash(IdentityOperation(Int, 2))
         @test hash(iden) != hash(IdentityOperation(Int, 3))
-        
+
         @test apply_operation(iden, [3,2]) == [3,2]
         @test iden([3,2]) == [3,2]
 
@@ -59,7 +59,7 @@ using TightBindingLattice
             @test t0 == IdentityOperation(Int, 2)
             @test IdentityOperation(Int, 2) == t0
         end
-        
+
         @testset "operator" begin
             @test t1 * iden == t1
             @test iden * t1 == t1
@@ -137,7 +137,7 @@ using TightBindingLattice
             @test p1*p2 == PointOperation([0 -1; 1 -1] * [0 1; 1 0])
             @test inv(p1) * p1 == PointOperation([1 0; 0 1])
             @test p1 * inv(p1) == PointOperation([1 0; 0 1])
-            
+
             @test p1^3 == p1 * p1 * p1
             @test p1^(-1) == inv(p1)
             @test p1^(-2) == inv(p1)*inv(p1)
@@ -195,12 +195,12 @@ using TightBindingLattice
             @test domaintype(st) == Int
             @test domaintype(sp) == Int
             @test domaintype(s2) == Int
-            
+
             @test  isidentity(s0)
             @test !isidentity(st)
             @test !isidentity(sp)
             @test !isidentity(s2)
-            
+
             @test  istranslation(s0)
             @test  istranslation(st)
             @test !istranslation(sp)
@@ -215,10 +215,10 @@ using TightBindingLattice
         @testset "equality" begin
             sop = SpaceOperation(c4p)
             @test sop.matrix == [0 -1; 1 0] && sop.displacement == [0,0]
-            
+
             sop = SpaceOperation(t10)
             @test sop.matrix == [1 0; 0 1] && sop.displacement == [1,0]
-            
+
             sop = SpaceOperation(c4p, t10)
             @test sop.matrix == [0 -1; 1 0] && sop.displacement == [1, 0]
             @test sop == SpaceOperation([0 -1; 1 0], [1, 0])
@@ -236,7 +236,7 @@ using TightBindingLattice
 
             @test c4p_t10 == SpaceOperation([0 -1; 1 0], [1,  0])
             @test t10_c4p == SpaceOperation([0 -1; 1 0], [0, -1])
-            
+
             @test c4p * c4p_t10 == SpaceOperation([-1 0; 0 -1], [ 1,  0])
             @test c4p * t10_c4p == SpaceOperation([-1 0; 0 -1], [ 0, -1])
             @test c4p_t10 * c4p == SpaceOperation([-1 0; 0 -1], [ 0, -1])
@@ -244,14 +244,14 @@ using TightBindingLattice
 
             # associativity
             @test all((A * B) * C == A * (B * C)
-                        for A in AbstractSymmetryOperation[t10, t01, m10, c4p, c4m],
-                            B in AbstractSymmetryOperation[t10, t01, m10, c4p, c4m],
-                            C in AbstractSymmetryOperation[t10, t01, m10, c4p, c4m])
-            
+                        for A in AbstractSpaceSymmetryOperation[t10, t01, m10, c4p, c4m],
+                            B in AbstractSpaceSymmetryOperation[t10, t01, m10, c4p, c4m],
+                            C in AbstractSpaceSymmetryOperation[t10, t01, m10, c4p, c4m])
+
             # inverse
             @test all(inv(A * B) == inv(B) * inv(A)
-                          for A in AbstractSymmetryOperation[t10, t01, m10, c4p, c4m],
-                              B in AbstractSymmetryOperation[t10, t01, m10, c4p, c4m])
+                          for A in AbstractSpaceSymmetryOperation[t10, t01, m10, c4p, c4m],
+                              B in AbstractSpaceSymmetryOperation[t10, t01, m10, c4p, c4m])
         end
 
         @testset "comparison with other types" begin
@@ -276,7 +276,7 @@ using TightBindingLattice
             @test promote_type(IdentityOperation{Int}, SpaceOperation{Int, Rational{Int}}) == SpaceOperation{Int, Rational{Int}}
             @test promote_type(TranslationOperation{Int}, SpaceOperation{Int, Rational{Int}}) == SpaceOperation{Int, Rational{Int}}
             @test promote_type(PointOperation{Int}, SpaceOperation{Int, Rational{Int}}) == SpaceOperation{Int, Rational{Int}}
-            
+
             @test promote_type(SpaceOperation{Int, Int}, SpaceOperation{Int, Rational{Int}}) == SpaceOperation{Int, Rational{Int}}
 
             arr = SpaceOperation{Int, Rational{Int}}[]
@@ -333,7 +333,7 @@ using TightBindingLattice
 
     #     tp = t * p
     #     pt = p * t
-        
+
     #     tpc = canonize(tp)
     #     ptc = canonize(pt)
 

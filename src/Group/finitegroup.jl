@@ -21,7 +21,13 @@ export ishomomorphic
 """
     FiniteGroup
 
-Finite group.
+Finite group, with elements {1, 2, 3,..., n}. The identity element is always 1.
+
+# Fields
+* `multiplication_table::Matrix{Int}`: multiplication table
+* `period_lengths::Vector{Int}`: period length (order) of every element
+* `inverses::Vector{Int}`: inverse of every element
+* `conjugacy_classes::Vector{Vector{Int}}`: conjugacy classes
 """
 struct FiniteGroup <: AbstractGroup
     multiplication_table::Matrix{Int}
@@ -35,19 +41,25 @@ struct FiniteGroup <: AbstractGroup
     """
     function FiniteGroup(mtab::AbstractMatrix{<:Integer})
         n_elem = size(mtab, 1)
-        size(mtab, 2) != n_elem && throw(ArgumentError("Multiplication table should be a square matrix"))
-        elements = BitSet(1:n_elem)
+        if size(mtab, 2) != n_elem
+            throw(ArgumentError("Multiplication table should be a square matrix"))
+        end
         # check identity and closure
-        mtab[:,1] != 1:n_elem && throw(ArgumentError("Element 1 should be identity"))
-        mtab[1,:] != 1:n_elem && throw(ArgumentError("Element 1 should be identity"))
+        if (mtab[:,1] != 1:n_elem) || (mtab[1,:] != 1:n_elem)
+            throw(ArgumentError("Element 1 should be identity"))
+        end
+        elements = BitSet(1:n_elem)
         # check closure and inverse (sudoku)
         for i in 2:n_elem
-            BitSet(mtab[:,i]) != elements && throw(ArgumentError("Multiplication not a group"))
-            BitSet(mtab[i,:]) != elements && throw(ArgumentError("Multiplication not a group"))
+            if (BitSet(mtab[:,i]) != elements) || (BitSet(mtab[i,:]) != elements)
+                throw(ArgumentError("Multiplication not a group"))
+            end
         end
         # check associativity
         for i in 1:n_elem, j in 1:n_elem, k in 1:n_elem
-            mtab[mtab[i, j], k] != mtab[i, mtab[j, k]] && throw(ArgumentError("Multiplication not associative"))
+            if mtab[mtab[i, j], k] != mtab[i, mtab[j, k]]
+                throw(ArgumentError("Multiplication not associative"))
+            end
         end
         # compute cycles
         period_lengths = zeros(Int, n_elem)
@@ -93,15 +105,19 @@ struct FiniteGroup <: AbstractGroup
             end
         end
 
-        @assert all(period_lengths[first(cc)] == period_lengths[i] for cc in conjugacy_classes for i in cc)
+        @assert all(
+            period_lengths[first(cc)] == period_lengths[i]
+            for cc in conjugacy_classes for i in cc
+        )
 
         new(mtab, period_lengths, inverses, conjugacy_classes)
     end
 end
 
 
-import Base.==
-==(lhs::FiniteGroup, rhs::FiniteGroup) = (lhs.multiplication_table == rhs.multiplication_table)
+function Base.:(==)(lhs::FiniteGroup, rhs::FiniteGroup)
+    return (lhs.multiplication_table == rhs.multiplication_table)
+end
 
 """
     element(group, idx)
@@ -172,7 +188,9 @@ group_multiplication_table(group::FiniteGroup) = group.multiplication_table
 
 Check if the group is abelian.
 """
-isabelian(group::FiniteGroup) = group.multiplication_table == transpose(group.multiplication_table)
+function isabelian(group::FiniteGroup)
+    return group.multiplication_table == transpose(group.multiplication_table)
+end
 
 
 """
@@ -182,7 +200,7 @@ Return a function which computes the group product.
 """
 function group_product(group::FiniteGroup) # a bit like currying
     function product(lhs::Integer, rhs::Integer)
-        group.multiplication_table[lhs, rhs]
+        return group.multiplication_table[lhs, rhs]
     end
     function product(lhs::Integer, rhs::AbstractSet{<:Integer})
         return BitSet([group.multiplication_table[lhs, x] for x in rhs])
@@ -199,27 +217,31 @@ end
 
 """
     group_product(group, lhs, rhs)
+
+Return the result of group multiplication of `lhs` and `rhs`.
+If both `lhs` and `rhs` are integers, return an integer.
+If either of them is a set (`AbstractSet`) of integers, then return a `BitSet`.
 """
 function group_product(group::FiniteGroup, lhs::Integer, rhs::Integer)
     return group.multiplication_table[lhs, rhs]
 end
 
 
-function group_product(group::FiniteGroup,
-                       lhs::AbstractSet{<:Integer}, rhs::Integer)
+function group_product(group::FiniteGroup, lhs::AbstractSet{<:Integer}, rhs::Integer)
     return BitSet([group_product(group, x, rhs) for x in lhs])
 end
 
 
-function group_product(group::FiniteGroup,
-                       lhs::Integer, rhs::AbstractSet{<:Integer})
+function group_product(group::FiniteGroup, lhs::Integer, rhs::AbstractSet{<:Integer})
     return BitSet([group_product(group, lhs, x) for x in rhs])
 end
 
 
-function group_product(group::FiniteGroup,
-                       lhs::AbstractSet{<:Integer},
-                       rhs::AbstractSet{<:Integer})
+function group_product(
+    group::FiniteGroup,
+    lhs::AbstractSet{<:Integer},
+    rhs::AbstractSet{<:Integer},
+)
     return BitSet([group_product(group, x, y) for x in lhs for y in rhs])
 end
 
@@ -246,20 +268,22 @@ group_inverse(group::FiniteGroup, g::AbstractVector{<:Integer}) = group.inverses
 
 
 """
-    conjugacy_class(group, i)
+    conjugacy_class(group::FiniteGroup, i::Integer)
 
 Conjugacy class of the element `i`.
 """
 function conjugacy_class(group::FiniteGroup, i::Integer)
-    return findfirst(c -> let j = searchsortedfirst(c, i)
-                              j <= length(c) && c[j] == i
-                          end,
-                     group.conjugacy_classes)
+    return findfirst(
+        c -> let j = searchsortedfirst(c, i)
+            j <= length(c) && c[j] == i
+        end,
+        group.conjugacy_classes
+    )
 end
 
 
 """
-    generate_subgroup(group, idx)
+    generate_subgroup(group::FiniteGroup, idx::Integer)
 
 subgroup generated by `generators`. ⟨ {g} ⟩
 """
@@ -277,13 +301,14 @@ end
 
 
 """
-    generate_subgroup(group, generators)
+    generate_subgroup(group::FiniteGroup, generators::Integer)
 
 subgroup generated by `generators`. ⟨ S ⟩
 """
-function generate_subgroup(group::FiniteGroup,
-                           generators::G) where {G<:Union{<:AbstractSet{<:Integer},
-                                                          <:AbstractVector{<:Integer}}}
+function generate_subgroup(
+    group::FiniteGroup,
+    generators::G
+) where {G<:Union{<:AbstractSet{<:Integer}, <:AbstractVector{<:Integer}}}
     change = true
     subgroup = BitSet(generators)
     push!(subgroup, 1)
@@ -417,8 +442,10 @@ end
 
 Generate a multiplication table from elements with product.
 """
-function group_multiplication_table(elements::AbstractVector{ElementType},
-                                    product::Function=(*)) where {ElementType}
+function group_multiplication_table(
+    elements::AbstractVector{ElementType},
+    product::Function=Base.:(*)
+) where {ElementType}
     element_lookup = Dict(k=>i for (i, k) in enumerate(elements))
     ord_group = length(elements)
     mtab = zeros(Int, (ord_group, ord_group))
@@ -434,10 +461,12 @@ end
 
 Check whether `representation` is homomorphic to `group` under `product` and `equal`, order preserved.
 """
-function ishomomorphic(group::FiniteGroup,
-                       representation::AbstractVector;
-                       product::Function=(*),
-                       equal::Function=(==))
+function ishomomorphic(
+    group::FiniteGroup,
+    representation::AbstractVector;
+    product::Function=Base.:(*),
+    equal::Function=Base.:(==)
+)
     ord_group = group_order(group)
     if length(representation) != ord_group
         return false

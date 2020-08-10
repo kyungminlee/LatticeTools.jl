@@ -21,9 +21,12 @@ struct IrrepComponent{SymmetryType<:SymmetryOrEmbedding}<:AbstractSymmetryIrrepC
     symmetry::SymmetryType
     irrep_index::Int
     irrep_component::Int
-    function IrrepComponent(sym::S,
-                            irrep_index::Integer,
-                            irrep_compo::Integer=1) where {S<:SymmetryOrEmbedding}
+
+    function IrrepComponent(
+        sym::S,
+        irrep_index::Integer,
+        irrep_compo::Integer=1,
+    ) where {S<:SymmetryOrEmbedding}
         if !(1 <= irrep_index <= num_irreps(sym))
             throw(ArgumentError("irrep index must be between 1 and $(num_irreps(sym))"))
         elseif !(1 <= irrep_compo <= irrep_dimension(sym, irrep_index))
@@ -34,11 +37,12 @@ struct IrrepComponent{SymmetryType<:SymmetryOrEmbedding}<:AbstractSymmetryIrrepC
 end
 
 
-import Base.==
-function ==(lhs::IrrepComponent, rhs::IrrepComponent)
-    lhs.symmetry == rhs.symmetry &&
-    lhs.irrep_index == rhs.irrep_index &&
-    lhs.irrep_component == rhs.irrep_component
+function Base.:(==)(lhs::IrrepComponent, rhs::IrrepComponent)
+    return (
+        lhs.symmetry == rhs.symmetry &&
+        lhs.irrep_index == rhs.irrep_index &&
+        lhs.irrep_component == rhs.irrep_component
+    )
 end
 
 """
@@ -55,9 +59,11 @@ group_order(sic::IrrepComponent) = group_order(sic.symmetry)
 Return a generator which gives `IrrepComponent(sym, irrep_index, irrep_component)`.
 """
 function get_irrep_components(sym::SymmetryOrEmbedding)
-    return (IrrepComponent(sym, irrep_index, irrep_compo)
-                for irrep_index in 1:num_irreps(sym)
-                for irrep_compo in 1:irrep_dimension(sym, irrep_index))
+    return (
+        IrrepComponent(sym, irrep_index, irrep_compo)
+        for irrep_index in 1:num_irreps(sym)
+        for irrep_compo in 1:irrep_dimension(sym, irrep_index)
+    )
 end
 
 
@@ -88,17 +94,23 @@ Get the little group elements (i.e. indices) of `psym` corresponding to the irre
 - `IrrepComponent{TranslationSymmetry}` and `PointSymmetry`, or
 - `IrrepComponent{SymmetryEmbedding{TranslationSymmetry}}` and `SymmetryEmbedding{PointSymmetry}`
 """
-function little_group_elements(tsic::IrrepComponent{TranslationSymmetry},
-                               psym::PointSymmetry) ::Vector{Int}
+function little_group_elements(
+    tsic::IrrepComponent{TranslationSymmetry},
+    psym::PointSymmetry,
+) ::Vector{Int}
     return little_group_elements(tsic.symmetry, tsic.irrep_index, psym)
 end
 
 
-function little_group_elements(tsic::IrrepComponent{SymmetryEmbedding{TranslationSymmetry}},
-                               psymbed::SymmetryEmbedding{PointSymmetry}) ::Vector{Int}
-    return little_group_elements(symmetry(tsic.symmetry),
-                                 tsic.irrep_index,
-                                 symmetry(psymbed))
+function little_group_elements(
+    tsic::IrrepComponent{SymmetryEmbedding{TranslationSymmetry}},
+    psymbed::SymmetryEmbedding{PointSymmetry}
+)::Vector{Int}
+    return little_group_elements(
+        symmetry(tsic.symmetry),
+        tsic.irrep_index,
+        symmetry(psymbed)
+    )
 end
 
 
@@ -107,14 +119,18 @@ end
 
 Return the `FiniteGroup` object that corresponds to the little group of `psym` at `tsic`.
 """
-function little_group(tsic::IrrepComponent{TranslationSymmetry},
-                      psym::PointSymmetry)::FiniteGroup
+function little_group(
+    tsic::IrrepComponent{TranslationSymmetry},
+    psym::PointSymmetry,
+)::FiniteGroup
     return little_group(tsic.symmetry, tsic.irrep_index, psym)
 end
 
 
-function little_group(tsic::IrrepComponent{SymmetryEmbedding{TranslationSymmetry}},
-                      psymbed::SymmetryEmbedding{PointSymmetry})::FiniteGroup
+function little_group(
+    tsic::IrrepComponent{SymmetryEmbedding{TranslationSymmetry}},
+    psymbed::SymmetryEmbedding{PointSymmetry},
+)::FiniteGroup
     return little_group(symmetry(tsic.symmetry), tsic.irrep_index, symmetry(psymbed))
 end
 
@@ -124,14 +140,18 @@ end
 
 Return the `PointSymmetry` object that corresponds to the little group of psym at `tsic`.
 """
-function little_symmetry(tsic::IrrepComponent{TranslationSymmetry},
-                         psym::PointSymmetry)::PointSymmetry
+function little_symmetry(
+    tsic::IrrepComponent{TranslationSymmetry},
+    psym::PointSymmetry,
+)::PointSymmetry
     return little_symmetry(tsic.symmetry, tsic.irrep_index, psym)
 end
 
 
-function little_symmetry(tsic::IrrepComponent{SymmetryEmbedding{TranslationSymmetry}},
-                         psymbed::SymmetryEmbedding{PointSymmetry})::SymmetryEmbedding{PointSymmetry}
+function little_symmetry(
+    tsic::IrrepComponent{SymmetryEmbedding{TranslationSymmetry}},
+    psymbed::SymmetryEmbedding{PointSymmetry},
+)::SymmetryEmbedding{PointSymmetry}
     psym_little = little_symmetry(symmetry(tsic.symmetry), tsic.irrep_index, symmetry(psymbed))
     return embed(psymbed.lattice, psym_little)
 end
@@ -140,16 +160,22 @@ end
 """
     iscompatible(tsic, psym)
 """
-function iscompatible(tsic::IrrepComponent{TranslationSymmetry},
-                      psym::PointSymmetry)::Bool
+function iscompatible(
+    tsic::IrrepComponent{TranslationSymmetry},
+    psym::PointSymmetry,
+)::Bool
     return iscompatible(tsic.symmetry, tsic.irrep_index, psym)
 end
 
 
-function iscompatible(tsic::IrrepComponent{SymmetryEmbedding{TranslationSymmetry}},
-                      psymbed::SymmetryEmbedding{PointSymmetry})::Bool
-    return iscompatible(tsic.symmetry, psymbed) &&
-           iscompatible(symmetry(tsic.symmetry), tsic.irrep_index, symmetry(psymbed))
+function iscompatible(
+    tsic::IrrepComponent{SymmetryEmbedding{TranslationSymmetry}},
+    psymbed::SymmetryEmbedding{PointSymmetry},
+)::Bool
+    return (
+        iscompatible(tsic.symmetry, psymbed) &&
+        iscompatible(symmetry(tsic.symmetry), tsic.irrep_index, symmetry(psymbed))
+    )
 end
 
 
@@ -196,7 +222,7 @@ end
 #     psym = ssic.component2.symmetry
 #     psym_irrep_index = ssic.component2.irrep_index
 #     psym_irrep_compo = ssic.component2.irrep_component
-    
+
 #     tsym_elements = elements(tsym)
 #     tsym_irrep = irrep(tsym, tsym_irrep_index)
 #     tsym_irrep_components = [m[tsym_irrep_compo, tsym_irrep_compo] for m in tsym_irrep]
@@ -256,9 +282,7 @@ end
 # end
 
 
-# import Base.==
-
-# function ==(lhs::TranslationSymmetryIrrepComponent,
+# function Base.:(==)(lhs::TranslationSymmetryIrrepComponent,
 #             rhs::TranslationSymmetryIrrepComponent)
 #     lhs.symmetry == rhs.symmetry && lhs.irrep_index == rhs.irrep_index
 # end

@@ -8,3 +8,5 @@ _research/
 
 docs/build/
 docs/src/generated/
+
+MutableArtifacts.toml

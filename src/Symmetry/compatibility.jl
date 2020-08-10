@@ -69,9 +69,11 @@ end
 """
     iscompatible(tsym, tsym_irrep_index, point_operation)
 """
-function iscompatible(tsym::TranslationSymmetry,
-                      tsym_irrep_index::Integer,
-                      pop::PointOperation{<:Integer})::Bool
+function iscompatible(
+    tsym::TranslationSymmetry,
+    tsym_irrep_index::Integer,
+    pop::PointOperation{<:Integer},
+)::Bool
     !iscompatible(tsym, pop) && return false
     reciprocal_matrix = ExactLinearAlgebra.inverse(transpose(pop.matrix))
     k1 = tsym.fractional_momenta[tsym_irrep_index]
@@ -82,10 +84,15 @@ end
 """
     iscompatible(tsym, tsym_irrep_index, psym)
 """
-function iscompatible(tsym::TranslationSymmetry,
-                      tsym_irrep_index::Integer,
-                      psym::PointSymmetry)::Bool
-    return all(iscompatible(tsym, tsym_irrep_index, pop) for pop in generator_elements(psym))
+function iscompatible(
+    tsym::TranslationSymmetry,
+    tsym_irrep_index::Integer,
+    psym::PointSymmetry,
+)::Bool
+    return all(
+        iscompatible(tsym, tsym_irrep_index, pop)
+        for pop in generator_elements(psym)
+    )
 end
 
 
@@ -128,9 +135,10 @@ end
     iscompatible(lattice, point_symmetry)
 """
 function iscompatible(lattice::Lattice, psym::PointSymmetry)::Bool
-    return iscompatible(lattice.orthocube, psym) &&
-           all(!isnothing(findsitemap(lattice.unitcell, pop))
-                   for pop in generator_elements(psym))
+    return (
+        iscompatible(lattice.orthocube, psym) &&
+        all(pop -> !isnothing(findsitemap(lattice.unitcell, pop)), generator_elements(psym))
+    )
 end
 
 

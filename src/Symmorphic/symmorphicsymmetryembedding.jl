@@ -13,17 +13,21 @@ struct SymmorphicSymmetryEmbedding{S1<:AbstractSymmetry,
     normal::SymmetryEmbedding{S1}
     rest::SymmetryEmbedding{S2}
 
-    function SymmorphicSymmetryEmbedding(lattice::Lattice,
-            symmetry::SymmorphicSymmetry{S1, S2, E}) where {S1, S2, E}
+    function SymmorphicSymmetryEmbedding(
+        lattice::Lattice,
+        symmetry::SymmorphicSymmetry{S1, S2, E},
+    ) where {S1, S2, E}
         if !iscompatible(lattice, symmetry)
             throw(ArgumentError("lattice and symmetry are not compatible"))
         end
-        return new{S1, S2}(lattice,
-                           embed(lattice, symmetry.normal),
-                           embed(lattice, symmetry.rest))
+        return new{S1, S2}(
+            lattice,
+            embed(lattice, symmetry.normal),
+            embed(lattice, symmetry.rest),
+        )
     end
 
-    function SymmorphicSymmetryEmbedding(normal::SymmetryEmbedding{S1}, rest::SymmetryEmbedding{S2}) where {S1, S2}
+    function SymmorphicSymmetryEmbedding(normal::SymmetryEmbedding, rest::SymmetryEmbedding)
         lattice = normal.lattice
         if rest.lattice != lattice
             throw(ArgumentError("two symmetry embeddings should have the same lattice"))
@@ -37,26 +41,26 @@ end
 """
     embed(lattice::Lattice, ssym::SymmorphicSymmetry)
 """
-embed(lattice::Lattice, ssym::SymmorphicSymmetry) = SymmorphicSymmetryEmbedding(lattice, ssym)
-
-
-function ⋊(normal::SymmetryEmbedding{S1}, rest::SymmetryEmbedding{S2}) where {S1, S2}
-    return SymmorphicSymmetryEmbedding(normal, rest)
-end
-
-function ⋉(rest::SymmetryEmbedding{S2}, normal::SymmetryEmbedding{S1}) where {S1, S2}
-    return SymmorphicSymmetryEmbedding(normal, rest)
+function embed(lattice::Lattice, ssym::SymmorphicSymmetry)
+    return SymmorphicSymmetryEmbedding(lattice, ssym)
 end
 
 
-import Base.eltype
-eltype(::SymmorphicSymmetryEmbedding) = SitePermutation
+function ⋊(normal::SymmetryEmbedding, rest::SymmetryEmbedding)
+    return SymmorphicSymmetryEmbedding(normal, rest)
+end
 
-import Base.valtype
-valtype(::SymmorphicSymmetryEmbedding) = SitePermutation
+function ⋉(rest::SymmetryEmbedding, normal::SymmetryEmbedding)
+    return SymmorphicSymmetryEmbedding(normal, rest)
+end
 
 
-function (==)(lhs::SymmorphicSymmetryEmbedding{S1, S2}, rhs::SymmorphicSymmetryEmbedding{S1, S2}) where {S1, S2}
+Base.eltype(::SymmorphicSymmetryEmbedding) = SitePermutation
+
+Base.valtype(::SymmorphicSymmetryEmbedding) = SitePermutation
+
+
+function Base.:(==)(lhs::SSE, rhs::SSE) where {SSE<:SymmorphicSymmetryEmbedding}
     return lhs.lattice == rhs.lattice && lhs.normal == rhs.normal && lhs.rest == rhs.rest
 end
 
@@ -70,8 +74,8 @@ end
 
 
 """
-    iscompatible(lattice::Lattice, ssym::SymmorphicSymmetry{S1, S2, E}) where {S1, S2, E}
+    iscompatible(lattice::Lattice, ssym::SymmorphicSymmetry)
 """
-function iscompatible(lattice::Lattice, ssym::SymmorphicSymmetry{S1, S2, E}) where {S1, S2, E}
+function iscompatible(lattice::Lattice, ssym::SymmorphicSymmetry)
     return iscompatible(lattice, ssym.normal) && iscompatible(lattice, ssym.rest)
 end

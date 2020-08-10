@@ -1,13 +1,13 @@
 export PointSymmetry
 
-export  group_order,
-        element, elements,
-        element_name, element_names,
-        group_multiplication_table,
-        character_table,
-        irrep, irreps, num_irreps, irrep_dimension,
-        generator_elements, generator_indices,
-        symmetry_product
+export group_order,
+       element, elements,
+       element_name, element_names,
+       group_multiplication_table,
+       character_table,
+       irrep, irreps, num_irreps, irrep_dimension,
+       generator_elements, generator_indices,
+       symmetry_product
 
 export project
 
@@ -18,6 +18,8 @@ export little_symmetry, little_symmetry_iso
 export get_irrep_iterator
 export read_point_symmetry
 export symmetry_name
+
+import LinearAlgebra
 
 simplify_name(name::AbstractString) = replace(replace(name, r"<sub>.*?</sub>"=>""), r"<sup>.*?</sup>"=>"")
 
@@ -43,30 +45,28 @@ struct PointSymmetry <: AbstractSymmetry{PointOperation{Int}}
     schoenflies::String
 
     function PointSymmetry(
-            group::FiniteGroup,
-            generators::AbstractVector{<:Integer},
-            conjugacy_classes::AbstractVector{<:AbstractVector{<:Integer}},
-            character_table::AbstractMatrix{<:Number},
-            irreps::AbstractVector{<:AbstractVector{<:AbstractMatrix{<:Number}}},
-            element_names::AbstractVector{<:AbstractString},
-            matrix_representations::AbstractVector{<:AbstractMatrix{<:Integer}},
-            hermann_mauguin::AbstractString,
-            schoenflies::AbstractString)
+        group::FiniteGroup,
+        generators::AbstractVector{<:Integer},
+        conjugacy_classes::AbstractVector{<:AbstractVector{<:Integer}},
+        character_table::AbstractMatrix{<:Number},
+        irreps::AbstractVector{<:AbstractVector{<:AbstractMatrix{<:Number}}},
+        element_names::AbstractVector{<:AbstractString},
+        matrix_representations::AbstractVector{<:AbstractMatrix{<:Integer}},
+        hermann_mauguin::AbstractString,
+        schoenflies::AbstractString,
+    )
         tol = Base.rtoldefault(Float64)
         # number counting check
         if length(element_names) != group_order(group)
             throw(ArgumentError("number of elements different from order of group"))
-        end
-        if length(matrix_representations) != group_order(group)
+        elseif length(matrix_representations) != group_order(group)
             throw(ArgumentError("number of matrix representations different from order of group"))
-        end
-        if !allunique(matrix_representations)
+        elseif !allunique(matrix_representations)
             throw(ArgumentError("matrix representations have to be all unique"))
-        end
-        # TODO Test matrix representation for isomorphism
-        if generate_subgroup(group, generators) != BitSet(1:group_order(group))
+        elseif generate_subgroup(group, generators) != BitSet(1:group_order(group))
             throw(ArgumentError("Generators $(generators) does not generate the group"))
         end
+        # TODO Test matrix representation for isomorphism
         let prev_set = BitSet()
             for elements in conjugacy_classes
                 !isempty(intersect(elements, prev_set)) && throw(ArgumentError("Same element in multiple conjugacy classes"))
@@ -87,7 +87,7 @@ struct PointSymmetry <: AbstractSymmetry{PointOperation{Int}}
                 throw(ArgumentError("wrong number of matrices in irrep $rep"))
             end
             d = size(rep[1], 1)
-            if !isapprox(rep[1], Matrix(LinearAlgebra.I, (d,d)); atol=tol)
+            if !isapprox(rep[1], Matrix(LinearAlgebra.I, (d, d)); atol=tol)
                 throw(ArgumentError("matrix representation of identity should be identity"))
             end
             for m in rep
@@ -107,16 +107,18 @@ struct PointSymmetry <: AbstractSymmetry{PointOperation{Int}}
 
         elements = PointOperation.(matrix_representations)
 
-        return new(elements,
-                   group,
-                   generators,
-                   conjugacy_classes,
-                   character_table,
-                   irreps,
-                   element_names,
-                   matrix_representations,
-                   hermann_mauguin,
-                   schoenflies)
+        return new(
+            elements,
+            group,
+            generators,
+            conjugacy_classes,
+            character_table,
+            irreps,
+            element_names,
+            matrix_representations,
+            hermann_mauguin,
+            schoenflies,
+        )
     end
 end
 
@@ -134,40 +136,53 @@ function read_point_symmetry(data::AbstractDict)
     generators = data["Generators"]
     conjugacy_classes = [item for item in data["ConjugacyClasses"]]
     character_table = cleanup_number(read_matrix(data["CharacterTable"]), tol)
-    irreps = [ Matrix{ComplexF64}[cleanup_number(read_matrix(elem), tol) for elem in item]
-                   for item in data["IrreducibleRepresentations"] ]
+    irreps = [
+        Matrix{ComplexF64}[cleanup_number(read_matrix(elem), tol) for elem in item]
+        for item in data["IrreducibleRepresentations"]
+    ]
     element_names = data["ElementNames"]
     matrix_representations = Matrix{Int}[read_matrix(x) for x in data["MatrixRepresentations"]]
     hermann_mauguin = data["HermannMauguin"]
     schoenflies = data["Schoenflies"]
-    PointSymmetry(group, generators,
-                  conjugacy_classes, character_table, irreps,
-                  element_names, matrix_representations, hermann_mauguin, schoenflies)
+    return PointSymmetry(
+        group, generators,
+        conjugacy_classes, character_table, irreps,
+        element_names, matrix_representations, hermann_mauguin, schoenflies,
+    )
 end
 
 
 """
     project(psym, projection; tol=√ϵ)
 """
-function project(psym::PointSymmetry,
-                 projection::AbstractMatrix{<:Integer};
-                 tol::Real=Base.rtoldefault(Float64))
+function project(
+    psym::PointSymmetry,
+    projection::AbstractMatrix{<:Integer};
+    tol::Real=Base.rtoldefault(Float64),
+)
     dim = size(psym.matrix_representations[1], 1)
-    size(projection, 2) != dim && throw(ArgumentError("projection does not match matrix_representations dimension"))
+    if size(projection, 2) != dim
+        throw(ArgumentError("projection does not match matrix_representations dimension"))
+    end
 
     vals = LinearAlgebra.svdvals(projection)
 
-    new_matrix_representations = [projection * m * transpose(projection) for m in psym.matrix_representations]
+    new_matrix_representations = [
+        projection * m * transpose(projection)
+        for m in psym.matrix_representations
+    ]
 
-    return PointSymmetry(psym.group,
-                         psym.generators,
-                         psym.conjugacy_classes,
-                         psym.character_table,
-                         psym.irreps,
-                         psym.element_names,
-                         new_matrix_representations,
-                         psym.hermann_mauguin,
-                         psym.schoenflies)
+    return PointSymmetry(
+        psym.group,
+        psym.generators,
+        psym.conjugacy_classes,
+        psym.character_table,
+        psym.irreps,
+        psym.element_names,
+        new_matrix_representations,
+        psym.hermann_mauguin,
+        psym.schoenflies,
+    )
 end
 
 
@@ -175,11 +190,9 @@ end
 
 dimension(sym::PointSymmetry) = size(sym.matrix_representations[1], 1)
 
-import Base.eltype
-eltype(sym::PointSymmetry) = PointOperation{Int}
+Base.eltype(sym::PointSymmetry) = PointOperation{Int}
 
-import Base.valtype
-valtype(sym::PointSymmetry) = PointOperation{Int}
+Base.valtype(sym::PointSymmetry) = PointOperation{Int}
 
 element(sym::PointSymmetry, g) = sym.elements[g]
 elements(sym::PointSymmetry) = sym.elements
@@ -214,19 +227,21 @@ function symmetry_product(sym::PointSymmetry)
 end
 
 
-import Base.in
-in(item::Any, sym::PointSymmetry) = false
-in(item::IdentityOperation, sym::PointSymmetry) = dimension(item) == dimension(sym)
-in(item::TranslationOperation, sym::PointSymmetry) = dimension(item) == dimension(sym) && ispoint(item)
-in(item::PointOperation{<:Integer}, sym::PointSymmetry) = in(item, elements(sym))
-in(item::SpaceOperation{<:Integer, Tt}, sym::PointSymmetry) where {Tt} = ispoint(item) && in(PointOperation(item.matrix), sym)
+Base.in(item::Any, sym::PointSymmetry) = false
+Base.in(item::IdentityOperation, sym::PointSymmetry) = dimension(item) == dimension(sym)
+function Base.in(item::TranslationOperation, sym::PointSymmetry)
+    return dimension(item) == dimension(sym) && ispoint(item)
+end
+Base.in(item::PointOperation{<:Integer}, sym::PointSymmetry) = in(item, elements(sym))
+function Base.in(item::SpaceOperation{<:Integer, Tt}, sym::PointSymmetry) where {Tt}
+    return ispoint(item) && Base.in(PointOperation(item.matrix), sym)
+end
 
-import Base.iterate
-iterate(sym::PointSymmetry) = iterate(elements(sym))
-iterate(sym::PointSymmetry, i) = iterate(elements(sym), i)
 
-import Base.length
-length(sym::PointSymmetry) = length(elements(sym))
+Base.iterate(sym::PointSymmetry) = iterate(elements(sym))
+Base.iterate(sym::PointSymmetry, i) = iterate(elements(sym), i)
+
+Base.length(sym::PointSymmetry) = length(elements(sym))
 
 # """
 #     get_site_permutation(lattice, matrix_representation, site_map)

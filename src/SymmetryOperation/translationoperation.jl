@@ -4,7 +4,27 @@ export apply_operation
 export domaintype
 export isidentity, istranslation, ispoint
 
-struct TranslationOperation{S<:Real} <:AbstractSymmetryOperation{S}
+
+"""
+    TranslationOperation{S<:Real}
+
+Represents translation symmetry operation
+
+# Fields
+* `displacement`: displacement vector
+
+# Examples
+```jldoctest
+julia> using TightBindingLattice
+
+julia> TranslationOperation([1, 2])
+TranslationOperation{Int64}([1, 2])
+
+julia> TranslationOperation([0.5, 0.0, 0.5])
+TranslationOperation{Float64}([0.5, 0.0, 0.5])
+```
+"""
+struct TranslationOperation{S<:Real} <:AbstractSpaceSymmetryOperation{S}
     displacement::Vector{S}
     function TranslationOperation{S}(displacement::AbstractVector{<:Real}) where {S}
         new{S}(displacement)
@@ -15,74 +35,94 @@ struct TranslationOperation{S<:Real} <:AbstractSymmetryOperation{S}
 end
 
 
-import Base.convert
-function convert(::Type{TranslationOperation{S}}, obj::IdentityOperation{S}) where S
+function Base.convert(::Type{TranslationOperation{S}}, obj::IdentityOperation{S}) where S
     dim = dimension(obj)
     return TranslationOperation{S}(zeros(S, dim))
 end
 
-function convert(::Type{TranslationOperation{S}}, displacement::AbstractVector{S}) where S
+function Base.convert(::Type{TranslationOperation{S}}, displacement::AbstractVector{S}) where S
     return TranslationOperation{S}(displacement)
 end
 
 
-import Base.promote_rule
-function promote_rule(::Type{TranslationOperation{S}}, ::Type{IdentityOperation{S}}) where S
+function Base.promote_rule(::Type{TranslationOperation{S}}, ::Type{IdentityOperation{S}}) where S
     return TranslationOperation{S}
 end
 
 
 ## properties
+"""
+    dimension(arg::TranslationOperation)
+
+Spatial dimension of the translation operation
+"""
 dimension(arg::TranslationOperation) = length(arg.displacement)
+
+"""
+    isidentity(t::TranslationOperation)
+
+Return true if the translation operation is an identity, i.e. `iszero(t.displacement)`
+"""
 isidentity(arg::TranslationOperation) = iszero(arg.displacement)
+
+"""
+    istranslation(arg::TranslationOperation)
+
+Always return `true`, since `arg` is already a translation operation.
+"""
 istranslation(arg::TranslationOperation) = true
+
+"""
+    ispoint(arg::TranslationOperation)
+
+Return `true` if `arg` is a point operation. The only way this can be true is when `arg` is
+an identity operation.
+"""
 ispoint(arg::TranslationOperation) = iszero(arg.displacement)
 
-import Base.hash
-hash(arg::TranslationOperation{S}) where S = hash(arg.displacement, hash(TranslationOperation{S}))
+
+Base.hash(arg::TranslationOperation{S}) where S = hash(arg.displacement, hash(TranslationOperation{S}))
 
 
 ## operators
-import Base.==
-function (==)(lhs::TranslationOperation{S}, rhs::TranslationOperation{S}) where S
-    lhs.displacement == rhs.displacement
+function Base.:(==)(lhs::TranslationOperation{S}, rhs::TranslationOperation{S}) where S
+    return lhs.displacement == rhs.displacement
 end
-function (==)(top::TranslationOperation{S}, iden::IdentityOperation{S}) where S
-    iszero(top.displacement)
+function Base.:(==)(top::TranslationOperation{S}, iden::IdentityOperation{S}) where S
+    return iszero(top.displacement)
 end
-function (==)(iden::IdentityOperation{S}, top::TranslationOperation{S}) where S
-    iszero(top.displacement)
-end
-
-
-import Base.*
-function (*)(lhs::TranslationOperation{S}, rhs::TranslationOperation{S}) where S
-    TranslationOperation{S}(lhs.displacement .+ rhs.displacement)
+function Base.:(==)(iden::IdentityOperation{S}, top::TranslationOperation{S}) where S
+    return iszero(top.displacement)
 end
 
 
-import Base.^
-function (^)(lhs::TranslationOperation{S}, rhs::Real) where S
-    TranslationOperation{S}(lhs.displacement .* rhs)
+function Base.:(*)(lhs::TranslationOperation{S}, rhs::TranslationOperation{S}) where S
+    return TranslationOperation{S}(lhs.displacement .+ rhs.displacement)
 end
 
 
-import Base.inv
-function inv(arg::TranslationOperation{S}) where S
-    TranslationOperation{S}(-arg.displacement)
+function Base.:(^)(lhs::TranslationOperation{S}, rhs::Real) where S
+    return TranslationOperation{S}(lhs.displacement .* rhs)
+end
+
+
+function Base.inv(arg::TranslationOperation{S}) where S
+    return TranslationOperation{S}(-arg.displacement)
 end
 
 
 ## apply
 """
     apply_operation(symop::TranslationOperation{S}, coordinate::AbstractArray{S}) where S
+
+Return the translated coordinate.
 """
 function apply_operation(symop::TranslationOperation{S},
                          coord::AbstractArray{S}) where {S<:Real}
     return coord .+ symop.displacement
 end
 
+
 function (symop::TranslationOperation{S})(coord::AbstractVector{S}) where S
     return coord .+ symop.displacement
 end
-

@@ -4,7 +4,7 @@ import Pkg
 import Serialization
 using LinearAlgebra
 
-using YAML
+import YAML
 
 using ..TightBindingLattice: FiniteGroup, IrrepData
 using ..TightBindingLattice: cleanup_number, parse_expr, group_isomorphism, group_multiplication_table, simplify_name

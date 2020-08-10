@@ -3,10 +3,12 @@ using TightBindingLattice
 
 
 @testset "OrthoCube" begin
+
     @testset "failures" begin
         @test_throws DimensionMismatch OrthoCube([1 2 3; 4 5 6])
         @test_throws ArgumentError OrthoCube([1 1; 1 1])
     end
+
     @testset "orthogonal" begin
         orthocube = OrthoCube([3 0; 0 3])
         @test dimension(orthocube) == 2
