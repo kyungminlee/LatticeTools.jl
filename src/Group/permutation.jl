@@ -53,7 +53,7 @@ end
 
 
 """
-        *(p1 ::Permutation, p2 ::Permutation)
+    *(p1 ::Permutation, p2 ::Permutation)
 
 Multiply the two permutation.
 NOT THIS: (Return `[p2.map[x] for x in p1.map]`.)
