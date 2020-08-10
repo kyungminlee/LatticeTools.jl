@@ -68,8 +68,8 @@ struct SpaceOperation{Tp<:Real, Tt<:Real} <:AbstractSpaceSymmetryOperation{Tt}
 
     function SpaceOperation(translation::TranslationOperation{Tt}) where {Tt}
         dim = dimension(translation)
-        return SpaceOperation{Int, Tt}(Matrix{Int}(
-            LinearAlgebra.I, dim, dim),
+        return SpaceOperation{Int, Tt}(
+            Matrix{Int}(LinearAlgebra.I, dim, dim),
             translation.displacement,
         )
     end
