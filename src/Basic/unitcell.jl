@@ -435,14 +435,14 @@ end
 =#
 
 
-raw"""
+"""
     momentumgrid(unitcell, shape)
 
 Generate an n-dimensional grid of momenta of given shape.
 
 Returns an n-dimensional array of the following form:
 ```math
-   k[i_1, i_2, \ldots ] = G \cdot ( \frac{i_1}{n_1}, \frac{i_2}{n_2}, \ldots )
+   k[i_1, i_2, \\ldots ] = G \\cdot ( \\frac{i_1}{n_1}, \\frac{i_2}{n_2}, \\ldots )
 ````
 where G is the reciprocal lattice vector
 """

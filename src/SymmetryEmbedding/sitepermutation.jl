@@ -11,7 +11,7 @@ abstract type AbstractSpaceSymmetryOperationEmbedding <: AbstractSymmetryOperati
 Represents a permutation of sites as a symmetry operation of a lattice.
 
 # Fields
-* `permutation::Permutation`: permutation
+* `permutation::Permutation`
 """
 struct SitePermutation <:AbstractSpaceSymmetryOperationEmbedding
     permutation::Permutation
@@ -92,4 +92,9 @@ function embed(lattice::Lattice, sop::SpaceOperation{<:Integer, <:Integer})
 end
 
 
+"""
+    isidentity(perm::SitePermutation)
+
+Test whether `perm` is an identity.
+"""
 isidentity(perm::SitePermutation) = isidentity(perm.permutation)

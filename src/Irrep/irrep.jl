@@ -15,8 +15,31 @@ struct IrrepData
     irreps::Vector{Vector{Matrix{ComplexF64}}}
 end
 
+
+"""
+    AbstractSymmetryIrrepComponent
+
+Abstract type for symmetry irrep component.
+"""
 abstract type AbstractSymmetryIrrepComponent end
 
+
+"""
+    IrrepComponent{SymmetryType}
+
+Represent an irrep component.
+Consider a symmetry `S`, and  the i'th irrep Γᵢ, which has D dimensions.
+The d-dimensional component (1 ≤ d ≤ D) is represented by `Irrep(S, i, D)`.
+This type serves as a subscript for iterating over all components of all irreps.
+
+# Parameters
+* `SymmetryType<:SymmetryOrEmbedding`
+
+# Fields
+* `symmetry::SymmetryType`
+* `irrep_index::Int`
+* `irrep_component::Int`
+"""
 struct IrrepComponent{SymmetryType<:SymmetryOrEmbedding}<:AbstractSymmetryIrrepComponent
     symmetry::SymmetryType
     irrep_index::Int
@@ -89,7 +112,7 @@ end
 """
     little_group_elements(tsic, psym)
 
-Get the little group elements (i.e. indices) of `psym` corresponding to the irrep of translation symmetry specified by `tsic`.
+Return little group elements (i.e. indices) of `psym` corresponding to the irrep of translation symmetry specified by `tsic`.
 `tsic` and `psym` are either
 - `IrrepComponent{TranslationSymmetry}` and `PointSymmetry`, or
 - `IrrepComponent{SymmetryEmbedding{TranslationSymmetry}}` and `SymmetryEmbedding{PointSymmetry}`
@@ -127,6 +150,11 @@ function little_group(
 end
 
 
+"""
+    little_group(tsic, psymbed)
+
+Return the `FiniteGroup` object that corresponds to the little group of `psymbed` at `tsic`.
+"""
 function little_group(
     tsic::IrrepComponent{SymmetryEmbedding{TranslationSymmetry}},
     psymbed::SymmetryEmbedding{PointSymmetry},
@@ -159,6 +187,9 @@ end
 
 """
     iscompatible(tsic, psym)
+
+Test whether the point symmetry `psym` is compatible with the irrep component `tsic`
+(i.e. momentum) of the translation symmetry.
 """
 function iscompatible(
     tsic::IrrepComponent{TranslationSymmetry},

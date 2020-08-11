@@ -1,13 +1,15 @@
-# # Little Symmetry
+# # Honeycomb Lattice in k-space
 
 using LinearAlgebra
 using Plots
 using TightBindingLattice
 
 simplifyname(s::AbstractString) = (
-                    s |> (x-> replace(x, r"<sup>(.+?)</sup>" => s"\1"))
-                      |> (x-> replace(x, r"<sub>(.+?)</sub>" => s"[\1]"))
-                )
+    s
+    |> (x-> replace(x, r"<sup>(.+?)</sup>" => s"\1"))
+    |> (x-> replace(x, r"<sub>(.+?)</sub>" => s"[\1]"))
+)
+
 function makewithin(extent::AbstractVector{<:Real})
     a, b, c, d = extent
     (x::Real, y::Real) -> ((a <= x <= b) && (c <= y <= d))
@@ -15,15 +17,15 @@ end
 mkpath("example_little_symmetry_kspace_honeycomb")
 
 
-# ## Honeycome lattice
+# ## Honeycome Lattice
 
-# ### Define Unitcell
+# ### Define UnitCell
 latticevectors = [1 -0.5; 0 sqrt(3)*0.5];
-unitcell = make_unitcell(latticevectors; SiteType=String);
+unitcell = makeunitcell(latticevectors; SiteType=String);
 addsite!(unitcell, "A", carte2fract(unitcell, [0.5, 0.5 / sqrt(3)]));
 addsite!(unitcell, "B", carte2fract(unitcell, [0.5, -0.5 / sqrt(3)]));
 
-# ### Plot lattice
+# ### Plot Lattice
 let bravais_lattice = [], a_sites = [], b_sites = []
     extent = [-2, 2, -2, 2]
     within = makewithin(extent)
@@ -39,7 +41,7 @@ let bravais_lattice = [], a_sites = [], b_sites = []
     bravais_lattice = hcat(bravais_lattice...)
     a_sites = hcat(a_sites...)
     b_sites = hcat(b_sites...)
-    
+
     img = plot(aspect_ratio=1)
     scatter!(bravais_lattice[1,:], bravais_lattice[2,:], color="black", markershape=:circle, markersize=3, label="Bravais")
     scatter!(a_sites[1,:], a_sites[2,:], color="red", markerstrokewidth=0, markersize=5, label="A")
@@ -51,13 +53,13 @@ end
 
 # ![](example_little_symmetry_kspace_honeycomb/realspace.svg)
 
-# ## √3 × √3 supercell
+# ## √3 × √3 Supercell
 
 # ### Make Superlattice
 shape = [2 -1; 1 1]
-lattice = make_lattice(unitcell, shape)
+lattice = makelattice(unitcell, shape)
 
-# ### Plot lattice
+# ### Plot Lattice
 let bravais_lattice = [], a_sites = [], b_sites = []
     extent = [-4, 4, -4, 4]
     within = makewithin(extent)
@@ -74,7 +76,7 @@ let bravais_lattice = [], a_sites = [], b_sites = []
     bravais_lattice = hcat(bravais_lattice...)
     a_sites = hcat(a_sites...)
     b_sites = hcat(b_sites...)
-    
+
     img = plot(aspect_ratio=1)
     scatter!(bravais_lattice[1,:], bravais_lattice[2,:], color="black", markershape=:circle, markersize=3, label="Bravais (supercell)")
     scatter!(a_sites[1,:], a_sites[2,:], color="red", markerstrokewidth=0, markersize=5, label="A")
@@ -116,7 +118,7 @@ for tsym_irrep_index in 1:num_irreps(tsym)
 end
 
 
-# ### Plot momentum space
+# ### Plot Momentum Space
 let
     extent = [-1.1, 1.1, -1.4, 1.4]
     within = makewithin(extent)
@@ -163,13 +165,13 @@ end
 
 # ![](example_little_symmetry_kspace_honeycomb/momentumspace-root3xroot3.svg)
 
-# ## 2√3 × 2√3 supercell
+# ## 2√3 × 2√3 Supercell
 
 # ### Make Superlattice
 shape = [2 2; -2 4]
-lattice = make_lattice(unitcell, shape)
+lattice = makelattice(unitcell, shape)
 
-# ### Plot lattice
+# ### Plot Lattice
 let bravais_lattice = [], a_sites = [], b_sites = []
     extent = [-8, 8, -8, 8]
     within = makewithin(extent)
@@ -186,7 +188,7 @@ let bravais_lattice = [], a_sites = [], b_sites = []
     bravais_lattice = hcat(bravais_lattice...)
     a_sites = hcat(a_sites...)
     b_sites = hcat(b_sites...)
-    
+
     img = plot(aspect_ratio=1)
     scatter!(bravais_lattice[1,:], bravais_lattice[2,:], color="black", markershape=:circle, markersize=5, label="Bravais (supercell)")
     scatter!(a_sites[1,:], a_sites[2,:], color="red", markerstrokewidth=0, markersize=3, label="A")
@@ -228,7 +230,7 @@ for tsym_irrep_index in 1:num_irreps(tsym)
 end
 
 
-# ### Plot momentum space
+# ### Plot Momentum Space
 let
     extent = [-1.2, 1.2, -1.6, 1.6]
     extent = [-1.1, 1.1, -1.4, 1.4]
@@ -238,8 +240,8 @@ let
     kpoints = []
     littlegroupnames = String[]
     generatornames = String[]
-    kpointnames = String[]    
-    
+    kpointnames = String[]
+
     for tsym_irrep_index in 1:num_irreps(tsym)
         psym_little = little_symmetry(tsym, tsym_irrep_index, psym)
         kf = tsym.fractional_momenta[tsym_irrep_index]
@@ -251,7 +253,6 @@ let
             if within(k...)
                 push!(kpoints, k)
                 push!(littlegroupnames, psym_little.hermann_mauguin)
-                #push!(generatornames, join(psym_little.element_names[psym_little.generators], "<br>"))
                 push!(generatornames, join(simplifyname.(psym_little.element_names[psym_little.generators]), "\n"))
                 push!(kpointnames, "$tsym_irrep_index")
             end
@@ -277,13 +278,13 @@ end
 
 # ![](example_little_symmetry_kspace_honeycomb/momentumspace-2root3x2root3.svg)
 
-# ## 6 × 6 supercell
+# ## 6 × 6 Supercell
 
 # ### Make Superlattice
 shape = [6 0; 0 6]
-lattice = make_lattice(unitcell, shape)
+lattice = makelattice(unitcell, shape)
 
-# ### Plot lattice
+# ### Plot Lattice
 let bravais_lattice = [], a_sites = [], b_sites = []
     extent = [-8, 8, -8, 8]
     within = makewithin(extent)
@@ -300,7 +301,7 @@ let bravais_lattice = [], a_sites = [], b_sites = []
     bravais_lattice = hcat(bravais_lattice...)
     a_sites = hcat(a_sites...)
     b_sites = hcat(b_sites...)
-    
+
     img = plot(aspect_ratio=1)
     scatter!(bravais_lattice[1,:], bravais_lattice[2,:], color="black", markershape=:circle, markersize=5, label="Bravais (supercell)")
     scatter!(a_sites[1,:], a_sites[2,:], color="red", markerstrokewidth=0, markersize=3, label="A")
@@ -342,7 +343,7 @@ for tsym_irrep_index in 1:num_irreps(tsym)
 end
 
 
-# ### Plot momentum space
+# ### Plot Momentum Space
 let
     extent = [-1.2, 1.2, -1.6, 1.6]
     extent = [-1.1, 1.1, -1.4, 1.4]
@@ -352,8 +353,8 @@ let
     kpoints = []
     littlegroupnames = String[]
     generatornames = String[]
-    kpointnames = String[]    
-    
+    kpointnames = String[]
+
     for tsym_irrep_index in 1:num_irreps(tsym)
         psym_little = little_symmetry(tsym, tsym_irrep_index, psym)
         kf = tsym.fractional_momenta[tsym_irrep_index]
@@ -365,7 +366,6 @@ let
             if within(k...)
                 push!(kpoints, k)
                 push!(littlegroupnames, psym_little.hermann_mauguin)
-                #push!(generatornames, join(psym_little.element_names[psym_little.generators], "<br>"))
                 push!(generatornames, join(simplifyname.(psym_little.element_names[psym_little.generators]), "\n"))
                 push!(kpointnames, "$tsym_irrep_index")
             end

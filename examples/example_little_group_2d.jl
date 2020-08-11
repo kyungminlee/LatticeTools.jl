@@ -19,12 +19,12 @@ function display_matrix(io::IO, matrix::AbstractMatrix; prefix::AbstractString="
     end
 end
 
-# ## Set up lattice and symmetry
-unitcell = make_unitcell([1.0 0.0; 0.0 1.0]; SiteType=String);
+# ## Set up Lattice and Symmetry
+unitcell = makeunitcell([1.0 0.0; 0.0 1.0]; SiteType=String);
 addsite!(unitcell, "Ox", FractCoord([0,0], [0.5, 0.0]));
 addsite!(unitcell, "Oy", FractCoord([0,0], [0.0, 0.5]));
 
-lattice = make_lattice(unitcell, [4 0; 0 4]);
+lattice = makelattice(unitcell, [4 0; 0 4]);
 tsym = TranslationSymmetry(lattice);
 psym = project(PointSymmetryDatabase.get(13), [1 0 0; 0 1 0]);
 
@@ -32,16 +32,16 @@ psym = project(PointSymmetryDatabase.get(13), [1 0 0; 0 1 0]);
 # ## Little Group
 lge = little_group_elements(tsym, 2, psym)
 lg = little_group(tsym, 2, psym)
-println("Little group")
+println("Little Group")
 println("------------")
 display_matrix(stdout, group_multiplication_table(lg))
 
 
 lg_matrep = psym.matrix_representations[lge]
-println("Matrix representations: $lg_matrep")
+println("Matrix Representations: $lg_matrep")
 
 
-# ## Finding point groups isomorphic to the little group
+# ## Finding Point Groups Isomorphic to the Little Group
 little_symmetry_candidates = Tuple{PointSymmetry, Vector{Int}}[]
 for i in 1:32
     ps = PointSymmetryDatabase.get(i)
@@ -53,17 +53,17 @@ end
 (psym2, ϕ) = first(little_symmetry_candidates)
 
 lg_matrep2 = lg_matrep[ϕ]
-println("Matrix representations (isomorphic): $lg_matrep2")
+println("Matrix Representations (Isomorphic): $lg_matrep2")
 
 
 # ## Multiplication Tables
-println("Parent point group")
+println("Parent Point Group")
 println("------------------")
 display_matrix(stdout, group_multiplication_table(psym2))
-println("Little group")
+println("Little Group")
 println("------------")
 display_matrix(stdout, group_multiplication_table(lg_matrep))
-println("Isomorphic little group")
+println("Isomorphic Little Group")
 println("-----------------------")
 display_matrix(stdout, group_multiplication_table(lg_matrep2))
 

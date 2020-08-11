@@ -5,9 +5,11 @@ using Plots
 using TightBindingLattice
 
 simplifyname(s::AbstractString) = (
-                    s |> (x-> replace(x, r"<sup>(.+?)</sup>" => s"\1"))
-                      |> (x-> replace(x, r"<sub>(.+?)</sub>" => s"[\1]"))
-                )
+    s
+    |> (x-> replace(x, r"<sup>(.+?)</sup>" => s"\1"))
+    |> (x-> replace(x, r"<sub>(.+?)</sub>" => s"[\1]"))
+)
+
 function makewithin(extent::AbstractVector{<:Real})
     a, b, c, d = extent
     (x::Real, y::Real) -> ((a <= x <= b) && (c <= y <= d))
@@ -15,46 +17,20 @@ end
 mkpath("example_little_symmetry_kspace_square")
 
 
-# ## Honeycome lattice
+# ## Honeycome Lattice
 
-# ### Define Unitcell
+# ### Define UnitCell
 latticevectors = [1.0 0.0; 0.0 1.0];
-unitcell = make_unitcell(latticevectors; SiteType=String);
+unitcell = makeunitcell(latticevectors; SiteType=String);
 addsite!(unitcell, "A", carte2fract(unitcell, [0.0, 0.0]));
 
-# # ### Plot lattice
-# let bravais_lattice = [], sites = []
-#     extent = [-2, 2, -2, 2]
-#     within = makewithin(extent)
-#     for i1 in -5:5, i2 in -5:5
-#         R = latticevectors * [i1, i2]
-#         within(R...) && push!(bravais_lattice, R)
-#         for (orb_name, orb_fc) in unitcell.sites
-#             orb_cc = fract2carte(unitcell, orb_fc)
-#             r = R + orb_cc
-#             within(r...) && push!(sites, r)
-#         end
-#     end
-#     bravais_lattice = hcat(bravais_lattice...)
-#     sites = hcat(sites...)
-    
-#     img = plot(aspect_ratio=1)
-#     scatter!(bravais_lattice[1,:], bravais_lattice[2,:], color="black", markershape=:circle, markersize=3, label="Bravais")
-#     scatter!(sites[1,:], sites[2,:], color="red", markerstrokewidth=0, markersize=5, label="A")
-#     xlims!(extent[1], extent[2])
-#     ylims!(extent[3], extent[4])
-#     savefig(img, "example_little_symmetry_kspace_square/realspace.svg")
-# end
-
-# ![](example_little_symmetry_kspace_square/realspace.svg)
-
-# ## 4 × 4 supercell
+# ## 4 × 4 Supercell
 
 # ### Make Superlattice
 shape = [4 0; 0 4]
-lattice = make_lattice(unitcell, shape)
+lattice = makelattice(unitcell, shape)
 
-# ### Plot lattice
+# ### Plot Lattice
 let bravais_lattice = [], sites = []
     extent = [-2, 6, -2, 6]
     within = makewithin(extent)
@@ -70,7 +46,7 @@ let bravais_lattice = [], sites = []
     end
     bravais_lattice = hcat(bravais_lattice...)
     sites = hcat(sites...)
-    
+
     img = plot(aspect_ratio=1)
     scatter!(bravais_lattice[1,:], bravais_lattice[2,:],
              markershape=:circle, markersize=7,
@@ -89,7 +65,6 @@ end
 
 # ### Symmetries
 tsym = TranslationSymmetry(lattice)
-# psym = project(PointSymmetryDatabase.get(13), [1 0 0; 0 1 0])
 psym = PointSymmetryDatabase.find2d("4mm")
 println("point symmetry (Hermann Mauguin): $(psym.hermann_mauguin)")
 println("translation symmetry compatible with point symmetry? ", iscompatible(tsym, psym))
@@ -117,7 +92,7 @@ for tsym_irrep_index in 1:num_irreps(tsym)
 end
 
 
-# ### Plot momentum space
+# ### Plot Momentum Space
 let
     extent = [-1.3, 1.3, -1.3, 1.3]
     within = makewithin(extent)

@@ -31,10 +31,6 @@ function Base.:(==)(lhs::Lattice{O}, rhs::Lattice{O}) where O
 end
 
 
-function makelattice(unitcell::UnitCell, scale::Integer)
-    return makelattice(unitcell, scale*ones(Int, (1,1)))
-end
-
 function makelattice(
     unitcell::UnitCell{O},
     shape_matrix::AbstractMatrix{<:Integer}
@@ -64,6 +60,20 @@ end
 #TODO unit testing for lattice with wrong dimensions
 
 
+"""
+    makelattice(unitcell, shape, [generators])
+
+Create a lattice with periodic boundary condition, using the unitcell, shape, and
+translation generators.
+
+# Arguments
+* `unitcell::UnitCell{O}`
+* `shape_matrix::AbstractMatrix{<:Integer}`: shape of the Bravais lattice. This can also be
+a single integer, which is equivalent to a identity matrix times the number.
+
+# Optional Arguments
+* `generator_translations::AbstractMatrix{<:Integer}`
+"""
 function makelattice(
     unitcell::UnitCell{O},
     shape_matrix::AbstractMatrix{<:Integer},
@@ -90,6 +100,20 @@ function makelattice(
     return Lattice{O}(unitcell, orthocube, unitcell_coordinates, new_unitcell)
 end
 
+
+function makelattice(unitcell::UnitCell, scale::Integer)
+    return makelattice(unitcell, scale*ones(Int, (1,1)))
+end
+
+
 make_lattice = makelattice
 
+"""
+    dimension(lattice)
+
+Spatial dimension of the lattice.
+
+# Arguments
+- `lattice::Lattice`
+"""
 dimension(lattice::Lattice) = dimension(lattice.unitcell)

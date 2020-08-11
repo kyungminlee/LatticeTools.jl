@@ -8,9 +8,9 @@ import LinearAlgebra
 """
     SpaceOperation{Tp<:Real, Tt<:Real}
 
-Represents a spatial symmetry operation of the following form:
+Represent a spatial symmetry operation of the following form:
 ```math
-S: \\mathbf{r} \\mapsto M \\cdot ( \\mathbf{r} + \\mathbf{R} )
+S_{[M, \\mathbf{R}]}: \\mathbf{r} \\mapsto M \\cdot ( \\mathbf{r} + \\mathbf{R} )
 ```
 
 # Fields
@@ -46,6 +46,11 @@ struct SpaceOperation{Tp<:Real, Tt<:Real} <:AbstractSpaceSymmetryOperation{Tt}
         return new{Tp, Tt}(matrix, displacement)
     end
 
+    @doc """
+        SpaceOperation(matrix::AbstractMatrix{Tp}, displacement::AbstractVector{Tt}) where {Tp<:Real, Tt<:Real}
+
+    Construct a space operation by `matrix` and `displacement`.
+    """
     function SpaceOperation(
         matrix::AbstractMatrix{Tp},
         displacement::AbstractVector{Tt},
@@ -53,6 +58,16 @@ struct SpaceOperation{Tp<:Real, Tt<:Real} <:AbstractSpaceSymmetryOperation{Tt}
         return SpaceOperation{Tp, Tt}(matrix, displacement)
     end
 
+
+    @doc """
+        SpaceOperation([point], [translation])
+
+    Construct a space operation by `point` and `translation`.
+
+    # Arguments
+    * `point::PointOperation{Tp}`
+    * `translation::TranslationOperation{Tt}`
+    """
     function SpaceOperation(
         point::PointOperation{Tp},
         translation::TranslationOperation{Tt},
@@ -74,6 +89,7 @@ struct SpaceOperation{Tp<:Real, Tt<:Real} <:AbstractSpaceSymmetryOperation{Tt}
     end
 end
 
+## Conversion
 
 function Base.convert(::Type{SpaceOperation{Tp1, Tt1}}, arg::SpaceOperation{Tp2, Tt2}) where {Tp1, Tt1, Tp2, Tt2}
     return SpaceOperation(convert(Matrix{Tp1}, arg.matrix), convert(Vector{Tt1}, arg.displacement))
@@ -140,11 +156,35 @@ function Base.promote_rule(::Type{TranslationOperation{Tt}}, ::Type{PointOperati
 end
 
 
-## properties
-dimension(arg::SpaceOperation) = length(arg.displacement)
+## Properties
+
+"""
+    isidentity(arg::SpaceOperation)
+
+Check whether `arg` is identity (i.e. identity point and identity translation)
+"""
 isidentity(arg::SpaceOperation) = isone(arg.matrix) && iszero(arg.displacement)
+
+"""
+    istranslation(arg::SpaceOperation)
+
+Check whether `arg` is a translation operation (i.e., point operation is identity)
+"""
 istranslation(arg::SpaceOperation) = isone(arg.matrix)
+
+"""
+    ispoint(arg::SpaceOperation)
+
+Check whether `arg` is a point operation (i.e. translation is identity)
+"""
 ispoint(arg::SpaceOperation) = iszero(arg.displacement)
+
+"""
+    dimension(arg::SpaceOperation)
+
+Return the spatial dimension of `arg`.
+"""
+dimension(arg::SpaceOperation) = length(arg.displacement)
 
 
 function Base.hash(op::SpaceOperation{Tp, Tt}) where {Tp, Tt}

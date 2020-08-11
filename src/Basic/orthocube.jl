@@ -5,6 +5,17 @@ export volume
 export isequiv
 
 
+"""
+    OrthoCube(shape)
+
+Represent a hypercubic (Bravais) lattice.
+
+# Fields
+* `shape_matrix`: a matrix whose columns are the lattice vectors of the
+* `inverse_shape_matrix`: `(shape_matrix)`
+* `wrap`: periodic wrapping function which takes an integer array, and maps it onto a
+  site in the Bravais lattice. Analogous to `fldmod`.
+"""
 struct OrthoCube
     shape_matrix::Matrix{Int}
     inverse_shape_matrix::Matrix{Rational{Int}}
@@ -73,6 +84,13 @@ end
 # end
 
 
+"""
+    find_generators(ortho::OrthoCube)
+
+Find generators of an OrthoCube. For one-dimensional lattice, which is isomorphic to Zₙ, the
+generator is +1. For two-dimensional lattices, this function invokes
+[`find_generators_2d`](@ref). Higher dimensions are currently not supported.
+"""
 function find_generators(ortho::OrthoCube)
     if dimension(ortho) == 1
         return ones(Int, 1, 1)
@@ -84,6 +102,11 @@ function find_generators(ortho::OrthoCube)
 end
 
 
+"""
+    find_generators_2d(ortho::OrthoCube)
+
+Find translation generators of an OrthoCube.
+"""
 function find_generators_2d(ortho::OrthoCube)
     dimension(ortho) != 2 && throw(ArgumentError("shape matrix should be 2x2"))
 

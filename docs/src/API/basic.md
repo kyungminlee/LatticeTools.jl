@@ -1,4 +1,4 @@
-# Basic
+# Basics
 
 ```@meta
 CurrentModule = TightBindingLattice
@@ -7,13 +7,17 @@ CurrentModule = TightBindingLattice
 ## Coordinate Types
 
 ```@docs
-TightBindingLattice.FractCoord
+CarteCoord
+FractCoord
 ```
 
 ### Functions
 ```@docs
-TightBindingLattice.fract2carte
-TightBindingLattice.carte2fract
+FractCoord(::Vector{Int}, ::Vector{Float64})
+FractCoord(::Vector{Float64})
+FractCoord(::Int)
+fract2carte(::Matrix{Float64}, ::FractCoord)
+carte2fract(::Matrix{Float64}, ::CarteCoord)
 ```
 
 ## UnitCell
@@ -38,7 +42,7 @@ TightBindingLattice.getsitename
 TightBindingLattice.carte2fract(::UnitCell, ::CarteCoord)
 TightBindingLattice.fract2carte(::UnitCell, ::FractCoord)
 TightBindingLattice.whichunitcell
-TightBindingLattice.momentumgrid(::UnitCell, ::AbstractVector{<:Integer})
+TightBindingLattice.momentumgrid(::UnitCell, ::Vector{Int})
 TightBindingLattice.findsiteindex
 ```
 
@@ -49,22 +53,21 @@ TightBindingLattice.OrthoCube
 ```
 
 ```@docs
-TightBindingLattice.dimension
-TightBindingLattice.volume
-TightBindingLattice.isequiv
-TightBindingLattice.find_generators
-TightBindingLattice.find_generators_2d
-TightBindingLattice.generate_coordinates
+TightBindingLattice.dimension(::OrthoCube)
+TightBindingLattice.volume(::OrthoCube)
+TightBindingLattice.isequiv(::OrthoCube, ::OrthoCube)
+TightBindingLattice.find_generators(::OrthoCube)
+TightBindingLattice.find_generators_2d(::OrthoCube)
+TightBindingLattice.generate_coordinates(::OrthoCube, ::Matrix{Int})
 ```
 
 ## Lattice
 
 ```@docs
 TightBindingLattice.Lattice
-TightBindingLattice.make_lattice
 TightBindingLattice.makelattice
 ```
 
 ```@docs
-TightBindingLattice.dimension
+TightBindingLattice.dimension(::Lattice)
 ```

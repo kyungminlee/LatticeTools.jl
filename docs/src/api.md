@@ -1,6 +1,6 @@
 # API
 
-```@autodocs
+<!-- ```@autodocs -->
 Modules = [TightBindingLattice]
 Order = [:type, :function]
-```
+<!-- ``` -->

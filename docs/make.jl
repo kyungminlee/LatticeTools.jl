@@ -4,15 +4,17 @@ using TightBindingLattice
 
 example_directory = joinpath(@__DIR__, "..", "examples")
 output_directory = joinpath(@__DIR__, "src/generated")
-for filename in ["example_group_isomorphism.jl",
-                 "example_honeycomb_symmetry.jl",
-                 "example_orthocube.jl",
-                 "example_kagome_symmetry.jl",
-                 "example_little_group_2d.jl",
-                 "example_little_group_3d.jl",
-                 "example_little_symmetry_kspace_honeycomb.jl",
-                 "example_point_group_4mm.jl",
-                 "example_point_group_elements.jl",]
+for filename in [
+    "example_group_isomorphism.jl",
+    "example_honeycomb_symmetry.jl",
+    "example_orthocube.jl",
+    "example_kagome_symmetry.jl",
+    "example_little_group_2d.jl",
+    "example_little_group_3d.jl",
+    "example_little_symmetry_kspace_honeycomb.jl",
+    "example_point_group_4mm.jl",
+    "example_point_group_elements.jl",
+]
     example = joinpath(example_directory, filename)
     Literate.markdown(example, output_directory)
 end
@@ -30,26 +32,31 @@ makedocs(
         "Symmetry" => [
             "Symmetry/operation-space.md",
             "Symmetry/symmetry-space.md",
+            "Symmetry/irrep.md",
         ],
         "Examples" => [
-            "Group isomorphism" => "generated/example_group_isomorphism.md",
-            "Orthocube" => "generated/example_orthocube.md",
-            "Point group elements" => "generated/example_point_group_elements.md",
-            "Point group 4mm (C₄ᵥ)" => "generated/example_point_group_4mm.md",
-            "Little group in 2d" => "generated/example_little_group_2d.md",
-            "Little group in 3d" => "generated/example_little_group_3d.md",
-            "Honeycomb lattice" => "generated/example_honeycomb_symmetry.md",
-            "Honeycomb lattice in k-space" => "generated/example_little_symmetry_kspace_honeycomb.md",
-            "Kagome lattice" => "generated/example_kagome_symmetry.md",
+            "Group Isomorphism" => "generated/example_group_isomorphism.md",
+            "OrthoCube" => "generated/example_orthocube.md",
+            "Point Group Elements" => "generated/example_point_group_elements.md",
+            "Point Group 4mm (C₄ᵥ)" => "generated/example_point_group_4mm.md",
+            "Little Group in 2D" => "generated/example_little_group_2d.md",
+            "Little Group in 3D" => "generated/example_little_group_3d.md",
+            "Honeycomb Lattice" => "generated/example_honeycomb_symmetry.md",
+            "Honeycomb Lattice in k-space" => "generated/example_little_symmetry_kspace_honeycomb.md",
+            "Kagome Lattice" => "generated/example_kagome_symmetry.md",
         ],
         "API Reference" => [
             "Basic" => "API/basic.md",
-            "All API" => "api.md"
+            "Group" => "API/group.md",
+            "Symmetry Operation" => "API/symmetry-operation.md",
+            "Symmetry" => "API/symmetry.md",
+            "Symmetry Embedding" => "API/symmetry-embedding.md",
+            "Symmetry Irrep Component" => "API/symmetry-irrep-component.md",
         ]
     ]
 )
 
 deploydocs(
-        repo = "github.com/kyungminlee/TightBindingLattice.jl.git",
-        devbranch = "dev",
+    repo = "github.com/kyungminlee/TightBindingLattice.jl.git",
+    devbranch = "dev",
 )
