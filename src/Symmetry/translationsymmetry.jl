@@ -2,7 +2,8 @@ export TranslationSymmetry
 export dimension
 export group, group_order, group_multiplication_table,
        character_table,
-       irrep, irreps, irrep_dimension, num_irreps,
+       irrep, irreps, irrep_dimension,
+       num_irreps, numirreps, irrepcount,
        element, elements,
        element_name, element_names,
        generator_elements, generator_indices,
@@ -18,6 +19,35 @@ export translation_symmetry_embedding
 
 """
     TranslationSymmetry
+
+Represent lattice translation symmetry.
+
+```
+julia> TranslationSymmetry([3 0; 0 2])
+```
+
+# Fields
+* `orthocube::OrthoCube`
+* `elements::Vector{TranslationOperation{Int}}`
+* `group::FiniteGroup`
+
+# Additional Fields
+* `generators::Vector{Int}`
+* `conjugacy_classes::Vector{Vector{Int}}`
+* `character_table::Matrix{ComplexF64}`
+* `irreps::Vector{Vector{Matrix{ComplexF64}}}`
+* `element_names::Vector{String}`
+
+# Cache Fields
+* `generator_translations::Matrix{Int}`
+* `coordinates::Vector{Vector{Int}}`
+* `orthogonal_shape::Vector{Int}`
+* `orthogonal_coordinates::Vector{Vector{Int}}`
+* `orthogonal_to_coordinate_map::Dict{Vector{Int}, Vector{Int}}`
+* `coordinate_to_orthogonal_map::Dict{Vector{Int}, Vector{Int}}`
+* `orthogonal_shape_matrix::Matrix{Int}`
+* `orthogonal_reduced_reciprocal_shape_matrix::Matrix{Rational{Int}}`
+* `fractional_momenta::Vector{Vector{Rational{Int}}}`
 """
 struct TranslationSymmetry <: AbstractSymmetry{TranslationOperation{Int}}
 
@@ -45,14 +75,23 @@ struct TranslationSymmetry <: AbstractSymmetry{TranslationOperation{Int}}
     orthogonal_reduced_reciprocal_shape_matrix::Matrix{Rational{Int}}
     fractional_momenta::Vector{Vector{Rational{Int}}}
 
+    @doc """
+        TranslationSymmetry(shape::Matrix{<:Integer}; tol=√ϵ)
+    """
     function TranslationSymmetry(shape::Matrix{<:Integer}; tol::Real=Base.rtoldefault(Float64))
         return TranslationSymmetry(OrthoCube(shape))
     end
 
+    @doc """
+        TranslationSymmetry(lattice::Lattice; tol=√ϵ)
+    """
     function TranslationSymmetry(lattice::Lattice; tol::Real=Base.rtoldefault(Float64))
         return TranslationSymmetry(lattice.orthocube)
     end
 
+    @doc """
+        TranslationSymmetry(orthocube::OrthoCube; tol=√ϵ)
+    """
     function TranslationSymmetry(
         orthocube::OrthoCube;
         tol::Real=Base.rtoldefault(Float64),
@@ -61,6 +100,9 @@ struct TranslationSymmetry <: AbstractSymmetry{TranslationOperation{Int}}
         return TranslationSymmetry(orthocube, generator_translations; tol=tol)
     end
 
+    @doc """
+        TranslationSymmetry(orthocube::OrthoCube, generators::AbstractMatrix{<:Integer}; tol::Real=Base.rtoldefault(Float64))
+    """
     function TranslationSymmetry(
         orthocube::OrthoCube,
         generator_translations::AbstractMatrix{<:Integer};
@@ -150,35 +192,98 @@ struct TranslationSymmetry <: AbstractSymmetry{TranslationOperation{Int}}
 end
 
 
+"""
+    dimension(sym::TranslationSymmetry)
+
+Spatial dimension of the translation symmetry
+"""
 dimension(sym::TranslationSymmetry) = dimension(sym.orthocube)
 
+"""
+    group(sym::TranslationSymmetry)
+
+Group structure of the translation symmetry
+"""
 group(sym::TranslationSymmetry) = sym.group
-group_order(sym::TranslationSymmetry, g...) = group_order(sym.group, g...)
-group_multiplication_table(psym::TranslationSymmetry) = group_multiplication_table(psym.group)
 
-Base.eltype(sym::TranslationSymmetry) = TranslationOperation{Int}
-Base.valtype(sym::TranslationSymmetry) = TranslationOperation{Int}
+"""
+    group_order(sym::TranslationSymmetry, g...)
+
+Group order of the translation symmetry. Calls `group_order(group(sym), g...)`
+"""
+group_order(sym::TranslationSymmetry, g...) = group_order(group(sym), g...)
+
+"""
+    group_multiplication_table(sym::TranslationSymmetry)
+
+Group multiplication table of the translation symmetry.
+Calls `group_multiplication_table(group(sym))`
+"""
+group_multiplication_table(sym::TranslationSymmetry) = group_multiplication_table(group(sym))
 
 
-element(sym::TranslationSymmetry, g) = sym.elements[g]
+"""
+    elements(sym::TranslationSymmetry)
+
+Get the elements of the translation symmetry.
+"""
 elements(sym::TranslationSymmetry) = sym.elements
 
+"""
+    element(sym::TranslationSymmetry, i)
+
+Get the `i`th element of the translation symmetry.
+"""
+element(sym::TranslationSymmetry, g) = sym.elements[g]
+
+
+"""
+    element_names(sym::TranslationSymmetry)
+
+Get the names of the elements of the translation symmetry.
+"""
 element_names(sym::TranslationSymmetry) = sym.element_names
+
+"""
+    element_name(sym::TranslationSymmetry, i)
+
+Get the name of the `i`th element of the translation symmetry.
+"""
 element_name(sym::TranslationSymmetry, g) = sym.element_names[g]
 
-character_table(sym::TranslationSymmetry) = sym.character_table
 
-irreps(sym::TranslationSymmetry) = sym.irreps
-irrep(sym::TranslationSymmetry, idx) = sym.irreps[idx]
-num_irreps(sym::TranslationSymmetry) = length(sym.irreps)
-irrep_dimension(sym::TranslationSymmetry, idx::Integer) = 1 # size(first(sym.irreps[idx]), 1)
+"""
+    generator_indices(sym::TranslationSymmetry)
 
+Return indices of the generating translations.
+"""
 generator_indices(sym::TranslationSymmetry) = sym.generators
+
+
+"""
+    generator_elements(sym::TranslationSymmetry)
+
+Return the generating translation operations.
+"""
 generator_elements(sym::TranslationSymmetry) = element(sym, sym.generators)
 
 
 """
     symmetry_product(tsym::TranslationSymmetry)
+
+Return a binary function which combines two translation operations, with the given periodic
+boundary condition.
+
+```jldoctest
+julia> using TightBindingLattice
+
+julia> tsym = TranslationSymmetry([3 0; 0 4]);
+
+julia> p = symmetry_product(tsym);
+
+julia> p(TranslationOperation([2, 1]), TranslationOperation([2, 3]))
+TranslationOperation{Int64}([1, 0])
+```
 """
 function symmetry_product(sym::TranslationSymmetry)
     function product(lhs::TranslationOperation, rhs::TranslationOperation)
@@ -186,6 +291,11 @@ function symmetry_product(sym::TranslationSymmetry)
     end
     return product
 end
+
+
+Base.eltype(sym::TranslationSymmetry) = TranslationOperation{Int}
+
+Base.valtype(sym::TranslationSymmetry) = TranslationOperation{Int}
 
 
 Base.in(item::Any, sym::TranslationSymmetry) = false
@@ -209,7 +319,11 @@ Base.iterate(sym::TranslationSymmetry, i) = iterate(elements(sym), i)
 
 Base.length(sym::TranslationSymmetry) = length(elements(sym))
 
+"""
+    symmetry_name(sym::TranslationSymmetry)
 
+Name of the translation symmetry. Return `TranslationSymmetry[(n11,n21)x(n12,n22)]`.
+"""
 function symmetry_name(sym::TranslationSymmetry)
     n11 = sym.orthocube.shape_matrix[1,1]
     n12 = sym.orthocube.shape_matrix[1,2]
@@ -219,13 +333,76 @@ function symmetry_name(sym::TranslationSymmetry)
 end
 
 
-function fractional_momentum(sym::TranslationSymmetry, g...)
-    return sym.fractional_momenta[g...]
-end
+# Irreducible Representations
+
+"""
+    character_table(sym::TranslationSymmetry)
+
+Return the character table of the translation symmetry.
+"""
+character_table(sym::TranslationSymmetry) = sym.character_table
+
+"""
+    irreps(sym::TranslationSymmetry)
+
+Return the irreducible representations of the translation symmetry
+"""
+irreps(sym::TranslationSymmetry) = sym.irreps
+
+"""
+    irrep(sym::TranslationSymmetry, idx)
+
+Return the `idx`th irreducible representation of the translation symmetry
+"""
+irrep(sym::TranslationSymmetry, idx) = sym.irreps[idx]
+
+"""
+    num_irreps(sym::TranslationSymmetry)
+
+Return the number of irreducible representations of the translation symmetry,
+i.e. number of allowed momentum points.
+Aliases: [`num_irreps`](@ref), [`numirreps`](@ref), [`irrepcount`](@ref)
+"""
+num_irreps(sym::TranslationSymmetry) = length(sym.irreps)
+
+"""
+    numirreps(sym::TranslationSymmetry)
+
+Return the number of irreducible representations of the translation symmetry,
+i.e. number of allowed momentum points.
+Aliases: [`num_irreps`](@ref), [`numirreps`](@ref), [`irrepcount`](@ref)
+"""
+numirreps(sym::TranslationSymmetry) = length(sym.irreps)
+
+"""
+    irrepcount(sym::TranslationSymmetry)
+
+Return the number of irreducible representations of the translation symmetry,
+i.e. number of allowed momentum points.
+Aliases: [`num_irreps`](@ref), [`numirreps`](@ref), [`irrepcount`](@ref)
+"""
+irrepcount(sym::TranslationSymmetry) = length(sym.irreps)
 
 
-raw"""
-    isbragg(orthogonal_shape, orthogonal_momentum, identity_translation)
+"""
+    irrep_dimension(sym::TranslationSymmetry, idx::Integer)
+
+Dimension of the `idx`th irrep of the translation symmetry,
+which is always 1 for translation symmetry which is Abelian.
+"""
+irrep_dimension(sym::TranslationSymmetry, idx::Integer) = 1 # size(first(sym.irreps[idx]), 1)
+
+
+"""
+    fractional_momentum(sym::TranslationSymmetry, g...)
+
+Return the `g`th fractional momentum of the translation symmetry.
+"""
+fractional_momentum(sym::TranslationSymmetry, g...) = sym.fractional_momenta[g...]
+
+
+"""
+    isbragg(shape, integer_momentum, identity_translation)
 
 Test whether an orthogonal momentum is compatible with the identity translation.
 Since identity translation can only be in the trivial representation
@@ -233,9 +410,9 @@ Since identity translation can only be in the trivial representation
 The orthogonal momentum is given as an integer vector.
 
 ```math
-  t(\rho) \vert \psi(k) \rangle
-    = exp(i k \cdot \rho ) \vert \psi(k) \rangle
-    = \vert \psi(k) \rangle
+  t(\\rho) \\vert \\psi(k) \\rangle
+    = exp(i k \\cdot \\rho ) \\vert \\psi(k) \\rangle
+    = \\vert \\psi(k) \\rangle
 ```
 
 When the orthogonal shape is [n₁, n₂, ...], orthogonal momentum is chosen from
@@ -261,8 +438,10 @@ function isbragg(
 end
 
 
-raw"""
-    isbragg(orthogonal_shape, orthogonal_momentum, identity_translations)
+"""
+    isbragg(shape, integer_momentum, identity_translations)
+
+Check for Bragg condition at the `integer momentum` for all the `identity translations`.
 """
 function isbragg(
     shape::AbstractVector{<:Integer},
@@ -291,8 +470,10 @@ function isbragg(
 end
 
 
-raw"""
+"""
     isbragg(k, translations)
+
+Check for Bragg condition at `k` for all the translations.
 """
 function isbragg(
     fractional_momentum::AbstractVector{<:Rational{<:Integer}},
@@ -304,6 +485,8 @@ end
 
 """
     isbragg(tsym, tsym_irrep_index, translation)
+
+Check for Bragg condition at momentum given by the `tsym_irrep_index`.
 """
 function isbragg(
     tsym::TranslationSymmetry,
@@ -316,6 +499,8 @@ end
 
 """
     isbragg(tsym, tsym_irrep_index, translations)
+
+Check for Bragg condition at momentum given by the `tsym_irrep_index` for all translations.
 """
 function isbragg(
     tsym::TranslationSymmetry,

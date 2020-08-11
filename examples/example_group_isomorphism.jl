@@ -1,6 +1,7 @@
-# # Group isomorphism
+# # Group Isomorphism
 
-# ## Set up basic functions
+# ## Set up Basic Functions
+
 using TightBindingLattice
 using Formatting
 function display_matrix(io::IO, matrix::AbstractMatrix; prefix::AbstractString="")
@@ -14,12 +15,14 @@ function display_matrix(io::IO, matrix::AbstractMatrix; prefix::AbstractString="
     end
 end
 
-# ## Generate two isomorphic groups
+# ## Generate Two Isomorphic Groups
 
-group1 = FiniteGroup([1 2 3 4;
-                      2 1 4 3;
-                      3 4 2 1;
-                      4 3 1 2]);
+group1 = FiniteGroup([
+    1 2 3 4;
+    2 1 4 3;
+    3 4 2 1;
+    4 3 1 2;
+]);
 group2 = let mtab1 = group1.multiplication_table,
              mtab2 = zeros(Int, (4, 4)),
              mapping = [1, 3, 2, 4]
@@ -30,22 +33,22 @@ group2 = let mtab1 = group1.multiplication_table,
          end;
 
 
-# ## Group multiplication tables
+# ## Group Multiplication Tables
 
-println("Multiplication table of G₁")
+println("Multiplication Table of G₁")
 println("--------------------------")
 display_matrix(stdout, group_multiplication_table(group1))
 println()
 
-println("Multiplication table of G₂")
+println("Multiplication Table of G₂")
 println("--------------------------")
 display_matrix(stdout, group_multiplication_table(group2))
 println()
 
 
-# ## Group isomorphism
+# ## Group Isomorphism
 
-println("Group isomorphism  ϕ: G₁ → G₂")
+println("Group Isomorphism  ϕ: G₁ → G₂")
 println("-----------------------------")
 ϕ = group_isomorphism(group1, group2)
 for g in 1:group_order(group1)
@@ -58,7 +61,7 @@ for g in 1:group_order(group1), h in 1:group_order(group1)
     mtab2[ϕ[g], ϕ[h]] = ϕ[ group_product(group1, g, h) ]
 end
 
-println("Multiplication table of ϕ(G₁)")
+println("Multiplication Table of ϕ(G₁)")
 println("-----------------------------")
 display_matrix(stdout, mtab2)
 println()

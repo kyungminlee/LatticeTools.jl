@@ -17,14 +17,21 @@ const CarteCoord = Vector{Float64}
 
 Fractional coordinates.
 
-# Members
-* `whole ::Vector{Int}`: Integer part of fractional coordinates
-* `fraction ::Vector{Float64}`: [0,1) part of fractional coordinates
+# Fields
+* `whole::Vector{Int}`: Integer part of fractional coordinates
+* `fraction::Vector{Float64}`: [0,1) part of fractional coordinates
 """
 struct FractCoord  # TODO: Type parameter for integer and float
     whole::Vector{Int}
     fraction::Vector{Float64}
 
+    @doc """
+        FractCoord(w, f)
+
+    # Arguments
+    * `w::AbstractVector{<:Integer}`: whole part of the coordinate
+    * `f::AbstractVector{<:Real}`: fractional part. In [0, 1).
+    """
     function FractCoord(
         w::AbstractVector{<:Integer}, f::AbstractVector{<:Real};
         tol::Real=Base.rtoldefault(Float64)
@@ -50,12 +57,29 @@ struct FractCoord  # TODO: Type parameter for integer and float
         return new(neww, newf)
     end
 
+    @doc """
+        FractCoord(coord)
+
+    Create a `FractCoord` from `coord`, where `whole` is determined by `fld(x, 1)` and
+    `fraction` by `mod(x, 1)`.
+
+    # Arguments
+    * `coord::AbstractVector{<:Real}`
+    """
     function FractCoord(coord::AbstractVector{<:Real}; tol::Real=Base.rtoldefault(Float64))
         w = Int[fld(x,1) for x in coord]
         f = Float64[mod(x,1) for x in coord]
         return FractCoord(w, f; tol=tol)
     end
 
+    @doc """
+        FractCoord(ndim)
+
+    Construct a zero `FractCoord` of `ndim` dimensions.
+
+    # Arguments
+    * `ndim::Integer`: spatial dimensions
+    """
     function FractCoord(ndim::Integer)
         ndim <= 0 && throw(ArgumentError("ndim should be positive"))
         w = zeros(Int, ndim)
@@ -66,12 +90,12 @@ end
 
 
 """
-    dimension
+    dimension(fc::FractCoord)
 
 Dimension of the fractional coordinates
 
 # Arguments
-* `fc ::FractCoord`: Fractional coordinates.
+* `fc::FractCoord`: Fractional coordinates.
 """
 dimension(fc::FractCoord) = length(fc.whole)
 
@@ -127,11 +151,11 @@ end
 
 
 """
-    fract2carte
+    fract2carte(latticevectors, fc)
 
 # Arguments
-* `latticevectors ::AbstractArray{<:Real, 2}`: square matrix whose columns are lattice vectors.
-* `fc ::FractCoord`: fractional coordinates
+* `latticevectors::AbstractArray{<:Real, 2}`: square matrix whose columns are lattice vectors.
+* `fc::FractCoord`: fractional coordinates
 """
 function fract2carte(latticevectors::AbstractMatrix{<:Real}, fc::FractCoord)::CarteCoord
     d1, d2 = size(latticevectors)
@@ -148,12 +172,12 @@ end
 
 
 """
-    carte2fract
+    carte2fract(latticevectors, cc; tol=√ϵ)
 
 # Arguments
-* `latticevectors ::AbstractArray{<:Real, 2}`: square matrix whose columns are lattice vectors.
-* `cc ::CarteCoord`: cartesian coordinates
-* `tol ::Real=Base.rtoldefault(Float64)`: tolerance
+* `latticevectors::AbstractArray{<:Real, 2}`: square matrix whose columns are lattice vectors.
+* `cc::CarteCoord`: cartesian coordinates
+* `tol::Real=Base.rtoldefault(Float64)`: tolerance
 """
 function carte2fract(
     latticevectors::AbstractMatrix{<:Real},

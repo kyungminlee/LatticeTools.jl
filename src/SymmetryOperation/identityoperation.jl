@@ -14,9 +14,23 @@ Represents identity (space symmetry) operation
 """
 struct IdentityOperation{S<:Real} <: AbstractSpaceSymmetryOperation{S}
     dimension::Int
+
+    @doc """
+        IdentityOperation{S}(dim::Integer) where {S<:Real}
+
+    Construct an identity operation of dimension `dim`, on coordinates of type `S`.
+
+    * 2020-08-10: Haven't figured out how to make this appear in the documentation.
+    """
     function IdentityOperation{S}(dim::Integer) where {S<:Real}
         return new{S}(dim)
     end
+
+    @doc """
+        IdentityOperation(S, dim::Integer)
+
+    Construct an identity operation of dimension `dim`, on coordinates of type `S`.
+    """
     function IdentityOperation(::Type{S}, dim::Integer) where {S<:Real}
         return new{S}(dim)
     end
@@ -24,10 +38,35 @@ end
 
 
 ## properties
+
+"""
+    isidentity(arg::IdentityOperation)
+
+Check whether the argument is an identity. Always `true`.
+"""
 isidentity(arg::IdentityOperation) = true
+
+
+"""
+    istranslation(arg::IdentityOperation)
+
+Check whether the argument is a translation operation. Always `true`.
+"""
 istranslation(arg::IdentityOperation) = true
+
+
+"""
+    ispoint(arg::IdentityOperation)
+
+Check whether the argument is a point operation. Always `true`.
+"""
 ispoint(arg::IdentityOperation) = true
 
+"""
+    dimension(arg::IdentityOperation)
+
+Return the spatial dimension of the identity operation.
+"""
 dimension(arg::IdentityOperation) = arg.dimension
 
 

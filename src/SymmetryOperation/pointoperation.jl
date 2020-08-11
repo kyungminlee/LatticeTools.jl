@@ -14,9 +14,16 @@ Represents point symmetry operation
 """
 struct PointOperation{S<:Real} <:AbstractSpaceSymmetryOperation{S}
     matrix::Matrix{S}
+
+    @doc """
+        PointOperation(matrix::AbstractMatrix{S}) where {S<:Real}
+
+    Construct a point operation with `matrix`.
+    """
     function PointOperation(matrix::AbstractMatrix{S}) where {S<:Real}
         return PointOperation{S}(matrix)
     end
+
     function PointOperation{S}(matrix::AbstractMatrix{S2}) where {S<:Real, S2<:Real}
         dim = size(matrix, 1)
         size(matrix, 2) != dim && throw(DimensionMismatch("matrix not square"))
@@ -41,10 +48,34 @@ end
 
 
 ## properties
-dimension(arg::PointOperation) = size(arg.matrix, 1)
+
+"""
+    isidentity(arg::PointOperation)
+
+Check whether `arg` is identity.
+"""
 isidentity(arg::PointOperation) = isone(arg.matrix)
+
+"""
+    istranslation(arg::PointOperation)
+
+Check whether `arg` is a translation operation, i.e. identity.
+"""
 istranslation(arg::PointOperation) = isone(arg.matrix)
+
+"""
+    ispoint(arg::PointOperation)
+
+Check whether `arg` is a point operation. Always `true`.
+"""
 ispoint(arg::PointOperation) = true
+
+"""
+    dimension(arg::PointOperation)
+
+Return spatial dimension of `arg`.
+"""
+dimension(arg::PointOperation) = size(arg.matrix, 1)
 
 
 Base.hash(arg::PointOperation{S}) where S = hash(arg.matrix, hash(PointOperation{S}))

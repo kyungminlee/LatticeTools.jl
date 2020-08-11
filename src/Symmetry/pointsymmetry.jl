@@ -27,6 +27,18 @@ simplify_name(name::AbstractString) = replace(replace(name, r"<sub>.*?</sub>"=>"
 
 """
     PointSymmetry
+
+# Arguments
+* `elements::Vector{PointOperation{Int}}`
+* `group::FiniteGroup`
+* `generators::Vector{Int}`
+* `conjugacy_classes::Vector{Vector{Int}}`
+* `character_table::Matrix{ComplexF64}`
+* `irreps::Vector{Vector{Matrix{ComplexF64}}}`
+* `element_names::Vector{String}`
+* `matrix_representations::Vector{Matrix{Int}}`
+* `hermann_mauguin::String`
+* `schoenflies::String`
 """
 struct PointSymmetry <: AbstractSymmetry{PointOperation{Int}}
     elements::Vector{PointOperation{Int}}
@@ -154,6 +166,15 @@ end
 
 """
     project(psym, projection; tol=√ϵ)
+
+Project `psym` to a subspace using `projection`
+
+# Arguments
+* `psym::PointSymmetry`
+* `projection::AbstractMatrix{<:Integer}`: n × d matrix, where d ≤ n.
+
+# Optional Arguments
+* `tol::Real`: singular values of projection must be 1 up to tolerance.
 """
 function project(
     psym::PointSymmetry,
@@ -166,6 +187,9 @@ function project(
     end
 
     vals = LinearAlgebra.svdvals(projection)
+    if any(x -> abs(x - 1) > tol, vals)
+        throw(ArgumentError("projection has non-unity singular value: $vals"))
+    end
 
     new_matrix_representations = [
         projection * m * transpose(projection)
@@ -188,36 +212,94 @@ end
 
 ## Basic properties
 
+"""
+    dimension(sym::PointSymmetry)
+
+Spatial dimension of the point symmetry
+"""
 dimension(sym::PointSymmetry) = size(sym.matrix_representations[1], 1)
 
-Base.eltype(sym::PointSymmetry) = PointOperation{Int}
 
-Base.valtype(sym::PointSymmetry) = PointOperation{Int}
+"""
+    elements(sym::PointSymmetry)
 
-element(sym::PointSymmetry, g) = sym.elements[g]
+Return the elements of the point symmetry.
+"""
 elements(sym::PointSymmetry) = sym.elements
 
-element_name(sym::PointSymmetry, g) = sym.element_names[g]
+"""
+    element(sym::PointSymmetry, i)
+
+Return the `i`th element of the point symmetry.
+"""
+element(sym::PointSymmetry, g) = sym.elements[g]
+
+
+"""
+    element_names(sym::PointSymmetry)
+
+Return the names of the elements of the point symmetry.
+"""
 element_names(sym::PointSymmetry) = sym.element_names
 
+"""
+    element_name(sym::PointSymmetry, i)
+
+Return the name of the `i`th element of the point symmetry.
+"""
+element_name(sym::PointSymmetry, g) = sym.element_names[g]
+
+
+"""
+    group(sym::PointSymmetry)
+
+Group structure of the point symmetry
+"""
 group(psym::PointSymmetry) = psym.group
-group_order(psym::PointSymmetry) = group_order(psym.group)
-group_multiplication_table(psym::PointSymmetry) = group_multiplication_table(psym.group)
 
-character_table(sym::PointSymmetry) = sym.character_table
-irreps(sym::PointSymmetry) = sym.irreps
-irrep(sym::PointSymmetry, idx::Integer) = sym.irreps[idx]
-num_irreps(sym::PointSymmetry) = length(sym.irreps)
-irrep_dimension(sym::PointSymmetry, idx::Integer) = size(first(irrep(sym, idx)), 2)
+"""
+    group_order(sym::PointSymmetry, g...)
 
+Group order of the point symmetry. Calls `group_order(group(sym), g...)`
+"""
+group_order(psym::PointSymmetry, g...) = group_order(group(psym), g...)
+
+"""
+    group_multiplication_table(sym::PointSymmetry)
+
+Group multiplication table of the point symmetry.
+Calls `group_multiplication_table(group(sym))`
+"""
+group_multiplication_table(sym::PointSymmetry) = group_multiplication_table(group(sym))
+
+
+"""
+    generator_indices(sym::PointSymmetry)
+
+Return indices of the generating translations.
+"""
 generator_indices(sym::PointSymmetry) = sym.generators
+
+"""
+    generator_elements(sym::PointSymmetry)
+
+Return the generating point operations.
+"""
 generator_elements(sym::PointSymmetry) = element(sym, sym.generators)
 
+"""
+    symmetry_name(sym::TranslationSymmetry)
+
+Name of the point symmetry. Return `TranslationSymmetry[<Hermann Mauguin>]`.
+"""
 symmetry_name(sym::PointSymmetry) = "PointSymmetry[$(sym.hermann_mauguin)]"
 
 
 """
     symmetry_product(psym::PointSymmetry)
+
+Return a function which takes two point operations and combines them.
+Not really necessary, but is defined for consistency with translation symmetry.
 """
 function symmetry_product(sym::PointSymmetry)
     function product(lhs::PointOperation, rhs::PointOperation)
@@ -226,6 +308,10 @@ function symmetry_product(sym::PointSymmetry)
     return product
 end
 
+
+Base.eltype(sym::PointSymmetry) = PointOperation{Int}
+
+Base.valtype(sym::PointSymmetry) = PointOperation{Int}
 
 Base.in(item::Any, sym::PointSymmetry) = false
 Base.in(item::IdentityOperation, sym::PointSymmetry) = dimension(item) == dimension(sym)
@@ -242,6 +328,69 @@ Base.iterate(sym::PointSymmetry) = iterate(elements(sym))
 Base.iterate(sym::PointSymmetry, i) = iterate(elements(sym), i)
 
 Base.length(sym::PointSymmetry) = length(elements(sym))
+
+
+# Irreducible Representations
+
+"""
+    character_table(sym::PointSymmetry)
+
+Return the character table of the point symmetry.
+"""
+character_table(sym::PointSymmetry) = sym.character_table
+
+"""
+    irreps(sym::PointSymmetry)
+
+Return the irreducible representations of the point symmetry.
+"""
+irreps(sym::PointSymmetry) = sym.irreps
+
+
+"""
+    irrep(sym::PointSymmetry, idx::Integer)
+
+Return the `idx`th irreducible representation of the point symmetry.
+"""
+irrep(sym::PointSymmetry, idx::Integer) = sym.irreps[idx]
+
+"""
+    num_irreps(sym::PointSymmetry)
+
+Return the number of irreducible representations of the point symmetry.
+Aliases: [`num_irreps(::PointSymmetry)`](@ref),
+[`numirreps(::PointSymmetry)`](@ref), [`irrepcount(::PointSymmetry)`](@ref)
+"""
+num_irreps(sym::PointSymmetry) = length(sym.irreps)
+
+"""
+    numirreps(sym::PointSymmetry)
+
+Return the number of irreducible representations of the point symmetry.
+Aliases: [`num_irreps(::PointSymmetry)`](@ref),
+[`numirreps(::PointSymmetry)`](@ref), [`irrepcount(::PointSymmetry)`](@ref)
+"""
+numirreps(sym::PointSymmetry) = length(sym.irreps)
+
+"""
+    irrepcount(sym::PointSymmetry)
+
+Return the number of irreducible representations of the point symmetry.
+Aliases: [`num_irreps(::PointSymmetry)`](@ref),
+[`numirreps(::PointSymmetry)`](@ref), [`irrepcount(::PointSymmetry)`](@ref)
+"""
+irrepcount(sym::PointSymmetry) = length(sym.irreps)
+
+
+"""
+    irrep_dimension(sym::PointSymmetry, idx::Integer)
+
+Dimension of the `idx`th irrep of the point symmetry.
+"""
+irrep_dimension(sym::PointSymmetry, idx::Integer) = size(first(irrep(sym, idx)), 2)
+
+
+
 
 # """
 #     get_site_permutation(lattice, matrix_representation, site_map)

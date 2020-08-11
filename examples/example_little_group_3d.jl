@@ -1,14 +1,14 @@
-# # Little group 3D
+# # Little Group in 3D
 
 using TightBindingLattice
 
-unitcell = make_unitcell([1.0 0.0 0.0; 0.0 1.0 0.0; 0 0 1]; SiteType=String)
+unitcell = makeunitcell([1.0 0.0 0.0; 0.0 1.0 0.0; 0 0 1]; SiteType=String)
 addsite!(unitcell, "Ox", FractCoord([0,0,0], [0.5, 0.0, 0.0]))
 addsite!(unitcell, "Oy", FractCoord([0,0,0], [0.0, 0.5, 0.0]))
 
-# Currently, make_lattice in three-dimension is unsupported
+# Currently, makelattice in three-dimension is not well supported
 
-lattice = make_lattice(unitcell, [4 0 0; 0 4 0; 0 0 3], [1 0 0; 0 1 0; 0 0 1])
+lattice = makelattice(unitcell, [4 0 0; 0 4 0; 0 0 3], [1 0 0; 0 1 0; 0 0 1])
 tsym = TranslationSymmetry(lattice.orthocube, [1 0 0; 0 1 0; 0 0 1])
 psym = project(PointSymmetryDatabase.get(15), [1 0 0; 0 1 0; 0 0 1])
 

@@ -26,9 +26,21 @@ TranslationOperation{Float64}([0.5, 0.0, 0.5])
 """
 struct TranslationOperation{S<:Real} <:AbstractSpaceSymmetryOperation{S}
     displacement::Vector{S}
+
+    @doc """
+        TranslationOperation{S}(displacement::AbstractVector{<:Real}) where {S}
+
+    Construct a translation operation of `displacement` on coordinate space of type `S`.
+    """
     function TranslationOperation{S}(displacement::AbstractVector{<:Real}) where {S}
         new{S}(displacement)
     end
+
+    @doc """
+        TranslationOperation(displacement::AbstractVector{S}) where {S<:Real}
+
+    Construct a translation operation of `displacement` on coordinate space of type `S`.
+    """
     function TranslationOperation(displacement::AbstractVector{S}) where {S<:Real}
         new{S}(displacement)
     end
@@ -52,13 +64,6 @@ end
 
 ## properties
 """
-    dimension(arg::TranslationOperation)
-
-Spatial dimension of the translation operation
-"""
-dimension(arg::TranslationOperation) = length(arg.displacement)
-
-"""
     isidentity(t::TranslationOperation)
 
 Return true if the translation operation is an identity, i.e. `iszero(t.displacement)`
@@ -79,6 +84,13 @@ Return `true` if `arg` is a point operation. The only way this can be true is wh
 an identity operation.
 """
 ispoint(arg::TranslationOperation) = iszero(arg.displacement)
+
+"""
+    dimension(arg::TranslationOperation)
+
+Spatial dimension of the translation operation
+"""
+dimension(arg::TranslationOperation) = length(arg.displacement)
 
 
 Base.hash(arg::TranslationOperation{S}) where S = hash(arg.displacement, hash(TranslationOperation{S}))

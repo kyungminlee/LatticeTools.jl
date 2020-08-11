@@ -1,7 +1,6 @@
 module TightBindingLattice
 
 include("Basic/basic.jl")
-include("Basic/permutation.jl")
 include("Basic/coord.jl")
 include("Basic/orthocube.jl")  # replacement for hypercube
 include("Basic/unitcell.jl")
@@ -9,6 +8,7 @@ include("Basic/lattice.jl")
 
 include("Group/abstractgroup.jl")
 include("Group/finitegroup.jl")
+include("Group/permutation.jl")
 
 include("SymmetryOperation/abstractoperation.jl")
 include("SymmetryOperation/identityoperation.jl")

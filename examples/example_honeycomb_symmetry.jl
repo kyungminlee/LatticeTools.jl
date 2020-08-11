@@ -1,4 +1,4 @@
-# # Honeycomb lattice
+# # Honeycomb Lattice
 
 # ## Preamble
 using TightBindingLattice
@@ -13,15 +13,15 @@ mkpath("example_honeycomb_symmetry")
 extent = [-2.5, 2.5, -2.5, 2.5]
 within(r) = (extent[1] <= r[1] <= extent[2] && extent[3] <= r[2] <= extent[4]);
 
-# ## Set up lattice and symmetry
+# ## Set up Lattice and Symmetry
 scale_matrix = [2 2; -2 4]
 @assert det(scale_matrix) ≈ 12
 
-unitcell = make_unitcell([1 -0.5; 0 0.5*sqrt(3.0)])
+unitcell = makeunitcell([1 -0.5; 0 0.5*sqrt(3.0)])
 addsite!(unitcell, "A", carte2fract(unitcell, [0.5, 0.5/sqrt(3)]))
 addsite!(unitcell, "B", carte2fract(unitcell, [0.5,-0.5/sqrt(3)]))
 
-lattice = make_lattice(unitcell, scale_matrix)
+lattice = makelattice(unitcell, scale_matrix)
 
 tsymbed = translation_symmetry_embedding(lattice)
 tsym = symmetry(tsymbed)
@@ -31,9 +31,8 @@ psymbed = embed(lattice, psym)
 print("Point group: ", psym.hermann_mauguin)
 
 
-
 # ## Permutations
-println("Translation permutations")
+println("Translation Permutations")
 println("------------------------")
 
 for t in tsymbed
@@ -41,7 +40,7 @@ for t in tsymbed
 end
 println()
 
-println("Point permutations")
+println("Point Permutations")
 println("------------------")
 for p in psymbed
     println(p)
@@ -49,7 +48,7 @@ end
 println()
 
 
-# ## Plots for translation symmetry embeddings
+# ## Plots for Translation Symmetry Embeddings
 
 for (i_elem, perm) in enumerate(elements(tsymbed))
     elname = element_name(tsym, i_elem)
@@ -69,11 +68,14 @@ for (i_elem, perm) in enumerate(elements(tsymbed))
         R = [R1, R2]
         LR = L * R
         idx_filt = [i for (i, r) in enumerate(eachcol(orbcoords)) if within(r .+ LR)]
-        scatter!(orbcoords[1,idx_filt] .+ LR[1],
-                 orbcoords[2,idx_filt] .+ LR[2],
-                 color="blue",
-                 markerstrokecolor="blue",
-                 series_annotations=[Plots.text(x, 6, :left, :bottom) for x in orbnames[idx_filt]], label=nothing)
+        scatter!(
+            orbcoords[1,idx_filt] .+ LR[1],
+            orbcoords[2,idx_filt] .+ LR[2],
+            color="blue",
+            markerstrokecolor="blue",
+            series_annotations=[Plots.text(x, 6, :left, :bottom) for x in orbnames[idx_filt]],
+            label=nothing
+        )
     end
     xlims!(extent[1], extent[2])
     ylims!(extent[3], extent[4])
@@ -94,7 +96,7 @@ end
 # ![](example_honeycomb_symmetry/translation_symmetry-12.svg)
 
 
-# ## Plots for point symmetry embeddings
+# ## Plots for Point Symmetry Embeddings
 
 for (i_elem, perm) in enumerate(elements(psymbed))
     elname = element_name(psym, i_elem)
@@ -114,11 +116,14 @@ for (i_elem, perm) in enumerate(elements(psymbed))
         R = [R1, R2]
         LR = L * R
         idx_filt = [i for (i, r) in enumerate(eachcol(orbcoords)) if within(r .+ LR)]
-        scatter!(orbcoords[1,idx_filt] .+ LR[1],
-                 orbcoords[2,idx_filt] .+ LR[2],
-                 color="blue",
-                 markerstrokecolor="blue",
-                 series_annotations=[Plots.text(x, 6, :left, :bottom) for x in orbnames[idx_filt]], label=nothing)
+        scatter!(
+            orbcoords[1,idx_filt] .+ LR[1],
+            orbcoords[2,idx_filt] .+ LR[2],
+            color="blue",
+            markerstrokecolor="blue",
+            series_annotations=[Plots.text(x, 6, :left, :bottom) for x in orbnames[idx_filt]],
+            label=nothing
+        )
     end
     xlims!(extent[1], extent[2])
     ylims!(extent[3], extent[4])

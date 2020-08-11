@@ -127,7 +127,6 @@ Test whether lattice and the symmetry are compatible.
 For translation symmetry, this means that the hypercubic lattice for both are the same.
 """
 function iscompatible(lattice::Lattice, tsym::TranslationSymmetry)
-    # return lattice.hypercube == tsym.hypercube
     return iscompatible(lattice.orthocube, tsym)
 end
 
@@ -140,32 +139,3 @@ function iscompatible(lattice::Lattice, psym::PointSymmetry)::Bool
         all(pop -> !isnothing(findsitemap(lattice.unitcell, pop)), generator_elements(psym))
     )
 end
-
-
-
-# function iscompatible(hypercube::HypercubicLattice, op::TranslationOperation{<:Integer})::Bool
-#     if dimension(hypercube) != dimension(op)
-#         throw(DimensionMismatch("hypercube and operation have different dimension"))
-#     end
-#     return true
-# end
-
-# """
-#     iscompatible(hypercube, point_operation)
-
-#     (R ⋅ L) mod L = 0   and   (R ⋅ L) / L = 1
-# """
-# function iscompatible(hypercube::HypercubicLattice, op::PointOperation{<:Integer})::Bool
-#     R, r = hypercube.wrap(op.matrix * hypercube.scale_matrix)
-#     return iszero(r) && abs(ExactLinearAlgebra.determinant(R)) == 1
-# end
-
-
-# function iscompatible(hypercube::HypercubicLattice, tsym::TranslationSymmetry)::Bool
-#     R, r = hypercube.wrap(tsym.hypercube.scale_matrix)
-#     return iszero(r) && abs(ExactLinearAlgebra.determinant(R)) == 1
-# end
-
-# function iscompatible(hypercube::HypercubicLattice, psym::PointSymmetry)::Bool
-#     return all(iscompatible(hypercube, pop) for pop in elements(psym))
-# end

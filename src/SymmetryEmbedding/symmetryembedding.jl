@@ -16,7 +16,7 @@ SymmetryOrEmbedding = Union{<:AbstractSymmetry, <:AbstractSymmetryEmbedding}
 """
     SymmetryEmbedding{SymmetryType<:AbstractSymmetry}
 
-# Members
+# Fields
 - `lattice::Lattice`
 - `symmetry::SymmetryType`
 - `elements::Vector{SitePermutation}`
@@ -26,6 +26,11 @@ struct SymmetryEmbedding{SymmetryType}<:AbstractSymmetryEmbedding
     symmetry::SymmetryType
     elements::Vector{SitePermutation}
 
+    @doc """
+        SymmetryEmbedding(lattice::Lattice, symmetry::SymmetryType)
+
+    Construct a `SymmetryEmbedding`.
+    """
     function SymmetryEmbedding(
         lattice::Lattice,
         symmetry::SymmetryType,
@@ -63,11 +68,35 @@ end
 Base.eltype(::SymmetryEmbedding) = SitePermutation
 Base.valtype(::SymmetryEmbedding) = SitePermutation
 
+"""
+    elements(symbed::SymmetryEmbedding)
+
+Get elements of the symmetry embedding
+"""
 elements(symbed::SymmetryEmbedding) = symbed.elements
+
+"""
+    element(symbed::SymmetryEmbedding, g...)
+
+Get the `g`th element of the symmetry embedding.
+"""
 element(symbed::SymmetryEmbedding, g...) = symbed.elements[g...]
+
+"""
+    symmetry(symbed::SymmetryEmbedding)
+
+Return the underlying symmetry of the symmetry embedding
+"""
 symmetry(symbed::SymmetryEmbedding) = symbed.symmetry
-generator_elements(symbed::SymmetryEmbedding) = element(symbed, generator_indices(symbed.symmetry))
-generator_indices(symbed::SymmetryEmbedding) = generator_indices(symbed.symmetry)
+
+"""
+    generator_elements(symbed::SymmetryEmbedding)
+
+Get the generators of the symmetry embedding, based on the generators of the underlying
+symmetry. The embedding is allowed to be one-to-one, in which case the return value may
+contain duplicates.
+"""
+generator_elements(symbed::SymmetryEmbedding) = element(symbed, generator_indices(symbed))
 
 
 function Base.:(==)(lhs::SymmetryEmbedding{S}, rhs::SymmetryEmbedding{S}) where S
@@ -85,24 +114,35 @@ Base.length(sym::SymmetryEmbedding) = length(elements(sym))
 for f in [
     :group_order,
     :group_multiplication_table,
+    :generator_indices,
     :element_names,
     :element_name,
     :character_table,
     :irreps,
     :irrep,
-    :num_irreps,
     :irrep_dimension,
+    :num_irreps, :numirreps, :irrepcount,
 ]
     eval(quote
-        ($f)(symbed::SymmetryEmbedding, args...) = ($f)(symbed.symmetry, args...)
+        @doc """
+            $($f)(::SymmetryEmbedding, args...)
+
+        Calls `$($f)` for the underlying symmetry.
+        See [`$($f)(::TranslationSymmetry)`](@ref), [`$($f)(::PointSymmetry)`](@ref).
+        """
+        ($f)(symbed::SymmetryEmbedding, args...) = ($f)(symmetry(symbed), args...)
     end)
 end
 
 
-function fractional_momentum(symbed::SymmetryEmbedding{<:TranslationSymmetry}, args...)
+"""
+    fractional_momentum(symbed::SymmetryEmbedding{TranslationSymmetry}, args...)
+
+Return fractional momentum(s) of the translation symmetry embedding.
+"""
+function fractional_momentum(symbed::SymmetryEmbedding{TranslationSymmetry}, args...)
     return fractional_momentum(symmetry(symbed), args...)
 end
-
 
 
 """
@@ -132,7 +172,7 @@ function iscompatible(
     tsym_irrep_index::Integer,
     psymbed::SymmetryEmbedding{PointSymmetry},
 )::Bool
-    ! iscompatible(tsymbed, psymbed) && return false
+    !iscompatible(tsymbed, psymbed) && return false
     return little_group_elements(tsymbed, tsym_irrep_index, psymbed) == 1:group_order(psymbed)
 end
 
@@ -247,13 +287,30 @@ function little_symmetry(
 end
 
 
+"""
+    symmetry_name(arg::SymmetryEmbedding)
+
+Return the name of the symmetry embedding.
+"""
 function symmetry_name(arg::SymmetryEmbedding)
     return "Embed[$(symmetry_name(symmetry(arg))) on $(arg.lattice.orthocube.shape_matrix)"*
         " with $(numsite(arg.lattice.unitcell)) sites]"
 end
 
 
+"""
+    embed(lattice::Lattice, tsym::TranslationSymmetry)
+
+Embed translation symmetry `tsym` to lattice.
+"""
 embed(lattice::Lattice, tsym::TranslationSymmetry) = SymmetryEmbedding(lattice, tsym)
+
+
+"""
+    embed(lattice::Lattice, psym::PointSymmetry)
+
+Embed point symmetry `psym` to lattice.
+"""
 embed(lattice::Lattice, psym::PointSymmetry) = SymmetryEmbedding(lattice, psym)
 
 

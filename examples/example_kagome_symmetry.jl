@@ -17,7 +17,7 @@ within(r) = (extent[1] <= r[1] <= extent[2] && extent[3] <= r[2] <= extent[4])
 
 function make_kagome_lattice(size_matrix ::AbstractMatrix{<:Integer})
     latticevectors = [1 -0.5; 0 0.5*sqrt(3.0)];
-    unitcell = make_unitcell(latticevectors, SiteType=String)
+    unitcell = makeunitcell(latticevectors, SiteType=String)
     addsite!(unitcell, "A", carte2fract(unitcell, [0.5, 0.0]))
     addsite!(unitcell, "B", carte2fract(unitcell, [0.25, 0.25*sqrt(3.0)]))
     addsite!(unitcell, "C", carte2fract(unitcell, [0.5+0.25, 0.25*sqrt(3.0)]))
@@ -40,7 +40,7 @@ function make_kagome_lattice(size_matrix ::AbstractMatrix{<:Integer})
         ([ 0,-1], "B", [ 0, 0], "C",-1),
     ]
 
-    lattice = make_lattice(unitcell, size_matrix)
+    lattice = makelattice(unitcell, size_matrix)
     orthocube = lattice.orthocube
     supercell = lattice.supercell
     tsym = TranslationSymmetry(lattice)
@@ -109,7 +109,7 @@ function make_kagome_lattice(size_matrix ::AbstractMatrix{<:Integer})
 end
 
 
-# ## Symmetry analysis
+# ## Symmetry Analysis
 
 kagome = make_kagome_lattice([4 -2; 2 2])
 
@@ -126,7 +126,7 @@ println("Number of elements: ", group_order(psym))
 println("Number of irreps: ", num_irreps(psym))
 
 
-# ## Site map
+# ## Site Map
 
 site_map = findsitemap(kagome.lattice.unitcell, psym)
 
