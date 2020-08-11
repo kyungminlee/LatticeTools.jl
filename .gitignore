@@ -1,0 +1,12 @@
+.DS_Store
+Manifest.toml
+/dev/
+
+_research/
+.vscode/
+*.code-workspace
+
+docs/build/
+docs/src/generated/
+
+MutableArtifacts.toml
