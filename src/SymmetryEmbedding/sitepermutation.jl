@@ -1,4 +1,8 @@
+export AbstractSymmetryOperationEmbedding
+export AbstractSpaceSymmetryOperationEmbedding
+
 export SitePermutation
+
 export embed
 export isidentity
 

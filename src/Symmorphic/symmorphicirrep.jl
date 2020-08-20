@@ -39,6 +39,13 @@ struct SymmorphicIrrepComponent{S1<:SymmetryOrEmbedding, S2<:SymmetryOrEmbedding
         return new{S1, S2}(normal, rest)
     end
 
+    """
+        SymmorphicIrrepComponent(normal, rest)
+
+    # Arguments
+    * `normal::IrrepComponent{SymmetryEmbedding{S1}}`
+    * `rest::IrrepComponent{SymmetryEmbedding{S2}}`
+    """
     function SymmorphicIrrepComponent(
         normal::IrrepComponent{SymmetryEmbedding{S1}},
         rest::IrrepComponent{SymmetryEmbedding{S2}},
