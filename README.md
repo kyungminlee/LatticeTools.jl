@@ -18,9 +18,9 @@
 
 
 [docs-stable-img]: https://img.shields.io/badge/docs-stable-blue.svg
-[docs-stable-url]: http://kyungminlee.org/TightBindingLattice.jl/stable
+[docs-stable-url]: https://kyungminlee.org/TightBindingLattice.jl/stable
 [docs-dev-img]: https://img.shields.io/badge/docs-dev-blue.svg
-[docs-dev-url]: http://kyungminlee.org/TightBindingLattice.jl/dev
+[docs-dev-url]: https://kyungminlee.org/TightBindingLattice.jl/dev
 
 [travis-img]: https://travis-ci.org/kyungminlee/TightBindingLattice.jl.svg?branch=master
 [travis-url]: https://travis-ci.org/kyungminlee/TightBindingLattice.jl
