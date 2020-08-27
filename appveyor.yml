@@ -1,13 +1,11 @@
 environment:
   matrix:
   - julia_version: 1.5
-  - julia_version: 1.6
   - julia_version: nightly
 platform:
   - x64
 matrix:
   allow_failures:
-  - julia_version: 1.6
   - julia_version: nightly
 branches:
   only:
