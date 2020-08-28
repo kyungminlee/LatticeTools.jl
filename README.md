@@ -1,4 +1,6 @@
-# TightBindingLattice.jl
+<img src="https://kyungminlee.org/TightBindingLattice.jl/stable/assets/logo.png" width="400px">
+
+# LatticeTools.jl
 
 | **Documentation** | **Build Status** | **Code Coverage** |
 |:-----------------:|:----------------:|:-----------------:|
