@@ -293,6 +293,20 @@ function symmetry_product(sym::TranslationSymmetry)
 end
 
 
+function symmetry_canonize(sym::TranslationSymmetry)
+    function canonize(arg::TranslationOperation{<:Integer})
+        return TranslationOperation(sym.orthocube.wrap(arg.displacement)[2])
+    end
+    function canonize(arg::PointOperation{<:Integer})
+        return arg
+    end
+    function canonize(arg::SpaceOperation{<:Integer, <:Integer})
+        return SpaceOperation(canonize(arg.matrix), canonize(arg.displacement))
+    end
+    return canonize
+end
+
+
 Base.eltype(sym::TranslationSymmetry) = TranslationOperation{Int}
 
 Base.valtype(sym::TranslationSymmetry) = TranslationOperation{Int}

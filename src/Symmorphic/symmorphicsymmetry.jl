@@ -89,6 +89,7 @@ function Base.:(==)(lhs::SymmorphicSymmetry{S1, S2, E}, rhs::SymmorphicSymmetry{
     return lhs.normal == rhs.normal && lhs.rest == rhs.rest
 end
 
+
 """
     symmetry_product(sym)
 

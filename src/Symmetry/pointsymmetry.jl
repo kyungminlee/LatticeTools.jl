@@ -308,6 +308,14 @@ function symmetry_product(sym::PointSymmetry)
     return product
 end
 
+function symmetry_canonize(sym::PointSymmetry)
+    canonize(arg::TranslationOperation{<:Integer}) = arg
+    canonize(arg::PointOperation{<:Integer}) = arg
+    canonize(arg::SpaceOperation{<:Integer, <:Integer}) = arg
+    return canonize
+end
+
+
 
 Base.eltype(sym::PointSymmetry) = PointOperation{Int}
 
