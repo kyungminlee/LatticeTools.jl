@@ -18,7 +18,6 @@
 (@v1.5) pkg> add LatticeTools
 ```
 
-
 [docs-stable-img]: https://img.shields.io/badge/docs-stable-blue.svg
 [docs-stable-url]: https://kyungminlee.org/LatticeTools.jl/stable
 [docs-dev-img]: https://img.shields.io/badge/docs-dev-blue.svg
