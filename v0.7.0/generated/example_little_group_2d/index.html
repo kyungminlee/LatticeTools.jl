@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Little Group in 2D · LatticeTools.jl</title><link href="https://fonts.googleapis.com/css?family=Lato|Roboto+Mono" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.11.1/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL="../.."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../../assets/documenter.js"></script><script src="../../siteinfo.js"></script><script src="../../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/documenter-dark.css" data-theme-name="documenter-dark"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../../assets/themeswap.js"></script></head><body><div id="documenter"><nav class="docs-sidebar"><a class="docs-logo" href="../../"><img src="../../assets/logo.svg" alt="LatticeTools.jl logo"/></a><div class="docs-package-name"><span class="docs-autofit">LatticeTools.jl</span></div><form class="docs-search" action="../../search/"><input class="docs-search-query" id="documenter-search-query" name="q" type="text" placeholder="Search docs"/></form><ul class="docs-menu"><li><a class="tocitem" href="../../">Home</a></li><li><a class="tocitem" href="../../lattice/">Lattice Definition</a></li><li><span class="tocitem">Symmetry Analysis</span><ul><li><a class="tocitem" href="../../Symmetry/space-symmetry/">Space symmetry analysis</a></li><li><a class="tocitem" href="../../Symmetry/space-operation/">Symmetry Operations</a></li><li><a class="tocitem" href="../../Symmetry/irrep/">Irreducible Representations</a></li></ul></li><li><span class="tocitem">Examples</span><ul><li><a class="tocitem" href="../example_group_isomorphism/">Group Isomorphism</a></li><li><a class="tocitem" href="../example_hypercube/">Hypercube</a></li><li><a class="tocitem" href="../example_point_group_elements/">Point Group Elements</a></li><li><a class="tocitem" href="../example_point_group_4mm/">Point Group 4mm (C₄ᵥ)</a></li><li class="is-active"><a class="tocitem" href>Little Group in 2D</a><ul class="internal"><li><a class="tocitem" href="#Preamble"><span>Preamble</span></a></li><li><a class="tocitem" href="#Set-up-Lattice-and-Symmetry"><span>Set up Lattice and Symmetry</span></a></li><li><a class="tocitem" href="#Little-Group"><span>Little Group</span></a></li><li><a class="tocitem" href="#Finding-Point-Groups-Isomorphic-to-the-Little-Group"><span>Finding Point Groups Isomorphic to the Little Group</span></a></li><li><a class="tocitem" href="#Multiplication-Tables"><span>Multiplication Tables</span></a></li><li><a class="tocitem" href="#Irreps-and-Little-Groups"><span>Irreps and Little Groups</span></a></li></ul></li><li><a class="tocitem" href="../example_little_group_3d/">Little Group in 3D</a></li><li><a class="tocitem" href="../example_honeycomb_symmetry/">Honeycomb Lattice</a></li><li><a class="tocitem" href="../example_little_symmetry_kspace_honeycomb/">Honeycomb Lattice in k-space</a></li><li><a class="tocitem" href="../example_kagome_symmetry/">Kagome Lattice</a></li></ul></li><li><span class="tocitem">API Reference</span><ul><li><a class="tocitem" href="../../API/basic/">Basic</a></li><li><a class="tocitem" href="../../API/group/">Group</a></li><li><a class="tocitem" href="../../API/symmetry-operation/">Symmetry Operation</a></li><li><a class="tocitem" href="../../API/symmetry/">Symmetry</a></li><li><a class="tocitem" href="../../API/symmetry-embedding/">Symmetry Embedding</a></li><li><a class="tocitem" href="../../API/symmetry-irrep-component/">Symmetry Irrep Component</a></li></ul></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><nav class="breadcrumb"><ul class="is-hidden-mobile"><li><a class="is-disabled">Examples</a></li><li class="is-active"><a href>Little Group in 2D</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>Little Group in 2D</a></li></ul></nav><div class="docs-right"><a class="docs-edit-link" href="https://github.com/kyungminlee/LatticeTools.jl/blob/master/examples/example_little_group_2d.jl" title="Edit on GitHub"><span class="docs-icon fab"></span><span class="docs-label is-hidden-touch">Edit on GitHub</span></a><a class="docs-settings-button fas fa-cog" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-sidebar-button fa fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a></div></header><article class="content" id="documenter-page"><h1 id="Little-Group-in-2D"><a class="docs-heading-anchor" href="#Little-Group-in-2D">Little Group in 2D</a><a id="Little-Group-in-2D-1"></a><a class="docs-heading-anchor-permalink" href="#Little-Group-in-2D" title="Permalink"></a></h1><h2 id="Preamble"><a class="docs-heading-anchor" href="#Preamble">Preamble</a><a id="Preamble-1"></a><a class="docs-heading-anchor-permalink" href="#Preamble" title="Permalink"></a></h2><pre><code class="language-julia">using LatticeTools
+using Formatting
+using Plots
+function display_matrix(io::IO, matrix::AbstractMatrix; prefix::AbstractString=&quot;&quot;)
+    width = ceil(Int, maximum(length(&quot;$item&quot;) for item in matrix)/4)*4
+    for row in eachrow(matrix)
+        for (icol, col) in enumerate(row)
+            if icol == 1
+                print(io, prefix)
+                printfmt(io, &quot;{:&gt;$(width)s}&quot;, &quot;$col&quot;)
+            else
+                printfmt(io, &quot; {:&gt;$(width)s}&quot;, &quot;$col&quot;)
+            end
+        end
+        println(io)
+    end
+end</code></pre><pre class="documenter-example-output">display_matrix (generic function with 1 method)</pre><h2 id="Set-up-Lattice-and-Symmetry"><a class="docs-heading-anchor" href="#Set-up-Lattice-and-Symmetry">Set up Lattice and Symmetry</a><a id="Set-up-Lattice-and-Symmetry-1"></a><a class="docs-heading-anchor-permalink" href="#Set-up-Lattice-and-Symmetry" title="Permalink"></a></h2><pre><code class="language-julia">unitcell = makeunitcell([1.0 0.0; 0.0 1.0]; SiteType=String);
+addsite!(unitcell, &quot;Ox&quot;, FractCoord([0,0], [0.5, 0.0]));
+addsite!(unitcell, &quot;Oy&quot;, FractCoord([0,0], [0.0, 0.5]));
+
+lattice = makelattice(unitcell, [4 0; 0 4]);
+tsym = TranslationSymmetry(lattice);
+psym = project(PointSymmetryDatabase.get(13), [1 0 0; 0 1 0]);</code></pre><h2 id="Little-Group"><a class="docs-heading-anchor" href="#Little-Group">Little Group</a><a id="Little-Group-1"></a><a class="docs-heading-anchor-permalink" href="#Little-Group" title="Permalink"></a></h2><pre><code class="language-julia">lge = little_group_elements(tsym, 2, psym)
+lg = little_group(tsym, 2, psym)
+println(&quot;Little Group&quot;)
+println(&quot;------------&quot;)
+display_matrix(stdout, group_multiplication_table(lg))
+
+
+lg_matrep = psym.matrix_representations[lge]
+println(&quot;Matrix Representations: $lg_matrep&quot;)</code></pre><pre class="documenter-example-output">Little Group
+------------
+   1    2
+   2    1
+Matrix Representations: [[1 0; 0 1], [1 0; 0 -1]]</pre><h2 id="Finding-Point-Groups-Isomorphic-to-the-Little-Group"><a class="docs-heading-anchor" href="#Finding-Point-Groups-Isomorphic-to-the-Little-Group">Finding Point Groups Isomorphic to the Little Group</a><a id="Finding-Point-Groups-Isomorphic-to-the-Little-Group-1"></a><a class="docs-heading-anchor-permalink" href="#Finding-Point-Groups-Isomorphic-to-the-Little-Group" title="Permalink"></a></h2><pre><code class="language-julia">little_symmetry_candidates = Tuple{PointSymmetry, Vector{Int}}[]
+for i in 1:32
+    ps = PointSymmetryDatabase.get(i)
+    ϕ = group_isomorphism(lg, ps.group)
+    if !isnothing(ϕ)
+        push!(little_symmetry_candidates, (ps, ϕ))
+    end
+end
+(psym2, ϕ) = first(little_symmetry_candidates)
+
+lg_matrep2 = lg_matrep[ϕ]
+println(&quot;Matrix Representations (Isomorphic): $lg_matrep2&quot;)</code></pre><pre class="documenter-example-output">Matrix Representations (Isomorphic): [[1 0; 0 1], [1 0; 0 -1]]</pre><h2 id="Multiplication-Tables"><a class="docs-heading-anchor" href="#Multiplication-Tables">Multiplication Tables</a><a id="Multiplication-Tables-1"></a><a class="docs-heading-anchor-permalink" href="#Multiplication-Tables" title="Permalink"></a></h2><pre><code class="language-julia">println(&quot;Parent Point Group&quot;)
+println(&quot;------------------&quot;)
+display_matrix(stdout, group_multiplication_table(psym2))
+println(&quot;Little Group&quot;)
+println(&quot;------------&quot;)
+display_matrix(stdout, group_multiplication_table(lg_matrep))
+println(&quot;Isomorphic Little Group&quot;)
+println(&quot;-----------------------&quot;)
+display_matrix(stdout, group_multiplication_table(lg_matrep2))</code></pre><pre class="documenter-example-output">Parent Point Group
+------------------
+   1    2
+   2    1
+Little Group
+------------
+   1    2
+   2    1
+Isomorphic Little Group
+-----------------------
+   1    2
+   2    1</pre><h2 id="Irreps-and-Little-Groups"><a class="docs-heading-anchor" href="#Irreps-and-Little-Groups">Irreps and Little Groups</a><a id="Irreps-and-Little-Groups-1"></a><a class="docs-heading-anchor-permalink" href="#Irreps-and-Little-Groups" title="Permalink"></a></h2><pre><code class="language-julia">println(&quot;Irreps and Little Groups&quot;)
+println(&quot;------------------------&quot;)
+for tsic in get_irrep_components(tsym)
+    idx = tsic.irrep_index
+    kf = tsym.fractional_momenta[idx]
+    k = lattice.unitcell.reducedreciprocallatticevectors * kf
+    psym_little = little_symmetry(tsym, idx, psym)
+    println(&quot;- irrep_index: $(idx)&quot;)
+    println(&quot;  momentum: $(k)&quot;)
+    println(&quot;  little_point_group: { name: \&quot;$(psym_little.hermann_mauguin)\&quot;, order: $(group_order(psym_little)) }&quot;)
+    println(&quot;  is_psym_compatible: $(iscompatible(tsym, idx, psym))&quot;)
+    println(&quot;  is_psym_little_compatible: $(iscompatible(tsym, idx, psym_little))&quot;)
+end</code></pre><pre class="documenter-example-output">Irreps and Little Groups
+------------------------
+- irrep_index: 1
+  momentum: [0.0, 0.0]
+  little_point_group: { name: &quot;4mm&quot;, order: 8 }
+  is_psym_compatible: true
+  is_psym_little_compatible: true
+- irrep_index: 2
+  momentum: [0.25, 0.0]
+  little_point_group: { name: &quot;m&quot;, order: 2 }
+  is_psym_compatible: false
+  is_psym_little_compatible: true
+- irrep_index: 3
+  momentum: [0.5, 0.0]
+  little_point_group: { name: &quot;mm2&quot;, order: 4 }
+  is_psym_compatible: false
+  is_psym_little_compatible: true
+- irrep_index: 4
+  momentum: [0.75, 0.0]
+  little_point_group: { name: &quot;m&quot;, order: 2 }
+  is_psym_compatible: false
+  is_psym_little_compatible: true
+- irrep_index: 5
+  momentum: [0.0, 0.25]
+  little_point_group: { name: &quot;m&quot;, order: 2 }
+  is_psym_compatible: false
+  is_psym_little_compatible: true
+- irrep_index: 6
+  momentum: [0.25, 0.25]
+  little_point_group: { name: &quot;m&quot;, order: 2 }
+  is_psym_compatible: false
+  is_psym_little_compatible: true
+- irrep_index: 7
+  momentum: [0.5, 0.25]
+  little_point_group: { name: &quot;m&quot;, order: 2 }
+  is_psym_compatible: false
+  is_psym_little_compatible: true
+- irrep_index: 8
+  momentum: [0.75, 0.25]
+  little_point_group: { name: &quot;m&quot;, order: 2 }
+  is_psym_compatible: false
+  is_psym_little_compatible: true
+- irrep_index: 9
+  momentum: [0.0, 0.5]
+  little_point_group: { name: &quot;mm2&quot;, order: 4 }
+  is_psym_compatible: false
+  is_psym_little_compatible: true
+- irrep_index: 10
+  momentum: [0.25, 0.5]
+  little_point_group: { name: &quot;m&quot;, order: 2 }
+  is_psym_compatible: false
+  is_psym_little_compatible: true
+- irrep_index: 11
+  momentum: [0.5, 0.5]
+  little_point_group: { name: &quot;4mm&quot;, order: 8 }
+  is_psym_compatible: true
+  is_psym_little_compatible: true
+- irrep_index: 12
+  momentum: [0.75, 0.5]
+  little_point_group: { name: &quot;m&quot;, order: 2 }
+  is_psym_compatible: false
+  is_psym_little_compatible: true
+- irrep_index: 13
+  momentum: [0.0, 0.75]
+  little_point_group: { name: &quot;m&quot;, order: 2 }
+  is_psym_compatible: false
+  is_psym_little_compatible: true
+- irrep_index: 14
+  momentum: [0.25, 0.75]
+  little_point_group: { name: &quot;m&quot;, order: 2 }
+  is_psym_compatible: false
+  is_psym_little_compatible: true
+- irrep_index: 15
+  momentum: [0.5, 0.75]
+  little_point_group: { name: &quot;m&quot;, order: 2 }
+  is_psym_compatible: false
+  is_psym_little_compatible: true
+- irrep_index: 16
+  momentum: [0.75, 0.75]
+  little_point_group: { name: &quot;m&quot;, order: 2 }
+  is_psym_compatible: false
+  is_psym_little_compatible: true</pre><hr/><p><em>This page was generated using <a href="https://github.com/fredrikekre/Literate.jl">Literate.jl</a>.</em></p></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../example_point_group_4mm/">« Point Group 4mm (C₄ᵥ)</a><a class="docs-footer-nextpage" href="../example_little_group_3d/">Little Group in 3D »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> on <span class="colophon-date" title="Sunday 30 August 2020 21:05">Sunday 30 August 2020</span>. Using Julia version 1.5.1.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
