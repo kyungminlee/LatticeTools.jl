@@ -101,7 +101,7 @@ function symmetry_product(
 ) where {S<:SpaceOperation{<:Integer}}
     function product(lhs::SpaceOperation{<:Integer}, rhs::SpaceOperation{<:Integer})
         foo = lhs * rhs
-        return S(foo.matrix, sym.normal.orthocube.wrap(foo.displacement)[2])
+        return S(foo.matrix, sym.normal.hypercube.wrap(foo.displacement)[2])
     end
     return product
 end

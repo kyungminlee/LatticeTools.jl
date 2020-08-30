@@ -7,7 +7,7 @@ output_directory = joinpath(@__DIR__, "src/generated")
 for filename in [
     "example_group_isomorphism.jl",
     "example_honeycomb_symmetry.jl",
-    "example_orthocube.jl",
+    "example_hypercube.jl",
     "example_kagome_symmetry.jl",
     "example_little_group_2d.jl",
     "example_little_group_3d.jl",
@@ -36,7 +36,7 @@ makedocs(
         ],
         "Examples" => [
             "Group Isomorphism" => "generated/example_group_isomorphism.md",
-            "OrthoCube" => "generated/example_orthocube.md",
+            "Hypercube" => "generated/example_hypercube.md",
             "Point Group Elements" => "generated/example_point_group_elements.md",
             "Point Group 4mm (C₄ᵥ)" => "generated/example_point_group_4mm.md",
             "Little Group in 2D" => "generated/example_little_group_2d.md",

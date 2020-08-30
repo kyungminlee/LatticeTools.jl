@@ -10,13 +10,13 @@ Represent a lattice.
 
 # Arguments
 * `unitcell::UnitCell{O}`
-* `orthocube::OrthoCube`
+* `hypercube::Hypercube`
 * `bravais_coordinates::Vector{Vector{Int}}`
 * `supercell::UnitCell{Tuple{O, Vector{Int}}}`
 """
 struct Lattice{O}
     unitcell::UnitCell{O}
-    orthocube::OrthoCube
+    hypercube::Hypercube
     bravais_coordinates::Vector{Vector{Int}}
     supercell::UnitCell{Tuple{O, Vector{Int}}}
 end
@@ -25,7 +25,7 @@ end
 function Base.:(==)(lhs::Lattice{O}, rhs::Lattice{O}) where O
     return (
         lhs.unitcell == rhs.unitcell
-        && lhs.orthocube == rhs.orthocube
+        && lhs.hypercube == rhs.hypercube
         && lhs.bravais_coordinates == rhs.bravais_coordinates
     )
 end
@@ -40,11 +40,11 @@ function makelattice(
         throw(DimensionMismatch("unitcell and shape_matrix should have the same dimension"))
     end
 
-    orthocube = OrthoCube(shape_matrix)
-    generator_translations = find_generators(orthocube)
-    unitcell_coordinates = generate_coordinates(orthocube, generator_translations)
+    hypercube = Hypercube(shape_matrix)
+    generator_translations = find_generators(hypercube)
+    unitcell_coordinates = generate_coordinates(hypercube, generator_translations)
 
-    new_latticevectors = unitcell.latticevectors * orthocube.shape_matrix
+    new_latticevectors = unitcell.latticevectors * hypercube.shape_matrix
 
     new_unitcell = makeunitcell(new_latticevectors; SiteType=Tuple{O, Vector{Int}})
     for uc in unitcell_coordinates, (orbname, orbcoord) in unitcell.sites
@@ -55,7 +55,7 @@ function makelattice(
         addsite!(new_unitcell, new_orbname, new_orbcoord)
     end
 
-    return Lattice{O}(unitcell, orthocube, unitcell_coordinates, new_unitcell)
+    return Lattice{O}(unitcell, hypercube, unitcell_coordinates, new_unitcell)
 end
 #TODO unit testing for lattice with wrong dimensions
 
@@ -83,10 +83,10 @@ function makelattice(
     if size(shape_matrix) != (dim, dim)
         throw(DimensionMismatch("unitcell and shape_matrix should have the same dimension"))
     end
-    orthocube = OrthoCube(shape_matrix)
-    unitcell_coordinates = generate_coordinates(orthocube, generator_translations)
+    hypercube = Hypercube(shape_matrix)
+    unitcell_coordinates = generate_coordinates(hypercube, generator_translations)
 
-    new_latticevectors = unitcell.latticevectors * orthocube.shape_matrix
+    new_latticevectors = unitcell.latticevectors * hypercube.shape_matrix
 
     new_unitcell = makeunitcell(new_latticevectors; SiteType=Tuple{O, Vector{Int}})
     for uc in unitcell_coordinates, (orbname, orbcoord) in unitcell.sites
@@ -97,7 +97,7 @@ function makelattice(
         addsite!(new_unitcell, new_orbname, new_orbcoord)
     end
 
-    return Lattice{O}(unitcell, orthocube, unitcell_coordinates, new_unitcell)
+    return Lattice{O}(unitcell, hypercube, unitcell_coordinates, new_unitcell)
 end
 
 

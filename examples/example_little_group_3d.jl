@@ -9,7 +9,7 @@ addsite!(unitcell, "Oy", FractCoord([0,0,0], [0.0, 0.5, 0.0]))
 # Currently, makelattice in three-dimension is not well supported
 
 lattice = makelattice(unitcell, [4 0 0; 0 4 0; 0 0 3], [1 0 0; 0 1 0; 0 0 1])
-tsym = TranslationSymmetry(lattice.orthocube, [1 0 0; 0 1 0; 0 0 1])
+tsym = TranslationSymmetry(lattice.hypercube, [1 0 0; 0 1 0; 0 0 1])
 psym = project(PointSymmetryDatabase.get(15), [1 0 0; 0 1 0; 0 0 1])
 
 for idx in 1:num_irreps(tsym)

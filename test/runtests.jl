@@ -6,7 +6,7 @@ include("test_parser.jl")
 include("test_coord.jl")
 include("test_unitcell.jl")
 #include("test_unitcell_deprecated.jl")
-include("test_orthocube.jl")
+include("test_hypercube.jl")
 include("test_lattice.jl")
 include("test_permutation.jl")
 

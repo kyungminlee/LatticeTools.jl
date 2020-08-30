@@ -26,7 +26,7 @@ function make_kagome_lattice(size_matrix ::AbstractMatrix{<:Integer}; compute_sy
     ]
 
     lattice = make_lattice(unitcell, size_matrix)
-    orthocube = lattice.orthocube
+    hypercube = lattice.hypercube
     supercell = lattice.supercell
     tsym = TranslationSymmetry(lattice)
     psym = project(PointSymmetryDatabase.get(25), [1 0 0; 0 1 0])
@@ -36,8 +36,8 @@ function make_kagome_lattice(size_matrix ::AbstractMatrix{<:Integer}; compute_sy
 
     for r in lattice.bravais_coordinates
         for (rowvec, roworb, colvec, colorb, bondsign) in nnbondtypes
-            R_row, r_row = orthocube.wrap(r .+ rowvec)
-            R_col, r_col = orthocube.wrap(r .+ colvec)
+            R_row, r_row = hypercube.wrap(r .+ rowvec)
+            R_col, r_col = hypercube.wrap(r .+ colvec)
             roworb_super = (roworb, r_row)
             colorb_super = (colorb, r_col)
             irow = get(supercell.siteindices, roworb_super, -1)
@@ -45,8 +45,8 @@ function make_kagome_lattice(size_matrix ::AbstractMatrix{<:Integer}; compute_sy
             push!(nnbonds, ((irow, icol), R_col-R_row, bondsign))
         end
         for (rowvec, roworb, colvec, colorb, bondsign) in nnnbondtypes
-            R_row, r_row = orthocube.wrap(r .+ rowvec)
-            R_col, r_col = orthocube.wrap(r .+ colvec)
+            R_row, r_row = hypercube.wrap(r .+ rowvec)
+            R_col, r_col = hypercube.wrap(r .+ colvec)
             roworb_super = (roworb, r_row)
             colorb_super = (colorb, r_col)
             irow = get(supercell.siteindices, roworb_super, -1)
@@ -59,8 +59,8 @@ function make_kagome_lattice(size_matrix ::AbstractMatrix{<:Integer}; compute_sy
     for r in lattice.bravais_coordinates
       triangle = []
       for (rowvec, roworb, colvec, colorb, bondsign) in nnbondtypes[1:3]
-        R_row, r_row = orthocube.wrap(r .+ rowvec)
-        R_col, r_col = orthocube.wrap(r .+ colvec)
+        R_row, r_row = hypercube.wrap(r .+ rowvec)
+        R_col, r_col = hypercube.wrap(r .+ colvec)
         roworb_super = (roworb, r_row)
         colorb_super = (colorb, r_col)
         irow = get(supercell.siteindices, roworb_super, -1)
@@ -71,8 +71,8 @@ function make_kagome_lattice(size_matrix ::AbstractMatrix{<:Integer}; compute_sy
 
       triangle = []
       for (rowvec, roworb, colvec, colorb, bondsign) in nnbondtypes[4:6]
-        R_row, r_row = orthocube.wrap(r .+ rowvec)
-        R_col, r_col = orthocube.wrap(r .+ colvec)
+        R_row, r_row = hypercube.wrap(r .+ rowvec)
+        R_col, r_col = hypercube.wrap(r .+ colvec)
         roworb_super = (roworb, r_row)
         colorb_super = (colorb, r_col)
         irow = get(supercell.siteindices, roworb_super, -1)

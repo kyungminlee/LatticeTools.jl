@@ -55,10 +55,10 @@ struct SymmetryEmbedding{SymmetryType}<:AbstractSymmetryEmbedding
                         push!(isomorphic_group_names, target_symmetry.hermann_mauguin)
                     end
                 end
-                @warn "Lattice $(lattice.orthocube.shape_matrix) is too small for $(symmetry_name(symmetry)) (embedding not faithful).\n"*
+                @warn "Lattice $(lattice.hypercube.shape_matrix) is too small for $(symmetry_name(symmetry)) (embedding not faithful).\n"*
                       "Reduced point group isomorphic to: $(join(isomorphic_group_names, ", "))" # COV_EXCL_LINE
             else
-                @warn "Lattice $(lattice.orthocube.shape_matrix) is too small for $(symmetry_name(symmetry)) (embedding not faithful)." # COV_EXCL_LINE
+                @warn "Lattice $(lattice.hypercube.shape_matrix) is too small for $(symmetry_name(symmetry)) (embedding not faithful)." # COV_EXCL_LINE
             end
         end
         new{SymmetryType}(lattice, symmetry, elems)
@@ -293,7 +293,7 @@ end
 Return the name of the symmetry embedding.
 """
 function symmetry_name(arg::SymmetryEmbedding)
-    return "Embed[$(symmetry_name(symmetry(arg))) on $(arg.lattice.orthocube.shape_matrix)"*
+    return "Embed[$(symmetry_name(symmetry(arg))) on $(arg.lattice.hypercube.shape_matrix)"*
         " with $(numsite(arg.lattice.unitcell)) sites]"
 end
 

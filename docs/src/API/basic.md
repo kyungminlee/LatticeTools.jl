@@ -46,19 +46,19 @@ LatticeTools.momentumgrid(::UnitCell, ::Vector{Int})
 LatticeTools.findsiteindex
 ```
 
-## OrthoCube
+## Hypercube
 
 ```@docs
-LatticeTools.OrthoCube
+LatticeTools.Hypercube
 ```
 
 ```@docs
-LatticeTools.dimension(::OrthoCube)
-LatticeTools.volume(::OrthoCube)
-LatticeTools.isequiv(::OrthoCube, ::OrthoCube)
-LatticeTools.find_generators(::OrthoCube)
-LatticeTools.find_generators_2d(::OrthoCube)
-LatticeTools.generate_coordinates(::OrthoCube, ::Matrix{Int})
+LatticeTools.dimension(::Hypercube)
+LatticeTools.volume(::Hypercube)
+LatticeTools.isequiv(::Hypercube, ::Hypercube)
+LatticeTools.find_generators(::Hypercube)
+LatticeTools.find_generators_2d(::Hypercube)
+LatticeTools.generate_coordinates(::Hypercube, ::Matrix{Int})
 ```
 
 ## Lattice

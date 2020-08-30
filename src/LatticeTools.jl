@@ -2,7 +2,7 @@ module LatticeTools
 
 include("Basic/basic.jl")
 include("Basic/coord.jl")
-include("Basic/orthocube.jl")  # replacement for hypercube
+include("Basic/hypercube.jl")  # replacement for hypercube
 include("Basic/unitcell.jl")
 include("Basic/lattice.jl")
 

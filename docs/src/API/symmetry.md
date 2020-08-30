@@ -21,8 +21,8 @@ TranslationSymmetry
 ```@docs
 TranslationSymmetry(::Matrix{Int})
 TranslationSymmetry(::Lattice)
-TranslationSymmetry(::OrthoCube)
-TranslationSymmetry(::OrthoCube, ::Matrix{Int})
+TranslationSymmetry(::Hypercube)
+TranslationSymmetry(::Hypercube, ::Matrix{Int})
 ```
 
 ### Common Functions for Symmetry

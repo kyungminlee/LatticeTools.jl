@@ -4,30 +4,30 @@ using LatticeTools
 
 @testset "iscompatible" begin
     # hypercube and operation
-    @testset "orthocube-operation" begin
+    @testset "hypercube-operation" begin
         #hypercube = HypercubicLattice([2 0; 0 2])
-        orthocube = OrthoCube([2 0; 0 2])
-        @test_throws DimensionMismatch iscompatible(orthocube, TranslationOperation([1, 0, 0]))
-        @test iscompatible(orthocube, TranslationOperation([1, 0]))
+        hypercube = Hypercube([2 0; 0 2])
+        @test_throws DimensionMismatch iscompatible(hypercube, TranslationOperation([1, 0, 0]))
+        @test iscompatible(hypercube, TranslationOperation([1, 0]))
 
-        @test_throws DimensionMismatch iscompatible(orthocube, PointOperation([1 0 0; 0 1 0; 0 0 0]))
-        @test iscompatible(orthocube, PointOperation([0 1; 1 0]))
-        @test !iscompatible(orthocube, PointOperation([0 2; 1 0]))
-        @test !iscompatible(OrthoCube([3 0; 0 2]), PointOperation([0 1; 1 0]))
+        @test_throws DimensionMismatch iscompatible(hypercube, PointOperation([1 0 0; 0 1 0; 0 0 0]))
+        @test iscompatible(hypercube, PointOperation([0 1; 1 0]))
+        @test !iscompatible(hypercube, PointOperation([0 2; 1 0]))
+        @test !iscompatible(Hypercube([3 0; 0 2]), PointOperation([0 1; 1 0]))
     end
 
     # hypercube and symmetry
     @testset "hypercube-symmetry" begin
-        orthocube = OrthoCube([2 0; 0 2])
-        @test  iscompatible(orthocube, TranslationSymmetry([2 0; 0 2]))
-        @test  iscompatible(orthocube, TranslationSymmetry([2 2; 0 2]))
-        @test !iscompatible(orthocube, TranslationSymmetry([1 0; 0 1]))
-        @test !iscompatible(orthocube, TranslationSymmetry([2 0; 0 1]))
+        hypercube = Hypercube([2 0; 0 2])
+        @test  iscompatible(hypercube, TranslationSymmetry([2 0; 0 2]))
+        @test  iscompatible(hypercube, TranslationSymmetry([2 2; 0 2]))
+        @test !iscompatible(hypercube, TranslationSymmetry([1 0; 0 1]))
+        @test !iscompatible(hypercube, TranslationSymmetry([2 0; 0 1]))
 
         psym = project(PointSymmetryDatabase.find("4mm"), [1 0 0; 0 1 0])
-        @test  iscompatible(orthocube, psym)
-        @test  iscompatible(OrthoCube([2 2; 0 2]), psym)
-        @test !iscompatible(OrthoCube([3 0; 0 2]), psym)
+        @test  iscompatible(hypercube, psym)
+        @test  iscompatible(Hypercube([2 2; 0 2]), psym)
+        @test !iscompatible(Hypercube([3 0; 0 2]), psym)
     end
 
     # translation symmetry and point operation

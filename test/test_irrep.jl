@@ -112,7 +112,7 @@ using LatticeTools
         for ((tsic, psic), ssic) in zip(ssics1, ssics2)
             @test group_order(ssic) == group_order(tsic) * group_order(psic)
 
-            @test tsic.symmetry.orthocube == ssic.normal.symmetry.orthocube
+            @test tsic.symmetry.hypercube == ssic.normal.symmetry.hypercube
             @test psic.symmetry.hermann_mauguin == ssic.rest.symmetry.hermann_mauguin
             @test tsic.irrep_index == ssic.normal.irrep_index
             @test psic.irrep_index == ssic.rest.irrep_index

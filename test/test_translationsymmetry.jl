@@ -10,7 +10,7 @@ using YAML
         TranslationSymmetry(4*ones(Int, (1, 1)))
         TranslationSymmetry([4 0; 0 4])
         @test_throws ErrorException TranslationSymmetry([4 0 0; 0 4 0; 0 0 4])  # <- Temporary
-        @test_throws ArgumentError TranslationSymmetry(OrthoCube([2 0; 0 2]), [2 0; 0 1])
+        @test_throws ArgumentError TranslationSymmetry(Hypercube([2 0; 0 2]), [2 0; 0 1])
     end
 
     @testset "properties" begin
@@ -85,7 +85,7 @@ using YAML
             lookup = Dict(r => i for (i, r) in enumerate(tsym.coordinates))
             for (i, ri) in enumerate(tsym.coordinates)
                 for (j, rj) in enumerate(tsym.coordinates)
-                    _, ek = tsym.orthocube.wrap(ri + rj)
+                    _, ek = tsym.hypercube.wrap(ri + rj)
                     k = lookup[ek]
                     mtab[i,j] = k
                 end # for j
@@ -113,7 +113,7 @@ using YAML
         @testset "symmetry_product" begin
             pro = symmetry_product(tsym)
             @test all(
-                pro(x,y).displacement == tsym.orthocube.wrap(x.displacement + y.displacement)[2]
+                pro(x,y).displacement == tsym.hypercube.wrap(x.displacement + y.displacement)[2]
                 for x in tsym, y in tsym
             )
         end

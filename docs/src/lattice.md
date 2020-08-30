@@ -4,7 +4,7 @@ The most basic feature **LatticeTools.jl** provides is defining a lattice system
 1. a unit cell, defined by the lattice vectors and the basis sites
 2. Bravais lattice
 
-[`UnitCell`](@ref) represents the first component, while the second component, its cluster shape and periodic boundary condition for finite a finite size lattice, makes use of [`OrthoCube`](@ref).
+[`UnitCell`](@ref) represents the first component, while the second component, its cluster shape and periodic boundary condition for finite a finite size lattice, makes use of [`Hypercube`](@ref).
 
 
 ## UnitCell
@@ -30,16 +30,16 @@ i.e. in units of the lattice vectors, with `whole` ($\in \mathbb{Z}^{D}$) and
 `fraction` ($\in [0, 1)^D$) parts.
 
 
-## OrthoCube
+## Hypercube
 
 A finite size lattice with periodic boundary condition can be constructed as a quotient set of an infinite lattice, with equivalence relation defined by a "supercell translation".
 In such a case, the equivalence relation within the basis under translation is identity; only the equivalence relation within the Bravais lattice needs to be worked out.
-[`OrthoCube`](@ref) provides methods for calculating equivalence relation.
+[`Hypercube`](@ref) provides methods for calculating equivalence relation.
 
 For example, when the super cell is defined by lattice vectors `[3, -1]` and `[1, 3]` (in units of the lattice vectors of the original unit cell), 
 ```@repl
 using LatticeTools # hide
-cube = OrthoCube([3 1; -1 3])
+cube = Hypercube([3 1; -1 3])
 cube.wrap([4, 0])
 ```
 Here `cube.wrap` is similar to `divrem`:

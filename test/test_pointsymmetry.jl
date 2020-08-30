@@ -238,8 +238,8 @@ using YAML
     end
 
     @testset "iscompatible" begin
-        hc1 = OrthoCube([4 0; 0 4])
-        hc2 = OrthoCube([4 0; 0 3])
+        hc1 = Hypercube([4 0; 0 4])
+        hc2 = Hypercube([4 0; 0 3])
         tsym1 = TranslationSymmetry(hc1)
         tsym2 = TranslationSymmetry(hc2)
 
