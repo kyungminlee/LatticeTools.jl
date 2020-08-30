@@ -5,7 +5,7 @@ including translation, and point operation, and the combination of the two.
 Here `S` is the type for the coordinates.
 
 ```@setup tbl
-using TightBindingLattice
+using LatticeTools
 ```
 
 ## Translation Operation

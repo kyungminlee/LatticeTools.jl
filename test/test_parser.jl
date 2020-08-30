@@ -1,7 +1,7 @@
 using Test
-using TightBindingLattice
+using LatticeTools
 
-using TightBindingLattice: parse_expr
+using LatticeTools: parse_expr
 
 
 @testset "parse_expr" begin
@@ -38,7 +38,7 @@ using TightBindingLattice: parse_expr
 end
 
 @testset "cleanup" begin
-    using TightBindingLattice: cleanup_number
+    using LatticeTools: cleanup_number
     @test cleanup_number(42, 1E-8) == 42
     @test cleanup_number(1.5 + 1E-12, 1E-8) == 1.5
     @test cleanup_number([1.0 + 1E-12, 2.0 - 1E-12, 3.0], 1E-8) == [1.0, 2.0, 3.0]

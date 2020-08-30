@@ -1,5 +1,5 @@
 using Test
-using TightBindingLattice
+using LatticeTools
 
 
 @testset "symmorphic" begin
@@ -29,7 +29,7 @@ using TightBindingLattice
             let
                 z1 = product(x, y)
                 z2 = x * y
-                z3 = SpaceOperation(z2.matrix, tsym.orthocube.wrap(z2.displacement)[2])
+                z3 = SpaceOperation(z2.matrix, tsym.hypercube.wrap(z2.displacement)[2])
                 z1 == z3
             end for x in els, y in els
         )

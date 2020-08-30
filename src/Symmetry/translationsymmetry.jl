@@ -27,7 +27,7 @@ julia> TranslationSymmetry([3 0; 0 2])
 ```
 
 # Fields
-* `orthocube::OrthoCube`
+* `hypercube::Hypercube`
 * `elements::Vector{TranslationOperation{Int}}`
 * `group::FiniteGroup`
 
@@ -51,7 +51,7 @@ julia> TranslationSymmetry([3 0; 0 2])
 """
 struct TranslationSymmetry <: AbstractSymmetry{TranslationOperation{Int}}
 
-    orthocube::OrthoCube
+    hypercube::Hypercube
 
     elements::Vector{TranslationOperation{Int}}
     group::FiniteGroup
@@ -79,32 +79,32 @@ struct TranslationSymmetry <: AbstractSymmetry{TranslationOperation{Int}}
         TranslationSymmetry(shape::Matrix{<:Integer}; tol=√ϵ)
     """
     function TranslationSymmetry(shape::Matrix{<:Integer}; tol::Real=Base.rtoldefault(Float64))
-        return TranslationSymmetry(OrthoCube(shape))
+        return TranslationSymmetry(Hypercube(shape))
     end
 
     @doc """
         TranslationSymmetry(lattice::Lattice; tol=√ϵ)
     """
     function TranslationSymmetry(lattice::Lattice; tol::Real=Base.rtoldefault(Float64))
-        return TranslationSymmetry(lattice.orthocube)
+        return TranslationSymmetry(lattice.hypercube)
     end
 
     @doc """
-        TranslationSymmetry(orthocube::OrthoCube; tol=√ϵ)
+        TranslationSymmetry(hypercube::Hypercube; tol=√ϵ)
     """
     function TranslationSymmetry(
-        orthocube::OrthoCube;
+        hypercube::Hypercube;
         tol::Real=Base.rtoldefault(Float64),
     )
-        generator_translations = find_generators(orthocube)
-        return TranslationSymmetry(orthocube, generator_translations; tol=tol)
+        generator_translations = find_generators(hypercube)
+        return TranslationSymmetry(hypercube, generator_translations; tol=tol)
     end
 
     @doc """
-        TranslationSymmetry(orthocube::OrthoCube, generators::AbstractMatrix{<:Integer}; tol::Real=Base.rtoldefault(Float64))
+        TranslationSymmetry(hypercube::Hypercube, generators::AbstractMatrix{<:Integer}; tol::Real=Base.rtoldefault(Float64))
     """
     function TranslationSymmetry(
-        orthocube::OrthoCube,
+        hypercube::Hypercube,
         generator_translations::AbstractMatrix{<:Integer};
         tol::Real=Base.rtoldefault(Float64),
     )
@@ -113,16 +113,16 @@ struct TranslationSymmetry <: AbstractSymmetry{TranslationOperation{Int}}
         end
 
         # BEGIN Orthogonal
-        coordinates = generate_coordinates(orthocube, generator_translations)
+        coordinates = generate_coordinates(hypercube, generator_translations)
         coordinate_indices = Dict(r => i for (i, r) in enumerate(coordinates))
 
-        pbcadd = (x::Vector{Int}, y::Vector{Int}) -> orthocube.wrap(x+y)[2]
+        pbcadd = (x::Vector{Int}, y::Vector{Int}) -> hypercube.wrap(x+y)[2]
         group = FiniteGroup(group_multiplication_table(coordinates, pbcadd))
         @assert isabelian(group)
 
         ord_group = group_order(group)
 
-        generators = Int[ coordinate_indices[ orthocube.wrap(v)[2] ]
+        generators = Int[ coordinate_indices[ hypercube.wrap(v)[2] ]
                               for v in eachcol(generator_translations) ]
 
         orthogonal_shape = Int[group.period_lengths[g] for g in generators] # in "generator" coordinates
@@ -135,7 +135,7 @@ struct TranslationSymmetry <: AbstractSymmetry{TranslationOperation{Int}}
 
         let ortho_latvec = generator_translations
             for (r, r_ortho) in zip(coordinates, orthogonal_coordinates)
-                @assert r == orthocube.wrap(ortho_latvec * r_ortho)[2]
+                @assert r == hypercube.wrap(ortho_latvec * r_ortho)[2]
                 orthogonal_to_coordinate_map[r_ortho] = r
                 coordinate_to_orthogonal_map[r] = r_ortho
             end
@@ -179,7 +179,7 @@ struct TranslationSymmetry <: AbstractSymmetry{TranslationOperation{Int}}
         end
 
         return new(
-            orthocube, elements, group, generators,
+            hypercube, elements, group, generators,
             conjugacy_classes, character_table, irreps, element_names,
             generator_translations,
             coordinates,
@@ -197,7 +197,7 @@ end
 
 Spatial dimension of the translation symmetry
 """
-dimension(sym::TranslationSymmetry) = dimension(sym.orthocube)
+dimension(sym::TranslationSymmetry) = dimension(sym.hypercube)
 
 """
     group(sym::TranslationSymmetry)
@@ -275,7 +275,7 @@ Return a binary function which combines two translation operations, with the giv
 boundary condition.
 
 ```jldoctest
-julia> using TightBindingLattice
+julia> using LatticeTools
 
 julia> tsym = TranslationSymmetry([3 0; 0 4]);
 
@@ -287,9 +287,23 @@ TranslationOperation{Int64}([1, 0])
 """
 function symmetry_product(sym::TranslationSymmetry)
     function product(lhs::TranslationOperation, rhs::TranslationOperation)
-        return TranslationOperation(sym.orthocube.wrap(lhs.displacement + rhs.displacement)[2])
+        return TranslationOperation(sym.hypercube.wrap(lhs.displacement + rhs.displacement)[2])
     end
     return product
+end
+
+
+function symmetry_canonize(sym::TranslationSymmetry)
+    function canonize(arg::TranslationOperation{<:Integer})
+        return TranslationOperation(sym.hypercube.wrap(arg.displacement)[2])
+    end
+    function canonize(arg::PointOperation{<:Integer})
+        return arg
+    end
+    function canonize(arg::SpaceOperation{<:Integer, <:Integer})
+        return SpaceOperation(canonize(arg.matrix), canonize(arg.displacement))
+    end
+    return canonize
 end
 
 
@@ -325,10 +339,10 @@ Base.length(sym::TranslationSymmetry) = length(elements(sym))
 Name of the translation symmetry. Return `TranslationSymmetry[(n11,n21)x(n12,n22)]`.
 """
 function symmetry_name(sym::TranslationSymmetry)
-    n11 = sym.orthocube.shape_matrix[1,1]
-    n12 = sym.orthocube.shape_matrix[1,2]
-    n21 = sym.orthocube.shape_matrix[2,1]
-    n22 = sym.orthocube.shape_matrix[2,2]
+    n11 = sym.hypercube.shape_matrix[1,1]
+    n12 = sym.hypercube.shape_matrix[1,2]
+    n21 = sym.hypercube.shape_matrix[2,1]
+    n22 = sym.hypercube.shape_matrix[2,2]
     return "TranslationSymmetry[($n11,$n21)x($n12,$n22)]"
 end
 

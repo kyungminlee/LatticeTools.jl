@@ -1,7 +1,7 @@
 # # Point group 4mm (C₄ᵥ)
 
 # ## Preamble
-using TightBindingLattice
+using LatticeTools
 using Formatting: printfmt
 
 function display_matrix(io::IO, matrix::AbstractMatrix; prefix::AbstractString="")

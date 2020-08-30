@@ -1,13 +1,13 @@
 using Documenter
 using Literate
-using TightBindingLattice
+using LatticeTools
 
 example_directory = joinpath(@__DIR__, "..", "examples")
 output_directory = joinpath(@__DIR__, "src/generated")
 for filename in [
     "example_group_isomorphism.jl",
     "example_honeycomb_symmetry.jl",
-    "example_orthocube.jl",
+    "example_hypercube.jl",
     "example_kagome_symmetry.jl",
     "example_little_group_2d.jl",
     "example_little_group_3d.jl",
@@ -20,23 +20,23 @@ for filename in [
 end
 
 makedocs(
-    modules=[TightBindingLattice],
+    modules=[LatticeTools],
     doctest=true,
-    sitename="TightBindingLattice.jl",
+    sitename="LatticeTools.jl",
     format=Documenter.HTML(prettyurls=!("local" in ARGS)),
     authors="Kyungmin Lee",
     checkdocs=:all,
     pages = [
         "Home" => "index.md",
         "lattice.md",
-        "Symmetry" => [
-            "Symmetry/operation-space.md",
-            "Symmetry/symmetry-space.md",
+        "Symmetry Analysis" => [
+            "Symmetry/space-symmetry.md",
+            "Symmetry/space-operation.md",
             "Symmetry/irrep.md",
         ],
         "Examples" => [
             "Group Isomorphism" => "generated/example_group_isomorphism.md",
-            "OrthoCube" => "generated/example_orthocube.md",
+            "Hypercube" => "generated/example_hypercube.md",
             "Point Group Elements" => "generated/example_point_group_elements.md",
             "Point Group 4mm (C₄ᵥ)" => "generated/example_point_group_4mm.md",
             "Little Group in 2D" => "generated/example_little_group_2d.md",
@@ -57,6 +57,6 @@ makedocs(
 )
 
 deploydocs(
-    repo = "github.com/kyungminlee/TightBindingLattice.jl.git",
+    repo = "github.com/kyungminlee/LatticeTools.jl.git",
     devbranch = "dev",
 )

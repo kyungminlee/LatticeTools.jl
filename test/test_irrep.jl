@@ -1,5 +1,5 @@
 using Test
-using TightBindingLattice
+using LatticeTools
 
 
 @testset "irrep" begin
@@ -23,7 +23,7 @@ using TightBindingLattice
         for tsym_irrep in 1:num_irreps(tsym)
             tsic = IrrepComponent(tsym, tsym_irrep)
             tsicbed = IrrepComponent(tsymbed, tsym_irrep)
-            
+
             @test group_order(tsic) == group_order(tsym)
             psym_little = little_symmetry(tsic, psym)
             psymbed_little = little_symmetry(tsicbed, psymbed)
@@ -40,7 +40,7 @@ using TightBindingLattice
             @test iscompatible(tsicbed, psymbed_little)
 
             @test little_group(tsic, psym) == little_group(tsicbed, psymbed)
-            
+
             lge1 = little_group_elements(tsic, psym)
             lge2 = little_group_elements(tsicbed, psymbed)
             @test lge1 == lge2
@@ -112,7 +112,7 @@ using TightBindingLattice
         for ((tsic, psic), ssic) in zip(ssics1, ssics2)
             @test group_order(ssic) == group_order(tsic) * group_order(psic)
 
-            @test tsic.symmetry.orthocube == ssic.normal.symmetry.orthocube
+            @test tsic.symmetry.hypercube == ssic.normal.symmetry.hypercube
             @test psic.symmetry.hermann_mauguin == ssic.rest.symmetry.hermann_mauguin
             @test tsic.irrep_index == ssic.normal.irrep_index
             @test psic.irrep_index == ssic.rest.irrep_index

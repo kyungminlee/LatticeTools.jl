@@ -1,5 +1,5 @@
 using Test
-using TightBindingLattice
+using LatticeTools
 
 using LinearAlgebra
 
@@ -11,7 +11,7 @@ using LinearAlgebra
         addsite!(unitcell, "Oy", FractCoord([0,0], [0.0, 0.5]))
         @testset "square" begin
             lattice = make_lattice(unitcell, [2 0; 0 2])
-            
+
             # |       |                 |       |
             # 6       8                 8       6
             # |       |         [1,0]   |       |
@@ -82,7 +82,7 @@ using LinearAlgebra
             @test little_group_elements(tsymbed, psymbed) == 1:group_order(psymbed)
             @test little_group_elements(tsymbed, 1, psymbed) == 1:group_order(psymbed)
             @test length(little_group_elements(tsymbed, 2, psymbed)) < group_order(psymbed)
-            
+
             @test iscompatible(tsymbed, 1, psymbed)
             @test !iscompatible(tsymbed, 2, psymbed)
             @test !iscompatible(tsymbed, 3, psymbed)

@@ -1,42 +1,42 @@
 export iscompatible
 
 
-## 1. OrthoCube and Operation
+## 1. Hypercube and Operation
 
 """
-    iscompatible(orthocube, operator::TranslationOperation{<:Integer})
+    iscompatible(hypercube, operator::TranslationOperation{<:Integer})
 """
-function iscompatible(orthocube::OrthoCube, op::TranslationOperation{<:Integer})::Bool
-    if dimension(orthocube) != dimension(op)
+function iscompatible(hypercube::Hypercube, op::TranslationOperation{<:Integer})::Bool
+    if dimension(hypercube) != dimension(op)
         throw(DimensionMismatch("hypercube and operation have different dimension"))
     end
     return true
 end
 
 """
-    iscompatible(orthocube, operator::PointOperation{<:Integer})
+    iscompatible(hypercube, operator::PointOperation{<:Integer})
 """
-function iscompatible(orthocube::OrthoCube, op::PointOperation{<:Integer})::Bool
-    R, r = orthocube.wrap(op.matrix * orthocube.shape_matrix)
+function iscompatible(hypercube::Hypercube, op::PointOperation{<:Integer})::Bool
+    R, r = hypercube.wrap(op.matrix * hypercube.shape_matrix)
     return iszero(r) && abs(ExactLinearAlgebra.determinant(R)) == 1
 end
 
 
-## 2. OrthoCube and Symmetry
+## 2. Hypercube and Symmetry
 
 """
-    iscompatible(orthocube, symmetry::TranslationSymmetry)
+    iscompatible(hypercube, symmetry::TranslationSymmetry)
 """
-function iscompatible(orthocube::OrthoCube, tsym::TranslationSymmetry)::Bool
-    R, r = orthocube.wrap(tsym.orthocube.shape_matrix)
+function iscompatible(hypercube::Hypercube, tsym::TranslationSymmetry)::Bool
+    R, r = hypercube.wrap(tsym.hypercube.shape_matrix)
     return iszero(r) && abs(ExactLinearAlgebra.determinant(R)) == 1
 end
 
 """
-    iscompatible(orthocube, symmetry::PointSymmetry)
+    iscompatible(hypercube, symmetry::PointSymmetry)
 """
-function iscompatible(orthocube::OrthoCube, psym::PointSymmetry)::Bool
-    return all(iscompatible(orthocube, pop) for pop in elements(psym))
+function iscompatible(hypercube::Hypercube, psym::PointSymmetry)::Bool
+    return all(iscompatible(hypercube, pop) for pop in elements(psym))
 end
 
 
@@ -46,14 +46,14 @@ end
     iscompatible(tsym::TranslationSymmetry, pop::PointOperation{<:Integer})
 """
 function iscompatible(tsym::TranslationSymmetry, pop::PointOperation{<:Integer})::Bool
-    return iscompatible(tsym.orthocube, pop)
+    return iscompatible(tsym.hypercube, pop)
 end
 
 """
     iscompatible(tsym::TranslationSymmetry, psym::PointSymmetry)
 """
 function iscompatible(tsym::TranslationSymmetry, psym::PointSymmetry)::Bool
-    return iscompatible(tsym.orthocube, psym)
+    return iscompatible(tsym.hypercube, psym)
 end
 
 """
@@ -113,7 +113,7 @@ end
     iscompatible(lattice, point_operation)
 """
 function iscompatible(lattice::Lattice, op::PointOperation{<:Integer})
-    return iscompatible(lattice.orthocube, op) &&
+    return iscompatible(lattice.hypercube, op) &&
            !isnothing(findsitemap(lattice.unitcell, op))
 end
 
@@ -127,7 +127,7 @@ Test whether lattice and the symmetry are compatible.
 For translation symmetry, this means that the hypercubic lattice for both are the same.
 """
 function iscompatible(lattice::Lattice, tsym::TranslationSymmetry)
-    return iscompatible(lattice.orthocube, tsym)
+    return iscompatible(lattice.hypercube, tsym)
 end
 
 """
@@ -135,7 +135,7 @@ end
 """
 function iscompatible(lattice::Lattice, psym::PointSymmetry)::Bool
     return (
-        iscompatible(lattice.orthocube, psym) &&
+        iscompatible(lattice.hypercube, psym) &&
         all(pop -> !isnothing(findsitemap(lattice.unitcell, pop)), generator_elements(psym))
     )
 end

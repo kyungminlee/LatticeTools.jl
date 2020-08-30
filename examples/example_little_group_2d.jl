@@ -1,7 +1,7 @@
 # # Little Group in 2D
 
 # ## Preamble
-using TightBindingLattice
+using LatticeTools
 using Formatting
 using Plots
 function display_matrix(io::IO, matrix::AbstractMatrix; prefix::AbstractString="")

@@ -1,5 +1,5 @@
 using Test
-using TightBindingLattice
+using LatticeTools
 
 
 @testset "Lattice1D" begin
@@ -9,7 +9,7 @@ using TightBindingLattice
     scale_matrix = 3 * ones(Int, (1,1))
     @test lattice.unitcell == unitcell
     #@test lattice.hypercube == HypercubicLattice(scale_matrix)
-    @test lattice.orthocube == OrthoCube(scale_matrix)
+    @test lattice.hypercube == Hypercube(scale_matrix)
     @test numsite(lattice.supercell) == 3
 
     @test_throws DimensionMismatch make_lattice(unitcell, [3 0])
@@ -35,7 +35,7 @@ end
     lattice = make_lattice(unitcell, [2 0; 0 2])
 
     @test lattice.unitcell == unitcell
-    @test lattice.orthocube.shape_matrix == [2 0; 0 2]
+    @test lattice.hypercube.shape_matrix == [2 0; 0 2]
     @test numsite(lattice.supercell) == 3 * 2 * 2
     @test lattice.supercell.latticevectors == [2.0 0.0; 0.0 2.0]
 
@@ -48,7 +48,7 @@ end
     let lattice3 = make_lattice(unitcell, [2 0; 0 2], [0 1; 1 0])
         @test lattice != lattice3
         @test lattice.unitcell == lattice3.unitcell
-        @test lattice.orthocube == lattice3.orthocube
+        @test lattice.hypercube == lattice3.hypercube
         @test lattice.bravais_coordinates != lattice3.bravais_coordinates
     end
     let unitcell2 = make_unitcell([1.0 0.0; 0.0 1.0]; SiteType=String)

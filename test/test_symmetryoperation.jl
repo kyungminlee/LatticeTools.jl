@@ -1,5 +1,5 @@
 using Test
-using TightBindingLattice
+using LatticeTools
 
 
 @testset "symmetryoperation" begin

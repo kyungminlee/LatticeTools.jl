@@ -1,7 +1,7 @@
 # Basics
 
 ```@meta
-CurrentModule = TightBindingLattice
+CurrentModule = LatticeTools
 ```
 
 ## Coordinate Types
@@ -23,51 +23,51 @@ carte2fract(::Matrix{Float64}, ::CarteCoord)
 ## UnitCell
 
 ```@docs
-TightBindingLattice.UnitCell
-TightBindingLattice.makeunitcell
+LatticeTools.UnitCell
+LatticeTools.makeunitcell
 ```
 
 ### Functions
 ```@docs
-TightBindingLattice.dimension
-TightBindingLattice.numsite
-TightBindingLattice.sitecount
-TightBindingLattice.addsite!
-TightBindingLattice.hassite
-TightBindingLattice.getsite
-TightBindingLattice.getsiteindex
-TightBindingLattice.getsitecoord
-TightBindingLattice.getsiteindexcoord
-TightBindingLattice.getsitename
-TightBindingLattice.carte2fract(::UnitCell, ::CarteCoord)
-TightBindingLattice.fract2carte(::UnitCell, ::FractCoord)
-TightBindingLattice.whichunitcell
-TightBindingLattice.momentumgrid(::UnitCell, ::Vector{Int})
-TightBindingLattice.findsiteindex
+LatticeTools.dimension
+LatticeTools.numsite
+LatticeTools.sitecount
+LatticeTools.addsite!
+LatticeTools.hassite
+LatticeTools.getsite
+LatticeTools.getsiteindex
+LatticeTools.getsitecoord
+LatticeTools.getsiteindexcoord
+LatticeTools.getsitename
+LatticeTools.carte2fract(::UnitCell, ::CarteCoord)
+LatticeTools.fract2carte(::UnitCell, ::FractCoord)
+LatticeTools.whichunitcell
+LatticeTools.momentumgrid(::UnitCell, ::Vector{Int})
+LatticeTools.findsiteindex
 ```
 
-## OrthoCube
+## Hypercube
 
 ```@docs
-TightBindingLattice.OrthoCube
+LatticeTools.Hypercube
 ```
 
 ```@docs
-TightBindingLattice.dimension(::OrthoCube)
-TightBindingLattice.volume(::OrthoCube)
-TightBindingLattice.isequiv(::OrthoCube, ::OrthoCube)
-TightBindingLattice.find_generators(::OrthoCube)
-TightBindingLattice.find_generators_2d(::OrthoCube)
-TightBindingLattice.generate_coordinates(::OrthoCube, ::Matrix{Int})
+LatticeTools.dimension(::Hypercube)
+LatticeTools.volume(::Hypercube)
+LatticeTools.isequiv(::Hypercube, ::Hypercube)
+LatticeTools.find_generators(::Hypercube)
+LatticeTools.find_generators_2d(::Hypercube)
+LatticeTools.generate_coordinates(::Hypercube, ::Matrix{Int})
 ```
 
 ## Lattice
 
 ```@docs
-TightBindingLattice.Lattice
-TightBindingLattice.makelattice
+LatticeTools.Lattice
+LatticeTools.makelattice
 ```
 
 ```@docs
-TightBindingLattice.dimension(::Lattice)
+LatticeTools.dimension(::Lattice)
 ```

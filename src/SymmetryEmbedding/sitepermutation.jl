@@ -54,7 +54,7 @@ Embed the simplest version of integer translation (no mapping between sites etc.
 function embed(lattice::Lattice, top::TranslationOperation{<:Integer})
     p = zeros(Int, numsite(lattice.supercell))
     for (site_index1, ((site_name1, uc_coord1), _)) in enumerate(lattice.supercell.sites)
-        _, uc_coord2 = lattice.orthocube.wrap( top(uc_coord1) )
+        _, uc_coord2 = lattice.hypercube.wrap( top(uc_coord1) )
         site_index1 = getsiteindex(lattice.supercell, (site_name1, uc_coord1))
         site_index2 = getsiteindex(lattice.supercell, (site_name1, uc_coord2))
         p[site_index1] = site_index2
@@ -78,7 +78,7 @@ function embed(lattice::Lattice, pop::PointOperation{<:Integer})
         namei = getsitename(lattice.unitcell, i)
         namej = getsitename(lattice.unitcell, j)
         for Ri in lattice.bravais_coordinates
-            _, Rj = lattice.orthocube.wrap(pop.matrix * Ri + dR)
+            _, Rj = lattice.hypercube.wrap(pop.matrix * Ri + dR)
             i_super = lattice.supercell.siteindices[(namei, Ri)]
             j_super = lattice.supercell.siteindices[(namej, Rj)]
             p[i_super] = j_super

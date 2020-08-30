@@ -1,7 +1,7 @@
 using Test
-using TightBindingLattice
+using LatticeTools
 
-using TightBindingLattice: simplify_name
+using LatticeTools: simplify_name
 
 using LinearAlgebra
 using YAML
@@ -33,7 +33,7 @@ using YAML
                              element_names, matrix_representations,
                              hermann_mauguin, schoenflies)
 
-        let TBL = TightBindingLattice
+        let TBL = LatticeTools
             @test eltype(psym) == PointOperation{Int}
             @test valtype(psym) == PointOperation{Int}
             @test all(TBL.element(psym, i) == PointOperation(matrix_representations[i]) for i in 1:2)
@@ -238,8 +238,8 @@ using YAML
     end
 
     @testset "iscompatible" begin
-        hc1 = OrthoCube([4 0; 0 4])
-        hc2 = OrthoCube([4 0; 0 3])
+        hc1 = Hypercube([4 0; 0 4])
+        hc2 = Hypercube([4 0; 0 3])
         tsym1 = TranslationSymmetry(hc1)
         tsym2 = TranslationSymmetry(hc2)
 

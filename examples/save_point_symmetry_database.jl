@@ -1,4 +1,4 @@
-using TightBindingLattice
+using LatticeTools
 using JLD2
 
 
