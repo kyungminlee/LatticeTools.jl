@@ -1,7 +1,7 @@
 # Symmetry
 
 ```@meta
-CurrentModule = TightBindingLattice
+CurrentModule = LatticeTools
 ```
 
 

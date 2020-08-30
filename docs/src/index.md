@@ -21,7 +21,7 @@ To install, add the package registry `KyugminLeeRegistry` and then install the p
 ## Quick Example
 
 ```@example example-unitcell
-using TightBindingLattice
+using LatticeTools
 
 unitcell = makeunitcell([1.0 0.0; 0.0 1.0]; SiteType=String)
 addsite!(unitcell, "Ox", FractCoord([0,0], [0.5, 0.0]))

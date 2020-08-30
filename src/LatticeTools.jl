@@ -1,4 +1,4 @@
-module TightBindingLattice
+module LatticeTools
 
 include("Basic/basic.jl")
 include("Basic/coord.jl")

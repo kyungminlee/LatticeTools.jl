@@ -1,4 +1,4 @@
-using TightBindingLattice
+using LatticeTools
 
 function make_kagome_lattice(size_matrix ::AbstractMatrix{<:Integer}; compute_symmetry::Bool=false)
     latticevectors = [1 -0.5; 0 0.5*sqrt(3.0)];

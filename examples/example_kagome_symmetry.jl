@@ -1,7 +1,7 @@
 # # Kagome Lattice
 
 # ## Preamble
-using TightBindingLattice
+using LatticeTools
 using LinearAlgebra
 using Printf
 using Plots

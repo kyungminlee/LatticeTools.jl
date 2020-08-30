@@ -1,7 +1,7 @@
 # # Orthocube Examples (Bravais Lattice)
 
 # ## Preamble
-using TightBindingLattice
+using LatticeTools
 using Plots
 mkpath("example_orthocube")
 

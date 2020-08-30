@@ -2,7 +2,7 @@
 
 # Search elements by their Seitz name, and show their matrix representations
 
-using TightBindingLattice
+using LatticeTools
 
 all_elements = Dict()
 print("# Reading groups")

@@ -1,6 +1,6 @@
 using Documenter
 using Literate
-using TightBindingLattice
+using LatticeTools
 
 example_directory = joinpath(@__DIR__, "..", "examples")
 output_directory = joinpath(@__DIR__, "src/generated")
@@ -20,7 +20,7 @@ for filename in [
 end
 
 makedocs(
-    modules=[TightBindingLattice],
+    modules=[LatticeTools],
     doctest=true,
     sitename="LatticeTools.jl",
     format=Documenter.HTML(prettyurls=!("local" in ARGS)),
@@ -57,6 +57,6 @@ makedocs(
 )
 
 deploydocs(
-    repo = "github.com/kyungminlee/TightBindingLattice.jl.git",
+    repo = "github.com/kyungminlee/LatticeTools.jl.git",
     devbranch = "dev",
 )

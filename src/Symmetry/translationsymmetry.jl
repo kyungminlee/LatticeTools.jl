@@ -275,7 +275,7 @@ Return a binary function which combines two translation operations, with the giv
 boundary condition.
 
 ```jldoctest
-julia> using TightBindingLattice
+julia> using LatticeTools
 
 julia> tsym = TranslationSymmetry([3 0; 0 4]);
 

@@ -1,7 +1,7 @@
 # # Honeycomb Lattice
 
 # ## Preamble
-using TightBindingLattice
+using LatticeTools
 using LinearAlgebra
 using Plots
 

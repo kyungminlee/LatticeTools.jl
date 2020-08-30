@@ -1,7 +1,7 @@
 # Group
 
 ```@meta
-CurrentModule = TightBindingLattice
+CurrentModule = LatticeTools
 ```
 
 ## AbstractGroup
@@ -29,7 +29,7 @@ group_multiplication_table(::FiniteGroup)
 isabelian(::FiniteGroup)
 group_product(::FiniteGroup)
 group_inverse(::FiniteGroup)
-TightBindingLattice.group_inverse(::FiniteGroup, ::Int)
+LatticeTools.group_inverse(::FiniteGroup, ::Int)
 conjugacy_class(::FiniteGroup, ::Int)
 generate_subgroup(::FiniteGroup, ::Int)
 issubgroup(::FiniteGroup, ::Set{Int})

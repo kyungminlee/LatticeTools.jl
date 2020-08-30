@@ -32,7 +32,7 @@ Can be constructed using `FiniteGroup(multiplication_table)`
 
 # Examples
 ```jldoctest
-julia> using TightBindingLattice
+julia> using LatticeTools
 
 julia> FiniteGroup([1 2; 2 1])
 FiniteGroup([1 2; 2 1], [1, 2], [1, 2], [[1], [2]])

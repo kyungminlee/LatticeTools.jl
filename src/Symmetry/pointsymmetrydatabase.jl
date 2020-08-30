@@ -7,7 +7,7 @@ using YAML
 using JLD2
 using FileIO
 
-import ..TightBindingLattice: PointSymmetry, read_point_symmetry, simplify_name
+import ..LatticeTools: PointSymmetry, read_point_symmetry, simplify_name
 
 
 NUM_POINT_SYMMETRIES_2D = 11

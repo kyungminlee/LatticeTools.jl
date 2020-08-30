@@ -1,6 +1,6 @@
 # # Little Group in 3D
 
-using TightBindingLattice
+using LatticeTools
 
 unitcell = makeunitcell([1.0 0.0 0.0; 0.0 1.0 0.0; 0 0 1]; SiteType=String)
 addsite!(unitcell, "Ox", FractCoord([0,0,0], [0.5, 0.0, 0.0]))
@@ -16,7 +16,7 @@ for idx in 1:num_irreps(tsym)
     kf = tsym.fractional_momenta[idx]
     k = lattice.unitcell.reducedreciprocallatticevectors * kf
     psym_little1 = little_symmetry(tsym, idx, psym)
-    psym_little2 = TightBindingLattice.little_symmetry_iso(tsym, idx, psym)
+    psym_little2 = LatticeTools.little_symmetry_iso(tsym, idx, psym)
     println("- irrep_index: $(idx)")
     println("  momentum: $(k)")
     println("  little_point_group1: { name: \"$(psym_little1.hermann_mauguin)\", order: $(group_order(psym_little1)) }")

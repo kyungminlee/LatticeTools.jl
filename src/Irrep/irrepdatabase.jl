@@ -6,8 +6,8 @@ using LinearAlgebra
 
 import YAML
 
-using ..TightBindingLattice: FiniteGroup, IrrepData
-using ..TightBindingLattice: cleanup_number, parse_expr, group_isomorphism, group_multiplication_table, simplify_name
+using ..LatticeTools: FiniteGroup, IrrepData
+using ..LatticeTools: cleanup_number, parse_expr, group_isomorphism, group_multiplication_table, simplify_name
 
 
 IRREP_DATABASE = IrrepData[]

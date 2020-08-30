@@ -2,7 +2,7 @@
 
 using LinearAlgebra
 using Plots
-using TightBindingLattice
+using LatticeTools
 
 simplifyname(s::AbstractString) = (
     s

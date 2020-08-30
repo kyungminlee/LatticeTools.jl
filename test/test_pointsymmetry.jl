@@ -1,7 +1,7 @@
 using Test
-using TightBindingLattice
+using LatticeTools
 
-using TightBindingLattice: simplify_name
+using LatticeTools: simplify_name
 
 using LinearAlgebra
 using YAML
@@ -33,7 +33,7 @@ using YAML
                              element_names, matrix_representations,
                              hermann_mauguin, schoenflies)
 
-        let TBL = TightBindingLattice
+        let TBL = LatticeTools
             @test eltype(psym) == PointOperation{Int}
             @test valtype(psym) == PointOperation{Int}
             @test all(TBL.element(psym, i) == PointOperation(matrix_representations[i]) for i in 1:2)

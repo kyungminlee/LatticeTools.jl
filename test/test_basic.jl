@@ -1,5 +1,5 @@
 using Test
-using TightBindingLattice
+using LatticeTools
 
 using LinearAlgebra
 
@@ -57,7 +57,7 @@ using LinearAlgebra
     end
 
     @testset "gcd" begin
-        using TightBindingLattice: extended_gcd
+        using LatticeTools: extended_gcd
         let x = 3, y = 0
             r, (a,b) = extended_gcd(x,y)
             @test r == 3

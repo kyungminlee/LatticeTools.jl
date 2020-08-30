@@ -1,5 +1,5 @@
 using Test
-using TightBindingLattice
+using LatticeTools
 
 include("test_basic.jl")
 include("test_parser.jl")

@@ -1,5 +1,5 @@
 using Test
-using TightBindingLattice
+using LatticeTools
 
 
 @testset "iscompatible" begin
@@ -9,7 +9,7 @@ using TightBindingLattice
         orthocube = OrthoCube([2 0; 0 2])
         @test_throws DimensionMismatch iscompatible(orthocube, TranslationOperation([1, 0, 0]))
         @test iscompatible(orthocube, TranslationOperation([1, 0]))
-        
+
         @test_throws DimensionMismatch iscompatible(orthocube, PointOperation([1 0 0; 0 1 0; 0 0 0]))
         @test iscompatible(orthocube, PointOperation([0 1; 1 0]))
         @test !iscompatible(orthocube, PointOperation([0 2; 1 0]))
@@ -29,7 +29,7 @@ using TightBindingLattice
         @test  iscompatible(OrthoCube([2 2; 0 2]), psym)
         @test !iscompatible(OrthoCube([3 0; 0 2]), psym)
     end
-    
+
     # translation symmetry and point operation
     @testset "translation-point" begin
         @test  iscompatible(TranslationSymmetry([2 0; 0 2]), PointOperation([0 1; 1 0]))
@@ -114,7 +114,7 @@ using TightBindingLattice
     @testset "lattice-symmetry" begin
         unitcell = make_unitcell([1.0 0.0; 0.0 1.0]; SiteType=String)
         addsite!(unitcell, "X", FractCoord([0, 0], [0.5, 0.0]))
-        
+
         lattice = make_lattice(unitcell, [2 0; 0 2])
         @test_throws DimensionMismatch iscompatible(lattice, TranslationOperation([1,2,3]))
         for i in -5:5, j in -5:5
@@ -134,4 +134,3 @@ using TightBindingLattice
         @test !iscompatible(lattice, psym)
     end
 end
-

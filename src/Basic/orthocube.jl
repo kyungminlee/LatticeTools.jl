@@ -75,11 +75,11 @@ function isequiv(lhs::OrthoCube, rhs::OrthoCube)
 end
 
 # function isequiv_old(lhs::OrthoCube, rhs::OrthoCube)
-#     det_lhs = TightBindingLattice.ExactLinearAlgebra.determinant(lhs.shape_matrix)
-#     det_rhs = TightBindingLattice.ExactLinearAlgebra.determinant(rhs.shape_matrix)
+#     det_lhs = LatticeTools.ExactLinearAlgebra.determinant(lhs.shape_matrix)
+#     det_rhs = LatticeTools.ExactLinearAlgebra.determinant(rhs.shape_matrix)
 #     det_lhs != det_rhs && return false
-#     inv_lhs = TightBindingLattice.ExactLinearAlgebra.inverse(lhs.shape_matrix)
-#     inv_rhs = TightBindingLattice.ExactLinearAlgebra.inverse(rhs.shape_matrix)
+#     inv_lhs = LatticeTools.ExactLinearAlgebra.inverse(lhs.shape_matrix)
+#     inv_rhs = LatticeTools.ExactLinearAlgebra.inverse(rhs.shape_matrix)
 #     return all(isinteger.(inv_lhs * rhs.shape_matrix)) && all(isinteger.(inv_rhs * lhs.shape_matrix))
 # end
 

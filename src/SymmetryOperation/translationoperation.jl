@@ -15,7 +15,7 @@ Represents translation symmetry operation
 
 # Examples
 ```jldoctest
-julia> using TightBindingLattice
+julia> using LatticeTools
 
 julia> TranslationOperation([1, 2])
 TranslationOperation{Int64}([1, 2])

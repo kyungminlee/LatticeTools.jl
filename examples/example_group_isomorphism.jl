@@ -2,7 +2,7 @@
 
 # ## Set up Basic Functions
 
-using TightBindingLattice
+using LatticeTools
 using Formatting
 function display_matrix(io::IO, matrix::AbstractMatrix; prefix::AbstractString="")
     width = ceil(Int, maximum(length("$item") for item in matrix)/4)*4
