@@ -4,7 +4,7 @@ using LatticeTools
 
 include("Kagome.jl")
 
-lattice_data = JSON.parsefile("lattice.json")
+lattice_data = JSON.parsefile("lattice-3.json")
 sites = [(sitetype, [R...]) for (sitetype, R) in lattice_data["sites"]]
 kagome = Kagome.make_kagome_obc(sites)
 site_coordinates = []
@@ -17,12 +17,12 @@ end
 site_coordinates = hcat(site_coordinates...)
 site_coordinates[2,:] = -site_coordinates[2,:]
 
-Drawing(840, 300, "logo.svg")
+Drawing(800, 300, "logo.png")
 
 origin()
-translate(-460, 110)
+translate(-450, 130)
 
-let ratio = 88, radius = 10, radius_large = 14, offset = (0,0),
+let ratio = 100, radius = 13, radius_large = 18, offset = (0,0),
     sitecolor = Dict("A" => "brown3", "B" => "forestgreen", "C" => "mediumorchid3")
 
     sethue("gray")
@@ -44,7 +44,7 @@ let ratio = 88, radius = 10, radius_large = 14, offset = (0,0),
     end
 end
 
-translate(400, -136)
+translate(360, -160)
 sethue("black")
 fontsize(144)
 fontface("Tamil MN")
