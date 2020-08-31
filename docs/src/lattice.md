@@ -37,8 +37,7 @@ In such a case, the equivalence relation within the basis under translation is i
 [`Hypercube`](@ref) provides methods for calculating equivalence relation.
 
 For example, when the super cell is defined by lattice vectors `[3, -1]` and `[1, 3]` (in units of the lattice vectors of the original unit cell), 
-```@repl
-using LatticeTools # hide
+```@repl example-unitcell
 cube = Hypercube([3 1; -1 3])
 cube.wrap([4, 0])
 ```
@@ -50,10 +49,6 @@ Here `cube.wrap` is similar to `divrem`:
 
 Now the two can be combined into a [`Lattice`](@ref) using [`makelattice`](@ref).
 
-```@repl
-using LatticeTools # hide
-unitcell = makeunitcell([1.0 0.0; 0.0 1.0]; SiteType=String) # hide
-addsite!(unitcell, "A", FractCoord([0,0], [0.1, 0.0])) # hide
-addsite!(unitcell, "B", FractCoord([0,0], [0.0, 0.1])) # hide
+```@repl example-unitcell
 lattice = makelattice(unitcell, [3 1; -1 3])
 ```

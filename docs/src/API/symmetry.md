@@ -120,18 +120,18 @@ iscompatible
 ## PointSymmetryDatabase
 
 ```@docs
-PointSymmetryDatabase
-PointSymmetryDatabase.get2d
-PointSymmetryDatabase.get3d
-PointSymmetryDatabase.find2d
-PointSymmetryDatabase.find3d
+LatticeTools.PointSymmetryDatabase
+LatticeTools.PointSymmetryDatabase.get2d
+LatticeTools.PointSymmetryDatabase.get3d
+LatticeTools.PointSymmetryDatabase.find2d
+LatticeTools.PointSymmetryDatabase.find3d
 ```
 
 
 ## IrrepDatabase
 
 ```@docs
-IrrepDatabase
+LatticeTools.IrrepDatabase
 ```
 
 

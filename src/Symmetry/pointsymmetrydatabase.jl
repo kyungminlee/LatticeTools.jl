@@ -1,3 +1,8 @@
+"""
+Point symmetry database module.
+Provides matrix representations (in units of lattice vectors) and other information about the point symmetries
+(Hermann-Mauguin notation, names of the elements, etc.), together with character tables and irreducible representations.
+"""
 module PointSymmetryDatabase
 
 import Serialization
@@ -19,7 +24,7 @@ NUM_POINT_SYMMETRIES_3D = 32
 POINT_SYMMETRY_DATABASE_3D = Vector{PointSymmetry}(undef, NUM_POINT_SYMMETRIES_3D)
 POINT_SYMMETRY_LOOKUP_3D = Dict{Vector{String}, Int}()
 
-
+# COV_EXCL_START
 function load_yaml()
     for group_index in 1:NUM_POINT_SYMMETRIES_2D
         psym = load_group_2d(group_index)
@@ -91,6 +96,7 @@ function load_group_3d(group_index::Integer)
     point_symmetry = read_point_symmetry(data_yaml)
     return point_symmetry
 end
+# COV_EXCL_STOP
 
 
 # 3D by default
