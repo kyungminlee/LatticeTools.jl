@@ -3,15 +3,11 @@
 using Formatting: printfmt
 
 function display_matrix(io::IO, matrix::AbstractMatrix; prefix::AbstractString=&quot;&quot;)
-    width = ceil(Int, maximum(length(&quot;$item&quot;) for item in matrix)/4)*4
+    width = ceil(Int, maximum(length(&quot;$item&quot;)+1 for item in matrix)/4)*4
     for row in eachrow(matrix)
         for (icol, col) in enumerate(row)
-            if icol == 1
-                print(io, prefix)
-                printfmt(io, &quot;{:&gt;$(width)s}&quot;, &quot;$col&quot;)
-            else
-                printfmt(io, &quot; {:&gt;$(width)s}&quot;, &quot;$col&quot;)
-            end
+            icol == 1 &amp;&amp; print(io, prefix)
+            printfmt(io, &quot;{:&gt;$(width)s}&quot;, &quot;$col&quot;)
         end
         println(io)
     end
@@ -111,33 +107,33 @@ irreducible_representations:
   elements:
   - name: &quot;1&quot;
     matrix: |-
-         1    0
-         0    1
+         1   0
+         0   1
   - name: &quot;2&lt;sub&gt;001&lt;/sub&gt;&quot;
     matrix: |-
-        -1    0
-         0   -1
+        -1   0
+         0  -1
   - name: &quot;4&lt;sup&gt;+&lt;/sup&gt;&lt;sub&gt;001&lt;/sub&gt;&quot;
     matrix: |-
-         0   -1
-         1    0
+         0  -1
+         1   0
   - name: &quot;4&lt;sup&gt;-&lt;/sup&gt;&lt;sub&gt;001&lt;/sub&gt;&quot;
     matrix: |-
-         0    1
-        -1    0
+         0   1
+        -1   0
   - name: &quot;m&lt;sub&gt;010&lt;/sub&gt;&quot;
     matrix: |-
-         0    1
-         1    0
+         0   1
+         1   0
   - name: &quot;m&lt;sub&gt;100&lt;/sub&gt;&quot;
     matrix: |-
-         0   -1
-        -1    0
+         0  -1
+        -1   0
   - name: &quot;m&lt;sub&gt;110&lt;/sub&gt;&quot;
     matrix: |-
-         1    0
-         0   -1
+         1   0
+         0  -1
   - name: &quot;m&lt;sub&gt;1-10&lt;/sub&gt;&quot;
     matrix: |-
-        -1    0
-         0    1</pre><hr/><p><em>This page was generated using <a href="https://github.com/fredrikekre/Literate.jl">Literate.jl</a>.</em></p></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../example_point_group_elements/">« Point Group Elements</a><a class="docs-footer-nextpage" href="../example_little_group_2d/">Little Group in 2D »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> on <span class="colophon-date" title="Monday 31 August 2020 16:03">Monday 31 August 2020</span>. Using Julia version 1.5.1.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
+        -1   0
+         0   1</pre><hr/><p><em>This page was generated using <a href="https://github.com/fredrikekre/Literate.jl">Literate.jl</a>.</em></p></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../example_point_group_elements/">« Point Group Elements</a><a class="docs-footer-nextpage" href="../example_little_group_2d/">Little Group in 2D »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> on <span class="colophon-date" title="Monday 31 August 2020 16:14">Monday 31 August 2020</span>. Using Julia version 1.5.1.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
