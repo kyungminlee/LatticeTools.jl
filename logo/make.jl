@@ -17,7 +17,7 @@ end
 site_coordinates = hcat(site_coordinates...)
 site_coordinates[2,:] = -site_coordinates[2,:]
 
-Drawing(840, 300, "logo.png")
+Drawing(840, 300, "logo.svg")
 
 origin()
 translate(-460, 110)
