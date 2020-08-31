@@ -4,6 +4,7 @@
 using LatticeTools
 using Formatting
 using Plots
+
 function display_matrix(io::IO, matrix::AbstractMatrix; prefix::AbstractString="")
     width = ceil(Int, maximum(length("$item") for item in matrix)/4)*4
     for row in eachrow(matrix)

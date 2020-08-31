@@ -3,6 +3,7 @@
 # ## Preamble
 using LatticeTools
 using Plots
+
 mkpath("example_hypercube")
 
 function draw_hypercube(hypercube::Hypercube, coordinates::AbstractMatrix{<:Integer})

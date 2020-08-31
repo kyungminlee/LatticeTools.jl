@@ -31,6 +31,16 @@ function Base.:(==)(lhs::Lattice{O}, rhs::Lattice{O}) where O
 end
 
 
+"""
+    makelattice(unitcell, shape)
+
+Create a `Lattice` from `unitcell` and `shape`.
+Generating translations are fouond using `find_generators`.
+
+# Arguments
+- `unitcell`
+- `shape`: shape of the cluster
+"""
 function makelattice(
     unitcell::UnitCell{O},
     shape_matrix::AbstractMatrix{<:Integer}
@@ -100,7 +110,12 @@ function makelattice(
     return Lattice{O}(unitcell, hypercube, unitcell_coordinates, new_unitcell)
 end
 
+"""
+    makelattice(unitcell, scale)
 
+Construct a `Lattice` with `unitcell` having shape `scale`.
+Works for one-dimensional lattice.
+"""
 function makelattice(unitcell::UnitCell, scale::Integer)
     return makelattice(unitcell, scale*ones(Int, (1,1)))
 end
