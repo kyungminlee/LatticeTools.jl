@@ -8,6 +8,7 @@ Here `S` is the type for the coordinates.
 using LatticeTools
 ```
 
+
 ## Translation Operation
 
 The type [`TranslationOperation{S}`](@ref) represents translation operation
@@ -30,6 +31,7 @@ t([3, 4])
 apply_operation(t, [5, 6])
 ```
 
+
 ## Point Operation
 
 Point operation is represented by the type [`PointOperation{S}`](@ref),
@@ -51,6 +53,7 @@ p([0, 1])
 p = PointOperation([0 1; 1 0])
 p([2, 5])
 ```
+
 
 ## Space Operation
 

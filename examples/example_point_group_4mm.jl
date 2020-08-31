@@ -5,15 +5,11 @@ using LatticeTools
 using Formatting: printfmt
 
 function display_matrix(io::IO, matrix::AbstractMatrix; prefix::AbstractString="")
-    width = ceil(Int, maximum(length("$item") for item in matrix)/4)*4
+    width = ceil(Int, maximum(length("$item")+1 for item in matrix)/4)*4
     for row in eachrow(matrix)
         for (icol, col) in enumerate(row)
-            if icol == 1
-                print(io, prefix)
-                printfmt(io, "{:>$(width)s}", "$col")
-            else
-                printfmt(io, " {:>$(width)s}", "$col")
-            end
+            icol == 1 && print(io, prefix)
+            printfmt(io, "{:>$(width)s}", "$col")
         end
         println(io)
     end

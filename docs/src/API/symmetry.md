@@ -120,6 +120,7 @@ iscompatible
 ## PointSymmetryDatabase
 
 ```@docs
+PointSymmetryDatabase
 PointSymmetryDatabase.get2d
 PointSymmetryDatabase.get3d
 PointSymmetryDatabase.find2d
@@ -127,6 +128,11 @@ PointSymmetryDatabase.find3d
 ```
 
 
+## IrrepDatabase
+
+```@docs
+IrrepDatabase
+```
 
 
 ## Symmorphic Symmetry

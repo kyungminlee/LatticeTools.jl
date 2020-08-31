@@ -1,3 +1,7 @@
+"""
+Irrep datbase module.
+Provides irreducible representation data of point symmetries in three dimensions (and therefore two and one).
+"""
 module IrrepDatabase
 
 import Pkg
