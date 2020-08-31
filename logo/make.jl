@@ -22,7 +22,9 @@ Drawing(840, 300, "logo.svg")
 origin()
 translate(-460, 110)
 
-let ratio = 88, radius = 10, radius_large = 14, offset = (0,0)
+let ratio = 88, radius = 10, radius_large = 14, offset = (0,0),
+    sitecolor = Dict("A" => "brown3", "B" => "forestgreen", "C" => "mediumorchid3")
+
     sethue("gray")
     setline(2)
     for (i, j) in kagome.nearest_neighbor_bonds
@@ -34,12 +36,6 @@ let ratio = 88, radius = 10, radius_large = 14, offset = (0,0)
             :stroke
         )
     end
-
-    #sethue("white")
-    #for sc in values(site_coordinates), r in eachcol(sc)
-    #    circle(Point(r[1]*ratio + offset[1], r[2]*ratio + offset[2]), radius_large, :fill)
-    #end
-    sitecolor = Dict("A" => "brown3", "B" => "forestgreen", "C" => "mediumorchid3")
     for (sitetype, r) in zip(site_types, eachcol(site_coordinates))
         sethue("white")
         circle(Point(r[1]*ratio + offset[1], r[2]*ratio + offset[2]), radius_large, :fill)
