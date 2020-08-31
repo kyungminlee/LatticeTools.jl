@@ -74,15 +74,6 @@ function isequiv(lhs::Hypercube, rhs::Hypercube)
     return true
 end
 
-# function isequiv_old(lhs::Hypercube, rhs::Hypercube)
-#     det_lhs = LatticeTools.ExactLinearAlgebra.determinant(lhs.shape_matrix)
-#     det_rhs = LatticeTools.ExactLinearAlgebra.determinant(rhs.shape_matrix)
-#     det_lhs != det_rhs && return false
-#     inv_lhs = LatticeTools.ExactLinearAlgebra.inverse(lhs.shape_matrix)
-#     inv_rhs = LatticeTools.ExactLinearAlgebra.inverse(rhs.shape_matrix)
-#     return all(isinteger.(inv_lhs * rhs.shape_matrix)) && all(isinteger.(inv_rhs * lhs.shape_matrix))
-# end
-
 
 """
     find_generators(cube::Hypercube)

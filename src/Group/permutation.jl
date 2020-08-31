@@ -78,19 +78,6 @@ function Base.:(*)(p1 ::Permutation, p2 ::Permutation)
     return Permutation(Int[p1.map[x] for x in p2.map])
 end
 
-#=
-function Base.:(*)(lhs ::AbstractSet{Permutation}, rhs::Permutation)
-    return generate_group(lhs..., rhs)
-end
-
-function Base.:(*)(lhs ::Permutation, rhs::AbstractSet{Permutation})
-    return generate_group(lhs, rhs...)
-end
-
-function Base.:(*)(lhs ::AbstractSet{Permutation}, rhs::AbstractSet{Permutation})
-    return generate_group(lhs..., rhs...)
-end
-=#
 
 """
     ^(perm ::Permutation, pow ::Integer)

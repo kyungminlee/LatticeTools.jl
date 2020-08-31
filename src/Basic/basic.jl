@@ -1,36 +1,5 @@
 export ExactLinearAlgebra
 
-# COV_EXCL_START
-if VERSION < v"1.5-"
-    function Base._round_rational(::Type{T}, x::Rational{Tr}, ::RoundingMode{:ToZero}) where {T,Tr}
-        if denominator(x) == zero(Tr) && T <: Integer
-            throw(DivideError())
-        elseif denominator(x) == zero(Tr)
-            return convert(T, copysign(one(Tr)//zero(Tr), numerator(x)))
-        end
-        return convert(T,div(x.num,x.den))
-    end
-
-    function Base._round_rational(::Type{T}, x::Rational{Tr}, ::RoundingMode{:Down}) where {T,Tr}
-        if denominator(x) == zero(Tr) && T <: Integer
-            throw(DivideError())
-        elseif denominator(x) == zero(Tr)
-            return convert(T, copysign(one(Tr)//zero(Tr), numerator(x)))
-        end
-        return convert(T,fld(x.num,x.den))
-    end
-
-    function Base._round_rational(::Type{T}, x::Rational{Tr}, ::RoundingMode{:Up}) where {T,Tr}
-        if denominator(x) == zero(Tr) && T <: Integer
-            throw(DivideError())
-        elseif denominator(x) == zero(Tr)
-            return convert(T, copysign(one(Tr)//zero(Tr), numerator(x)))
-        end
-        return convert(T,cld(x.num,x.den))
-    end
-end
-# COV_EXCL_STOP
-
 module ExactLinearAlgebra
     import LinearAlgebra
 
