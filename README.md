@@ -6,7 +6,7 @@
 |:-----------------:|:----------------:|:-----------------:|
 | [![**STABLE**][docs-stable-img]][docs-stable-url] [![**DEV**][docs-dev-img]][docs-dev-url] | [![Build Status][travis-img]][travis-url] [![Build Status][appveyor-img]][appveyor-url] | [![Code Coverage][codecov-img]][codecov-url] [![Code Coverage][coveralls-img]][coveralls-url] |
 
-[LatticeTools.jl](https://github.com/kyungminlee/LatticeTools.jl) is a Julia package which provides functionalities to define lattices and perform symmetry analysis, with focus on interacting many-body quantum Hamiltonians.
+[LatticeTools.jl](https://github.com/kyungminlee/LatticeTools.jl) is a Julia package that provides functionalities to define lattices and perform symmetry analyses useful for studying interacting quantum many-body Hamiltonians.
 
 
 ## Installation

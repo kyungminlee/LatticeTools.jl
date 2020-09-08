@@ -1,8 +1,6 @@
 using Test
 using LatticeTools
 
-include("test_basic.jl")
-include("test_parser.jl")
 include("test_coord.jl")
 include("test_unitcell.jl")
 #include("test_unitcell_deprecated.jl")

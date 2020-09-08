@@ -1,6 +1,5 @@
 module LatticeTools
 
-include("Basic/basic.jl")
 include("Basic/coord.jl")
 include("Basic/hypercube.jl")  # replacement for hypercube
 include("Basic/unitcell.jl")

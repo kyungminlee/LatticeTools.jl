@@ -1,6 +1,8 @@
 # Welcome to LatticeTools.jl
 
+
 ## Overview
+
 **LatticeTools.jl** is a Julia package for defining lattices and performing space symmetry analysis on them, useful for creating and solving quantum Hamiltonians.
 
 ## Features
@@ -8,6 +10,7 @@
 - **Lattice definition**: Supports definition of a lattice with a unit cell with periodic boundary condition.
 - **Momentum space**: Provides methods for transformations between real space and momentum space.
 - **Symmetry analysis**: Supports group representation theoretical analysis on translation and point symmetry. Currently, only symmorphic space groups are supported.
+
 
 ## Installation
 
@@ -17,6 +20,7 @@ To install, add the package registry `KyugminLeeRegistry` and then install the p
 (@v1.5) pkg> registry add https://github.com/kyungminlee/KyungminLeeRegistry.git
 (@v1.5) pkg> add LatticeTools
 ```
+
 
 ## Quick Example
 

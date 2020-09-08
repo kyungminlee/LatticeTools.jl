@@ -16,6 +16,8 @@ export symmetry_name
 
 export translation_symmetry_embedding
 
+import MathExpr
+
 
 """
     TranslationSymmetry
@@ -108,7 +110,7 @@ struct TranslationSymmetry <: AbstractSymmetry{TranslationOperation{Int}}
         generator_translations::AbstractMatrix{<:Integer};
         tol::Real=Base.rtoldefault(Float64),
     )
-        if ExactLinearAlgebra.determinant(generator_translations) != 1
+        if MathExpr.determinant(generator_translations) != 1
             throw(ArgumentError("generator translation is not unimodular"))
         end
 
@@ -143,7 +145,7 @@ struct TranslationSymmetry <: AbstractSymmetry{TranslationOperation{Int}}
         orthogonal_shape_matrix = hcat(
                     [group_order(group, g) * v
                         for (g, v) in zip(generators, eachcol(generator_translations))]...)
-        orthogonal_reduced_reciprocal_shape_matrix = ExactLinearAlgebra.inverse(transpose(orthogonal_shape_matrix))
+        orthogonal_reduced_reciprocal_shape_matrix = MathExpr.inverse(transpose(orthogonal_shape_matrix))
 
         elements = [TranslationOperation(r) for r in coordinates]
 
@@ -161,7 +163,7 @@ struct TranslationSymmetry <: AbstractSymmetry{TranslationOperation{Int}}
                                      for kd in orthogonal_coordinates,
                                           t in orthogonal_coordinates]
 
-        character_table = cleanup_number(character_table, tol)
+        character_table = MathExpr.cleanupnumber(character_table, tol)
 
         let
             χ = ComplexF64[cis(-2π * LinearAlgebra.dot(k, t)) for k in fractional_momenta, t in coordinates]
@@ -651,7 +653,7 @@ end
     #                              generator_translations::AbstractMatrix{<:Integer};
     #                              tol::Real=Base.rtoldefault(Float64))
 
-    #     if ExactLinearAlgebra.determinant(generator_translations) != 1
+    #     if MathExpr.determinant(generator_translations) != 1
     #         throw(ArgumentError("generator translation is not unimodular"))
     #     end
 
@@ -685,7 +687,7 @@ end
     #                 [group_order(group, g) * v
     #                     for (g, v) in zip(generators, eachcol(generator_translations))]...
     #             )
-    #     orthogonal_reduced_reciprocal_shape_matrix = ExactLinearAlgebra.inverse(transpose(orthogonal_shape_matrix))
+    #     orthogonal_reduced_reciprocal_shape_matrix = MathExpr.inverse(transpose(orthogonal_shape_matrix))
     #     # END Orthogonal
 
     #     elements = [TranslationOperation(orthogonal_to_coordinate_map[r_ortho])

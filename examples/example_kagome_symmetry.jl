@@ -5,10 +5,12 @@ using LatticeTools
 using LinearAlgebra
 using Printf
 using Plots
+
 simplifyname(s::AbstractString) = (
-                    s |> (x-> replace(x, r"<sup>(.+?)</sup>" => s"\1"))
-                      |> (x-> replace(x, r"<sub>(.+?)</sub>" => s"[\1]"))
-                )
+    s
+    |> (x-> replace(x, r"<sup>(.+?)</sup>" => s"\1"))
+    |> (x-> replace(x, r"<sub>(.+?)</sub>" => s"[\1]"))
+)
 mkpath("example_kagome_symmetry")
 extent = [-2, 2, -2, 2]
 within(r) = (extent[1] <= r[1] <= extent[2] && extent[3] <= r[2] <= extent[4])

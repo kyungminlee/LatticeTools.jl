@@ -33,6 +33,7 @@ makedocs(
             "Symmetry/space-symmetry.md",
             "Symmetry/space-operation.md",
             "Symmetry/irrep.md",
+            "Symmetry/space-symmetry-database.md",
         ],
         "Examples" => [
             "Group Isomorphism" => "generated/example_group_isomorphism.md",

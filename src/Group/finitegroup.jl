@@ -45,7 +45,7 @@ struct FiniteGroup <: AbstractGroup
     inverses::Vector{Int}
     conjugacy_classes::Vector{Vector{Int}}
 
-    """
+    @doc """
         FiniteGroup(multiplication_table)
     """
     function FiniteGroup(mtab::AbstractMatrix{<:Integer})
