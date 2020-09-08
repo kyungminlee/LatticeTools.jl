@@ -9,9 +9,10 @@ import Serialization
 using LinearAlgebra
 
 import YAML
+import MathExpr
 
 using ..LatticeTools: FiniteGroup, IrrepData
-using ..LatticeTools: cleanup_number, parse_expr, group_isomorphism, group_multiplication_table, simplify_name
+using ..LatticeTools: group_isomorphism, group_multiplication_table, simplify_name
 
 
 IRREP_DATABASE = IrrepData[]
@@ -31,14 +32,14 @@ function load_yaml()
             error("Conjugacy class not canonical") # COV_EXCL_LINE
         end
 
-        character_table = cleanup_number(transpose(hcat(parse_expr(data["CharacterTable"])...)), tol)
+        character_table = MathExpr.cleanupnumber(transpose(hcat(MathExpr.parseexpr(data["CharacterTable"])...)), tol)
         let nc = length(conjugacy_classes)
             size(character_table) != (nc, nc) && error("character table has wrong size")
         end
 
         irreps = Vector{Matrix{ComplexF64}}[]
         for item in data["IrreducibleRepresentations"]
-            matrices = Matrix{ComplexF64}[cleanup_number(transpose(hcat(parse_expr(elem)...)), tol) for elem in item]
+            matrices = Matrix{ComplexF64}[MathExpr.cleanupnumber(transpose(hcat(MathExpr.parseexpr(elem)...)), tol) for elem in item]
             push!(irreps, matrices)
         end
         push!(IRREP_DATABASE, IrrepData(group, conjugacy_classes, character_table, irreps))

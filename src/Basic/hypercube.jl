@@ -4,6 +4,7 @@ export generate_coordinates
 export volume
 export isequiv
 
+import MathExpr
 
 """
     Hypercube(shape)
@@ -27,10 +28,10 @@ struct Hypercube
             msg = "scale_matrix is not square: dimensions are ($dim, $dim2)"
             throw(DimensionMismatch(msg))
         end
-        det = ExactLinearAlgebra.determinant(shape_matrix)
+        det = MathExpr.determinant(shape_matrix)
         det == 0 && throw(ArgumentError("scale matrix null"))
 
-        inverse_shape_matrix = ExactLinearAlgebra.inverse(shape_matrix)
+        inverse_shape_matrix = MathExpr.inverse(shape_matrix)
         function wrap(r::AbstractArray{<:Integer}, mode::RoundingMode=RoundDown)
             rnd = (x) -> round(Int, x, mode)
             R = rnd.(inverse_shape_matrix * r)
@@ -53,7 +54,7 @@ dimension(cube::Hypercube) = size(cube.shape_matrix, 1)
 
 Return the signed volume of the hypercube, defined by the determinant of the shape.
 """
-volume(cube::Hypercube) = ExactLinearAlgebra.determinant(cube.shape_matrix)
+volume(cube::Hypercube) = MathExpr.determinant(cube.shape_matrix)
 
 
 function Base.:(==)(lhs::Hypercube, rhs::Hypercube)
@@ -68,7 +69,7 @@ Check whether the two hypercubes are equivalent.
 """
 function isequiv(lhs::Hypercube, rhs::Hypercube)
     R, r = lhs.wrap(rhs.shape_matrix)
-    if abs(ExactLinearAlgebra.determinant(R)) != 1 || !iszero(r)
+    if abs(MathExpr.determinant(R)) != 1 || !iszero(r)
         return false
     end
     return true
@@ -125,7 +126,7 @@ function find_generators_2d(cube::Hypercube)
         axis1 = make_loop(r1)
         mod(cubevolume, length(axis1)) != 0 && continue
         for r2 in allowed_pairs
-            ExactLinearAlgebra.determinant(hcat(r1, r2)) != 1 && continue
+            MathExpr.determinant(hcat(r1, r2)) != 1 && continue
             axis2 = make_loop(r2)
             cubevolume != length(axis1) * length(axis2) && continue
             coordinates = vec([cube.wrap(sum(x))[2]
@@ -153,7 +154,7 @@ function generate_coordinates(
     let dim = dimension(cube)
         if size(generator_translations) != (dim, dim)
             throw(DimensionMismatch("Hypercube and generator_translations have different dimensions"))
-        elseif abs(ExactLinearAlgebra.determinant(generator_translations)) != 1
+        elseif abs(MathExpr.determinant(generator_translations)) != 1
             throw(ArgumentError("generator_translations is not unimodular"))
         end
     end

@@ -1,5 +1,6 @@
 export iscompatible
 
+import MathExpr
 
 ## 1. Hypercube and Operation
 
@@ -18,7 +19,7 @@ end
 """
 function iscompatible(hypercube::Hypercube, op::PointOperation{<:Integer})::Bool
     R, r = hypercube.wrap(op.matrix * hypercube.shape_matrix)
-    return iszero(r) && abs(ExactLinearAlgebra.determinant(R)) == 1
+    return iszero(r) && abs(MathExpr.determinant(R)) == 1
 end
 
 
@@ -29,7 +30,7 @@ end
 """
 function iscompatible(hypercube::Hypercube, tsym::TranslationSymmetry)::Bool
     R, r = hypercube.wrap(tsym.hypercube.shape_matrix)
-    return iszero(r) && abs(ExactLinearAlgebra.determinant(R)) == 1
+    return iszero(r) && abs(MathExpr.determinant(R)) == 1
 end
 
 """
@@ -75,7 +76,7 @@ function iscompatible(
     pop::PointOperation{<:Integer},
 )::Bool
     !iscompatible(tsym, pop) && return false
-    reciprocal_matrix = ExactLinearAlgebra.inverse(transpose(pop.matrix))
+    reciprocal_matrix = MathExpr.inverse(transpose(pop.matrix))
     k1 = tsym.fractional_momenta[tsym_irrep_index]
     k2 = (x -> mod(x, 1)).(reciprocal_matrix * k1)
     return k1 == k2

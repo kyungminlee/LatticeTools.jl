@@ -4,6 +4,7 @@ export dimension
 export isidentity, istranslation, ispoint
 
 import LinearAlgebra
+import MathExpr
 
 """
     SpaceOperation{Tp<:Real, Tt<:Real}
@@ -229,7 +230,7 @@ function Base.:(*)(lhs::PointOperation{Tp}, rhs::TranslationOperation{Tt}) where
 end
 
 function Base.:(*)(lhs::TranslationOperation{Tt}, rhs::PointOperation{Tp}) where {Tp, Tt}
-    rhs_matrix_inv = Matrix{Tp}(ExactLinearAlgebra.inverse(rhs.matrix))
+    rhs_matrix_inv = Matrix{Tp}(MathExpr.inverse(rhs.matrix))
     return SpaceOperation{Tp, Tt}(rhs.matrix, rhs_matrix_inv * lhs.displacement)
 end
 
@@ -238,7 +239,7 @@ end
 # = ML MR (x + ρR + inv(MR) ⋅ ρL )
 function Base.:(*)(lhs::SpaceOperation{Tp, Tt}, rhs::SpaceOperation{Tp, Tt}) where {Tp, Tt}
     matrix = lhs.matrix * rhs.matrix
-    rhs_matrix_inv = Matrix{Tp}(ExactLinearAlgebra.inverse(rhs.matrix))
+    rhs_matrix_inv = Matrix{Tp}(MathExpr.inverse(rhs.matrix))
     displacement = rhs.displacement + rhs_matrix_inv * lhs.displacement
     return SpaceOperation{Tp, Tt}(matrix, displacement)
 end
@@ -251,14 +252,14 @@ end
 
 function Base.:(*)(lhs::TranslationOperation{Tt}, rhs::SpaceOperation{Tp, Tt}) where {Tp, Tt}
     matrix = rhs.matrix
-    rhs_matrix_inv = Matrix{Tp}(ExactLinearAlgebra.inverse(rhs.matrix))
+    rhs_matrix_inv = Matrix{Tp}(MathExpr.inverse(rhs.matrix))
     displacement = rhs.displacement + rhs_matrix_inv * lhs.displacement
     return SpaceOperation{Tp, Tt}(matrix, displacement)
 end
 
 function Base.:(*)(lhs::SpaceOperation{Tp, Tt}, rhs::PointOperation{Tp}) where {Tp, Tt}
     matrix = lhs.matrix * rhs.matrix
-    rhs_matrix_inv = Matrix{Tp}(ExactLinearAlgebra.inverse(rhs.matrix))
+    rhs_matrix_inv = Matrix{Tp}(MathExpr.inverse(rhs.matrix))
     displacement = rhs_matrix_inv * lhs.displacement
     return SpaceOperation{Tp, Tt}(matrix, displacement)
 end
@@ -270,7 +271,7 @@ function Base.:(*)(lhs::PointOperation{Tp}, rhs::SpaceOperation{Tp, Tt}) where {
 end
 
 function Base.inv(arg::SpaceOperation{Tp, Tt}) where {Tp, Tt}
-    matrix_inv = Matrix{Tp}(ExactLinearAlgebra.inverse(arg.matrix))
+    matrix_inv = Matrix{Tp}(MathExpr.inverse(arg.matrix))
     return SpaceOperation{Tp, Tt}(matrix_inv, -arg.matrix * arg.displacement)
 end
 

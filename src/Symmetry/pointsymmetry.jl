@@ -20,6 +20,7 @@ export read_point_symmetry
 export symmetry_name
 
 import LinearAlgebra
+import MathExpr
 
 simplify_name(name::AbstractString) = replace(replace(name, r"<sub>.*?</sub>"=>""), r"<sup>.*?</sup>"=>"")
 
@@ -140,16 +141,16 @@ end
 """
 function read_point_symmetry(data::AbstractDict)
     tol = Base.rtoldefault(Float64)
-    read_matrix(obj) = collect(transpose(hcat(parse_expr(obj)...)))
+    read_matrix(obj) = collect(transpose(hcat(MathExpr.parseexpr(obj)...)))
 
     multiplication_table = read_matrix(data["MultiplicationTable"])
     group = FiniteGroup(multiplication_table)
     ord_group = group_order(group)
     generators = data["Generators"]
     conjugacy_classes = [item for item in data["ConjugacyClasses"]]
-    character_table = cleanup_number(read_matrix(data["CharacterTable"]), tol)
+    character_table = MathExpr.cleanupnumber(read_matrix(data["CharacterTable"]), tol)
     irreps = [
-        Matrix{ComplexF64}[cleanup_number(read_matrix(elem), tol) for elem in item]
+        Matrix{ComplexF64}[MathExpr.cleanupnumber(read_matrix(elem), tol) for elem in item]
         for item in data["IrreducibleRepresentations"]
     ]
     element_names = data["ElementNames"]
