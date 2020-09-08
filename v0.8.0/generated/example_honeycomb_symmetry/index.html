@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Honeycomb Lattice · LatticeTools.jl</title><link href="https://fonts.googleapis.com/css?family=Lato|Roboto+Mono" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.11.1/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL="../.."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../../assets/documenter.js"></script><script src="../../siteinfo.js"></script><script src="../../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/documenter-dark.css" data-theme-name="documenter-dark"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../../assets/themeswap.js"></script></head><body><div id="documenter"><nav class="docs-sidebar"><a class="docs-logo" href="../../"><img src="../../assets/logo.png" alt="LatticeTools.jl logo"/></a><div class="docs-package-name"><span class="docs-autofit">LatticeTools.jl</span></div><form class="docs-search" action="../../search/"><input class="docs-search-query" id="documenter-search-query" name="q" type="text" placeholder="Search docs"/></form><ul class="docs-menu"><li><a class="tocitem" href="../../">Home</a></li><li><a class="tocitem" href="../../lattice/">Lattice Definition</a></li><li><span class="tocitem">Symmetry Analysis</span><ul><li><a class="tocitem" href="../../Symmetry/space-symmetry/">Space Symmetry Analysis</a></li><li><a class="tocitem" href="../../Symmetry/space-operation/">Symmetry Operations</a></li><li><a class="tocitem" href="../../Symmetry/irrep/">Irreducible Representations</a></li><li><a class="tocitem" href="../../Symmetry/space-symmetry-database/">Space Symmetry Database</a></li></ul></li><li><span class="tocitem">Examples</span><ul><li><a class="tocitem" href="../example_group_isomorphism/">Group Isomorphism</a></li><li><a class="tocitem" href="../example_hypercube/">Hypercube</a></li><li><a class="tocitem" href="../example_point_group_elements/">Point Group Elements</a></li><li><a class="tocitem" href="../example_point_group_4mm/">Point Group 4mm (C₄ᵥ)</a></li><li><a class="tocitem" href="../example_little_group_2d/">Little Group in 2D</a></li><li><a class="tocitem" href="../example_little_group_3d/">Little Group in 3D</a></li><li class="is-active"><a class="tocitem" href>Honeycomb Lattice</a><ul class="internal"><li><a class="tocitem" href="#Preamble"><span>Preamble</span></a></li><li><a class="tocitem" href="#Set-up-Lattice-and-Symmetry"><span>Set up Lattice and Symmetry</span></a></li><li><a class="tocitem" href="#Permutations"><span>Permutations</span></a></li><li><a class="tocitem" href="#Plots-for-Translation-Symmetry-Embeddings"><span>Plots for Translation Symmetry Embeddings</span></a></li><li><a class="tocitem" href="#Plots-for-Point-Symmetry-Embeddings"><span>Plots for Point Symmetry Embeddings</span></a></li></ul></li><li><a class="tocitem" href="../example_little_symmetry_kspace_honeycomb/">Honeycomb Lattice in k-space</a></li><li><a class="tocitem" href="../example_kagome_symmetry/">Kagome Lattice</a></li></ul></li><li><span class="tocitem">API Reference</span><ul><li><a class="tocitem" href="../../API/basic/">Basic</a></li><li><a class="tocitem" href="../../API/group/">Group</a></li><li><a class="tocitem" href="../../API/symmetry-operation/">Symmetry Operation</a></li><li><a class="tocitem" href="../../API/symmetry/">Symmetry</a></li><li><a class="tocitem" href="../../API/symmetry-embedding/">Symmetry Embedding</a></li><li><a class="tocitem" href="../../API/symmetry-irrep-component/">Symmetry Irrep Component</a></li></ul></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><nav class="breadcrumb"><ul class="is-hidden-mobile"><li><a class="is-disabled">Examples</a></li><li class="is-active"><a href>Honeycomb Lattice</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>Honeycomb Lattice</a></li></ul></nav><div class="docs-right"><a class="docs-edit-link" href="https://github.com/kyungminlee/LatticeTools.jl/blob/master/examples/example_honeycomb_symmetry.jl" title="Edit on GitHub"><span class="docs-icon fab"></span><span class="docs-label is-hidden-touch">Edit on GitHub</span></a><a class="docs-settings-button fas fa-cog" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-sidebar-button fa fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a></div></header><article class="content" id="documenter-page"><h1 id="Honeycomb-Lattice"><a class="docs-heading-anchor" href="#Honeycomb-Lattice">Honeycomb Lattice</a><a id="Honeycomb-Lattice-1"></a><a class="docs-heading-anchor-permalink" href="#Honeycomb-Lattice" title="Permalink"></a></h1><h2 id="Preamble"><a class="docs-heading-anchor" href="#Preamble">Preamble</a><a id="Preamble-1"></a><a class="docs-heading-anchor-permalink" href="#Preamble" title="Permalink"></a></h2><pre><code class="language-julia">using LatticeTools
+using LinearAlgebra
+using Plots
+
+simplifyname(s::AbstractString) = (
+    s
+    |&gt; (x-&gt; replace(x, r&quot;&lt;sup&gt;(.+?)&lt;/sup&gt;&quot; =&gt; s&quot;\1&quot;))
+    |&gt; (x-&gt; replace(x, r&quot;&lt;sub&gt;(.+?)&lt;/sub&gt;&quot; =&gt; s&quot;[\1]&quot;))
+)
+mkpath(&quot;example_honeycomb_symmetry&quot;)
+extent = [-2.5, 2.5, -2.5, 2.5]
+within(r) = (extent[1] &lt;= r[1] &lt;= extent[2] &amp;&amp; extent[3] &lt;= r[2] &lt;= extent[4]);</code></pre><h2 id="Set-up-Lattice-and-Symmetry"><a class="docs-heading-anchor" href="#Set-up-Lattice-and-Symmetry">Set up Lattice and Symmetry</a><a id="Set-up-Lattice-and-Symmetry-1"></a><a class="docs-heading-anchor-permalink" href="#Set-up-Lattice-and-Symmetry" title="Permalink"></a></h2><pre><code class="language-julia">scale_matrix = [2 2; -2 4]
+@assert det(scale_matrix) ≈ 12
+
+unitcell = makeunitcell([1 -0.5; 0 0.5*sqrt(3.0)])
+addsite!(unitcell, &quot;A&quot;, carte2fract(unitcell, [0.5, 0.5/sqrt(3)]))
+addsite!(unitcell, &quot;B&quot;, carte2fract(unitcell, [0.5,-0.5/sqrt(3)]))
+
+lattice = makelattice(unitcell, scale_matrix)
+
+tsymbed = translation_symmetry_embedding(lattice)
+tsym = symmetry(tsymbed)
+psym = project(PointSymmetryDatabase.get(25), [1 0 0; 0 1 0])
+psymbed = embed(lattice, psym)
+
+print(&quot;Point group: &quot;, psym.hermann_mauguin)</code></pre><pre class="documenter-example-output">Point group: 6mm</pre><h2 id="Permutations"><a class="docs-heading-anchor" href="#Permutations">Permutations</a><a id="Permutations-1"></a><a class="docs-heading-anchor-permalink" href="#Permutations" title="Permalink"></a></h2><pre><code class="language-julia">println(&quot;Translation Permutations&quot;)
+println(&quot;------------------------&quot;)
+
+for t in tsymbed
+    println(t)
+end
+println()
+
+println(&quot;Point Permutations&quot;)
+println(&quot;------------------&quot;)
+for p in psymbed
+    println(p)
+end
+println()</code></pre><pre class="documenter-example-output">Translation Permutations
+------------------------
+SitePermutation(Permutation([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24], 1))
+SitePermutation(Permutation([3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 1, 2, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 13, 14], 6))
+SitePermutation(Permutation([5, 6, 7, 8, 9, 10, 11, 12, 1, 2, 3, 4, 17, 18, 19, 20, 21, 22, 23, 24, 13, 14, 15, 16], 3))
+SitePermutation(Permutation([7, 8, 9, 10, 11, 12, 1, 2, 3, 4, 5, 6, 19, 20, 21, 22, 23, 24, 13, 14, 15, 16, 17, 18], 2))
+SitePermutation(Permutation([9, 10, 11, 12, 1, 2, 3, 4, 5, 6, 7, 8, 21, 22, 23, 24, 13, 14, 15, 16, 17, 18, 19, 20], 3))
+SitePermutation(Permutation([11, 12, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 23, 24, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22], 6))
+SitePermutation(Permutation([13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12], 2))
+SitePermutation(Permutation([15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 13, 14, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 1, 2], 6))
+SitePermutation(Permutation([17, 18, 19, 20, 21, 22, 23, 24, 13, 14, 15, 16, 5, 6, 7, 8, 9, 10, 11, 12, 1, 2, 3, 4], 6))
+SitePermutation(Permutation([19, 20, 21, 22, 23, 24, 13, 14, 15, 16, 17, 18, 7, 8, 9, 10, 11, 12, 1, 2, 3, 4, 5, 6], 2))
+SitePermutation(Permutation([21, 22, 23, 24, 13, 14, 15, 16, 17, 18, 19, 20, 9, 10, 11, 12, 1, 2, 3, 4, 5, 6, 7, 8], 6))
+SitePermutation(Permutation([23, 24, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 11, 12, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10], 6))
+
+Point Permutations
+------------------
+SitePermutation(Permutation([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24], 1))
+SitePermutation(Permutation([11, 22, 19, 6, 3, 14, 23, 10, 7, 18, 15, 2, 17, 4, 1, 24, 21, 8, 5, 16, 13, 12, 9, 20], 3))
+SitePermutation(Permutation([15, 12, 5, 14, 19, 4, 9, 18, 23, 8, 1, 22, 21, 6, 11, 20, 13, 10, 3, 24, 17, 2, 7, 16], 3))
+SitePermutation(Permutation([12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 24, 23, 22, 21, 20, 19, 18, 17, 16, 15, 14, 13], 2))
+SitePermutation(Permutation([2, 15, 18, 7, 10, 23, 14, 3, 6, 19, 22, 11, 20, 9, 12, 13, 16, 5, 8, 21, 24, 1, 4, 17], 6))
+SitePermutation(Permutation([22, 1, 8, 23, 18, 9, 4, 19, 14, 5, 12, 15, 16, 7, 2, 17, 24, 3, 10, 13, 20, 11, 6, 21], 6))
+SitePermutation(Permutation([15, 2, 7, 18, 23, 10, 3, 14, 19, 6, 11, 22, 21, 8, 1, 24, 17, 4, 9, 20, 13, 12, 5, 16], 2))
+SitePermutation(Permutation([11, 12, 9, 10, 7, 8, 5, 6, 3, 4, 1, 2, 17, 18, 15, 16, 13, 14, 23, 24, 21, 22, 19, 20], 2))
+SitePermutation(Permutation([1, 22, 23, 8, 9, 18, 19, 4, 5, 14, 15, 12, 13, 10, 11, 20, 21, 6, 7, 16, 17, 2, 3, 24], 2))
+SitePermutation(Permutation([22, 11, 6, 19, 14, 3, 10, 23, 18, 7, 2, 15, 16, 5, 12, 13, 20, 9, 4, 17, 24, 1, 8, 21], 2))
+SitePermutation(Permutation([2, 1, 4, 3, 6, 5, 8, 7, 10, 9, 12, 11, 20, 19, 22, 21, 24, 23, 14, 13, 16, 15, 18, 17], 2))
+SitePermutation(Permutation([12, 15, 14, 5, 4, 19, 18, 9, 8, 23, 22, 1, 24, 3, 2, 17, 16, 7, 6, 21, 20, 11, 10, 13], 2))</pre><h2 id="Plots-for-Translation-Symmetry-Embeddings"><a class="docs-heading-anchor" href="#Plots-for-Translation-Symmetry-Embeddings">Plots for Translation Symmetry Embeddings</a><a id="Plots-for-Translation-Symmetry-Embeddings-1"></a><a class="docs-heading-anchor-permalink" href="#Plots-for-Translation-Symmetry-Embeddings" title="Permalink"></a></h2><pre><code class="language-julia">for (i_elem, perm) in enumerate(elements(tsymbed))
+    elname = element_name(tsym, i_elem)
+    fig = plot(title=elname, aspect=1, size=(200, 250), grid=false, titlefont=Plots.font(&quot;sans-serif&quot;, pointsize=8))
+    orbcoords = []
+    orbnames = []
+
+    for iorb in eachindex(lattice.supercell.sites)
+        orbfc = getsitecoord(lattice.supercell, perm(iorb))
+        orbcc = fract2carte(lattice.supercell, orbfc)
+        push!(orbnames, &quot;$iorb&quot;)
+        push!(orbcoords, orbcc)
+    end
+    orbcoords = hcat(orbcoords...)
+    L = lattice.supercell.latticevectors
+    for R1 in -2:2, R2 in -2:2
+        R = [R1, R2]
+        LR = L * R
+        idx_filt = [i for (i, r) in enumerate(eachcol(orbcoords)) if within(r .+ LR)]
+        scatter!(
+            orbcoords[1,idx_filt] .+ LR[1],
+            orbcoords[2,idx_filt] .+ LR[2],
+            color=&quot;blue&quot;,
+            markerstrokecolor=&quot;blue&quot;,
+            series_annotations=[Plots.text(x, 6, :left, :bottom) for x in orbnames[idx_filt]],
+            label=nothing
+        )
+    end
+    xlims!(extent[1], extent[2])
+    ylims!(extent[3], extent[4])
+    savefig(fig, &quot;example_honeycomb_symmetry/translation_symmetry-$i_elem.svg&quot;)
+end</code></pre><pre class="documenter-example-output">/home/travis/.julia/packages/GR/BwGt2/src/../deps/gr/bin/gksqt: error while loading shared libraries: libQt5Widgets.so.5: cannot open shared object file: No such file or directory
+connect: Connection refused
+GKS: can&#39;t connect to GKS socket application
+
+GKS: Open failed in routine OPEN_WS
+GKS: GKS not in proper state. GKS must be either in the state WSOP or WSAC in routine ACTIVATE_WS
+/home/travis/.julia/packages/GR/BwGt2/src/../deps/gr/bin/gksqt: error while loading shared libraries: libQt5Widgets.so.5: cannot open shared object file: No such file or directory
+connect: Connection refused
+GKS: can&#39;t connect to GKS socket application
+
+GKS: Open failed in routine OPEN_WS
+GKS: GKS not in proper state. GKS must be either in the state WSOP or WSAC in routine ACTIVATE_WS
+/home/travis/.julia/packages/GR/BwGt2/src/../deps/gr/bin/gksqt: error while loading shared libraries: libQt5Widgets.so.5: cannot open shared object file: No such file or directory
+connect: Connection refused
+GKS: can&#39;t connect to GKS socket application
+
+GKS: Open failed in routine OPEN_WS
+GKS: GKS not in proper state. GKS must be either in the state WSOP or WSAC in routine ACTIVATE_WS
+/home/travis/.julia/packages/GR/BwGt2/src/../deps/gr/bin/gksqt: error while loading shared libraries: libQt5Widgets.so.5: cannot open shared object file: No such file or directory
+connect: Connection refused
+GKS: can&#39;t connect to GKS socket application
+
+GKS: Open failed in routine OPEN_WS
+GKS: GKS not in proper state. GKS must be either in the state WSOP or WSAC in routine ACTIVATE_WS
+/home/travis/.julia/packages/GR/BwGt2/src/../deps/gr/bin/gksqt: error while loading shared libraries: libQt5Widgets.so.5: cannot open shared object file: No such file or directory
+connect: Connection refused
+GKS: can&#39;t connect to GKS socket application
+
+GKS: Open failed in routine OPEN_WS
+GKS: GKS not in proper state. GKS must be either in the state WSOP or WSAC in routine ACTIVATE_WS
+/home/travis/.julia/packages/GR/BwGt2/src/../deps/gr/bin/gksqt: error while loading shared libraries: libQt5Widgets.so.5: cannot open shared object file: No such file or directory
+connect: Connection refused
+GKS: can&#39;t connect to GKS socket application
+
+GKS: Open failed in routine OPEN_WS
+GKS: GKS not in proper state. GKS must be either in the state WSOP or WSAC in routine ACTIVATE_WS
+/home/travis/.julia/packages/GR/BwGt2/src/../deps/gr/bin/gksqt: error while loading shared libraries: libQt5Widgets.so.5: cannot open shared object file: No such file or directory
+connect: Connection refused
+GKS: can&#39;t connect to GKS socket application
+
+GKS: Open failed in routine OPEN_WS
+GKS: GKS not in proper state. GKS must be either in the state WSOP or WSAC in routine ACTIVATE_WS
+/home/travis/.julia/packages/GR/BwGt2/src/../deps/gr/bin/gksqt: error while loading shared libraries: libQt5Widgets.so.5: cannot open shared object file: No such file or directory
+connect: Connection refused
+GKS: can&#39;t connect to GKS socket application
+
+GKS: Open failed in routine OPEN_WS
+GKS: GKS not in proper state. GKS must be either in the state WSOP or WSAC in routine ACTIVATE_WS
+/home/travis/.julia/packages/GR/BwGt2/src/../deps/gr/bin/gksqt: error while loading shared libraries: libQt5Widgets.so.5: cannot open shared object file: No such file or directory
+connect: Connection refused
+GKS: can&#39;t connect to GKS socket application
+
+GKS: Open failed in routine OPEN_WS
+GKS: GKS not in proper state. GKS must be either in the state WSOP or WSAC in routine ACTIVATE_WS
+/home/travis/.julia/packages/GR/BwGt2/src/../deps/gr/bin/gksqt: error while loading shared libraries: libQt5Widgets.so.5: cannot open shared object file: No such file or directory
+connect: Connection refused
+GKS: can&#39;t connect to GKS socket application
+
+GKS: Open failed in routine OPEN_WS
+GKS: GKS not in proper state. GKS must be either in the state WSOP or WSAC in routine ACTIVATE_WS
+/home/travis/.julia/packages/GR/BwGt2/src/../deps/gr/bin/gksqt: error while loading shared libraries: libQt5Widgets.so.5: cannot open shared object file: No such file or directory
+connect: Connection refused
+GKS: can&#39;t connect to GKS socket application
+
+GKS: Open failed in routine OPEN_WS
+GKS: GKS not in proper state. GKS must be either in the state WSOP or WSAC in routine ACTIVATE_WS
+/home/travis/.julia/packages/GR/BwGt2/src/../deps/gr/bin/gksqt: error while loading shared libraries: libQt5Widgets.so.5: cannot open shared object file: No such file or directory
+connect: Connection refused
+GKS: can&#39;t connect to GKS socket application
+
+GKS: Open failed in routine OPEN_WS
+GKS: GKS not in proper state. GKS must be either in the state WSOP or WSAC in routine ACTIVATE_WS</pre><p><img src="translation_symmetry-1.svg" alt/> <img src="translation_symmetry-2.svg" alt/> <img src="translation_symmetry-3.svg" alt/> <img src="translation_symmetry-4.svg" alt/> <img src="translation_symmetry-5.svg" alt/> <img src="translation_symmetry-6.svg" alt/> <img src="translation_symmetry-7.svg" alt/> <img src="translation_symmetry-8.svg" alt/> <img src="translation_symmetry-9.svg" alt/> <img src="translation_symmetry-10.svg" alt/> <img src="translation_symmetry-11.svg" alt/> <img src="translation_symmetry-12.svg" alt/></p><h2 id="Plots-for-Point-Symmetry-Embeddings"><a class="docs-heading-anchor" href="#Plots-for-Point-Symmetry-Embeddings">Plots for Point Symmetry Embeddings</a><a id="Plots-for-Point-Symmetry-Embeddings-1"></a><a class="docs-heading-anchor-permalink" href="#Plots-for-Point-Symmetry-Embeddings" title="Permalink"></a></h2><pre><code class="language-julia">for (i_elem, perm) in enumerate(elements(psymbed))
+    elname = element_name(psym, i_elem)
+    fig = plot(title=simplifyname(elname), aspect=1, size=(200, 250), grid=false, titlefont=Plots.font(&quot;sans-serif&quot;, pointsize=8))
+    orbcoords = []
+    orbnames = []
+
+    for iorb in eachindex(lattice.supercell.sites)
+        orbfc = getsitecoord(lattice.supercell, perm(iorb))
+        orbcc = fract2carte(lattice.supercell, orbfc)
+        push!(orbnames, &quot;$iorb&quot;)
+        push!(orbcoords, orbcc)
+    end
+    orbcoords = hcat(orbcoords...)
+    L = lattice.supercell.latticevectors
+    for R1 in -2:2, R2 in -2:2
+        R = [R1, R2]
+        LR = L * R
+        idx_filt = [i for (i, r) in enumerate(eachcol(orbcoords)) if within(r .+ LR)]
+        scatter!(
+            orbcoords[1,idx_filt] .+ LR[1],
+            orbcoords[2,idx_filt] .+ LR[2],
+            color=&quot;blue&quot;,
+            markerstrokecolor=&quot;blue&quot;,
+            series_annotations=[Plots.text(x, 6, :left, :bottom) for x in orbnames[idx_filt]],
+            label=nothing
+        )
+    end
+    xlims!(extent[1], extent[2])
+    ylims!(extent[3], extent[4])
+    savefig(fig, &quot;example_honeycomb_symmetry/point_symmetry-$i_elem.svg&quot;)
+end</code></pre><pre class="documenter-example-output">/home/travis/.julia/packages/GR/BwGt2/src/../deps/gr/bin/gksqt: error while loading shared libraries: libQt5Widgets.so.5: cannot open shared object file: No such file or directory
+connect: Connection refused
+GKS: can&#39;t connect to GKS socket application
+
+GKS: Open failed in routine OPEN_WS
+GKS: GKS not in proper state. GKS must be either in the state WSOP or WSAC in routine ACTIVATE_WS
+/home/travis/.julia/packages/GR/BwGt2/src/../deps/gr/bin/gksqt: error while loading shared libraries: libQt5Widgets.so.5: cannot open shared object file: No such file or directory
+connect: Connection refused
+GKS: can&#39;t connect to GKS socket application
+
+GKS: Open failed in routine OPEN_WS
+GKS: GKS not in proper state. GKS must be either in the state WSOP or WSAC in routine ACTIVATE_WS
+/home/travis/.julia/packages/GR/BwGt2/src/../deps/gr/bin/gksqt: error while loading shared libraries: libQt5Widgets.so.5: cannot open shared object file: No such file or directory
+connect: Connection refused
+GKS: can&#39;t connect to GKS socket application
+
+GKS: Open failed in routine OPEN_WS
+GKS: GKS not in proper state. GKS must be either in the state WSOP or WSAC in routine ACTIVATE_WS
+/home/travis/.julia/packages/GR/BwGt2/src/../deps/gr/bin/gksqt: error while loading shared libraries: libQt5Widgets.so.5: cannot open shared object file: No such file or directory
+connect: Connection refused
+GKS: can&#39;t connect to GKS socket application
+
+GKS: Open failed in routine OPEN_WS
+GKS: GKS not in proper state. GKS must be either in the state WSOP or WSAC in routine ACTIVATE_WS
+/home/travis/.julia/packages/GR/BwGt2/src/../deps/gr/bin/gksqt: error while loading shared libraries: libQt5Widgets.so.5: cannot open shared object file: No such file or directory
+connect: Connection refused
+GKS: can&#39;t connect to GKS socket application
+
+GKS: Open failed in routine OPEN_WS
+GKS: GKS not in proper state. GKS must be either in the state WSOP or WSAC in routine ACTIVATE_WS
+/home/travis/.julia/packages/GR/BwGt2/src/../deps/gr/bin/gksqt: error while loading shared libraries: libQt5Widgets.so.5: cannot open shared object file: No such file or directory
+connect: Connection refused
+GKS: can&#39;t connect to GKS socket application
+
+GKS: Open failed in routine OPEN_WS
+GKS: GKS not in proper state. GKS must be either in the state WSOP or WSAC in routine ACTIVATE_WS
+/home/travis/.julia/packages/GR/BwGt2/src/../deps/gr/bin/gksqt: error while loading shared libraries: libQt5Widgets.so.5: cannot open shared object file: No such file or directory
+connect: Connection refused
+GKS: can&#39;t connect to GKS socket application
+
+GKS: Open failed in routine OPEN_WS
+GKS: GKS not in proper state. GKS must be either in the state WSOP or WSAC in routine ACTIVATE_WS
+/home/travis/.julia/packages/GR/BwGt2/src/../deps/gr/bin/gksqt: error while loading shared libraries: libQt5Widgets.so.5: cannot open shared object file: No such file or directory
+connect: Connection refused
+GKS: can&#39;t connect to GKS socket application
+
+GKS: Open failed in routine OPEN_WS
+GKS: GKS not in proper state. GKS must be either in the state WSOP or WSAC in routine ACTIVATE_WS
+/home/travis/.julia/packages/GR/BwGt2/src/../deps/gr/bin/gksqt: error while loading shared libraries: libQt5Widgets.so.5: cannot open shared object file: No such file or directory
+connect: Connection refused
+GKS: can&#39;t connect to GKS socket application
+
+GKS: Open failed in routine OPEN_WS
+GKS: GKS not in proper state. GKS must be either in the state WSOP or WSAC in routine ACTIVATE_WS
+/home/travis/.julia/packages/GR/BwGt2/src/../deps/gr/bin/gksqt: error while loading shared libraries: libQt5Widgets.so.5: cannot open shared object file: No such file or directory
+connect: Connection refused
+GKS: can&#39;t connect to GKS socket application
+
+GKS: Open failed in routine OPEN_WS
+GKS: GKS not in proper state. GKS must be either in the state WSOP or WSAC in routine ACTIVATE_WS
+/home/travis/.julia/packages/GR/BwGt2/src/../deps/gr/bin/gksqt: error while loading shared libraries: libQt5Widgets.so.5: cannot open shared object file: No such file or directory
+connect: Connection refused
+GKS: can&#39;t connect to GKS socket application
+
+GKS: Open failed in routine OPEN_WS
+GKS: GKS not in proper state. GKS must be either in the state WSOP or WSAC in routine ACTIVATE_WS
+/home/travis/.julia/packages/GR/BwGt2/src/../deps/gr/bin/gksqt: error while loading shared libraries: libQt5Widgets.so.5: cannot open shared object file: No such file or directory
+connect: Connection refused
+GKS: can&#39;t connect to GKS socket application
+
+GKS: Open failed in routine OPEN_WS
+GKS: GKS not in proper state. GKS must be either in the state WSOP or WSAC in routine ACTIVATE_WS</pre><p><img src="point_symmetry-1.svg" alt/> <img src="point_symmetry-2.svg" alt/> <img src="point_symmetry-3.svg" alt/> <img src="point_symmetry-4.svg" alt/> <img src="point_symmetry-5.svg" alt/> <img src="point_symmetry-6.svg" alt/> <img src="point_symmetry-7.svg" alt/> <img src="point_symmetry-8.svg" alt/> <img src="point_symmetry-9.svg" alt/> <img src="point_symmetry-10.svg" alt/> <img src="point_symmetry-11.svg" alt/> <img src="point_symmetry-12.svg" alt/></p><hr/><p><em>This page was generated using <a href="https://github.com/fredrikekre/Literate.jl">Literate.jl</a>.</em></p></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../example_little_group_3d/">« Little Group in 3D</a><a class="docs-footer-nextpage" href="../example_little_symmetry_kspace_honeycomb/">Honeycomb Lattice in k-space »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> on <span class="colophon-date" title="Tuesday 8 September 2020 22:03">Tuesday 8 September 2020</span>. Using Julia version 1.5.1.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
