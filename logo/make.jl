@@ -23,7 +23,7 @@ origin()
 translate(-450, 130)
 
 let ratio = 100, radius = 13, radius_large = 18, offset = (0,0),
-    sitecolor = Dict("A" => "brown3", "B" => "forestgreen", "C" => "mediumorchid3")
+    sitecolor = Dict("A" => "#389826", "B" => "#9558B2", "C" => "#CB3C33")
 
     sethue("gray")
     setline(2)
@@ -52,8 +52,9 @@ texttrack("Lattice", Point(0, 0), -50, 144)
 translate(0, 140)
 texttrack("Tools.jl", Point(0, 0), -50, 144)
 
-setcolor(sethue("royalblue")..., 1.0)
-ellipse(286.3, -239.6, 25, 22.6, :fill)
+setcolor(sethue("#4063D8")..., 1.0)
+#ellipse(286.3, -239.6, 25, 22.6, :fill)
+ellipse(286, -238, 32, 32, :fill)
 
 finish()
 #preview()
