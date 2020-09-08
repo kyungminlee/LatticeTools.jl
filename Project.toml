@@ -1,7 +1,7 @@
 name = "LatticeTools"
 uuid = "8a267902-5e0e-44c3-8ef8-9b2b5c352816"
 author = "Kyungmin Lee"
-version = "0.7.1"
+version = "0.8.0"
 
 [deps]
 FileIO = "5789e2e9-d7fb-5bc7-8068-2c6fae9b9549"
