@@ -4,6 +4,7 @@ export Permutation
 export generate_group
 export isidentity
 
+
 """
     Permutation(perms; max_order=2048)
 

@@ -6,6 +6,7 @@ export isequiv
 
 import MathExpr
 
+
 """
     Hypercube(shape)
 
@@ -42,12 +43,14 @@ struct Hypercube
     end
 end
 
+
 """
     dimension(cube::Hypercube)
 
 Return the spatial dimension of the hypercube.
 """
 dimension(cube::Hypercube) = size(cube.shape_matrix, 1)
+
 
 """
     volume(cube::Hypercube)

@@ -427,14 +427,6 @@ function whichunitcell(
 end
 
 
-#=
-function zero(uc::UnitCell; dtype::DataType=ComplexF64)
-    norb = numsite(uc)
-    return Base.zeros(dtype, (norb, norb))
-end
-=#
-
-
 """
     momentumgrid(unitcell, shape)
 

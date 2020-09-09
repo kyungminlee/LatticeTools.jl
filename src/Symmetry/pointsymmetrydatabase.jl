@@ -9,8 +9,6 @@ import Serialization
 import Pkg
 
 using YAML
-using JLD2
-using FileIO
 
 import ..LatticeTools: PointSymmetry, read_point_symmetry, simplify_name
 

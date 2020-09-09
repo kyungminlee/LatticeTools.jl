@@ -1,7 +1,6 @@
 export AbstractSymmetryEmbedding
 
 export SymmetryEmbedding
-# export SymmorphicSpaceSymmetryEmbedding
 
 export embed
 export element, elements

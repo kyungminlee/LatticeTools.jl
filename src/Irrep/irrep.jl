@@ -8,6 +8,7 @@ export get_irrep_components
 export get_irrep_iterator
 export little_symmetry
 
+
 struct IrrepData
     group::FiniteGroup
     conjugacy_classes::Vector{Vector{Int}}
