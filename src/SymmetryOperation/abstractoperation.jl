@@ -1,5 +1,8 @@
+export AbstractSymmetryOperation
 export AbstractSpaceSymmetryOperation
 export domaintype
+
+abstract type AbstractSymmetryOperation end
 
 """
     AbstractSpaceSymmetryOperation{S<:Real}
@@ -7,7 +10,7 @@ export domaintype
 Abstract space symmetry operation, i.e. translation, point, and space operation.
 See also [`TranslationOperation`](@ref), [`PointOperation`](@ref), [`SpaceOperation`](@ref).
 """
-abstract type AbstractSpaceSymmetryOperation{S<:Real} end
+abstract type AbstractSpaceSymmetryOperation{S<:Real} <: AbstractSymmetryOperation end
 
 """
     domaintype(arg::AbstractSpaceSymmetryOperation{S}) where {S<:Real}
