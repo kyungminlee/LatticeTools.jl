@@ -69,6 +69,7 @@ function Base.:(==)(lhs::IrrepComponent, rhs::IrrepComponent)
     )
 end
 
+
 """
     group_order(sic::IrrepComponent)
 
