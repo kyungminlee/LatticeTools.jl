@@ -23,8 +23,8 @@
 [docs-dev-img]: https://img.shields.io/badge/docs-dev-blue.svg
 [docs-dev-url]: https://kyungminlee.org/LatticeTools.jl/dev
 
-[githubaction-img]: https://github.com/kyungminlee/SimpleLinear.jl/workflows/Build/badge.svg
-[githubaction-url]: https://github.com/kyungminlee/SimpleLinear.jl/actions?query=workflow%3ABuild
+[githubaction-img]: https://github.com/kyungminlee/LatticeTools.jl/workflows/Build/badge.svg
+[githubaction-url]: https://github.com/kyungminlee/LatticeTools.jl/actions?query=workflow%3ABuild
 
 [codecov-img]: https://codecov.io/gh/kyungminlee/LatticeTools.jl/branch/master/graph/badge.svg
 [codecov-url]: https://codecov.io/gh/kyungminlee/LatticeTools.jl
