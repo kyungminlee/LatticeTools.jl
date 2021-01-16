@@ -1,4 +1,4 @@
-<img src="https://kyungminlee.org/LatticeTools.jl/stable/assets/logo.png" width="400px">
+<img src="https://kyungminlee.org/LatticeTools.jl/stable/assets/logo.svg" width="400px">
 
 # LatticeTools.jl
 
