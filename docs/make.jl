@@ -57,7 +57,7 @@ makedocs(
     ]
 )
 
-deploydocs(
-    repo = "github.com/kyungminlee/LatticeTools.jl.git",
-    devbranch = "dev",
+deploydocs(;
+    repo="github.com/kyungminlee/LatticeTools.jl.git",
+    devbranch="dev",
 )
