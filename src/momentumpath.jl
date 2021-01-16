@@ -34,13 +34,15 @@ function linpath(anchors::AbstractVector...; nseg::Integer=100)
     return out
 end
 
-# """
-#     momentumpath
-#
-# The anchorpoints are given in units of the reciprocal lattice vectors.
-# """
-# function momentumpath(unitcell::UnitCell,
-#                       anchors::AbstractVector{<:AbstractVector{<:Number}})
-#     real_anchorpoints = [unitcell.reciprocallatticevectors * ap for ap in anchorpoints]
-#     return linpath(real_anchorpoints...)
-# end
+"""
+    momentumpath
+
+The anchorpoints are given in units of the reciprocal lattice vectors.
+"""
+function momentumpath(
+    unitcell::UnitCell,
+    anchorpoints::AbstractVector{<:AbstractVector{<:Number}},
+)
+    real_anchorpoints = [unitcell.reciprocallatticevectors * ap for ap in anchorpoints]
+    return linpath(real_anchorpoints...)
+end
