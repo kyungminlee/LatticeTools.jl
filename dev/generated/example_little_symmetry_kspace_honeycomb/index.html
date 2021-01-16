@@ -109,12 +109,12 @@ irreducible representations:
   little point symmetry: 6mm
 - irrep index: 2
   fractional momentum: [1//3, 1//3]
-  momentum: [0.3333333333333333, 0.5773502691896258]
+  momentum: [0.3333333333333333, 0.5773502691896257]
   is point symmetry compatible with momentum: false
   little point symmetry: 3m
 - irrep index: 3
   fractional momentum: [2//3, 2//3]
-  momentum: [0.6666666666666666, 1.1547005383792517]
+  momentum: [0.6666666666666666, 1.1547005383792515]
   is point symmetry compatible with momentum: false
   little point symmetry: 3m</pre><h3 id="Plot-Momentum-Space"><a class="docs-heading-anchor" href="#Plot-Momentum-Space">Plot Momentum Space</a><a id="Plot-Momentum-Space-1"></a><a class="docs-heading-anchor-permalink" href="#Plot-Momentum-Space" title="Permalink"></a></h3><pre><code class="language-julia">let
     extent = [-1.1, 1.1, -1.4, 1.4]
@@ -164,7 +164,7 @@ GKS: can&#39;t connect to GKS socket application
 
 GKS: Open failed in routine OPEN_WS
 GKS: GKS not in proper state. GKS must be either in the state WSOP or WSAC in routine ACTIVATE_WS</pre><p><img src="momentumspace-root3xroot3.svg" alt/></p><h2 id="3-23-Supercell"><a class="docs-heading-anchor" href="#3-23-Supercell">2√3 × 2√3 Supercell</a><a id="3-23-Supercell-1"></a><a class="docs-heading-anchor-permalink" href="#3-23-Supercell" title="Permalink"></a></h2><h3 id="Make-Superlattice-2"><a class="docs-heading-anchor" href="#Make-Superlattice-2">Make Superlattice</a><a class="docs-heading-anchor-permalink" href="#Make-Superlattice-2" title="Permalink"></a></h3><pre><code class="language-julia">shape = [2 2; -2 4]
-lattice = makelattice(unitcell, shape)</code></pre><pre class="documenter-example-output">Lattice{String}(UnitCell{String}([1.0 -0.5; 0.0 0.8660254037844386], Tuple{String,FractCoord}[(&quot;A&quot;, FractCoord([0, 0] + [0.6666666666666667, 0.3333333333333334])), (&quot;B&quot;, FractCoord([0, -1] + [0.33333333333333326, 0.6666666666666665]))], [1.0 0.0; 0.5773502691896258 1.1547005383792517], [6.283185307179586 0.0; 3.627598728468436 7.255197456936872], Dict(&quot;B&quot; =&gt; 2,&quot;A&quot; =&gt; 1)), Hypercube([2 2; -2 4], Rational{Int64}[1//3 -1//6; 1//6 1//6], LatticeTools.var&quot;#wrap#10&quot;{Array{Int64,2},Array{Rational{Int64},2}}([2 2; -2 4], Rational{Int64}[1//3 -1//6; 1//6 1//6])), [[0, 0], [1, 0], [2, 0], [1, 2], [2, 2], [3, 2], [2, 1], [3, 1], [2, 3], [1, -1], [2, -1], [1, 1]], UnitCell{Tuple{String,Array{Int64,1}}}([3.0 0.0; -1.7320508075688772 3.4641016151377544], Tuple{Tuple{String,Array{Int64,1}},FractCoord}[((&quot;A&quot;, [0, 0]), FractCoord([0, 0] + [0.16666666666666666, 0.16666666666666669])), ((&quot;B&quot;, [0, 0]), FractCoord([0, 0] + [0.16666666666666666, 0.0])), ((&quot;A&quot;, [1, 0]), FractCoord([0, 0] + [0.5, 0.33333333333333337])), ((&quot;B&quot;, [1, 0]), FractCoord([0, 0] + [0.5, 0.16666666666666666])), ((&quot;A&quot;, [2, 0]), FractCoord([0, 0] + [0.8333333333333333, 0.5000000000000001])), ((&quot;B&quot;, [2, 0]), FractCoord([0, 0] + [0.8333333333333333, 0.33333333333333337])), ((&quot;A&quot;, [1, 2]), FractCoord([0, 0] + [0.16666666666666666, 0.6666666666666669])), ((&quot;B&quot;, [1, 2]), FractCoord([0, 0] + [0.16666666666666666, 0.5])), ((&quot;A&quot;, [2, 2]), FractCoord([0, 0] + [0.5, 0.8333333333333335])), ((&quot;B&quot;, [2, 2]), FractCoord([0, 0] + [0.5, 0.6666666666666666]))  …  ((&quot;A&quot;, [3, 1]), FractCoord([1, 0] + [0.0, 0.8333333333333335])), ((&quot;B&quot;, [3, 1]), FractCoord([1, 0] + [0.0, 0.6666666666666667])), ((&quot;A&quot;, [2, 3]), FractCoord([0, 1] + [0.3333333333333333, 0.0])), ((&quot;B&quot;, [2, 3]), FractCoord([0, 0] + [0.3333333333333333, 0.8333333333333335])), ((&quot;A&quot;, [1, -1]), FractCoord([0, 0] + [0.6666666666666666, 0.16666666666666669])), ((&quot;B&quot;, [1, -1]), FractCoord([0, 0] + [0.6666666666666666, 0.0])), ((&quot;A&quot;, [2, -1]), FractCoord([1, 0] + [0.0, 0.33333333333333337])), ((&quot;B&quot;, [2, -1]), FractCoord([1, 0] + [0.0, 0.16666666666666669])), ((&quot;A&quot;, [1, 1]), FractCoord([0, 0] + [0.3333333333333333, 0.5])), ((&quot;B&quot;, [1, 1]), FractCoord([0, 0] + [0.3333333333333333, 0.33333333333333337]))], [0.3333333333333333 0.16666666666666669; 0.0 0.2886751345948129], [2.0943951023931953 1.0471975511965979; 0.0 1.813799364234218], Dict((&quot;A&quot;, [2, 2]) =&gt; 9,(&quot;A&quot;, [1, 2]) =&gt; 7,(&quot;A&quot;, [1, -1]) =&gt; 19,(&quot;B&quot;, [1, -1]) =&gt; 20,(&quot;B&quot;, [3, 2]) =&gt; 12,(&quot;A&quot;, [1, 0]) =&gt; 3,(&quot;A&quot;, [2, -1]) =&gt; 21,(&quot;B&quot;, [2, 2]) =&gt; 10,(&quot;B&quot;, [1, 2]) =&gt; 8,(&quot;A&quot;, [2, 1]) =&gt; 13…)))</pre><h3 id="Plot-Lattice-3"><a class="docs-heading-anchor" href="#Plot-Lattice-3">Plot Lattice</a><a class="docs-heading-anchor-permalink" href="#Plot-Lattice-3" title="Permalink"></a></h3><pre><code class="language-julia">let bravais_lattice = [], a_sites = [], b_sites = []
+lattice = makelattice(unitcell, shape)</code></pre><pre class="documenter-example-output">Lattice{String}(UnitCell{String}([1.0 -0.5; 0.0 0.8660254037844386], Tuple{String,FractCoord}[(&quot;A&quot;, FractCoord([0, 0] + [0.6666666666666667, 0.3333333333333334])), (&quot;B&quot;, FractCoord([0, -1] + [0.33333333333333326, 0.6666666666666665]))], [1.0 0.0; 0.5773502691896258 1.1547005383792517], [6.283185307179586 0.0; 3.627598728468436 7.255197456936872], Dict(&quot;B&quot; =&gt; 2,&quot;A&quot; =&gt; 1)), Hypercube([2 2; -2 4], Rational{Int64}[1//3 -1//6; 1//6 1//6], LatticeTools.var&quot;#wrap#10&quot;{Array{Int64,2},Array{Rational{Int64},2}}([2 2; -2 4], Rational{Int64}[1//3 -1//6; 1//6 1//6])), [[0, 0], [1, 0], [2, 0], [1, 2], [2, 2], [3, 2], [2, 1], [3, 1], [2, 3], [1, -1], [2, -1], [1, 1]], UnitCell{Tuple{String,Array{Int64,1}}}([3.0 0.0; -1.7320508075688772 3.4641016151377544], Tuple{Tuple{String,Array{Int64,1}},FractCoord}[((&quot;A&quot;, [0, 0]), FractCoord([0, 0] + [0.16666666666666666, 0.16666666666666669])), ((&quot;B&quot;, [0, 0]), FractCoord([0, 0] + [0.16666666666666666, 0.0])), ((&quot;A&quot;, [1, 0]), FractCoord([0, 0] + [0.5, 0.33333333333333337])), ((&quot;B&quot;, [1, 0]), FractCoord([0, 0] + [0.5, 0.16666666666666663])), ((&quot;A&quot;, [2, 0]), FractCoord([0, 0] + [0.8333333333333333, 0.5000000000000001])), ((&quot;B&quot;, [2, 0]), FractCoord([0, 0] + [0.8333333333333333, 0.33333333333333337])), ((&quot;A&quot;, [1, 2]), FractCoord([0, 0] + [0.16666666666666666, 0.6666666666666669])), ((&quot;B&quot;, [1, 2]), FractCoord([0, 0] + [0.16666666666666666, 0.5])), ((&quot;A&quot;, [2, 2]), FractCoord([0, 0] + [0.5, 0.8333333333333335])), ((&quot;B&quot;, [2, 2]), FractCoord([0, 0] + [0.5, 0.6666666666666666]))  …  ((&quot;A&quot;, [3, 1]), FractCoord([1, 0] + [0.0, 0.8333333333333334])), ((&quot;B&quot;, [3, 1]), FractCoord([1, 0] + [0.0, 0.6666666666666666])), ((&quot;A&quot;, [2, 3]), FractCoord([0, 1] + [0.3333333333333333, 0.0])), ((&quot;B&quot;, [2, 3]), FractCoord([0, 0] + [0.3333333333333333, 0.8333333333333335])), ((&quot;A&quot;, [1, -1]), FractCoord([0, 0] + [0.6666666666666666, 0.16666666666666669])), ((&quot;B&quot;, [1, -1]), FractCoord([0, 0] + [0.6666666666666666, 0.0])), ((&quot;A&quot;, [2, -1]), FractCoord([1, 0] + [0.0, 0.3333333333333333])), ((&quot;B&quot;, [2, -1]), FractCoord([1, 0] + [0.0, 0.16666666666666663])), ((&quot;A&quot;, [1, 1]), FractCoord([0, 0] + [0.3333333333333333, 0.5])), ((&quot;B&quot;, [1, 1]), FractCoord([0, 0] + [0.3333333333333333, 0.33333333333333337]))], [0.3333333333333333 0.16666666666666669; 0.0 0.2886751345948129], [2.0943951023931953 1.0471975511965979; 0.0 1.813799364234218], Dict((&quot;A&quot;, [2, 2]) =&gt; 9,(&quot;A&quot;, [1, 2]) =&gt; 7,(&quot;A&quot;, [1, -1]) =&gt; 19,(&quot;B&quot;, [1, -1]) =&gt; 20,(&quot;B&quot;, [3, 2]) =&gt; 12,(&quot;A&quot;, [1, 0]) =&gt; 3,(&quot;A&quot;, [2, -1]) =&gt; 21,(&quot;B&quot;, [2, 2]) =&gt; 10,(&quot;B&quot;, [1, 2]) =&gt; 8,(&quot;A&quot;, [2, 1]) =&gt; 13…)))</pre><h3 id="Plot-Lattice-3"><a class="docs-heading-anchor" href="#Plot-Lattice-3">Plot Lattice</a><a class="docs-heading-anchor-permalink" href="#Plot-Lattice-3" title="Permalink"></a></h3><pre><code class="language-julia">let bravais_lattice = [], a_sites = [], b_sites = []
     extent = [-8, 8, -8, 8]
     within = makewithin(extent)
 
@@ -233,7 +233,7 @@ irreducible representations:
   little point symmetry: m
 - irrep index: 3
   fractional momentum: [1//3, 1//3]
-  momentum: [0.3333333333333333, 0.5773502691896258]
+  momentum: [0.3333333333333333, 0.5773502691896257]
   is point symmetry compatible with momentum: false
   little point symmetry: 3m
 - irrep index: 4
@@ -243,7 +243,7 @@ irreducible representations:
   little point symmetry: mm2
 - irrep index: 5
   fractional momentum: [2//3, 2//3]
-  momentum: [0.6666666666666666, 1.1547005383792517]
+  momentum: [0.6666666666666666, 1.1547005383792515]
   is point symmetry compatible with momentum: false
   little point symmetry: 3m
 - irrep index: 6
@@ -258,7 +258,7 @@ irreducible representations:
   little point symmetry: mm2
 - irrep index: 8
   fractional momentum: [1//6, 1//6]
-  momentum: [0.16666666666666666, 0.2886751345948129]
+  momentum: [0.16666666666666666, 0.28867513459481287]
   is point symmetry compatible with momentum: false
   little point symmetry: m
 - irrep index: 9
@@ -273,7 +273,7 @@ irreducible representations:
   little point symmetry: mm2
 - irrep index: 11
   fractional momentum: [2//3, 1//6]
-  momentum: [0.6666666666666666, 0.5773502691896258]
+  momentum: [0.6666666666666666, 0.5773502691896257]
   is point symmetry compatible with momentum: false
   little point symmetry: m
 - irrep index: 12
@@ -329,7 +329,7 @@ GKS: can&#39;t connect to GKS socket application
 
 GKS: Open failed in routine OPEN_WS
 GKS: GKS not in proper state. GKS must be either in the state WSOP or WSAC in routine ACTIVATE_WS</pre><p><img src="momentumspace-2root3x2root3.svg" alt/></p><h2 id="6-Supercell"><a class="docs-heading-anchor" href="#6-Supercell">6 × 6 Supercell</a><a id="6-Supercell-1"></a><a class="docs-heading-anchor-permalink" href="#6-Supercell" title="Permalink"></a></h2><h3 id="Make-Superlattice-3"><a class="docs-heading-anchor" href="#Make-Superlattice-3">Make Superlattice</a><a class="docs-heading-anchor-permalink" href="#Make-Superlattice-3" title="Permalink"></a></h3><pre><code class="language-julia">shape = [6 0; 0 6]
-lattice = makelattice(unitcell, shape)</code></pre><pre class="documenter-example-output">Lattice{String}(UnitCell{String}([1.0 -0.5; 0.0 0.8660254037844386], Tuple{String,FractCoord}[(&quot;A&quot;, FractCoord([0, 0] + [0.6666666666666667, 0.3333333333333334])), (&quot;B&quot;, FractCoord([0, -1] + [0.33333333333333326, 0.6666666666666665]))], [1.0 0.0; 0.5773502691896258 1.1547005383792517], [6.283185307179586 0.0; 3.627598728468436 7.255197456936872], Dict(&quot;B&quot; =&gt; 2,&quot;A&quot; =&gt; 1)), Hypercube([6 0; 0 6], Rational{Int64}[1//6 0//1; 0//1 1//6], LatticeTools.var&quot;#wrap#10&quot;{Array{Int64,2},Array{Rational{Int64},2}}([6 0; 0 6], Rational{Int64}[1//6 0//1; 0//1 1//6])), [[0, 0], [1, 0], [2, 0], [3, 0], [4, 0], [5, 0], [0, 1], [1, 1], [2, 1], [3, 1]  …  [2, 4], [3, 4], [4, 4], [5, 4], [0, 5], [1, 5], [2, 5], [3, 5], [4, 5], [5, 5]], UnitCell{Tuple{String,Array{Int64,1}}}([6.0 -3.0; 0.0 5.196152422706632], Tuple{Tuple{String,Array{Int64,1}},FractCoord}[((&quot;A&quot;, [0, 0]), FractCoord([0, 0] + [0.1111111111111111, 0.055555555555555566])), ((&quot;B&quot;, [0, 0]), FractCoord([0, -1] + [0.055555555555555546, 0.9444444444444444])), ((&quot;A&quot;, [1, 0]), FractCoord([0, 0] + [0.2777777777777778, 0.055555555555555566])), ((&quot;B&quot;, [1, 0]), FractCoord([0, -1] + [0.2222222222222222, 0.9444444444444444])), ((&quot;A&quot;, [2, 0]), FractCoord([0, 0] + [0.4444444444444444, 0.055555555555555566])), ((&quot;B&quot;, [2, 0]), FractCoord([0, -1] + [0.38888888888888884, 0.9444444444444444])), ((&quot;A&quot;, [3, 0]), FractCoord([0, 0] + [0.611111111111111, 0.055555555555555566])), ((&quot;B&quot;, [3, 0]), FractCoord([0, -1] + [0.5555555555555555, 0.9444444444444444])), ((&quot;A&quot;, [4, 0]), FractCoord([0, 0] + [0.7777777777777778, 0.055555555555555566])), ((&quot;B&quot;, [4, 0]), FractCoord([0, -1] + [0.7222222222222222, 0.9444444444444444]))  …  ((&quot;A&quot;, [1, 5]), FractCoord([0, 0] + [0.2777777777777777, 0.8888888888888888])), ((&quot;B&quot;, [1, 5]), FractCoord([0, 0] + [0.22222222222222213, 0.7777777777777777])), ((&quot;A&quot;, [2, 5]), FractCoord([0, 0] + [0.44444444444444436, 0.8888888888888888])), ((&quot;B&quot;, [2, 5]), FractCoord([0, 0] + [0.3888888888888888, 0.7777777777777777])), ((&quot;A&quot;, [3, 5]), FractCoord([0, 0] + [0.611111111111111, 0.8888888888888888])), ((&quot;B&quot;, [3, 5]), FractCoord([0, 0] + [0.5555555555555555, 0.7777777777777777])), ((&quot;A&quot;, [4, 5]), FractCoord([0, 0] + [0.7777777777777777, 0.8888888888888888])), ((&quot;B&quot;, [4, 5]), FractCoord([0, 0] + [0.7222222222222221, 0.7777777777777777])), ((&quot;A&quot;, [5, 5]), FractCoord([0, 0] + [0.9444444444444443, 0.8888888888888888])), ((&quot;B&quot;, [5, 5]), FractCoord([0, 0] + [0.8888888888888887, 0.7777777777777777]))], [0.16666666666666666 0.0; 0.09622504486493762 0.19245008972987526], [1.0471975511965976 0.0; 0.6045997880780726 1.2091995761561452], Dict((&quot;A&quot;, [2, 5]) =&gt; 65,(&quot;B&quot;, [0, 5]) =&gt; 62,(&quot;A&quot;, [5, 1]) =&gt; 23,(&quot;B&quot;, [4, 4]) =&gt; 58,(&quot;B&quot;, [1, 5]) =&gt; 64,(&quot;B&quot;, [5, 2]) =&gt; 36,(&quot;A&quot;, [1, 5]) =&gt; 63,(&quot;B&quot;, [3, 1]) =&gt; 20,(&quot;B&quot;, [3, 5]) =&gt; 68,(&quot;B&quot;, [2, 5]) =&gt; 66…)))</pre><h3 id="Plot-Lattice-4"><a class="docs-heading-anchor" href="#Plot-Lattice-4">Plot Lattice</a><a class="docs-heading-anchor-permalink" href="#Plot-Lattice-4" title="Permalink"></a></h3><pre><code class="language-julia">let bravais_lattice = [], a_sites = [], b_sites = []
+lattice = makelattice(unitcell, shape)</code></pre><pre class="documenter-example-output">Lattice{String}(UnitCell{String}([1.0 -0.5; 0.0 0.8660254037844386], Tuple{String,FractCoord}[(&quot;A&quot;, FractCoord([0, 0] + [0.6666666666666667, 0.3333333333333334])), (&quot;B&quot;, FractCoord([0, -1] + [0.33333333333333326, 0.6666666666666665]))], [1.0 0.0; 0.5773502691896258 1.1547005383792517], [6.283185307179586 0.0; 3.627598728468436 7.255197456936872], Dict(&quot;B&quot; =&gt; 2,&quot;A&quot; =&gt; 1)), Hypercube([6 0; 0 6], Rational{Int64}[1//6 0//1; 0//1 1//6], LatticeTools.var&quot;#wrap#10&quot;{Array{Int64,2},Array{Rational{Int64},2}}([6 0; 0 6], Rational{Int64}[1//6 0//1; 0//1 1//6])), [[0, 0], [1, 0], [2, 0], [3, 0], [4, 0], [5, 0], [0, 1], [1, 1], [2, 1], [3, 1]  …  [2, 4], [3, 4], [4, 4], [5, 4], [0, 5], [1, 5], [2, 5], [3, 5], [4, 5], [5, 5]], UnitCell{Tuple{String,Array{Int64,1}}}([6.0 -3.0; 0.0 5.196152422706632], Tuple{Tuple{String,Array{Int64,1}},FractCoord}[((&quot;A&quot;, [0, 0]), FractCoord([0, 0] + [0.1111111111111111, 0.055555555555555566])), ((&quot;B&quot;, [0, 0]), FractCoord([0, -1] + [0.055555555555555546, 0.9444444444444444])), ((&quot;A&quot;, [1, 0]), FractCoord([0, 0] + [0.2777777777777778, 0.055555555555555566])), ((&quot;B&quot;, [1, 0]), FractCoord([0, -1] + [0.2222222222222222, 0.9444444444444444])), ((&quot;A&quot;, [2, 0]), FractCoord([0, 0] + [0.4444444444444444, 0.055555555555555566])), ((&quot;B&quot;, [2, 0]), FractCoord([0, -1] + [0.38888888888888884, 0.9444444444444444])), ((&quot;A&quot;, [3, 0]), FractCoord([0, 0] + [0.611111111111111, 0.055555555555555566])), ((&quot;B&quot;, [3, 0]), FractCoord([0, -1] + [0.5555555555555555, 0.9444444444444444])), ((&quot;A&quot;, [4, 0]), FractCoord([0, 0] + [0.7777777777777778, 0.055555555555555566])), ((&quot;B&quot;, [4, 0]), FractCoord([0, -1] + [0.7222222222222222, 0.9444444444444444]))  …  ((&quot;A&quot;, [1, 5]), FractCoord([0, 0] + [0.2777777777777777, 0.8888888888888888])), ((&quot;B&quot;, [1, 5]), FractCoord([0, 0] + [0.22222222222222213, 0.7777777777777777])), ((&quot;A&quot;, [2, 5]), FractCoord([0, 0] + [0.44444444444444436, 0.8888888888888888])), ((&quot;B&quot;, [2, 5]), FractCoord([0, 0] + [0.3888888888888888, 0.7777777777777777])), ((&quot;A&quot;, [3, 5]), FractCoord([0, 0] + [0.611111111111111, 0.8888888888888888])), ((&quot;B&quot;, [3, 5]), FractCoord([0, 0] + [0.5555555555555555, 0.7777777777777777])), ((&quot;A&quot;, [4, 5]), FractCoord([0, 0] + [0.7777777777777777, 0.8888888888888888])), ((&quot;B&quot;, [4, 5]), FractCoord([0, 0] + [0.7222222222222221, 0.7777777777777777])), ((&quot;A&quot;, [5, 5]), FractCoord([0, 0] + [0.9444444444444444, 0.8888888888888888])), ((&quot;B&quot;, [5, 5]), FractCoord([0, 0] + [0.8888888888888888, 0.7777777777777777]))], [0.16666666666666666 0.0; 0.09622504486493762 0.19245008972987526], [1.0471975511965976 0.0; 0.6045997880780726 1.2091995761561452], Dict((&quot;A&quot;, [2, 5]) =&gt; 65,(&quot;B&quot;, [0, 5]) =&gt; 62,(&quot;A&quot;, [5, 1]) =&gt; 23,(&quot;B&quot;, [4, 4]) =&gt; 58,(&quot;B&quot;, [1, 5]) =&gt; 64,(&quot;B&quot;, [5, 2]) =&gt; 36,(&quot;A&quot;, [1, 5]) =&gt; 63,(&quot;B&quot;, [3, 1]) =&gt; 20,(&quot;B&quot;, [3, 5]) =&gt; 68,(&quot;B&quot;, [2, 5]) =&gt; 66…)))</pre><h3 id="Plot-Lattice-4"><a class="docs-heading-anchor" href="#Plot-Lattice-4">Plot Lattice</a><a class="docs-heading-anchor-permalink" href="#Plot-Lattice-4" title="Permalink"></a></h3><pre><code class="language-julia">let bravais_lattice = [], a_sites = [], b_sites = []
     extent = [-8, 8, -8, 8]
     within = makewithin(extent)
 
@@ -423,7 +423,7 @@ irreducible representations:
   little point symmetry: m
 - irrep index: 8
   fractional momentum: [1//6, 1//6]
-  momentum: [0.16666666666666666, 0.2886751345948129]
+  momentum: [0.16666666666666666, 0.28867513459481287]
   is point symmetry compatible with momentum: false
   little point symmetry: m
 - irrep index: 9
@@ -438,7 +438,7 @@ irreducible representations:
   little point symmetry: 1
 - irrep index: 11
   fractional momentum: [2//3, 1//6]
-  momentum: [0.6666666666666666, 0.5773502691896258]
+  momentum: [0.6666666666666666, 0.5773502691896257]
   is point symmetry compatible with momentum: false
   little point symmetry: m
 - irrep index: 12
@@ -458,7 +458,7 @@ irreducible representations:
   little point symmetry: 1
 - irrep index: 15
   fractional momentum: [1//3, 1//3]
-  momentum: [0.3333333333333333, 0.5773502691896258]
+  momentum: [0.3333333333333333, 0.5773502691896257]
   is point symmetry compatible with momentum: false
   little point symmetry: 3m
 - irrep index: 16
@@ -528,7 +528,7 @@ irreducible representations:
   little point symmetry: 1
 - irrep index: 29
   fractional momentum: [2//3, 2//3]
-  momentum: [0.6666666666666666, 1.1547005383792517]
+  momentum: [0.6666666666666666, 1.1547005383792515]
   is point symmetry compatible with momentum: false
   little point symmetry: 3m
 - irrep index: 30
@@ -613,4 +613,4 @@ connect: Connection refused
 GKS: can&#39;t connect to GKS socket application
 
 GKS: Open failed in routine OPEN_WS
-GKS: GKS not in proper state. GKS must be either in the state WSOP or WSAC in routine ACTIVATE_WS</pre><p><img src="momentumspace-6x6.svg" alt/></p><hr/><p><em>This page was generated using <a href="https://github.com/fredrikekre/Literate.jl">Literate.jl</a>.</em></p></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../example_honeycomb_symmetry/">« Honeycomb Lattice</a><a class="docs-footer-nextpage" href="../example_kagome_symmetry/">Kagome Lattice »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> on <span class="colophon-date" title="Saturday 16 January 2021 03:06">Saturday 16 January 2021</span>. Using Julia version 1.5.3.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
+GKS: GKS not in proper state. GKS must be either in the state WSOP or WSAC in routine ACTIVATE_WS</pre><p><img src="momentumspace-6x6.svg" alt/></p><hr/><p><em>This page was generated using <a href="https://github.com/fredrikekre/Literate.jl">Literate.jl</a>.</em></p></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../example_honeycomb_symmetry/">« Honeycomb Lattice</a><a class="docs-footer-nextpage" href="../example_kagome_symmetry/">Kagome Lattice »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> on <span class="colophon-date" title="Saturday 16 January 2021 15:44">Saturday 16 January 2021</span>. Using Julia version 1.5.3.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
