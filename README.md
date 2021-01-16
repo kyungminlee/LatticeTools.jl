@@ -4,7 +4,7 @@
 
 | **Documentation** | **Build Status** | **Code Coverage** |
 |:-----------------:|:----------------:|:-----------------:|
-| [![**STABLE**][docs-stable-img]][docs-stable-url] [![**DEV**][docs-dev-img]][docs-dev-url] | [![Build Status][travis-img]][travis-url] [![Build Status][appveyor-img]][appveyor-url] | [![Code Coverage][codecov-img]][codecov-url] [![Code Coverage][coveralls-img]][coveralls-url] |
+| [![**STABLE**][docs-stable-img]][docs-stable-url] [![**DEV**][docs-dev-img]][docs-dev-url] | [![Build][githubaction-img]][githubaction-url] | [![Code Coverage][codecov-img]][codecov-url] |
 
 [LatticeTools.jl](https://github.com/kyungminlee/LatticeTools.jl) is a Julia package that provides functionalities to define lattices and perform symmetry analyses useful for studying interacting quantum many-body Hamiltonians.
 
@@ -23,14 +23,8 @@
 [docs-dev-img]: https://img.shields.io/badge/docs-dev-blue.svg
 [docs-dev-url]: https://kyungminlee.org/LatticeTools.jl/dev
 
-[travis-img]: https://travis-ci.org/kyungminlee/LatticeTools.jl.svg?branch=master
-[travis-url]: https://travis-ci.org/kyungminlee/LatticeTools.jl
-
-[appveyor-img]: https://ci.appveyor.com/api/projects/status/1yrosfyjvn4u61nw?svg=true
-[appveyor-url]: https://ci.appveyor.com/project/kyungminlee/LatticeTools-jl
+[githubaction-img]: https://github.com/kyungminlee/SimpleLinear.jl/workflows/Build/badge.svg
+[githubaction-url]: https://github.com/kyungminlee/SimpleLinear.jl/actions?query=workflow%3ABuild
 
 [codecov-img]: https://codecov.io/gh/kyungminlee/LatticeTools.jl/branch/master/graph/badge.svg
 [codecov-url]: https://codecov.io/gh/kyungminlee/LatticeTools.jl
-
-[coveralls-img]: https://coveralls.io/repos/github/kyungminlee/LatticeTools.jl/badge.svg?branch=master
-[coveralls-url]: https://coveralls.io/github/kyungminlee/LatticeTools.jl?branch=master
