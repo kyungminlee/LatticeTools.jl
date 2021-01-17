@@ -7,7 +7,7 @@ export embed
 export isidentity
 
 
-abstract type AbstractSymmetryOperationEmbedding end
+abstract type AbstractSymmetryOperationEmbedding <: AbstractSymmetryOperation end
 abstract type AbstractSpaceSymmetryOperationEmbedding <: AbstractSymmetryOperationEmbedding end
 
 
@@ -19,7 +19,7 @@ Represents a permutation of sites as a symmetry operation of a lattice.
 # Fields
 * `permutation::Permutation`
 """
-struct SitePermutation <:AbstractSpaceSymmetryOperationEmbedding
+struct SitePermutation <: AbstractSpaceSymmetryOperationEmbedding
     permutation::Permutation
     SitePermutation(p::Permutation) = new(p)
     SitePermutation(p::AbstractVector{<:Integer}) = new(Permutation(p))
