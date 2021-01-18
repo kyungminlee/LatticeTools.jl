@@ -7,7 +7,7 @@ export group_order
 export get_irrep_components
 export get_irrep_iterator
 export little_symmetry
-
+export make_product_irrep
 
 struct IrrepData
     group::FiniteGroup
@@ -210,6 +210,23 @@ function iscompatible(
         iscompatible(symmetry(tsic.symmetry), tsic.irrep_index, symmetry(psymbed))
     )
 end
+
+
+
+function make_product_irrep(irrep_iterators...; tol::Real=Base.rtoldefault(Float64))
+    nested_symops_and_amplitude_list = [
+        [(x, y) for (x, y) in irrep_iterator if !isapprox(y, zero(y); atol=tol)]
+            for irrep_iterator in irrep_iterators
+    ]
+    symops_and_amplitudes = [
+        (prod(reverse([op for (op, amp) in elems])), prod(amp for (op, amp) in elems))
+            for elems in Iterators.product(nested_symops_and_amplitude_list...)
+            # elems has the form of ((s, phis), (t, phit), (p, phit), ...)
+            # we want the resulting element to be (p*t*s, ϕp*ϕt*ϕs). the phase commutes, while operations do not necessarily. 
+    ]
+    return symops_and_amplitudes
+end
+
 
 
 # struct SymmorphicSpaceIrrepComponent{S1<:SymmetryOrEmbedding, S2<:SymmetryOrEmbedding} <:AbstractSymmetryIrrepComponent
