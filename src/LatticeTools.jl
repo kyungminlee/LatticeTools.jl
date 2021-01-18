@@ -14,6 +14,7 @@ include("SymmetryOperation/identityoperation.jl")
 include("SymmetryOperation/translationoperation.jl")
 include("SymmetryOperation/pointoperation.jl")
 include("SymmetryOperation/spaceoperation.jl")
+include("SymmetryOperation/productoperation.jl")
 
 include("Symmetry/abstractsymmetry.jl")
 include("Symmetry/translationsymmetry.jl")
