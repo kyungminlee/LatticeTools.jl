@@ -87,10 +87,10 @@ Base.hash(arg::PointOperation{S}) where S = hash(arg.matrix, hash(PointOperation
 function Base.:(==)(lhs::PointOperation{S}, rhs::PointOperation{S}) where S
     return lhs.matrix == rhs.matrix
 end
-function Base.:(==)(pop::PointOperation{S}, iden::IdentityOperation{S}) where S
+function Base.:(==)(pop::PointOperation{S}, ::IdentityOperation{S}) where S
     return isidentity(pop)
 end
-function Base.:(==)(iden::IdentityOperation{S}, pop::PointOperation{S}) where S
+function Base.:(==)(::IdentityOperation{S}, pop::PointOperation{S}) where S
     return isidentity(pop)
 end
 function Base.:(==)(pop::PointOperation{S}, top::TranslationOperation{S}) where S
