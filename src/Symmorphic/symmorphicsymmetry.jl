@@ -6,6 +6,7 @@
 export SymmorphicSymmetry
 export SymmorphicIrrepComponent
 export ⋊, ⋉
+export ⋊ˢ, ⋉ˢ
 export symmetry_product
 export group, group_order, group_multiplication_table,
        element, elements, element_name, element_names
@@ -71,9 +72,8 @@ end
 
 Return symmorphic symmetry `normal ⋊ rest`.
 """
-function ⋊(normal::AbstractSymmetry, rest::AbstractSymmetry)
-    return SymmorphicSymmetry(normal, rest)
-end
+⋊(normal::AbstractSymmetry, rest::AbstractSymmetry) = SymmorphicSymmetry(normal, rest)
+⋊ˢ(normal::AbstractSymmetry, rest::AbstractSymmetry) = SymmorphicSymmetry(normal, rest)
 
 
 """
@@ -81,9 +81,8 @@ end
 
 Return symmorphic symmetry `normal ⋊ rest`.
 """
-function ⋉(rest::AbstractSymmetry, normal::AbstractSymmetry)
-    return SymmorphicSymmetry(normal, rest)
-end
+⋉(rest::AbstractSymmetry, normal::AbstractSymmetry) = SymmorphicSymmetry(normal, rest)
+⋉ˢ(rest::AbstractSymmetry, normal::AbstractSymmetry) = SymmorphicSymmetry(normal, rest)
 
 function Base.:(==)(lhs::SymmorphicSymmetry{S1, S2, E}, rhs::SymmorphicSymmetry{S1, S2, E}) where {S1, S2, E}
     return lhs.normal == rhs.normal && lhs.rest == rhs.rest

@@ -53,19 +53,14 @@ function embed(lattice::Lattice, ssym::SymmorphicSymmetry)
 end
 
 
-function ⋊(normal::SymmetryEmbedding, rest::SymmetryEmbedding)
-    return SymmorphicSymmetryEmbedding(normal, rest)
-end
+⋊(normal::SymmetryEmbedding, rest::SymmetryEmbedding) = SymmorphicSymmetryEmbedding(normal, rest)
+⋊ˢ(normal::SymmetryEmbedding, rest::SymmetryEmbedding) = SymmorphicSymmetryEmbedding(normal, rest)
 
-function ⋉(rest::SymmetryEmbedding, normal::SymmetryEmbedding)
-    return SymmorphicSymmetryEmbedding(normal, rest)
-end
-
+⋉(rest::SymmetryEmbedding, normal::SymmetryEmbedding) = SymmorphicSymmetryEmbedding(normal, rest)
+⋉ˢ(rest::SymmetryEmbedding, normal::SymmetryEmbedding) = SymmorphicSymmetryEmbedding(normal, rest)
 
 Base.eltype(::SymmorphicSymmetryEmbedding) = SitePermutation
-
 Base.valtype(::SymmorphicSymmetryEmbedding) = SitePermutation
-
 
 function Base.:(==)(lhs::SSE, rhs::SSE) where {SSE<:SymmorphicSymmetryEmbedding}
     return lhs.lattice == rhs.lattice && lhs.normal == rhs.normal && lhs.rest == rhs.rest
