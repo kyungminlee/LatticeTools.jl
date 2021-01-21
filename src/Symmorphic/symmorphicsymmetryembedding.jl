@@ -4,7 +4,7 @@ export embed
 export get_irrep_components
 export iscompatible
 export ⋉, ⋊
-
+export ⋉ˢ, ⋊ˢ
 export fractional_momentum
 
 """
