@@ -309,9 +309,10 @@ function symmetry_canonize(sym::TranslationSymmetry)
 end
 
 
-Base.eltype(sym::TranslationSymmetry) = TranslationOperation{Int}
-
-Base.valtype(sym::TranslationSymmetry) = TranslationOperation{Int}
+Base.eltype(::TranslationSymmetry) = TranslationOperation{Int}
+Base.valtype(::TranslationSymmetry) = TranslationOperation{Int}
+Base.eltype(::Type{<:TranslationSymmetry}) = TranslationOperation{Int}
+Base.valtype(::Type{<:TranslationSymmetry}) = TranslationOperation{Int}
 
 
 Base.in(item::Any, sym::TranslationSymmetry) = false

@@ -317,10 +317,11 @@ function symmetry_canonize(sym::PointSymmetry)
 end
 
 
+Base.eltype(::PointSymmetry) = PointOperation{Int}
+Base.valtype(::PointSymmetry) = PointOperation{Int}
+Base.eltype(::Type{<:PointSymmetry}) = PointOperation{Int}
+Base.valtype(::Type{<:PointSymmetry}) = PointOperation{Int}
 
-Base.eltype(sym::PointSymmetry) = PointOperation{Int}
-
-Base.valtype(sym::PointSymmetry) = PointOperation{Int}
 
 Base.in(item::Any, sym::PointSymmetry) = false
 Base.in(item::IdentityOperation, sym::PointSymmetry) = dimension(item) == dimension(sym)

@@ -66,6 +66,8 @@ end
 
 Base.eltype(::SymmetryEmbedding) = SitePermutation
 Base.valtype(::SymmetryEmbedding) = SitePermutation
+Base.eltype(::Type{<:SymmetryEmbedding}) = SitePermutation
+Base.valtype(::Type{<:SymmetryEmbedding}) = SitePermutation
 
 """
     elements(symbed::SymmetryEmbedding)

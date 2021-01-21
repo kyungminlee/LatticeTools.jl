@@ -61,8 +61,8 @@ end
 
 Base.eltype(::SymmorphicSymmetryEmbedding) = SitePermutation
 Base.valtype(::SymmorphicSymmetryEmbedding) = SitePermutation
-Base.eltype(::Type{SymmorphicSymmetryEmbedding}) = SitePermutation
-Base.valtype(::Type{SymmorphicSymmetryEmbedding}) = SitePermutation
+Base.eltype(::Type{<:SymmorphicSymmetryEmbedding}) = SitePermutation
+Base.valtype(::Type{<:SymmorphicSymmetryEmbedding}) = SitePermutation
 
 function Base.:(==)(lhs::SSE, rhs::SSE) where {SSE<:SymmorphicSymmetryEmbedding}
     return lhs.lattice == rhs.lattice && lhs.normal == rhs.normal && lhs.rest == rhs.rest
