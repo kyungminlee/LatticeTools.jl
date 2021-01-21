@@ -134,8 +134,10 @@ function group_multiplication_table(sym::SymmorphicSymmetry)
     return group_multiplication_table(vec(sym.elements), symmetry_product(sym))
 end
 
-Base.eltype(sym::SymmorphicSymmetry{S1, S2, E}) where {S1, S2, E} = E
-Base.valtype(sym::SymmorphicSymmetry{S1, S2, E}) where {S1, S2, E} = E
+Base.eltype(::SymmorphicSymmetry{S1, S2, E}) where {S1, S2, E} = E
+Base.valtype(::SymmorphicSymmetry{S1, S2, E}) where {S1, S2, E} = E
+Base.eltype(::Type{SymmorphicSymmetry{S1, S2, E}}) where {S1, S2, E} = E
+Base.valtype(::Type{SymmorphicSymmetry{S1, S2, E}}) where {S1, S2, E} = E
 
 """
     element(sym::SymmorphicSymmetry, g...)
