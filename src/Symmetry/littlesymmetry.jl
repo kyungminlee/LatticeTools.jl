@@ -12,8 +12,8 @@ Return elements of `psym` compatible with the translation symmetry `tsym`.
 function little_group_elements(tsym::TranslationSymmetry, psym::PointSymmetry)
     return Int[
         i_elem
-        for (i_elem, elem) in enumerate(elements(psym))
-        if iscompatible(tsym, elem)
+            for (i_elem, elem) in enumerate(elements(psym))
+                if iscompatible(tsym, elem)
     ]
 end
 
@@ -31,8 +31,8 @@ function little_group_elements(
 )
     return Int[
         i_elem
-        for (i_elem, pop) in enumerate(elements(psym))
-        if iscompatible(tsym, tsym_irrep_index, pop)
+            for (i_elem, pop) in enumerate(elements(psym))
+                if iscompatible(tsym, tsym_irrep_index, pop)
     ]
 end
 

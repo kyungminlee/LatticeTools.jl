@@ -121,7 +121,7 @@ function makelattice(unitcell::UnitCell, scale::Integer)
 end
 
 
-make_lattice = makelattice
+const make_lattice = makelattice
 
 """
     dimension(lattice)

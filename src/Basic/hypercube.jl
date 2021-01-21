@@ -72,7 +72,7 @@ Check whether the two hypercubes are equivalent.
 """
 function isequiv(lhs::Hypercube, rhs::Hypercube)
     R, r = lhs.wrap(rhs.shape_matrix)
-    if abs(MathExpr.determinant(R)) != 1 || !iszero(r)
+    if isone(abs(MathExpr.determinant(R))) || !iszero(r)
         return false
     end
     return true

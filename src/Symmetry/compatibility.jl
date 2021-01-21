@@ -90,10 +90,7 @@ function iscompatible(
     tsym_irrep_index::Integer,
     psym::PointSymmetry,
 )::Bool
-    return all(
-        iscompatible(tsym, tsym_irrep_index, pop)
-        for pop in generator_elements(psym)
-    )
+    return all(iscompatible(tsym, tsym_irrep_index, pop) for pop in generator_elements(psym))
 end
 
 
