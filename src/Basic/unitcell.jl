@@ -375,6 +375,12 @@ function addorbital!(uc::UnitCell{S, O}, orbitalname::O, siteindex::Integer) whe
 end
 
 
+function addorbital!(uc::UnitCell{S, O}, orbitalname::O, sitename::S) where {S, O}
+    siteindex = getsiteindex(uc, sitename)
+    return addorbital!(uc, orbitalname, siteindex)
+end
+
+
 function hasorbital(uc::UnitCell{S, O}, name::O) where {S, O}
     return haskey(uc.orbitalindices, name)
 end
