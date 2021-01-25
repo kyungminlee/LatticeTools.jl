@@ -20,24 +20,24 @@ export findsiteindex
 
 import LinearAlgebra
 
-export numorbital,
-       hasorbital,
-       addorbital!,
-       getorbital,
-       getorbitalindex,
-       getorbitalcoord,
-       getorbitalindexcoord,
-       getorbitalname
+# export numorbital,
+#        hasorbital,
+#        addorbital!,
+#        getorbital,
+#        getorbitalindex,
+#        getorbitalcoord,
+#        getorbitalindexcoord,
+#        getorbitalname
 
-@deprecate numorbital(args...) numsite(args...)
-@deprecate hasorbital(args...) hassite(args...)
-@deprecate addorbital!(args...) addsite!(args...)
-@deprecate getorbital(args...) getsite(args...)
-@deprecate getorbitalindex(args...) getsiteindex(args...)
-@deprecate getorbitalcoord(args...) getsitecoord(args...)
-@deprecate getorbitalindexcoord(args...) getsiteindexcoord(args...)
-@deprecate getorbitalname(args...) getsitename(args...)
-@deprecate findorbitalindex(args...; kwargs...) findsiteindex(args...; kwargs...)
+# @deprecate numorbital(args...) numsite(args...)
+# @deprecate hasorbital(args...) hassite(args...)
+# @deprecate addorbital!(args...) addsite!(args...)
+# @deprecate getorbital(args...) getsite(args...)
+# @deprecate getorbitalindex(args...) getsiteindex(args...)
+# @deprecate getorbitalcoord(args...) getsitecoord(args...)
+# @deprecate getorbitalindexcoord(args...) getsiteindexcoord(args...)
+# @deprecate getorbitalname(args...) getsitename(args...)
+# @deprecate findorbitalindex(args...; kwargs...) findsiteindex(args...; kwargs...)
 
 """
     UnitCell{O}
@@ -104,18 +104,8 @@ Construct an n-dimensional lattice.
 function makeunitcell(
     latticevectors::AbstractArray{<:Real, 2};
     SiteType::DataType=Any,
-    OrbitalType::DataType=Nothing,
     tol::Real=Base.rtoldefault(Float64)
 )
-    if OrbitalType != Nothing
-        @warn "OrbitalType is deprecated. use SiteType instead"
-        if SiteType == Any
-            SiteType = OrbitalType
-        else
-            @error "Cannot specify OrbitalType and SiteType simultaneously"
-        end
-    end
-
     (ndim, ndim_) = size(latticevectors)
     if ndim != ndim_
         throw(ArgumentError("lattice vectors has dimension ($(ndim), $(ndim_))"))
@@ -143,12 +133,11 @@ end
 function makeunitcell(
     latticeconstant::Real;
     SiteType::DataType=Any,
-    OrbitalType::DataType=Nothing,
     tol::Real=Base.rtoldefault(Float64),
 )
     return makeunitcell(
         reshape([latticeconstant], (1,1));
-        SiteType=SiteType, OrbitalType=OrbitalType, tol=tol,
+        SiteType=SiteType, tol=tol,
     )
 end
 
