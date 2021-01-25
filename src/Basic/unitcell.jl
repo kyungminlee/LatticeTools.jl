@@ -40,7 +40,7 @@ import LinearAlgebra
 # @deprecate findorbitalindex(args...; kwargs...) findsiteindex(args...; kwargs...)
 
 """
-    UnitCell{O}
+    UnitCell{S}
 
 Represent a unitcell of a lattice, which contains sites at fixed locations
 (does not yet implement multiple orbitals per site). It is recommended to use `makeunitcell`
@@ -126,8 +126,7 @@ function makeunitcell(
     SiteType::DataType=Any,
     tol::Real=Base.rtoldefault(Float64)
 )
-    lv = hcat(latticevectors...)
-    return makeunitcell(lv; SiteType=SiteType, tol=tol)
+    return makeunitcell(hcat(latticevectors...); SiteType=SiteType, tol=tol)
 end
 
 function makeunitcell(
@@ -135,10 +134,7 @@ function makeunitcell(
     SiteType::DataType=Any,
     tol::Real=Base.rtoldefault(Float64),
 )
-    return makeunitcell(
-        reshape([latticeconstant], (1,1));
-        SiteType=SiteType, tol=tol,
-    )
+    return makeunitcell(hcat(latticeconstant); SiteType=SiteType, tol=tol)
 end
 
 
@@ -162,7 +158,6 @@ Number of sites of the unit cell.
 * `uc ::UnitCell`
 """
 numsite(uc::UnitCell) = length(uc.sites)
-
 
 
 """
@@ -371,7 +366,7 @@ end
 
 
 """
-whichunitcell(unitcell, name, cartecoord; tol=√ϵ)
+    whichunitcell(unitcell, name, cartecoord; tol=√ϵ)
 
 # Return
 - `Vector{Int}`: the integer coordinate of the unitcell that the specified site/cartesian
