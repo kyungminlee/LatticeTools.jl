@@ -4,7 +4,7 @@ export apply_operation
 export domaintype
 export isidentity, istranslation, ispoint
 
-import MathExpr
+import LinearAlgebraX
 
 """
     PointOperation{S<:Real}
@@ -108,13 +108,13 @@ function Base.:(^)(lhs::PointOperation{S}, rhs::Integer) where S
     if rhs >= 0
         return PointOperation(lhs.matrix^rhs)
     else
-        lhs_inv_matrix = Matrix{S}(MathExpr.inverse(lhs.matrix))
+        lhs_inv_matrix = Matrix{S}(LinearAlgebraX.invx(lhs.matrix))
         return PointOperation{S}(lhs_inv_matrix^(-rhs))
     end
 end
 
 function Base.inv(lhs::PointOperation{S}) where {S<:Real}
-    return PointOperation{S}(MathExpr.inverse(lhs.matrix))
+    return PointOperation{S}(LinearAlgebraX.invx(lhs.matrix))
 end
 
 

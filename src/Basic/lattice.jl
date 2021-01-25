@@ -117,7 +117,7 @@ Construct a `Lattice` with `unitcell` having shape `scale`.
 Works for one-dimensional lattice.
 """
 function makelattice(unitcell::UnitCell, scale::Integer)
-    return makelattice(unitcell, scale*ones(Int, (1,1)))
+    return makelattice(unitcell, hcat(scale))
 end
 
 

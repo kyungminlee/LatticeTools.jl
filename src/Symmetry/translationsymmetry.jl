@@ -16,6 +16,7 @@ export symmetry_name
 
 export translation_symmetry_embedding
 
+import LinearAlgebraX
 import MathExpr
 
 
@@ -110,7 +111,7 @@ struct TranslationSymmetry <: AbstractSymmetry{TranslationOperation{Int}}
         generator_translations::AbstractMatrix{<:Integer};
         tol::Real=Base.rtoldefault(Float64),
     )
-        if MathExpr.determinant(generator_translations) != 1
+        if !isone(LinearAlgebraX.detx(generator_translations))
             throw(ArgumentError("generator translation is not unimodular"))
         end
 
@@ -145,7 +146,7 @@ struct TranslationSymmetry <: AbstractSymmetry{TranslationOperation{Int}}
         orthogonal_shape_matrix = hcat(
                     [group_order(group, g) * v
                         for (g, v) in zip(generators, eachcol(generator_translations))]...)
-        orthogonal_reduced_reciprocal_shape_matrix = MathExpr.inverse(transpose(orthogonal_shape_matrix))
+        orthogonal_reduced_reciprocal_shape_matrix = LinearAlgebraX.invx(transpose(orthogonal_shape_matrix))
 
         elements = [TranslationOperation(r) for r in coordinates]
 
