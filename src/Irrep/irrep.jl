@@ -110,6 +110,14 @@ function get_irrep_iterator(sic::IrrepComponent)
 end
 
 
+function get_irrep_iterator(sym::AbstractSymmetry, index::Integer, component::Integer=1)
+    elems = elements(sym)
+    irrep_components = [m[component, component] for m in irrep(sym, index)]
+    @assert length(elems) == length(irrep_components)
+    return zip(elems, irrep_components)
+end
+
+
 
 """
     little_group_elements(tsic, psym)
