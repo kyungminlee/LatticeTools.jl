@@ -18,6 +18,7 @@ using LatticeTools
         @test istranslation(iden)
         @test ispoint(iden)
         @test domaintype(iden) == Int
+        @test domaintype(typeof(iden)) == Int
         @test dimension(iden) == 2
         @test hash(iden) == hash(IdentityOperation(Int, 2))
         @test hash(iden) != hash(IdentityOperation(Int, 3))

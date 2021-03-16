@@ -69,6 +69,35 @@ using LatticeTools
         @test getsitename(uc, 2) == "Oy"
         @test getsitecoord(uc, 1) == fc1
         @test getsitecoord(uc, 2) == fc2
+
+        # orbitals
+        @test numorbital(uc) == 0
+        @test numorbitals(uc) == 0
+        @test orbitalcount(uc) == 0
+
+        addorbital!(uc, "px1", 1)
+        addorbital!(uc, "py1", "Ox")
+        addorbital!(uc, "px2", 2)
+        addorbital!(uc, "py2", "Oy")
+
+        @test numorbital(uc) == 4
+        @test numorbitals(uc) == 4
+        @test orbitalcount(uc) == 4
+
+        @test hasorbital(uc, "px1")
+        @test hasorbital(uc, "py1")
+        @test !hasorbital(uc, "pz1")
+        @test getorbitalindex(uc, "px1") == 1
+        @test getorbitalindex(uc, "py1") == 2
+        @test getorbital(uc, 2) == ("py1", 1)
+        @test getorbital(uc, "px2") == ("px2", 2)
+        @test getorbitalname(uc, 1) == "px1"
+        @test getorbitalname(uc, 2) == "py1"
+        @test getorbitalsiteindex(uc, 1) == 1
+        @test getorbitalsiteindex(uc, 2) == 1
+        @test getorbitalsiteindex(uc, 3) == 2
+        @test getorbitalsiteindex(uc, 4) == 2
+        @test getorbitalcoord(uc, 3) == getsitecoord(uc, 2)
     end
 
     @testset "Methods Exceptions" begin
