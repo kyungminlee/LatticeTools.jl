@@ -11,7 +11,7 @@ struct Phase{T<:Number} <: AbstractSymmetryOperation
     end
 end
 
-isidentity(arg::Phase) = isone(arg)
+LatticeTools.isidentity(arg::Phase) = isone(arg)
 Base.:(*)(lhs::Phase, rhs::Phase) = Phase(lhs.value * rhs.value)
 Base.:(^)(lhs::Phase, rhs::Real) = Phase(lhs.value^rhs)
 Base.inv(lhs::Phase) = Phase(conj(lhs.value))
