@@ -36,6 +36,8 @@ using LinearAlgebra
             @test length(elements(tsymbed)) == 4
             @test eltype(tsymbed) == SitePermutation
             @test valtype(tsymbed) == SitePermutation
+            @test eltype(typeof(tsymbed)) == SitePermutation
+            @test valtype(typeof(tsymbed)) == SitePermutation
             @test elements(tsymbed)[1] == SitePermutation([1,2,3,4,5,6,7,8])
             @test elements(tsymbed)[2] == SitePermutation([3,4,1,2,7,8,5,6])
             @test element(tsymbed, 2) == SitePermutation([3,4,1,2,7,8,5,6])
