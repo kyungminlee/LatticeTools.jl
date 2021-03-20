@@ -16,6 +16,7 @@ Base.:(*)(lhs::Phase, rhs::Phase) = Phase(lhs.value * rhs.value)
 Base.:(^)(lhs::Phase, rhs::Real) = Phase(lhs.value^rhs)
 Base.inv(lhs::Phase) = Phase(conj(lhs.value))
 Base.isapprox(lhs::Phase, rhs::Phase; kwargs...) = isapprox(lhs.value, rhs.value; kwargs...)
+Base.hash(p::P, h::UInt) where {P<:Phase} = Base.hash(P, Base.hash(p.value, h))
 
 @testset "DirectProductOperation" begin
     α = Phase(-1)
@@ -23,7 +24,19 @@ Base.isapprox(lhs::Phase, rhs::Phase; kwargs...) = isapprox(lhs.value, rhs.value
     t = TranslationOperation([1, 0])
     let
         θt = directproduct(θ, t)
+        θt2 = directproduct(Phase(cis(2π/3)), TranslationOperation([1, 0]))
+        @show θt
+        @show θt2
+        @show (θt.operations) == (θt2.operations)
+        @show typeof(θt.operations)
+        @show typeof(θt2.operations)
+        @show hash(θt.operations), hash(θt2.operations)
+        @show (θt.operations), (θt2.operations)
+
+        @test θt == θt2
+        @test hash(θt) == hash(θt2)
         @test θt != t ×ˢ θ
+        @test θt*θt == directproduct(θ*θ, t*t)
         @test θt^3 == directproduct(θ^3, t^3)
         @test inv(θt) == directproduct(inv(θ), inv(t))
     end
