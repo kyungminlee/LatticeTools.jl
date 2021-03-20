@@ -4,7 +4,7 @@ export dimension
 export isidentity, istranslation, ispoint
 
 import LinearAlgebra
-import MathExpr
+import LinearAlgebraX
 
 """
     SpaceOperation{Tp<:Real, Tt<:Real}
@@ -188,8 +188,8 @@ Return the spatial dimension of `arg`.
 dimension(arg::SpaceOperation) = length(arg.displacement)
 
 
-function Base.hash(op::SpaceOperation{Tp, Tt}) where {Tp, Tt}
-    h = hash(SpaceOperation{Tp, Tt})
+function Base.hash(op::SpaceOperation{Tp, Tt}, h::UInt) where {Tp, Tt}
+    h = hash(SpaceOperation{Tp, Tt}, h)
     h = hash(op.matrix, h)
     h = hash(op.displacement, h)
     return h
@@ -230,7 +230,7 @@ function Base.:(*)(lhs::PointOperation{Tp}, rhs::TranslationOperation{Tt}) where
 end
 
 function Base.:(*)(lhs::TranslationOperation{Tt}, rhs::PointOperation{Tp}) where {Tp, Tt}
-    rhs_matrix_inv = Matrix{Tp}(MathExpr.inverse(rhs.matrix))
+    rhs_matrix_inv = Matrix{Tp}(LinearAlgebraX.invx(rhs.matrix))
     return SpaceOperation{Tp, Tt}(rhs.matrix, rhs_matrix_inv * lhs.displacement)
 end
 
@@ -239,7 +239,7 @@ end
 # = ML MR (x + ρR + inv(MR) ⋅ ρL )
 function Base.:(*)(lhs::SpaceOperation{Tp, Tt}, rhs::SpaceOperation{Tp, Tt}) where {Tp, Tt}
     matrix = lhs.matrix * rhs.matrix
-    rhs_matrix_inv = Matrix{Tp}(MathExpr.inverse(rhs.matrix))
+    rhs_matrix_inv = Matrix{Tp}(LinearAlgebraX.invx(rhs.matrix))
     displacement = rhs.displacement + rhs_matrix_inv * lhs.displacement
     return SpaceOperation{Tp, Tt}(matrix, displacement)
 end
@@ -252,14 +252,14 @@ end
 
 function Base.:(*)(lhs::TranslationOperation{Tt}, rhs::SpaceOperation{Tp, Tt}) where {Tp, Tt}
     matrix = rhs.matrix
-    rhs_matrix_inv = Matrix{Tp}(MathExpr.inverse(rhs.matrix))
+    rhs_matrix_inv = Matrix{Tp}(LinearAlgebraX.invx(rhs.matrix))
     displacement = rhs.displacement + rhs_matrix_inv * lhs.displacement
     return SpaceOperation{Tp, Tt}(matrix, displacement)
 end
 
 function Base.:(*)(lhs::SpaceOperation{Tp, Tt}, rhs::PointOperation{Tp}) where {Tp, Tt}
     matrix = lhs.matrix * rhs.matrix
-    rhs_matrix_inv = Matrix{Tp}(MathExpr.inverse(rhs.matrix))
+    rhs_matrix_inv = Matrix{Tp}(LinearAlgebraX.invx(rhs.matrix))
     displacement = rhs_matrix_inv * lhs.displacement
     return SpaceOperation{Tp, Tt}(matrix, displacement)
 end
@@ -271,7 +271,7 @@ function Base.:(*)(lhs::PointOperation{Tp}, rhs::SpaceOperation{Tp, Tt}) where {
 end
 
 function Base.inv(arg::SpaceOperation{Tp, Tt}) where {Tp, Tt}
-    matrix_inv = Matrix{Tp}(MathExpr.inverse(arg.matrix))
+    matrix_inv = Matrix{Tp}(LinearAlgebraX.invx(arg.matrix))
     return SpaceOperation{Tp, Tt}(matrix_inv, -arg.matrix * arg.displacement)
 end
 

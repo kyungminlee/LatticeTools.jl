@@ -11,6 +11,7 @@ include("test_permutation.jl")
 include("test_group.jl")
 
 include("test_symmetryoperation.jl")
+include("test_directproductoperation.jl")
 
 include("test_translationsymmetry.jl")
 include("test_pointsymmetry.jl")

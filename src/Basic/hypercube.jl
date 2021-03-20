@@ -4,8 +4,7 @@ export generate_coordinates
 export volume
 export isequiv
 
-import MathExpr
-
+import LinearAlgebraX
 
 """
     Hypercube(shape)
@@ -29,10 +28,10 @@ struct Hypercube
             msg = "scale_matrix is not square: dimensions are ($dim, $dim2)"
             throw(DimensionMismatch(msg))
         end
-        det = MathExpr.determinant(shape_matrix)
-        det == 0 && throw(ArgumentError("scale matrix null"))
+        det = LinearAlgebraX.detx(shape_matrix)
+        iszero(det) && throw(ArgumentError("scale matrix null"))
 
-        inverse_shape_matrix = MathExpr.inverse(shape_matrix)
+        inverse_shape_matrix = LinearAlgebraX.invx(shape_matrix)
         function wrap(r::AbstractArray{<:Integer}, mode::RoundingMode=RoundDown)
             rnd = (x) -> round(Int, x, mode)
             R = rnd.(inverse_shape_matrix * r)
@@ -57,7 +56,7 @@ dimension(cube::Hypercube) = size(cube.shape_matrix, 1)
 
 Return the signed volume of the hypercube, defined by the determinant of the shape.
 """
-volume(cube::Hypercube) = MathExpr.determinant(cube.shape_matrix)
+volume(cube::Hypercube) = LinearAlgebraX.detx(cube.shape_matrix)
 
 
 function Base.:(==)(lhs::Hypercube, rhs::Hypercube)
@@ -72,9 +71,8 @@ Check whether the two hypercubes are equivalent.
 """
 function isequiv(lhs::Hypercube, rhs::Hypercube)
     R, r = lhs.wrap(rhs.shape_matrix)
-    if abs(MathExpr.determinant(R)) != 1 || !iszero(r)
-        return false
-    end
+    isone(abs(LinearAlgebraX.detx(R))) || return false
+    iszero(r) || return false
     return true
 end
 
@@ -127,13 +125,12 @@ function find_generators_2d(cube::Hypercube)
         r1p[1] == 0 && continue
         r1 = [r1p[1], -r1p[2]]
         axis1 = make_loop(r1)
-        mod(cubevolume, length(axis1)) != 0 && continue
+        iszero(mod(cubevolume, length(axis1))) || continue
         for r2 in allowed_pairs
-            MathExpr.determinant(hcat(r1, r2)) != 1 && continue
+            isone(LinearAlgebraX.detx(hcat(r1, r2))) || continue
             axis2 = make_loop(r2)
-            cubevolume != length(axis1) * length(axis2) && continue
-            coordinates = vec([cube.wrap(sum(x))[2]
-                                   for x in Iterators.product(axis1, axis2)])
+            cubevolume == length(axis1) * length(axis2) || continue
+            coordinates = vec([cube.wrap(sum(x))[2] for x in Iterators.product(axis1, axis2)])
             allunique(coordinates) && return hcat(r1, r2)
         end
     end
@@ -157,7 +154,7 @@ function generate_coordinates(
     let dim = dimension(cube)
         if size(generator_translations) != (dim, dim)
             throw(DimensionMismatch("Hypercube and generator_translations have different dimensions"))
-        elseif abs(MathExpr.determinant(generator_translations)) != 1
+        elseif !isone(abs(LinearAlgebraX.detx(generator_translations)))
             throw(ArgumentError("generator_translations is not unimodular"))
         end
     end

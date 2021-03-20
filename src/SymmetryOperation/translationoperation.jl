@@ -93,7 +93,7 @@ Spatial dimension of the translation operation
 dimension(arg::TranslationOperation) = length(arg.displacement)
 
 
-Base.hash(arg::TranslationOperation{S}) where S = hash(arg.displacement, hash(TranslationOperation{S}))
+Base.hash(arg::TranslationOperation{S}, h::UInt) where S = hash(TranslationOperation{S}, hash(arg.displacement, h))
 
 
 ## operators

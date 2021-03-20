@@ -122,8 +122,8 @@ function Base.isless(p1 ::Permutation, p2::Permutation)
 end
 
 
-function Base.hash(p::Permutation, h::UInt=UInt(0x0))
-    return Base.hash(p.map, hash(Permutation, h))
+function Base.hash(p::Permutation, h::UInt)
+    return Base.hash(Permutation, hash(p.map, h))
 end
 
 """

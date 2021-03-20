@@ -4,7 +4,7 @@ export apply_operation
 export domaintype
 export isidentity, istranslation, ispoint
 
-import MathExpr
+import LinearAlgebraX
 
 """
     PointOperation{S<:Real}
@@ -79,18 +79,17 @@ Return spatial dimension of `arg`.
 """
 dimension(arg::PointOperation) = size(arg.matrix, 1)
 
-
-Base.hash(arg::PointOperation{S}) where S = hash(arg.matrix, hash(PointOperation{S}))
+Base.hash(arg::PointOperation{S}, h::UInt) where S = hash(PointOperation{S}, hash(arg.matrix, h))
 
 
 ## operators
 function Base.:(==)(lhs::PointOperation{S}, rhs::PointOperation{S}) where S
     return lhs.matrix == rhs.matrix
 end
-function Base.:(==)(pop::PointOperation{S}, iden::IdentityOperation{S}) where S
+function Base.:(==)(pop::PointOperation{S}, ::IdentityOperation{S}) where S
     return isidentity(pop)
 end
-function Base.:(==)(iden::IdentityOperation{S}, pop::PointOperation{S}) where S
+function Base.:(==)(::IdentityOperation{S}, pop::PointOperation{S}) where S
     return isidentity(pop)
 end
 function Base.:(==)(pop::PointOperation{S}, top::TranslationOperation{S}) where S
@@ -108,13 +107,13 @@ function Base.:(^)(lhs::PointOperation{S}, rhs::Integer) where S
     if rhs >= 0
         return PointOperation(lhs.matrix^rhs)
     else
-        lhs_inv_matrix = Matrix{S}(MathExpr.inverse(lhs.matrix))
+        lhs_inv_matrix = Matrix{S}(LinearAlgebraX.invx(lhs.matrix))
         return PointOperation{S}(lhs_inv_matrix^(-rhs))
     end
 end
 
 function Base.inv(lhs::PointOperation{S}) where {S<:Real}
-    return PointOperation{S}(MathExpr.inverse(lhs.matrix))
+    return PointOperation{S}(LinearAlgebraX.invx(lhs.matrix))
 end
 
 

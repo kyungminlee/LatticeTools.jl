@@ -17,4 +17,5 @@ abstract type AbstractSpaceSymmetryOperation{S<:Real} <: AbstractSymmetryOperati
 
 Domain type of `arg`, i.e. the type of the coordinates.
 """
-domaintype(arg::AbstractSpaceSymmetryOperation{S}) where {S<:Real} = S
+domaintype(::AbstractSpaceSymmetryOperation{S}) where {S<:Real} = S
+domaintype(::Type{<:AbstractSpaceSymmetryOperation{S}}) where {S<:Real} = S

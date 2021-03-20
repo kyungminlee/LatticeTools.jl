@@ -39,8 +39,8 @@ end
 # import Base.isless
 # isless(lhs::SitePermutation, rhs::SitePermutation) = isless(lhs.permutation, rhs.permutation)
 
-function Base.hash(arg::SitePermutation, h::UInt=UInt(0x0))
-    return hash(arg.permutation, hash(SitePermutation, h))
+function Base.hash(arg::SitePermutation, h::UInt)
+    return hash(SitePermutation, hash(arg.permutation, h))
 end
 
 Base.inv(sp::SitePermutation) = SitePermutation(inv(sp.permutation))
