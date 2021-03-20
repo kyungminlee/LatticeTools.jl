@@ -188,8 +188,8 @@ Return the spatial dimension of `arg`.
 dimension(arg::SpaceOperation) = length(arg.displacement)
 
 
-function Base.hash(op::SpaceOperation{Tp, Tt}) where {Tp, Tt}
-    h = hash(SpaceOperation{Tp, Tt})
+function Base.hash(op::SpaceOperation{Tp, Tt}, h::UInt) where {Tp, Tt}
+    h = hash(SpaceOperation{Tp, Tt}, h)
     h = hash(op.matrix, h)
     h = hash(op.displacement, h)
     return h

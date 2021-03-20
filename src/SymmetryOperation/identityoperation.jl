@@ -70,8 +70,8 @@ Return the spatial dimension of the identity operation.
 dimension(arg::IdentityOperation) = arg.dimension
 
 
-function Base.hash(arg::IdentityOperation{S}) where S
-    return hash(arg.dimension, hash(IdentityOperation{S}))
+function Base.hash(arg::IdentityOperation{S}, h::UInt) where S
+    return hash(IdentityOperation{S}, hash(arg.dimension, h))
 end
 
 

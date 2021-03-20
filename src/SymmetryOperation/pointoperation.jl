@@ -79,8 +79,7 @@ Return spatial dimension of `arg`.
 """
 dimension(arg::PointOperation) = size(arg.matrix, 1)
 
-
-Base.hash(arg::PointOperation{S}) where S = hash(arg.matrix, hash(PointOperation{S}))
+Base.hash(arg::PointOperation{S}, h::UInt) where S = hash(PointOperation{S}, hash(arg.matrix, h))
 
 
 ## operators
