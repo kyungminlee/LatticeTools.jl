@@ -10,34 +10,34 @@ TranslationOperation{Rational{Int64}}(Rational{Int64}[1//2, 3//4])</code></pre><
 TranslationOperation{Int64}([1, 2])
 
 julia&gt; t([3, 4])
-2-element Array{Int64,1}:
+2-element Vector{Int64}:
  4
  6
 
 julia&gt; apply_operation(t, [5, 6])
-2-element Array{Int64,1}:
+2-element Vector{Int64}:
  6
  8</code></pre><h2 id="Point-Operation"><a class="docs-heading-anchor" href="#Point-Operation">Point Operation</a><a id="Point-Operation-1"></a><a class="docs-heading-anchor-permalink" href="#Point-Operation" title="Permalink"></a></h2><p>Point operation is represented by the type <a href="../../API/symmetry-operation/#LatticeTools.PointOperation"><code>PointOperation{S}</code></a>, which includes rotation, inversion, and mirror operations. A lattice system where lattice vectors are not orthogonal, the matrix of the point operation need not be an orthogonal matrix. For example, a sixfold rotation on a triangular Bravais lattice may be written as the following</p><p><img src="../rotation.png" alt="Sixfold rotation"/></p><pre><code class="language-julia-repl">julia&gt; p = PointOperation([1 -1; 1 0])
 PointOperation{Int64}([1 -1; 1 0])
 
 julia&gt; p([1, 0])
-2-element Array{Int64,1}:
+2-element Vector{Int64}:
  1
  1
 
 julia&gt; p([0, 1])
-2-element Array{Int64,1}:
+2-element Vector{Int64}:
  -1
   0</code></pre><pre><code class="language-julia-repl">julia&gt; p = PointOperation([0 1; 1 0])
 PointOperation{Int64}([0 1; 1 0])
 
 julia&gt; p([2, 5])
-2-element Array{Int64,1}:
+2-element Vector{Int64}:
  5
  2</code></pre><h2 id="Space-Operation"><a class="docs-heading-anchor" href="#Space-Operation">Space Operation</a><a id="Space-Operation-1"></a><a class="docs-heading-anchor-permalink" href="#Space-Operation" title="Permalink"></a></h2><pre><code class="language-julia-repl">julia&gt; s = SpaceOperation([1 -1; 1 0], [1, 0])
-SpaceOperation{Int64,Int64}([1 -1; 1 0], [1, 0])
+SpaceOperation{Int64, Int64}([1 -1; 1 0], [1, 0])
 
 julia&gt; s([1, 0])
-2-element Array{Int64,1}:
+2-element Vector{Int64}:
  2
- 2</code></pre></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../space-symmetry/">« Space Symmetry Analysis</a><a class="docs-footer-nextpage" href="../irrep/">Irreducible Representations »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> on <span class="colophon-date" title="Saturday 20 March 2021 10:05">Saturday 20 March 2021</span>. Using Julia version 1.5.4.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
+ 2</code></pre></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../space-symmetry/">« Space Symmetry Analysis</a><a class="docs-footer-nextpage" href="../irrep/">Irreducible Representations »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> on <span class="colophon-date" title="Friday 26 March 2021 00:53">Friday 26 March 2021</span>. Using Julia version 1.6.0.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
