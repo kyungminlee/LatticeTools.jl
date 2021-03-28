@@ -100,6 +100,7 @@ end
 # 3D by default
 get(args...) = get3d(args...)
 find(args...) = find3d(args...)
+findindex(args...) = findindex3d(args...)
 
 
 """
@@ -109,12 +110,9 @@ Get the `group_index`th two-dimensional point group symmetry.
 Ref: [https://www.cryst.ehu.es]
 """
 function get2d(group_index::Integer)
-    if (group_index < 1) || (group_index > NUM_POINT_SYMMETRIES_2D)
+    if !(1 <= group_index <= NUM_POINT_SYMMETRIES_2D)
         throw(ArgumentError("Point group 2D #$group_index not found"))
     end
-    #if !isassigned(POINT_SYMMETRY_DATABASE_2D, group_index)
-    #    POINT_SYMMETRY_DATABASE_2D[group_index] = load_group_2d(group_index)
-    #end
     return POINT_SYMMETRY_DATABASE_2D[group_index]
 end
 
@@ -126,14 +124,12 @@ Get the `group_index`th three-dimensional point group symmetry.
 Ref: [https://www.cryst.ehu.es]
 """
 function get3d(group_index::Integer)
-    if (group_index < 1) || (group_index > NUM_POINT_SYMMETRIES_3D)
+    if !(1 <= group_index <= NUM_POINT_SYMMETRIES_3D)
         throw(ArgumentError("Point group 3D #$group_index not found"))
     end
-    # if !isassigned(POINT_SYMMETRY_DATABASE_3D, group_index)
-    #     POINT_SYMMETRY_DATABASE_3D[group_index] = load_group_3d(group_index)
-    # end
     return POINT_SYMMETRY_DATABASE_3D[group_index]
 end
+
 
 """
     find2d(group_name::AbstractString)
@@ -150,6 +146,7 @@ function find2d(group_name::AbstractString)
     end
     return nothing
 end
+
 
 """
     find3d(group_name::AbstractString)
@@ -172,24 +169,35 @@ end
     find2d(element_names::AbstractVector{<:AbstractString})
 
 Find a two-dimensional point group symmetry by element names.
-The names must be "simplified", without any subscripts.
+The names will be "simplified", without any subscripts.
 """
-function find2d(element_names::AbstractVector{<:AbstractString})
+function findindex2d(element_names::AbstractVector{<:AbstractString})
     simple_names = sort(simplify_name.(element_names))
     return POINT_SYMMETRY_LOOKUP_2D[simple_names]
 end
 
 
+function find2d(element_names::AbstractVector{<:AbstractString})
+    return get2d(findindex2d(element_names))
+end
+
 """
     find3d(element_names::AbstractVector{<:AbstractString})
 
 Find a three-dimensional point group symmetry by element names.
-The names must be "simplified", without any subscripts.
+The names will be "simplified", without any subscripts.
+
+```julia
+PointSymmetry
+````
 """
-function find3d(element_names::AbstractVector{<:AbstractString})
+function findindex3d(element_names::AbstractVector{<:AbstractString})
     simple_names = sort(simplify_name.(element_names))
     return POINT_SYMMETRY_LOOKUP_3D[simple_names]
 end
 
+function find3d(element_names::AbstractVector{<:AbstractString})
+    return get3d(findindex3d(element_names))
+end
 
 end # module PointSymmetryDatabase

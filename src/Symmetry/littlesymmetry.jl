@@ -9,7 +9,7 @@ export little_symmetry_iso
 
 Return elements of `psym` compatible with the translation symmetry `tsym`.
 """
-function little_group_elements(tsym::TranslationSymmetry, psym::PointSymmetry)
+function little_group_elements(tsym::TranslationSymmetry, psym::PointSymmetry)::Vector{Int}
     return Int[
         i_elem
             for (i_elem, elem) in enumerate(elements(psym))
@@ -28,7 +28,7 @@ function little_group_elements(
     tsym::TranslationSymmetry,
     tsym_irrep_index::Integer,
     psym::PointSymmetry,
-)
+)::Vector{Int}
     return Int[
         i_elem
             for (i_elem, pop) in enumerate(elements(psym))
@@ -95,8 +95,7 @@ function little_symmetry(
         (lg_raw, lg_matrep_raw, lg_element_names_raw)
     end
 
-    group_index = PointSymmetryDatabase.find(lg_element_names_raw)
-    psym2 = PointSymmetryDatabase.get(group_index)
+    psym2 = PointSymmetryDatabase.find(lg_element_names_raw)
     ϕ = group_isomorphism(lg_raw, psym2.group)
     isnothing(ϕ) && error("Group not isomorphic")
 
@@ -143,8 +142,7 @@ function little_symmetry(tsym::TranslationSymmetry, tsym_irrep::Integer, psym::P
         (lg_raw, lg_matrep_raw, lg_element_names_raw)
     end
 
-    group_index = PointSymmetryDatabase.find(lg_element_names_raw)
-    psym2 = PointSymmetryDatabase.get(group_index)
+    psym2 = PointSymmetryDatabase.find(lg_element_names_raw)
     ϕ = group_isomorphism(lg_raw, psym2.group)
     isnothing(ϕ) && error("Group not isomorphic")
 
