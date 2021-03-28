@@ -1,3 +1,4 @@
+export FiniteTranslationSymmetry
 export TranslationSymmetry
 export dimension
 export group, group_order, group_multiplication_table,
@@ -21,12 +22,12 @@ import MathExpr
 
 
 """
-    TranslationSymmetry
+    FiniteTranslationSymmetry
 
 Represent lattice translation symmetry.
 
 ```
-julia> TranslationSymmetry([3 0; 0 2])
+julia> FiniteTranslationSymmetry([3 0; 0 2])
 ```
 
 # Fields
@@ -52,7 +53,7 @@ julia> TranslationSymmetry([3 0; 0 2])
 * `orthogonal_reduced_reciprocal_shape_matrix::Matrix{Rational{Int}}`
 * `fractional_momenta::Vector{Vector{Rational{Int}}}`
 """
-struct TranslationSymmetry <: AbstractSymmetry{TranslationOperation{Int}}
+struct FiniteTranslationSymmetry <: AbstractSymmetry{TranslationOperation{Int}}
 
     hypercube::Hypercube
 
@@ -79,34 +80,34 @@ struct TranslationSymmetry <: AbstractSymmetry{TranslationOperation{Int}}
     fractional_momenta::Vector{Vector{Rational{Int}}}
 
     @doc """
-        TranslationSymmetry(shape::Matrix{<:Integer}; tol=√ϵ)
+        FiniteTranslationSymmetry(shape::Matrix{<:Integer}; tol=√ϵ)
     """
-    function TranslationSymmetry(shape::Matrix{<:Integer}; tol::Real=Base.rtoldefault(Float64))
-        return TranslationSymmetry(Hypercube(shape))
+    function FiniteTranslationSymmetry(shape::Matrix{<:Integer}; tol::Real=Base.rtoldefault(Float64))
+        return FiniteTranslationSymmetry(Hypercube(shape))
     end
 
     @doc """
-        TranslationSymmetry(lattice::Lattice; tol=√ϵ)
+        FiniteTranslationSymmetry(lattice::Lattice; tol=√ϵ)
     """
-    function TranslationSymmetry(lattice::Lattice; tol::Real=Base.rtoldefault(Float64))
-        return TranslationSymmetry(lattice.hypercube)
+    function FiniteTranslationSymmetry(lattice::Lattice; tol::Real=Base.rtoldefault(Float64))
+        return FiniteTranslationSymmetry(lattice.hypercube)
     end
 
     @doc """
-        TranslationSymmetry(hypercube::Hypercube; tol=√ϵ)
+        FiniteTranslationSymmetry(hypercube::Hypercube; tol=√ϵ)
     """
-    function TranslationSymmetry(
+    function FiniteTranslationSymmetry(
         hypercube::Hypercube;
         tol::Real=Base.rtoldefault(Float64),
     )
         generator_translations = find_generators(hypercube)
-        return TranslationSymmetry(hypercube, generator_translations; tol=tol)
+        return FiniteTranslationSymmetry(hypercube, generator_translations; tol=tol)
     end
 
     @doc """
-        TranslationSymmetry(hypercube::Hypercube, generators::AbstractMatrix{<:Integer}; tol::Real=Base.rtoldefault(Float64))
+        FiniteTranslationSymmetry(hypercube::Hypercube, generators::AbstractMatrix{<:Integer}; tol::Real=Base.rtoldefault(Float64))
     """
-    function TranslationSymmetry(
+    function FiniteTranslationSymmetry(
         hypercube::Hypercube,
         generator_translations::AbstractMatrix{<:Integer};
         tol::Real=Base.rtoldefault(Float64),
@@ -194,85 +195,89 @@ struct TranslationSymmetry <: AbstractSymmetry{TranslationOperation{Int}}
     end
 end
 
+function TranslationSymmetry(args...; kwargs...)
+    @warn "TranslationSymmetry has been renamed to FiniteTranslationSymmetry."
+    return FiniteTranslationSymmetry(args...; kwargs...)
+end
 
 """
-    dimension(sym::TranslationSymmetry)
+    dimension(sym::FiniteTranslationSymmetry)
 
 Spatial dimension of the translation symmetry
 """
-dimension(sym::TranslationSymmetry) = dimension(sym.hypercube)
+dimension(sym::FiniteTranslationSymmetry) = dimension(sym.hypercube)
 
 """
-    group(sym::TranslationSymmetry)
+    group(sym::FiniteTranslationSymmetry)
 
 Group structure of the translation symmetry
 """
-group(sym::TranslationSymmetry) = sym.group
+group(sym::FiniteTranslationSymmetry) = sym.group
 
 """
-    group_order(sym::TranslationSymmetry, g...)
+    group_order(sym::FiniteTranslationSymmetry, g...)
 
 Group order of the translation symmetry. Calls `group_order(group(sym), g...)`
 """
-group_order(sym::TranslationSymmetry, g...) = group_order(group(sym), g...)
+group_order(sym::FiniteTranslationSymmetry, g...) = group_order(group(sym), g...)
 
 """
-    group_multiplication_table(sym::TranslationSymmetry)
+    group_multiplication_table(sym::FiniteTranslationSymmetry)
 
 Group multiplication table of the translation symmetry.
 Calls `group_multiplication_table(group(sym))`
 """
-group_multiplication_table(sym::TranslationSymmetry) = group_multiplication_table(group(sym))
+group_multiplication_table(sym::FiniteTranslationSymmetry) = group_multiplication_table(group(sym))
 
 
 """
-    elements(sym::TranslationSymmetry)
+    elements(sym::FiniteTranslationSymmetry)
 
 Get the elements of the translation symmetry.
 """
-elements(sym::TranslationSymmetry) = sym.elements
+elements(sym::FiniteTranslationSymmetry) = sym.elements
 
 """
-    element(sym::TranslationSymmetry, i)
+    element(sym::FiniteTranslationSymmetry, i)
 
 Get the `i`th element of the translation symmetry.
 """
-element(sym::TranslationSymmetry, g) = sym.elements[g]
+element(sym::FiniteTranslationSymmetry, g) = sym.elements[g]
 
 
 """
-    element_names(sym::TranslationSymmetry)
+    element_names(sym::FiniteTranslationSymmetry)
 
 Get the names of the elements of the translation symmetry.
 """
-element_names(sym::TranslationSymmetry) = sym.element_names
+element_names(sym::FiniteTranslationSymmetry) = sym.element_names
 
 """
-    element_name(sym::TranslationSymmetry, i)
+    element_name(sym::FiniteTranslationSymmetry, i)
 
 Get the name of the `i`th element of the translation symmetry.
 """
-element_name(sym::TranslationSymmetry, g) = sym.element_names[g]
+element_name(sym::FiniteTranslationSymmetry, g) = sym.element_names[g]
 
 
 """
-    generator_indices(sym::TranslationSymmetry)
+    generator_indices(sym::FiniteTranslationSymmetry)
 
 Return indices of the generating translations.
 """
-generator_indices(sym::TranslationSymmetry) = sym.generators
+generator_indices(sym::FiniteTranslationSymmetry) = sym.generators
 
 
 """
-    generator_elements(sym::TranslationSymmetry)
+    generator_elements(sym::FiniteTranslationSymmetry)
 
 Return the generating translation operations.
 """
-generator_elements(sym::TranslationSymmetry) = element(sym, sym.generators)
+generator_elements(sym::FiniteTranslationSymmetry) = element(sym, sym.generators)
 
 
 """
-    symmetry_product(tsym::TranslationSymmetry)
+    symmetry_product(tsym::FiniteTranslationSymmetry)
 
 Return a binary function which combines two translation operations, with the given periodic
 boundary condition.
@@ -280,7 +285,7 @@ boundary condition.
 ```jldoctest
 julia> using LatticeTools
 
-julia> tsym = TranslationSymmetry([3 0; 0 4]);
+julia> tsym = FiniteTranslationSymmetry([3 0; 0 4]);
 
 julia> p = symmetry_product(tsym);
 
@@ -288,7 +293,7 @@ julia> p(TranslationOperation([2, 1]), TranslationOperation([2, 3]))
 TranslationOperation{Int64}([1, 0])
 ```
 """
-function symmetry_product(sym::TranslationSymmetry)
+function symmetry_product(sym::FiniteTranslationSymmetry)
     function product(lhs::TranslationOperation, rhs::TranslationOperation)
         return TranslationOperation(sym.hypercube.wrap(lhs.displacement + rhs.displacement)[2])
     end
@@ -296,7 +301,7 @@ function symmetry_product(sym::TranslationSymmetry)
 end
 
 
-function symmetry_canonize(sym::TranslationSymmetry)
+function symmetry_canonize(sym::FiniteTranslationSymmetry)
     function canonize(arg::TranslationOperation{<:Integer})
         return TranslationOperation(sym.hypercube.wrap(arg.displacement)[2])
     end
@@ -310,113 +315,113 @@ function symmetry_canonize(sym::TranslationSymmetry)
 end
 
 
-Base.eltype(::TranslationSymmetry) = TranslationOperation{Int}
-Base.valtype(::TranslationSymmetry) = TranslationOperation{Int}
-Base.eltype(::Type{<:TranslationSymmetry}) = TranslationOperation{Int}
-Base.valtype(::Type{<:TranslationSymmetry}) = TranslationOperation{Int}
+Base.eltype(::FiniteTranslationSymmetry) = TranslationOperation{Int}
+Base.valtype(::FiniteTranslationSymmetry) = TranslationOperation{Int}
+Base.eltype(::Type{<:FiniteTranslationSymmetry}) = TranslationOperation{Int}
+Base.valtype(::Type{<:FiniteTranslationSymmetry}) = TranslationOperation{Int}
 
 
-Base.in(item::Any, sym::TranslationSymmetry) = false
-function Base.in(item::IdentityOperation, sym::TranslationSymmetry)
+Base.in(item::Any, sym::FiniteTranslationSymmetry) = false
+function Base.in(item::IdentityOperation, sym::FiniteTranslationSymmetry)
     dimension(item) == dimension(sym)
 end
-function Base.in(item::TranslationOperation{<:Integer}, sym::TranslationSymmetry)
+function Base.in(item::TranslationOperation{<:Integer}, sym::FiniteTranslationSymmetry)
     dimension(item) == dimension(sym)
 end
-function Base.in(item::PointOperation, sym::TranslationSymmetry)
+function Base.in(item::PointOperation, sym::FiniteTranslationSymmetry)
     dimension(item) == dimension(sym) && istranslation(item)
 end
-function Base.in(item::SpaceOperation{Tp, <:Integer}, sym::TranslationSymmetry) where {Tp}
+function Base.in(item::SpaceOperation{Tp, <:Integer}, sym::FiniteTranslationSymmetry) where {Tp}
     dimension(item) == dimension(sym) && istranslation(item)
 end
 
 
-Base.iterate(sym::TranslationSymmetry) = iterate(elements(sym))
-Base.iterate(sym::TranslationSymmetry, i) = iterate(elements(sym), i)
+Base.iterate(sym::FiniteTranslationSymmetry) = iterate(elements(sym))
+Base.iterate(sym::FiniteTranslationSymmetry, i) = iterate(elements(sym), i)
 
 
-Base.length(sym::TranslationSymmetry) = length(elements(sym))
+Base.length(sym::FiniteTranslationSymmetry) = length(elements(sym))
 
 """
-    symmetry_name(sym::TranslationSymmetry)
+    symmetry_name(sym::FiniteTranslationSymmetry)
 
-Name of the translation symmetry. Return `TranslationSymmetry[(n11,n21)x(n12,n22)]`.
+Name of the translation symmetry. Return `FiniteTranslationSymmetry[(n11,n21)x(n12,n22)]`.
 """
-function symmetry_name(sym::TranslationSymmetry)
+function symmetry_name(sym::FiniteTranslationSymmetry)
     n11 = sym.hypercube.shape_matrix[1,1]
     n12 = sym.hypercube.shape_matrix[1,2]
     n21 = sym.hypercube.shape_matrix[2,1]
     n22 = sym.hypercube.shape_matrix[2,2]
-    return "TranslationSymmetry[($n11,$n21)x($n12,$n22)]"
+    return "FiniteTranslationSymmetry[($n11,$n21)x($n12,$n22)]"
 end
 
 
 # Irreducible Representations
 
 """
-    character_table(sym::TranslationSymmetry)
+    character_table(sym::FiniteTranslationSymmetry)
 
 Return the character table of the translation symmetry.
 """
-character_table(sym::TranslationSymmetry) = sym.character_table
+character_table(sym::FiniteTranslationSymmetry) = sym.character_table
 
 """
-    irreps(sym::TranslationSymmetry)
+    irreps(sym::FiniteTranslationSymmetry)
 
 Return the irreducible representations of the translation symmetry
 """
-irreps(sym::TranslationSymmetry) = sym.irreps
+irreps(sym::FiniteTranslationSymmetry) = sym.irreps
 
 """
-    irrep(sym::TranslationSymmetry, idx)
+    irrep(sym::FiniteTranslationSymmetry, idx)
 
 Return the `idx`th irreducible representation of the translation symmetry
 """
-irrep(sym::TranslationSymmetry, idx) = sym.irreps[idx]
+irrep(sym::FiniteTranslationSymmetry, idx) = sym.irreps[idx]
 
 """
-    num_irreps(sym::TranslationSymmetry)
+    num_irreps(sym::FiniteTranslationSymmetry)
 
 Return the number of irreducible representations of the translation symmetry,
 i.e. number of allowed momentum points.
 Aliases: [`num_irreps`](@ref), [`numirreps`](@ref), [`irrepcount`](@ref)
 """
-num_irreps(sym::TranslationSymmetry) = length(sym.irreps)
+num_irreps(sym::FiniteTranslationSymmetry) = length(sym.irreps)
 
 """
-    numirreps(sym::TranslationSymmetry)
+    numirreps(sym::FiniteTranslationSymmetry)
 
 Return the number of irreducible representations of the translation symmetry,
 i.e. number of allowed momentum points.
 Aliases: [`num_irreps`](@ref), [`numirreps`](@ref), [`irrepcount`](@ref)
 """
-numirreps(sym::TranslationSymmetry) = length(sym.irreps)
+numirreps(sym::FiniteTranslationSymmetry) = length(sym.irreps)
 
 """
-    irrepcount(sym::TranslationSymmetry)
+    irrepcount(sym::FiniteTranslationSymmetry)
 
 Return the number of irreducible representations of the translation symmetry,
 i.e. number of allowed momentum points.
 Aliases: [`num_irreps`](@ref), [`numirreps`](@ref), [`irrepcount`](@ref)
 """
-irrepcount(sym::TranslationSymmetry) = length(sym.irreps)
+irrepcount(sym::FiniteTranslationSymmetry) = length(sym.irreps)
 
 
 """
-    irrep_dimension(sym::TranslationSymmetry, idx::Integer)
+    irrep_dimension(sym::FiniteTranslationSymmetry, idx::Integer)
 
 Dimension of the `idx`th irrep of the translation symmetry,
 which is always 1 for translation symmetry which is Abelian.
 """
-irrep_dimension(sym::TranslationSymmetry, idx::Integer) = 1 # size(first(sym.irreps[idx]), 1)
+irrep_dimension(sym::FiniteTranslationSymmetry, idx::Integer) = 1 # size(first(sym.irreps[idx]), 1)
 
 
 """
-    fractional_momentum(sym::TranslationSymmetry, g...)
+    fractional_momentum(sym::FiniteTranslationSymmetry, g...)
 
 Return the `g`th fractional momentum of the translation symmetry.
 """
-fractional_momentum(sym::TranslationSymmetry, g...) = sym.fractional_momenta[g...]
+fractional_momentum(sym::FiniteTranslationSymmetry, g...) = sym.fractional_momenta[g...]
 
 
 """
@@ -507,7 +512,7 @@ end
 Check for Bragg condition at momentum given by the `tsym_irrep_index`.
 """
 function isbragg(
-    tsym::TranslationSymmetry,
+    tsym::FiniteTranslationSymmetry,
     tsym_irrep_index::Integer,
     translation::TranslationOperation{<:Integer},
 )
@@ -521,7 +526,7 @@ end
 Check for Bragg condition at momentum given by the `tsym_irrep_index` for all translations.
 """
 function isbragg(
-    tsym::TranslationSymmetry,
+    tsym::FiniteTranslationSymmetry,
     tsym_irrep_index::Integer,
     translations::AbstractVector{<:TranslationOperation{<:Integer}},
 )
@@ -537,7 +542,7 @@ end
 # of the translation symmetry. The identity translation is in units of the "generators" of the lattice,
 # i.e. orthogonal integer shape.
 # """
-# function iscompatible(tsym::TranslationSymmetry,
+# function iscompatible(tsym::FiniteTranslationSymmetry,
 #                       tsym_irrep_index::Integer,
 #                       identity_translation::AbstractVector{<:Integer})
 #                       #identity_translation::TranslationOperation{<:Integer})
@@ -546,7 +551,7 @@ end
 #     return isbragg(orthogonal_shape, orthogonal_momentum, identity_translation.displacement)
 # end
 
-# function iscompatible(tsym::TranslationSymmetry,
+# function iscompatible(tsym::FiniteTranslationSymmetry,
 #                       tsym_irrep_index::Integer,
 #                       identity_translations::AbstractVector{<:AbstractVector{<:Integer}})
 #                     #   identity_translations::AbstractVector{<:TranslationOperation{<:Integer}})
@@ -558,7 +563,7 @@ end
 
 
 # function iscompatible(# lattice::Lattice,
-#                       tsym::TranslationSymmetry,
+#                       tsym::FiniteTranslationSymmetry,
 #                       tsym_irrep_index::Integer,
 #                       identity_translation::AbstractVector{<:Integer})
 #     # !iscompatible(lattice, tsym) && return false
@@ -569,7 +574,7 @@ end
 
 
 # function iscompatible(# lattice::Lattice,
-#                       tsym::TranslationSymmetry,
+#                       tsym::FiniteTranslationSymmetry,
 #                       tsym_irrep_index::Integer,
 #                       identity_translations::AbstractVector{<:AbstractVector{<:Integer}})
 #     orthogonal_momentum = tsym.orthogonal_coordinates[tsym_irrep_index]
@@ -602,7 +607,7 @@ end
 
 
 
-# function generators(lattice::Lattice, tsym::TranslationSymmetry)
+# function generators(lattice::Lattice, tsym::FiniteTranslationSymmetry)
 #     if lattice.hypercube != tsym.hypercube
 #         throw(ArgumentError("lattice and translation symmetry not consistent"))
 #     end
@@ -630,28 +635,28 @@ end
 
 
 
-    # function TranslationSymmetry(shape::Matrix{<:Integer}; tol::Real=Base.rtoldefault(Float64))
-    #     return TranslationSymmetry(orthogonalize(HypercubicLattice(shape)))
+    # function FiniteTranslationSymmetry(shape::Matrix{<:Integer}; tol::Real=Base.rtoldefault(Float64))
+    #     return FiniteTranslationSymmetry(orthogonalize(HypercubicLattice(shape)))
     # end
 
-    # function TranslationSymmetry(lattice::Lattice; tol::Real=Base.rtoldefault(Float64))
-    #     return TranslationSymmetry(lattice.hypercube)
+    # function FiniteTranslationSymmetry(lattice::Lattice; tol::Real=Base.rtoldefault(Float64))
+    #     return FiniteTranslationSymmetry(lattice.hypercube)
     # end
 
-    # function TranslationSymmetry(hypercube::HypercubicLattice; tol::Real=Base.rtoldefault(Float64))
+    # function FiniteTranslationSymmetry(hypercube::HypercubicLattice; tol::Real=Base.rtoldefault(Float64))
     #     if dimension(hypercube) == 1
     #         generator_translations = ones(Int, (1,1))
-    #         return TranslationSymmetry(hypercube, generator_translations; tol=tol)
+    #         return FiniteTranslationSymmetry(hypercube, generator_translations; tol=tol)
     #     elseif dimension(hypercube) == 2
     #         generator_translations = decompose_lattice_2d(hypercube)
-    #         return TranslationSymmetry(hypercube, generator_translations; tol=tol)
+    #         return FiniteTranslationSymmetry(hypercube, generator_translations; tol=tol)
     #     else
     #         error("Currenly only supports 1D and 2D")
     #     end
     # end
 
 
-    # function TranslationSymmetry(hypercube::HypercubicLattice,
+    # function FiniteTranslationSymmetry(hypercube::HypercubicLattice,
     #                              generator_translations::AbstractMatrix{<:Integer};
     #                              tol::Real=Base.rtoldefault(Float64))
 

@@ -64,7 +64,7 @@ end
 
 
 # ### Symmetries
-tsym = TranslationSymmetry(lattice)
+tsym = FiniteTranslationSymmetry(lattice)
 psym = PointSymmetryDatabase.find2d("4mm")
 println("point symmetry (Hermann Mauguin): $(psym.hermann_mauguin)")
 println("translation symmetry compatible with point symmetry? ", iscompatible(tsym, psym))

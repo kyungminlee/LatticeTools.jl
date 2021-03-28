@@ -9,7 +9,7 @@ export little_symmetry_iso
 
 Return elements of `psym` compatible with the translation symmetry `tsym`.
 """
-function little_group_elements(tsym::TranslationSymmetry, psym::PointSymmetry)::Vector{Int}
+function little_group_elements(tsym::FiniteTranslationSymmetry, psym::PointSymmetry)::Vector{Int}
     return Int[
         i_elem
             for (i_elem, elem) in enumerate(elements(psym))
@@ -25,7 +25,7 @@ Return elements of `psym` compatible with the translation symmetry `tsym` at
 irrep `tsym_irrep_index`
 """
 function little_group_elements(
-    tsym::TranslationSymmetry,
+    tsym::FiniteTranslationSymmetry,
     tsym_irrep_index::Integer,
     psym::PointSymmetry,
 )::Vector{Int}
@@ -41,7 +41,7 @@ end
     little_group(tsym, tsym_irrep_index, psym)
 """
 function little_group(
-    tsym::TranslationSymmetry,
+    tsym::FiniteTranslationSymmetry,
     tsym_irrep_index::Integer,
     psym::PointSymmetry,
 )::FiniteGroup
@@ -57,7 +57,7 @@ Generate a little group with given elements.
 The elements of the little group, which may be sparse, are compressed into consecutive integers.
 """
 function little_group(
-    tsym::TranslationSymmetry,
+    tsym::FiniteTranslationSymmetry,
     psym::PointSymmetry,
     elements::AbstractVector{<:Integer},
 )
@@ -79,12 +79,12 @@ First generate a little group with `lg_elements`, look up `PointSymmetryDatabase
 the names of the elements, and then checks for group isomorphism.
 
 # Arguments
-* `tsym::TranslationSymmetry`: translation symmetry
+* `tsym::FiniteTranslationSymmetry`: translation symmetry
 * `psym::PointSymmetry`: point symmetry
 * `lg_elements::AbstractVector{<:Integer}`: indices of the elements of the little group
 """
 function little_symmetry(
-    tsym::TranslationSymmetry,
+    tsym::FiniteTranslationSymmetry,
     psym::PointSymmetry,
     lg_elements::AbstractVector{<:Integer},
 )
@@ -119,7 +119,7 @@ end
 """
     little_symmetry(tsym, psym)
 """
-function little_symmetry(tsym::TranslationSymmetry, psym::PointSymmetry)
+function little_symmetry(tsym::FiniteTranslationSymmetry, psym::PointSymmetry)
     return little_symmetry(tsym, psym, little_group_elements(tsym, psym))
 end
 
@@ -127,7 +127,7 @@ end
 """
     little_symmetry(tsym, tsym_irrep_index, psym)
 """
-function little_symmetry(tsym::TranslationSymmetry, tsym_irrep::Integer, psym::PointSymmetry)
+function little_symmetry(tsym::FiniteTranslationSymmetry, tsym_irrep::Integer, psym::PointSymmetry)
     if !iscompatible(tsym, psym)
         throw(ArgumentError("translation and point symmetries are not compatible"))
     end
@@ -169,7 +169,7 @@ end
 Find little symmetry using group isomorphism
 """
 function little_symmetry_iso(
-    tsym::TranslationSymmetry,
+    tsym::FiniteTranslationSymmetry,
     tsym_irrep_index::Integer,
     psym::PointSymmetry,
 )

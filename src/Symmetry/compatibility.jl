@@ -26,9 +26,9 @@ end
 ## 2. Hypercube and Symmetry
 
 """
-    iscompatible(hypercube, symmetry::TranslationSymmetry)
+    iscompatible(hypercube, symmetry::FiniteTranslationSymmetry)
 """
-function iscompatible(hypercube::Hypercube, tsym::TranslationSymmetry)::Bool
+function iscompatible(hypercube::Hypercube, tsym::FiniteTranslationSymmetry)::Bool
     R, r = hypercube.wrap(tsym.hypercube.shape_matrix)
     return iszero(r) && isone(abs(LinearAlgebraX.detx(R)))
 end
@@ -41,26 +41,26 @@ function iscompatible(hypercube::Hypercube, psym::PointSymmetry)::Bool
 end
 
 
-## 3. TranslationSymmetry and PointOperation/PointSymmetry
+## 3. FiniteTranslationSymmetry and PointOperation/PointSymmetry
 
 """
-    iscompatible(tsym::TranslationSymmetry, pop::PointOperation{<:Integer})
+    iscompatible(tsym::FiniteTranslationSymmetry, pop::PointOperation{<:Integer})
 """
-function iscompatible(tsym::TranslationSymmetry, pop::PointOperation{<:Integer})::Bool
+function iscompatible(tsym::FiniteTranslationSymmetry, pop::PointOperation{<:Integer})::Bool
     return iscompatible(tsym.hypercube, pop)
 end
 
 """
-    iscompatible(tsym::TranslationSymmetry, psym::PointSymmetry)
+    iscompatible(tsym::FiniteTranslationSymmetry, psym::PointSymmetry)
 """
-function iscompatible(tsym::TranslationSymmetry, psym::PointSymmetry)::Bool
+function iscompatible(tsym::FiniteTranslationSymmetry, psym::PointSymmetry)::Bool
     return iscompatible(tsym.hypercube, psym)
 end
 
 """
-    iscompatible(psym::PointSymmetry, tsym::TranslationSymmetry)
+    iscompatible(psym::PointSymmetry, tsym::FiniteTranslationSymmetry)
 """
-function iscompatible(psym::PointSymmetry, tsym::TranslationSymmetry)::Bool
+function iscompatible(psym::PointSymmetry, tsym::FiniteTranslationSymmetry)::Bool
     return iscompatible(tsym, psym)
 end
 
@@ -71,7 +71,7 @@ end
     iscompatible(tsym, tsym_irrep_index, point_operation)
 """
 function iscompatible(
-    tsym::TranslationSymmetry,
+    tsym::FiniteTranslationSymmetry,
     tsym_irrep_index::Integer,
     pop::PointOperation{<:Integer},
 )::Bool
@@ -86,7 +86,7 @@ end
     iscompatible(tsym, tsym_irrep_index, psym)
 """
 function iscompatible(
-    tsym::TranslationSymmetry,
+    tsym::FiniteTranslationSymmetry,
     tsym_irrep_index::Integer,
     psym::PointSymmetry,
 )::Bool
@@ -124,7 +124,7 @@ end
 Test whether lattice and the symmetry are compatible.
 For translation symmetry, this means that the hypercubic lattice for both are the same.
 """
-function iscompatible(lattice::Lattice, tsym::TranslationSymmetry)
+function iscompatible(lattice::Lattice, tsym::FiniteTranslationSymmetry)
     return iscompatible(lattice.hypercube, tsym)
 end
 

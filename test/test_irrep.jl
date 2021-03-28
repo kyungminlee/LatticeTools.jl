@@ -8,7 +8,7 @@ using LatticeTools
     addsite!(unitcell, "Oy", FractCoord([0,0], [0.0, 0.5]))
 
     lattice = make_lattice(unitcell, [4 0; 0 4])
-    tsym = TranslationSymmetry(lattice)
+    tsym = FiniteTranslationSymmetry(lattice)
     psym = project(PointSymmetryDatabase.get(13), [1 0 0; 0 1 0])
 
     tsymbed = embed(lattice, tsym)

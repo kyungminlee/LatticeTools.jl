@@ -124,11 +124,11 @@ end
 
 Return little group elements (i.e. indices) of `psym` corresponding to the irrep of translation symmetry specified by `tsic`.
 `tsic` and `psym` are either
-- `IrrepComponent{TranslationSymmetry}` and `PointSymmetry`, or
-- `IrrepComponent{SymmetryEmbedding{TranslationSymmetry}}` and `SymmetryEmbedding{PointSymmetry}`
+- `IrrepComponent{FiniteTranslationSymmetry}` and `PointSymmetry`, or
+- `IrrepComponent{SymmetryEmbedding{FiniteTranslationSymmetry}}` and `SymmetryEmbedding{PointSymmetry}`
 """
 function little_group_elements(
-    tsic::IrrepComponent{TranslationSymmetry},
+    tsic::IrrepComponent{FiniteTranslationSymmetry},
     psym::PointSymmetry,
 ) ::Vector{Int}
     return little_group_elements(tsic.symmetry, tsic.irrep_index, psym)
@@ -136,7 +136,7 @@ end
 
 
 function little_group_elements(
-    tsic::IrrepComponent{SymmetryEmbedding{TranslationSymmetry}},
+    tsic::IrrepComponent{SymmetryEmbedding{FiniteTranslationSymmetry}},
     psymbed::SymmetryEmbedding{PointSymmetry}
 )::Vector{Int}
     return little_group_elements(
@@ -153,7 +153,7 @@ end
 Return the `FiniteGroup` object that corresponds to the little group of `psym` at `tsic`.
 """
 function little_group(
-    tsic::IrrepComponent{TranslationSymmetry},
+    tsic::IrrepComponent{FiniteTranslationSymmetry},
     psym::PointSymmetry,
 )::FiniteGroup
     return little_group(tsic.symmetry, tsic.irrep_index, psym)
@@ -166,7 +166,7 @@ end
 Return the `FiniteGroup` object that corresponds to the little group of `psymbed` at `tsic`.
 """
 function little_group(
-    tsic::IrrepComponent{SymmetryEmbedding{TranslationSymmetry}},
+    tsic::IrrepComponent{SymmetryEmbedding{FiniteTranslationSymmetry}},
     psymbed::SymmetryEmbedding{PointSymmetry},
 )::FiniteGroup
     return little_group(symmetry(tsic.symmetry), tsic.irrep_index, symmetry(psymbed))
@@ -179,7 +179,7 @@ end
 Return the `PointSymmetry` object that corresponds to the little group of psym at `tsic`.
 """
 function little_symmetry(
-    tsic::IrrepComponent{TranslationSymmetry},
+    tsic::IrrepComponent{FiniteTranslationSymmetry},
     psym::PointSymmetry,
 )::PointSymmetry
     return little_symmetry(tsic.symmetry, tsic.irrep_index, psym)
@@ -187,7 +187,7 @@ end
 
 
 function little_symmetry(
-    tsic::IrrepComponent{SymmetryEmbedding{TranslationSymmetry}},
+    tsic::IrrepComponent{SymmetryEmbedding{FiniteTranslationSymmetry}},
     psymbed::SymmetryEmbedding{PointSymmetry},
 )::SymmetryEmbedding{PointSymmetry}
     psym_little = little_symmetry(symmetry(tsic.symmetry), tsic.irrep_index, symmetry(psymbed))
@@ -202,7 +202,7 @@ Test whether the point symmetry `psym` is compatible with the irrep component `t
 (i.e. momentum) of the translation symmetry.
 """
 function iscompatible(
-    tsic::IrrepComponent{TranslationSymmetry},
+    tsic::IrrepComponent{FiniteTranslationSymmetry},
     psym::PointSymmetry,
 )::Bool
     return iscompatible(tsic.symmetry, tsic.irrep_index, psym)
@@ -210,7 +210,7 @@ end
 
 
 function iscompatible(
-    tsic::IrrepComponent{SymmetryEmbedding{TranslationSymmetry}},
+    tsic::IrrepComponent{SymmetryEmbedding{FiniteTranslationSymmetry}},
     psymbed::SymmetryEmbedding{PointSymmetry},
 )::Bool
     return (
@@ -245,7 +245,7 @@ end
 #     function SymmorphicSpaceIrrepComponent(
 #                 sic1::IrrepComponent{S1},
 #                 sic2::IrrepComponent{S2}) where {
-#             S1<:Union{TranslationSymmetry, SymmetryEmbedding{TranslationSymmetry}},
+#             S1<:Union{FiniteTranslationSymmetry, SymmetryEmbedding{FiniteTranslationSymmetry}},
 #             S2<:Union{PointSymmetry, SymmetryEmbedding{PointSymmetry}}}
 #         sym1 = sic1.symmetry
 #         sym_irrep_index1 = sic1.irrep_index
@@ -295,10 +295,10 @@ end
 # end
 
 # struct TranslationSymmetryIrrepComponent <:AbstractSymmetryIrrepComponent
-#     symmetry::TranslationSymmetry
+#     symmetry::FiniteTranslationSymmetry
 #     irrep_index::Int
 #     irrep_component::Int
-#     function TranslationSymmetryIrrepComponent(sym::TranslationSymmetry,
+#     function TranslationSymmetryIrrepComponent(sym::FiniteTranslationSymmetry,
 #                                                irrep_index::Integer,
 #                                                irrep_compo::Integer=1)
 #         if !(1 <= irrep_index <= num_irreps(sym))
@@ -314,7 +314,7 @@ end
 # group_order(sic::TranslationSymmetryIrrepComponent) = group_order(sic.symmetry)
 
 
-# function get_irrep_components(tsym::TranslationSymmetry)
+# function get_irrep_components(tsym::FiniteTranslationSymmetry)
 #     return (TranslationSymmetryIrrepComponent(tsym, irrep_index, 1)
 #                 for irrep_index in 1:num_irreps(tsym))
 # end
@@ -395,7 +395,7 @@ end
 
 
 
-# function get_irrep_components(tsym::TranslationSymmetry,
+# function get_irrep_components(tsym::FiniteTranslationSymmetry,
 #                               psym::PointSymmetry)
 #     return (SymmorphicSpaceSymmetryIrrepComponent(tsic, psic)
 #                 for tsic in get_irrep_components(tsym)
