@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Honeycomb Lattice in k-space · LatticeTools.jl</title><link href="https://fonts.googleapis.com/css?family=Lato|Roboto+Mono" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.0/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.0/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.0/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.11.1/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL="../.."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../../assets/documenter.js"></script><script src="../../siteinfo.js"></script><script src="../../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/documenter-dark.css" data-theme-name="documenter-dark" data-theme-primary-dark/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../../assets/themeswap.js"></script></head><body><div id="documenter"><nav class="docs-sidebar"><a class="docs-logo" href="../../"><img src="../../assets/logo.svg" alt="LatticeTools.jl logo"/></a><div class="docs-package-name"><span class="docs-autofit">LatticeTools.jl</span></div><form class="docs-search" action="../../search/"><input class="docs-search-query" id="documenter-search-query" name="q" type="text" placeholder="Search docs"/></form><ul class="docs-menu"><li><a class="tocitem" href="../../">Home</a></li><li><a class="tocitem" href="../../lattice/">Lattice Definition</a></li><li><span class="tocitem">Symmetry Analysis</span><ul><li><a class="tocitem" href="../../Symmetry/space-symmetry/">Space Symmetry Analysis</a></li><li><a class="tocitem" href="../../Symmetry/space-operation/">Symmetry Operations</a></li><li><a class="tocitem" href="../../Symmetry/irrep/">Irreducible Representations</a></li><li><a class="tocitem" href="../../Symmetry/space-symmetry-database/">Space Symmetry Database</a></li></ul></li><li><span class="tocitem">Examples</span><ul><li><a class="tocitem" href="../example_group_isomorphism/">Group Isomorphism</a></li><li><a class="tocitem" href="../example_hypercube/">Hypercube</a></li><li><a class="tocitem" href="../example_point_group_elements/">Point Group Elements</a></li><li><a class="tocitem" href="../example_point_group_4mm/">Point Group 4mm (C₄ᵥ)</a></li><li><a class="tocitem" href="../example_little_group_2d/">Little Group in 2D</a></li><li><a class="tocitem" href="../example_little_group_3d/">Little Group in 3D</a></li><li><a class="tocitem" href="../example_honeycomb_symmetry/">Honeycomb Lattice</a></li><li class="is-active"><a class="tocitem" href>Honeycomb Lattice in k-space</a><ul class="internal"><li><a class="tocitem" href="#Honeycome-Lattice"><span>Honeycome Lattice</span></a></li><li><a class="tocitem" href="#3-3-Supercell"><span>√3 × √3 Supercell</span></a></li><li><a class="tocitem" href="#3-23-Supercell"><span>2√3 × 2√3 Supercell</span></a></li><li><a class="tocitem" href="#6-Supercell"><span>6 × 6 Supercell</span></a></li></ul></li><li><a class="tocitem" href="../example_kagome_symmetry/">Kagome Lattice</a></li></ul></li><li><span class="tocitem">API Reference</span><ul><li><a class="tocitem" href="../../API/basic/">Basic</a></li><li><a class="tocitem" href="../../API/group/">Group</a></li><li><a class="tocitem" href="../../API/symmetry-operation/">Symmetry Operation</a></li><li><a class="tocitem" href="../../API/symmetry/">Symmetry</a></li><li><a class="tocitem" href="../../API/symmetry-embedding/">Symmetry Embedding</a></li><li><a class="tocitem" href="../../API/symmetry-irrep-component/">Symmetry Irrep Component</a></li></ul></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><nav class="breadcrumb"><ul class="is-hidden-mobile"><li><a class="is-disabled">Examples</a></li><li class="is-active"><a href>Honeycomb Lattice in k-space</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>Honeycomb Lattice in k-space</a></li></ul></nav><div class="docs-right"><a class="docs-edit-link" href="https://github.com/kyungminlee/LatticeTools.jl/blob/master/examples/example_little_symmetry_kspace_honeycomb.jl" title="Edit on GitHub"><span class="docs-icon fab"></span><span class="docs-label is-hidden-touch">Edit on GitHub</span></a><a class="docs-settings-button fas fa-cog" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-sidebar-button fa fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a></div></header><article class="content" id="documenter-page"><h1 id="Honeycomb-Lattice-in-k-space"><a class="docs-heading-anchor" href="#Honeycomb-Lattice-in-k-space">Honeycomb Lattice in k-space</a><a id="Honeycomb-Lattice-in-k-space-1"></a><a class="docs-heading-anchor-permalink" href="#Honeycomb-Lattice-in-k-space" title="Permalink"></a></h1><pre><code class="language-julia">using LinearAlgebra
+using Plots
+using LatticeTools
+
+simplifyname(s::AbstractString) = (
+    s
+    |&gt; (x-&gt; replace(x, r&quot;&lt;sup&gt;(.+?)&lt;/sup&gt;&quot; =&gt; s&quot;\1&quot;))
+    |&gt; (x-&gt; replace(x, r&quot;&lt;sub&gt;(.+?)&lt;/sub&gt;&quot; =&gt; s&quot;[\1]&quot;))
+)
+
+function makewithin(extent::AbstractVector{&lt;:Real})
+    a, b, c, d = extent
+    (x::Real, y::Real) -&gt; ((a &lt;= x &lt;= b) &amp;&amp; (c &lt;= y &lt;= d))
+end
+mkpath(&quot;example_little_symmetry_kspace_honeycomb&quot;)</code></pre><pre class="documenter-example-output">&quot;example_little_symmetry_kspace_honeycomb&quot;</pre><h2 id="Honeycome-Lattice"><a class="docs-heading-anchor" href="#Honeycome-Lattice">Honeycome Lattice</a><a id="Honeycome-Lattice-1"></a><a class="docs-heading-anchor-permalink" href="#Honeycome-Lattice" title="Permalink"></a></h2><h3 id="Define-UnitCell"><a class="docs-heading-anchor" href="#Define-UnitCell">Define UnitCell</a><a id="Define-UnitCell-1"></a><a class="docs-heading-anchor-permalink" href="#Define-UnitCell" title="Permalink"></a></h3><pre><code class="language-julia">latticevectors = [1 -0.5; 0 sqrt(3)*0.5];
+unitcell = makeunitcell(latticevectors; SiteType=String);
+addsite!(unitcell, &quot;A&quot;, carte2fract(unitcell, [0.5, 0.5 / sqrt(3)]));
+addsite!(unitcell, &quot;B&quot;, carte2fract(unitcell, [0.5, -0.5 / sqrt(3)]));</code></pre><h3 id="Plot-Lattice"><a class="docs-heading-anchor" href="#Plot-Lattice">Plot Lattice</a><a id="Plot-Lattice-1"></a><a class="docs-heading-anchor-permalink" href="#Plot-Lattice" title="Permalink"></a></h3><pre><code class="language-julia">let bravais_lattice = [], a_sites = [], b_sites = []
+    extent = [-2, 2, -2, 2]
+    within = makewithin(extent)
+    for i1 in -5:5, i2 in -5:5
+        R = latticevectors * [i1, i2]
+        within(R...) &amp;&amp; push!(bravais_lattice, R)
+        for (orb_name, orb_fc) in unitcell.sites
+            orb_cc = fract2carte(unitcell, orb_fc)
+            r = R + orb_cc
+            within(r...) &amp;&amp; push!(orb_name == &quot;A&quot; ? a_sites : b_sites, r)
+        end
+    end
+    bravais_lattice = hcat(bravais_lattice...)
+    a_sites = hcat(a_sites...)
+    b_sites = hcat(b_sites...)
+
+    img = plot(aspect_ratio=1)
+    scatter!(bravais_lattice[1,:], bravais_lattice[2,:], color=&quot;black&quot;, markershape=:circle, markersize=3, label=&quot;Bravais&quot;)
+    scatter!(a_sites[1,:], a_sites[2,:], color=&quot;red&quot;, markerstrokewidth=0, markersize=5, label=&quot;A&quot;)
+    scatter!(b_sites[1,:], b_sites[2,:], color=&quot;blue&quot;, markerstrokewidth=0, markersize=5, label=&quot;B&quot;)
+    xlims!(extent[1], extent[2])
+    ylims!(extent[3], extent[4])
+    savefig(img, &quot;example_little_symmetry_kspace_honeycomb/realspace.svg&quot;)
+end</code></pre><pre class="documenter-example-output">qt.qpa.xcb: could not connect to display
+qt.qpa.plugin: Could not load the Qt platform plugin &quot;xcb&quot; in &quot;&quot; even though it was found.
+This application failed to start because no Qt platform plugin could be initialized. Reinstalling the application may fix this problem.
+
+Available platform plugins are: linuxfb, minimal, offscreen, vnc, xcb.
+
+Aborted (core dumped)
+connect: Connection refused
+GKS: can&#39;t connect to GKS socket application
+
+GKS: Open failed in routine OPEN_WS
+GKS: GKS not in proper state. GKS must be either in the state WSOP or WSAC in routine ACTIVATE_WS</pre><p><img src="realspace.svg" alt/></p><h2 id="3-3-Supercell"><a class="docs-heading-anchor" href="#3-3-Supercell">√3 × √3 Supercell</a><a id="3-3-Supercell-1"></a><a class="docs-heading-anchor-permalink" href="#3-3-Supercell" title="Permalink"></a></h2><h3 id="Make-Superlattice"><a class="docs-heading-anchor" href="#Make-Superlattice">Make Superlattice</a><a id="Make-Superlattice-1"></a><a class="docs-heading-anchor-permalink" href="#Make-Superlattice" title="Permalink"></a></h3><pre><code class="language-julia">shape = [2 -1; 1 1]
+lattice = makelattice(unitcell, shape)</code></pre><pre class="documenter-example-output">Lattice{String, Any}(UnitCell{String, Any}([1.0 -0.5; 0.0 0.8660254037844386], Tuple{String, FractCoord}[(&quot;A&quot;, FractCoord([0, 0] + [0.6666666666666667, 0.3333333333333334])), (&quot;B&quot;, FractCoord([0, -1] + [0.33333333333333326, 0.6666666666666665]))], Tuple{Any, Int64}[], [1.0 0.0; 0.5773502691896258 1.1547005383792517], [6.283185307179586 0.0; 3.627598728468436 7.255197456936872], Dict(&quot;B&quot; =&gt; 2, &quot;A&quot; =&gt; 1), Dict{Any, Int64}()), Hypercube([2 -1; 1 1], Rational{Int64}[1//3 1//3; -1//3 2//3], LatticeTools.var&quot;#wrap#10&quot;{Matrix{Int64}, Matrix{Rational{BigInt}}}([2 -1; 1 1], Rational{BigInt}[1//3 1//3; -1//3 2//3])), [[0, 0], [0, 1], [1, 1]], UnitCell{Tuple{String, Vector{Int64}}, Tuple{Any, Vector{Int64}}}([1.5 -1.5; 0.8660254037844386 0.8660254037844386], Tuple{Tuple{String, Vector{Int64}}, FractCoord}[((&quot;A&quot;, [0, 0]), FractCoord([0, 0] + [0.33333333333333337, 0.0])), ((&quot;B&quot;, [0, 0]), FractCoord([0, -1] + [0.0, 0.6666666666666665])), ((&quot;A&quot;, [0, 1]), FractCoord([0, 0] + [0.6666666666666667, 0.6666666666666667])), ((&quot;B&quot;, [0, 1]), FractCoord([0, 0] + [0.3333333333333333, 0.3333333333333333])), ((&quot;A&quot;, [1, 1]), FractCoord([1, 0] + [0.0, 0.33333333333333337])), ((&quot;B&quot;, [1, 1]), FractCoord([0, 0] + [0.6666666666666665, 0.0]))], Tuple{Tuple{Any, Vector{Int64}}, Int64}[], [0.33333333333333326 -0.33333333333333337; 0.5773502691896258 0.5773502691896258], [2.094395102393195 -2.0943951023931957; 3.627598728468436 3.627598728468436], Dict((&quot;A&quot;, [1, 1]) =&gt; 5, (&quot;A&quot;, [0, 1]) =&gt; 3, (&quot;B&quot;, [0, 0]) =&gt; 2, (&quot;A&quot;, [0, 0]) =&gt; 1, (&quot;B&quot;, [1, 1]) =&gt; 6, (&quot;B&quot;, [0, 1]) =&gt; 4), Dict{Tuple{Any, Vector{Int64}}, Int64}()))</pre><h3 id="Plot-Lattice-2"><a class="docs-heading-anchor" href="#Plot-Lattice-2">Plot Lattice</a><a class="docs-heading-anchor-permalink" href="#Plot-Lattice-2" title="Permalink"></a></h3><pre><code class="language-julia">let bravais_lattice = [], a_sites = [], b_sites = []
+    extent = [-4, 4, -4, 4]
+    within = makewithin(extent)
+
+    for i1 in -5:5, i2 in -5:5
+        R = lattice.supercell.latticevectors * [i1, i2]
+        within(R...) &amp;&amp; push!(bravais_lattice, R)
+        for (orb_name, orb_fc) in lattice.supercell.sites
+            orb_cc = fract2carte(lattice.supercell, orb_fc)
+            r = R + orb_cc
+            within(r...) &amp;&amp; push!(orb_name[1] == &quot;A&quot; ? a_sites : b_sites, r)
+        end
+    end
+    bravais_lattice = hcat(bravais_lattice...)
+    a_sites = hcat(a_sites...)
+    b_sites = hcat(b_sites...)
+
+    img = plot(aspect_ratio=1)
+    scatter!(bravais_lattice[1,:], bravais_lattice[2,:], color=&quot;black&quot;, markershape=:circle, markersize=3, label=&quot;Bravais (supercell)&quot;)
+    scatter!(a_sites[1,:], a_sites[2,:], color=&quot;red&quot;, markerstrokewidth=0, markersize=5, label=&quot;A&quot;)
+    scatter!(b_sites[1,:], b_sites[2,:], color=&quot;blue&quot;, markerstrokewidth=0, markersize=5, label=&quot;B&quot;)
+    xlims!(extent[1], extent[2])
+    ylims!(extent[3], extent[4])
+    savefig(img, &quot;example_little_symmetry_kspace_honeycomb/realspace-root3xroot3.svg&quot;)
+end</code></pre><pre class="documenter-example-output">qt.qpa.xcb: could not connect to display
+qt.qpa.plugin: Could not load the Qt platform plugin &quot;xcb&quot; in &quot;&quot; even though it was found.
+This application failed to start because no Qt platform plugin could be initialized. Reinstalling the application may fix this problem.
+
+Available platform plugins are: linuxfb, minimal, offscreen, vnc, xcb.
+
+Aborted (core dumped)
+connect: Connection refused
+GKS: can&#39;t connect to GKS socket application
+
+GKS: Open failed in routine OPEN_WS
+GKS: GKS not in proper state. GKS must be either in the state WSOP or WSAC in routine ACTIVATE_WS</pre><p><img src="realspace-root3xroot3.svg" alt/></p><h3 id="Symmetries"><a class="docs-heading-anchor" href="#Symmetries">Symmetries</a><a id="Symmetries-1"></a><a class="docs-heading-anchor-permalink" href="#Symmetries" title="Permalink"></a></h3><pre><code class="language-julia">tsym = FiniteTranslationSymmetry(lattice)
+psym = project(PointSymmetryDatabase.get(25), [1 0 0; 0 1 0])
+println(&quot;point symmetry (Hermann Mauguin): $(psym.hermann_mauguin)&quot;)
+println(&quot;translation symmetry compatible with point symmetry? &quot;, iscompatible(tsym, psym))
+
+println(&quot;irreducible representations:&quot;)
+for tsym_irrep_index in 1:num_irreps(tsym)
+    kf = tsym.fractional_momenta[tsym_irrep_index]
+    kc = lattice.unitcell.reducedreciprocallatticevectors * kf
+    psym_little = little_symmetry(tsym, tsym_irrep_index, psym)
+    print(&quot;- irrep index: $tsym_irrep_index\n&quot;)
+    print(&quot;  fractional momentum: [&quot;)
+    for (i, x) in enumerate(kf)
+        i != 1 &amp;&amp; print(&quot;, &quot;)
+        print(x)
+    end
+    print(&quot;]\n&quot;)
+    print(&quot;  momentum: [&quot;)
+    for (i, x) in enumerate(kc)
+        i != 1 &amp;&amp; print(&quot;, &quot;)
+        print(x)
+    end
+    print(&quot;]\n&quot;)
+    print(&quot;  is point symmetry compatible with momentum: $(iscompatible(tsym, tsym_irrep_index, psym))\n&quot;)
+    print(&quot;  little point symmetry: $(psym_little.hermann_mauguin)\n&quot;)
+end</code></pre><pre class="documenter-example-output">point symmetry (Hermann Mauguin): 6mm
+translation symmetry compatible with point symmetry? true
+irreducible representations:
+- irrep index: 1
+  fractional momentum: [0//1, 0//1]
+  momentum: [0.0, 0.0]
+  is point symmetry compatible with momentum: true
+  little point symmetry: 6mm
+- irrep index: 2
+  fractional momentum: [1//3, 1//3]
+  momentum: [0.3333333333333333, 0.5773502691896257]
+  is point symmetry compatible with momentum: false
+  little point symmetry: 3m
+- irrep index: 3
+  fractional momentum: [2//3, 2//3]
+  momentum: [0.6666666666666666, 1.1547005383792515]
+  is point symmetry compatible with momentum: false
+  little point symmetry: 3m</pre><h3 id="Plot-Momentum-Space"><a class="docs-heading-anchor" href="#Plot-Momentum-Space">Plot Momentum Space</a><a id="Plot-Momentum-Space-1"></a><a class="docs-heading-anchor-permalink" href="#Plot-Momentum-Space" title="Permalink"></a></h3><pre><code class="language-julia">let
+    extent = [-1.1, 1.1, -1.4, 1.4]
+    within = makewithin(extent)
+
+    reciprocallatticepoints = []
+    kpoints = []
+    littlegroupnames = String[]
+    generatornames = String[]
+    kpointnames = String[]
+
+    for tsym_irrep_index in 1:num_irreps(tsym)
+        psym_little = little_symmetry(tsym, tsym_irrep_index, psym)
+        kf = tsym.fractional_momenta[tsym_irrep_index]
+        kc = lattice.unitcell.reducedreciprocallatticevectors * kf
+        for i1 in -2:2, i2 in -2:2
+            G = lattice.unitcell.reducedreciprocallatticevectors * [i1, i2]
+            within(G...) &amp;&amp; push!(reciprocallatticepoints, G)
+            k = G + kc
+            if within(k...)
+                push!(kpoints, k)
+                push!(littlegroupnames, psym_little.hermann_mauguin)
+                push!(generatornames, join(simplifyname.(psym_little.element_names[psym_little.generators]), &quot;\n&quot;))
+                push!(kpointnames, &quot;$tsym_irrep_index&quot;)
+            end
+        end
+    end
+    reciprocallatticepoints = hcat(reciprocallatticepoints...)
+    kpoints = hcat(kpoints...)
+
+    img = plot(size=(400, 500), xlims=(extent[1]-0.1, extent[2]+0.1), ylims=(extent[3]-0.1, extent[4]+0.1), aspect_ratio=1)
+    scatter!(reciprocallatticepoints[1,:], reciprocallatticepoints[2,:],
+             markershape=:circle, markersize=6, markercolor=RGBA(1,1,1,0), markerstrokecolor=RGBA(1,0,0,1), label=&quot;reciprocal lattice&quot;)
+    scatter!(kpoints[1,:], kpoints[2,:],
+             markershape=:circle, markersize=4, markercolor=RGBA(0,0,1,0.5), markerstrokecolor=RGBA(0,0,1,0.5),
+             series_annotations=[Plots.text(&quot;k[$x]&quot;, 8, :left, :bottom) for x in kpointnames], label=&quot;momentum points&quot;)
+    scatter!(kpoints[1,:], kpoints[2,:],
+             markershape=:circle, markersize=0, color=RGBA(0,0,0,0),
+             series_annotations=[Plots.text(&quot;$x &quot;, 8, :right, :top) for x in littlegroupnames], label=&quot;&quot;)
+    scatter!(kpoints[1,:], kpoints[2,:],
+             markershape=:circle, markersize=0, color=RGBA(0,0,0,0),
+             series_annotations=[Plots.text(&quot;$x&quot;, 6, :left, :top) for x in generatornames], label=&quot;&quot;)
+    savefig(img, &quot;example_little_symmetry_kspace_honeycomb/momentumspace-root3xroot3.svg&quot;)
+end</code></pre><pre class="documenter-example-output">qt.qpa.xcb: could not connect to display
+qt.qpa.plugin: Could not load the Qt platform plugin &quot;xcb&quot; in &quot;&quot; even though it was found.
+This application failed to start because no Qt platform plugin could be initialized. Reinstalling the application may fix this problem.
+
+Available platform plugins are: linuxfb, minimal, offscreen, vnc, xcb.
+
+Aborted (core dumped)
+connect: Connection refused
+GKS: can&#39;t connect to GKS socket application
+
+GKS: Open failed in routine OPEN_WS
+GKS: GKS not in proper state. GKS must be either in the state WSOP or WSAC in routine ACTIVATE_WS</pre><p><img src="momentumspace-root3xroot3.svg" alt/></p><h2 id="3-23-Supercell"><a class="docs-heading-anchor" href="#3-23-Supercell">2√3 × 2√3 Supercell</a><a id="3-23-Supercell-1"></a><a class="docs-heading-anchor-permalink" href="#3-23-Supercell" title="Permalink"></a></h2><h3 id="Make-Superlattice-2"><a class="docs-heading-anchor" href="#Make-Superlattice-2">Make Superlattice</a><a class="docs-heading-anchor-permalink" href="#Make-Superlattice-2" title="Permalink"></a></h3><pre><code class="language-julia">shape = [2 2; -2 4]
+lattice = makelattice(unitcell, shape)</code></pre><pre class="documenter-example-output">Lattice{String, Any}(UnitCell{String, Any}([1.0 -0.5; 0.0 0.8660254037844386], Tuple{String, FractCoord}[(&quot;A&quot;, FractCoord([0, 0] + [0.6666666666666667, 0.3333333333333334])), (&quot;B&quot;, FractCoord([0, -1] + [0.33333333333333326, 0.6666666666666665]))], Tuple{Any, Int64}[], [1.0 0.0; 0.5773502691896258 1.1547005383792517], [6.283185307179586 0.0; 3.627598728468436 7.255197456936872], Dict(&quot;B&quot; =&gt; 2, &quot;A&quot; =&gt; 1), Dict{Any, Int64}()), Hypercube([2 2; -2 4], Rational{Int64}[1//3 -1//6; 1//6 1//6], LatticeTools.var&quot;#wrap#10&quot;{Matrix{Int64}, Matrix{Rational{BigInt}}}([2 2; -2 4], Rational{BigInt}[1//3 -1//6; 1//6 1//6])), [[0, 0], [1, 0], [2, 0], [1, 2], [2, 2], [3, 2], [2, 1], [3, 1], [2, 3], [1, -1], [2, -1], [1, 1]], UnitCell{Tuple{String, Vector{Int64}}, Tuple{Any, Vector{Int64}}}([3.0 0.0; -1.7320508075688772 3.4641016151377544], Tuple{Tuple{String, Vector{Int64}}, FractCoord}[((&quot;A&quot;, [0, 0]), FractCoord([0, 0] + [0.16666666666666666, 0.16666666666666669])), ((&quot;B&quot;, [0, 0]), FractCoord([0, 0] + [0.16666666666666666, 0.0])), ((&quot;A&quot;, [1, 0]), FractCoord([0, 0] + [0.5, 0.33333333333333337])), ((&quot;B&quot;, [1, 0]), FractCoord([0, 0] + [0.5, 0.16666666666666663])), ((&quot;A&quot;, [2, 0]), FractCoord([0, 0] + [0.8333333333333333, 0.5000000000000001])), ((&quot;B&quot;, [2, 0]), FractCoord([0, 0] + [0.8333333333333333, 0.33333333333333337])), ((&quot;A&quot;, [1, 2]), FractCoord([0, 0] + [0.16666666666666666, 0.6666666666666669])), ((&quot;B&quot;, [1, 2]), FractCoord([0, 0] + [0.16666666666666666, 0.5])), ((&quot;A&quot;, [2, 2]), FractCoord([0, 0] + [0.5, 0.8333333333333335])), ((&quot;B&quot;, [2, 2]), FractCoord([0, 0] + [0.5, 0.6666666666666666]))  …  ((&quot;A&quot;, [3, 1]), FractCoord([1, 0] + [0.0, 0.8333333333333334])), ((&quot;B&quot;, [3, 1]), FractCoord([1, 0] + [0.0, 0.6666666666666666])), ((&quot;A&quot;, [2, 3]), FractCoord([0, 1] + [0.3333333333333333, 0.0])), ((&quot;B&quot;, [2, 3]), FractCoord([0, 0] + [0.3333333333333333, 0.8333333333333335])), ((&quot;A&quot;, [1, -1]), FractCoord([0, 0] + [0.6666666666666666, 0.16666666666666669])), ((&quot;B&quot;, [1, -1]), FractCoord([0, 0] + [0.6666666666666666, 0.0])), ((&quot;A&quot;, [2, -1]), FractCoord([1, 0] + [0.0, 0.3333333333333333])), ((&quot;B&quot;, [2, -1]), FractCoord([1, 0] + [0.0, 0.16666666666666663])), ((&quot;A&quot;, [1, 1]), FractCoord([0, 0] + [0.3333333333333333, 0.5])), ((&quot;B&quot;, [1, 1]), FractCoord([0, 0] + [0.3333333333333333, 0.33333333333333337]))], Tuple{Tuple{Any, Vector{Int64}}, Int64}[], [0.3333333333333333 0.16666666666666669; 0.0 0.2886751345948129], [2.0943951023931953 1.0471975511965979; 0.0 1.813799364234218], Dict((&quot;A&quot;, [3, 2]) =&gt; 11, (&quot;A&quot;, [2, -1]) =&gt; 21, (&quot;B&quot;, [0, 0]) =&gt; 2, (&quot;B&quot;, [1, 1]) =&gt; 24, (&quot;B&quot;, [1, 2]) =&gt; 8, (&quot;A&quot;, [1, 1]) =&gt; 23, (&quot;B&quot;, [2, 1]) =&gt; 14, (&quot;A&quot;, [1, 0]) =&gt; 3, (&quot;A&quot;, [3, 1]) =&gt; 15, (&quot;B&quot;, [2, -1]) =&gt; 22…), Dict{Tuple{Any, Vector{Int64}}, Int64}()))</pre><h3 id="Plot-Lattice-3"><a class="docs-heading-anchor" href="#Plot-Lattice-3">Plot Lattice</a><a class="docs-heading-anchor-permalink" href="#Plot-Lattice-3" title="Permalink"></a></h3><pre><code class="language-julia">let bravais_lattice = [], a_sites = [], b_sites = []
+    extent = [-8, 8, -8, 8]
+    within = makewithin(extent)
+
+    for i1 in -5:5, i2 in -5:5
+        R = lattice.supercell.latticevectors * [i1, i2]
+        within(R...) &amp;&amp; push!(bravais_lattice, R)
+        for (orb_name, orb_fc) in lattice.supercell.sites
+            orb_cc = fract2carte(lattice.supercell, orb_fc)
+            r = R + orb_cc
+            within(r...) &amp;&amp; push!(orb_name[1] == &quot;A&quot; ? a_sites : b_sites, r)
+        end
+    end
+    bravais_lattice = hcat(bravais_lattice...)
+    a_sites = hcat(a_sites...)
+    b_sites = hcat(b_sites...)
+
+    img = plot(aspect_ratio=1)
+    scatter!(bravais_lattice[1,:], bravais_lattice[2,:], color=&quot;black&quot;, markershape=:circle, markersize=5, label=&quot;Bravais (supercell)&quot;)
+    scatter!(a_sites[1,:], a_sites[2,:], color=&quot;red&quot;, markerstrokewidth=0, markersize=3, label=&quot;A&quot;)
+    scatter!(b_sites[1,:], b_sites[2,:], color=&quot;blue&quot;, markerstrokewidth=0, markersize=3, label=&quot;B&quot;)
+    xlims!(extent[1], extent[2])
+    ylims!(extent[3], extent[4])
+    savefig(img, &quot;example_little_symmetry_kspace_honeycomb/realspace-2root3x2root3.svg&quot;)
+end</code></pre><pre class="documenter-example-output">qt.qpa.xcb: could not connect to display
+qt.qpa.plugin: Could not load the Qt platform plugin &quot;xcb&quot; in &quot;&quot; even though it was found.
+This application failed to start because no Qt platform plugin could be initialized. Reinstalling the application may fix this problem.
+
+Available platform plugins are: linuxfb, minimal, offscreen, vnc, xcb.
+
+Aborted (core dumped)
+connect: Connection refused
+GKS: can&#39;t connect to GKS socket application
+
+GKS: Open failed in routine OPEN_WS
+GKS: GKS not in proper state. GKS must be either in the state WSOP or WSAC in routine ACTIVATE_WS</pre><p><img src="realspace-2root3x2root3.svg" alt/></p><h3 id="Symmetries-2"><a class="docs-heading-anchor" href="#Symmetries-2">Symmetries</a><a class="docs-heading-anchor-permalink" href="#Symmetries-2" title="Permalink"></a></h3><pre><code class="language-julia">tsym = FiniteTranslationSymmetry(lattice)
+psym = project(PointSymmetryDatabase.get(25), [1 0 0; 0 1 0])
+println(&quot;point symmetry (Hermann Mauguin): $(psym.hermann_mauguin)&quot;)
+println(&quot;translation symmetry compatible with point symmetry? &quot;, iscompatible(tsym, psym))
+
+println(&quot;irreducible representations:&quot;)
+for tsym_irrep_index in 1:num_irreps(tsym)
+    kf = tsym.fractional_momenta[tsym_irrep_index]
+    kc = lattice.unitcell.reducedreciprocallatticevectors * kf
+    psym_little = little_symmetry(tsym, tsym_irrep_index, psym)
+    print(&quot;- irrep index: $tsym_irrep_index\n&quot;)
+    print(&quot;  fractional momentum: [&quot;)
+    for (i, x) in enumerate(kf)
+        i != 1 &amp;&amp; print(&quot;, &quot;)
+        print(x)
+    end
+    print(&quot;]\n&quot;)
+    print(&quot;  momentum: [&quot;)
+    for (i, x) in enumerate(kc)
+        i != 1 &amp;&amp; print(&quot;, &quot;)
+        print(x)
+    end
+    print(&quot;]\n&quot;)
+    print(&quot;  is point symmetry compatible with momentum: $(iscompatible(tsym, tsym_irrep_index, psym))\n&quot;)
+    print(&quot;  little point symmetry: $(psym_little.hermann_mauguin)\n&quot;)
+end</code></pre><pre class="documenter-example-output">point symmetry (Hermann Mauguin): 6mm
+translation symmetry compatible with point symmetry? true
+irreducible representations:
+- irrep index: 1
+  fractional momentum: [0//1, 0//1]
+  momentum: [0.0, 0.0]
+  is point symmetry compatible with momentum: true
+  little point symmetry: 6mm
+- irrep index: 2
+  fractional momentum: [1//6, 2//3]
+  momentum: [0.16666666666666666, 0.8660254037844387]
+  is point symmetry compatible with momentum: false
+  little point symmetry: m
+- irrep index: 3
+  fractional momentum: [1//3, 1//3]
+  momentum: [0.3333333333333333, 0.5773502691896257]
+  is point symmetry compatible with momentum: false
+  little point symmetry: 3m
+- irrep index: 4
+  fractional momentum: [1//2, 0//1]
+  momentum: [0.5, 0.2886751345948129]
+  is point symmetry compatible with momentum: false
+  little point symmetry: mm2
+- irrep index: 5
+  fractional momentum: [2//3, 2//3]
+  momentum: [0.6666666666666666, 1.1547005383792515]
+  is point symmetry compatible with momentum: false
+  little point symmetry: 3m
+- irrep index: 6
+  fractional momentum: [5//6, 1//3]
+  momentum: [0.8333333333333334, 0.8660254037844388]
+  is point symmetry compatible with momentum: false
+  little point symmetry: m
+- irrep index: 7
+  fractional momentum: [0//1, 1//2]
+  momentum: [0.0, 0.5773502691896258]
+  is point symmetry compatible with momentum: false
+  little point symmetry: mm2
+- irrep index: 8
+  fractional momentum: [1//6, 1//6]
+  momentum: [0.16666666666666666, 0.28867513459481287]
+  is point symmetry compatible with momentum: false
+  little point symmetry: m
+- irrep index: 9
+  fractional momentum: [1//3, 5//6]
+  momentum: [0.3333333333333333, 1.1547005383792517]
+  is point symmetry compatible with momentum: false
+  little point symmetry: m
+- irrep index: 10
+  fractional momentum: [1//2, 1//2]
+  momentum: [0.5, 0.8660254037844388]
+  is point symmetry compatible with momentum: false
+  little point symmetry: mm2
+- irrep index: 11
+  fractional momentum: [2//3, 1//6]
+  momentum: [0.6666666666666666, 0.5773502691896257]
+  is point symmetry compatible with momentum: false
+  little point symmetry: m
+- irrep index: 12
+  fractional momentum: [5//6, 5//6]
+  momentum: [0.8333333333333334, 1.4433756729740648]
+  is point symmetry compatible with momentum: false
+  little point symmetry: m</pre><h3 id="Plot-Momentum-Space-2"><a class="docs-heading-anchor" href="#Plot-Momentum-Space-2">Plot Momentum Space</a><a class="docs-heading-anchor-permalink" href="#Plot-Momentum-Space-2" title="Permalink"></a></h3><pre><code class="language-julia">let
+    extent = [-1.2, 1.2, -1.6, 1.6]
+    extent = [-1.1, 1.1, -1.4, 1.4]
+    within = makewithin(extent)
+
+    reciprocallatticepoints = []
+    kpoints = []
+    littlegroupnames = String[]
+    generatornames = String[]
+    kpointnames = String[]
+
+    for tsym_irrep_index in 1:num_irreps(tsym)
+        psym_little = little_symmetry(tsym, tsym_irrep_index, psym)
+        kf = tsym.fractional_momenta[tsym_irrep_index]
+        kc = lattice.unitcell.reducedreciprocallatticevectors * kf
+        for i1 in -2:2, i2 in -2:2
+            G = lattice.unitcell.reducedreciprocallatticevectors * [i1, i2]
+            within(G...) &amp;&amp; push!(reciprocallatticepoints, G)
+            k = G + kc
+            if within(k...)
+                push!(kpoints, k)
+                push!(littlegroupnames, psym_little.hermann_mauguin)
+                push!(generatornames, join(simplifyname.(psym_little.element_names[psym_little.generators]), &quot;\n&quot;))
+                push!(kpointnames, &quot;$tsym_irrep_index&quot;)
+            end
+        end
+    end
+    reciprocallatticepoints = hcat(reciprocallatticepoints...)
+    kpoints = hcat(kpoints...)
+
+    img = plot(size=(600, 750), xlims=(extent[1]-0.1, extent[2]+0.1), ylims=(extent[3]-0.1, extent[4]+0.1), aspect_ratio=1)
+    scatter!(reciprocallatticepoints[1,:], reciprocallatticepoints[2,:],
+             markershape=:circle, markersize=6, markercolor=RGBA(1,1,1,0), markerstrokecolor=RGBA(1,0,0,1), label=&quot;reciprocal lattice&quot;)
+    scatter!(kpoints[1,:], kpoints[2,:],
+             markershape=:circle, markersize=4, markercolor=RGBA(0,0,1,0.5), markerstrokecolor=RGBA(0,0,1,0.5),
+             series_annotations=[Plots.text(&quot;k[$x]&quot;, 8, :left, :bottom) for x in kpointnames], label=&quot;momentum points&quot;)
+    scatter!(kpoints[1,:], kpoints[2,:],
+             markershape=:circle, markersize=0, color=RGBA(0,0,0,0),
+             series_annotations=[Plots.text(&quot;$x &quot;, 8, :right, :top) for x in littlegroupnames], label=&quot;&quot;)
+    scatter!(kpoints[1,:], kpoints[2,:],
+             markershape=:circle, markersize=0, color=RGBA(0,0,0,0),
+             series_annotations=[Plots.text(&quot;$x&quot;, 6, :left, :top) for x in generatornames], label=&quot;&quot;)
+    savefig(img, &quot;example_little_symmetry_kspace_honeycomb/momentumspace-2root3x2root3.svg&quot;)
+end</code></pre><pre class="documenter-example-output">qt.qpa.xcb: could not connect to display
+qt.qpa.plugin: Could not load the Qt platform plugin &quot;xcb&quot; in &quot;&quot; even though it was found.
+This application failed to start because no Qt platform plugin could be initialized. Reinstalling the application may fix this problem.
+
+Available platform plugins are: linuxfb, minimal, offscreen, vnc, xcb.
+
+Aborted (core dumped)
+connect: Connection refused
+GKS: can&#39;t connect to GKS socket application
+
+GKS: Open failed in routine OPEN_WS
+GKS: GKS not in proper state. GKS must be either in the state WSOP or WSAC in routine ACTIVATE_WS</pre><p><img src="momentumspace-2root3x2root3.svg" alt/></p><h2 id="6-Supercell"><a class="docs-heading-anchor" href="#6-Supercell">6 × 6 Supercell</a><a id="6-Supercell-1"></a><a class="docs-heading-anchor-permalink" href="#6-Supercell" title="Permalink"></a></h2><h3 id="Make-Superlattice-3"><a class="docs-heading-anchor" href="#Make-Superlattice-3">Make Superlattice</a><a class="docs-heading-anchor-permalink" href="#Make-Superlattice-3" title="Permalink"></a></h3><pre><code class="language-julia">shape = [6 0; 0 6]
+lattice = makelattice(unitcell, shape)</code></pre><pre class="documenter-example-output">Lattice{String, Any}(UnitCell{String, Any}([1.0 -0.5; 0.0 0.8660254037844386], Tuple{String, FractCoord}[(&quot;A&quot;, FractCoord([0, 0] + [0.6666666666666667, 0.3333333333333334])), (&quot;B&quot;, FractCoord([0, -1] + [0.33333333333333326, 0.6666666666666665]))], Tuple{Any, Int64}[], [1.0 0.0; 0.5773502691896258 1.1547005383792517], [6.283185307179586 0.0; 3.627598728468436 7.255197456936872], Dict(&quot;B&quot; =&gt; 2, &quot;A&quot; =&gt; 1), Dict{Any, Int64}()), Hypercube([6 0; 0 6], Rational{Int64}[1//6 0//1; 0//1 1//6], LatticeTools.var&quot;#wrap#10&quot;{Matrix{Int64}, Matrix{Rational{BigInt}}}([6 0; 0 6], Rational{BigInt}[1//6 0//1; 0//1 1//6])), [[0, 0], [1, 0], [2, 0], [3, 0], [4, 0], [5, 0], [0, 1], [1, 1], [2, 1], [3, 1]  …  [2, 4], [3, 4], [4, 4], [5, 4], [0, 5], [1, 5], [2, 5], [3, 5], [4, 5], [5, 5]], UnitCell{Tuple{String, Vector{Int64}}, Tuple{Any, Vector{Int64}}}([6.0 -3.0; 0.0 5.196152422706632], Tuple{Tuple{String, Vector{Int64}}, FractCoord}[((&quot;A&quot;, [0, 0]), FractCoord([0, 0] + [0.1111111111111111, 0.055555555555555566])), ((&quot;B&quot;, [0, 0]), FractCoord([0, -1] + [0.055555555555555546, 0.9444444444444444])), ((&quot;A&quot;, [1, 0]), FractCoord([0, 0] + [0.2777777777777778, 0.055555555555555566])), ((&quot;B&quot;, [1, 0]), FractCoord([0, -1] + [0.2222222222222222, 0.9444444444444444])), ((&quot;A&quot;, [2, 0]), FractCoord([0, 0] + [0.4444444444444444, 0.055555555555555566])), ((&quot;B&quot;, [2, 0]), FractCoord([0, -1] + [0.38888888888888884, 0.9444444444444444])), ((&quot;A&quot;, [3, 0]), FractCoord([0, 0] + [0.611111111111111, 0.055555555555555566])), ((&quot;B&quot;, [3, 0]), FractCoord([0, -1] + [0.5555555555555555, 0.9444444444444444])), ((&quot;A&quot;, [4, 0]), FractCoord([0, 0] + [0.7777777777777778, 0.055555555555555566])), ((&quot;B&quot;, [4, 0]), FractCoord([0, -1] + [0.7222222222222222, 0.9444444444444444]))  …  ((&quot;A&quot;, [1, 5]), FractCoord([0, 0] + [0.2777777777777777, 0.8888888888888888])), ((&quot;B&quot;, [1, 5]), FractCoord([0, 0] + [0.22222222222222213, 0.7777777777777777])), ((&quot;A&quot;, [2, 5]), FractCoord([0, 0] + [0.44444444444444436, 0.8888888888888888])), ((&quot;B&quot;, [2, 5]), FractCoord([0, 0] + [0.3888888888888888, 0.7777777777777777])), ((&quot;A&quot;, [3, 5]), FractCoord([0, 0] + [0.611111111111111, 0.8888888888888888])), ((&quot;B&quot;, [3, 5]), FractCoord([0, 0] + [0.5555555555555555, 0.7777777777777777])), ((&quot;A&quot;, [4, 5]), FractCoord([0, 0] + [0.7777777777777777, 0.8888888888888888])), ((&quot;B&quot;, [4, 5]), FractCoord([0, 0] + [0.7222222222222221, 0.7777777777777777])), ((&quot;A&quot;, [5, 5]), FractCoord([0, 0] + [0.9444444444444444, 0.8888888888888888])), ((&quot;B&quot;, [5, 5]), FractCoord([0, 0] + [0.8888888888888888, 0.7777777777777777]))], Tuple{Tuple{Any, Vector{Int64}}, Int64}[], [0.16666666666666666 0.0; 0.09622504486493762 0.19245008972987526], [1.0471975511965976 0.0; 0.6045997880780726 1.2091995761561452], Dict((&quot;B&quot;, [1, 5]) =&gt; 64, (&quot;A&quot;, [1, 5]) =&gt; 63, (&quot;A&quot;, [4, 3]) =&gt; 45, (&quot;A&quot;, [1, 1]) =&gt; 15, (&quot;A&quot;, [0, 2]) =&gt; 25, (&quot;B&quot;, [5, 4]) =&gt; 60, (&quot;A&quot;, [2, 1]) =&gt; 17, (&quot;B&quot;, [2, 5]) =&gt; 66, (&quot;B&quot;, [5, 2]) =&gt; 36, (&quot;A&quot;, [4, 2]) =&gt; 33…), Dict{Tuple{Any, Vector{Int64}}, Int64}()))</pre><h3 id="Plot-Lattice-4"><a class="docs-heading-anchor" href="#Plot-Lattice-4">Plot Lattice</a><a class="docs-heading-anchor-permalink" href="#Plot-Lattice-4" title="Permalink"></a></h3><pre><code class="language-julia">let bravais_lattice = [], a_sites = [], b_sites = []
+    extent = [-8, 8, -8, 8]
+    within = makewithin(extent)
+
+    for i1 in -5:5, i2 in -5:5
+        R = lattice.supercell.latticevectors * [i1, i2]
+        within(R...) &amp;&amp; push!(bravais_lattice, R)
+        for (orb_name, orb_fc) in lattice.supercell.sites
+            orb_cc = fract2carte(lattice.supercell, orb_fc)
+            r = R + orb_cc
+            within(r...) &amp;&amp; push!(orb_name[1] == &quot;A&quot; ? a_sites : b_sites, r)
+        end
+    end
+    bravais_lattice = hcat(bravais_lattice...)
+    a_sites = hcat(a_sites...)
+    b_sites = hcat(b_sites...)
+
+    img = plot(aspect_ratio=1)
+    scatter!(bravais_lattice[1,:], bravais_lattice[2,:], color=&quot;black&quot;, markershape=:circle, markersize=5, label=&quot;Bravais (supercell)&quot;)
+    scatter!(a_sites[1,:], a_sites[2,:], color=&quot;red&quot;, markerstrokewidth=0, markersize=3, label=&quot;A&quot;)
+    scatter!(b_sites[1,:], b_sites[2,:], color=&quot;blue&quot;, markerstrokewidth=0, markersize=3, label=&quot;B&quot;)
+    xlims!(extent[1], extent[2])
+    ylims!(extent[3], extent[4])
+    savefig(img, &quot;example_little_symmetry_kspace_honeycomb/realspace-6x6.svg&quot;)
+end</code></pre><pre class="documenter-example-output">qt.qpa.xcb: could not connect to display
+qt.qpa.plugin: Could not load the Qt platform plugin &quot;xcb&quot; in &quot;&quot; even though it was found.
+This application failed to start because no Qt platform plugin could be initialized. Reinstalling the application may fix this problem.
+
+Available platform plugins are: linuxfb, minimal, offscreen, vnc, xcb.
+
+Aborted (core dumped)
+connect: Connection refused
+GKS: can&#39;t connect to GKS socket application
+
+GKS: Open failed in routine OPEN_WS
+GKS: GKS not in proper state. GKS must be either in the state WSOP or WSAC in routine ACTIVATE_WS</pre><p><img src="realspace-6x6.svg" alt/></p><h3 id="Symmetries-3"><a class="docs-heading-anchor" href="#Symmetries-3">Symmetries</a><a class="docs-heading-anchor-permalink" href="#Symmetries-3" title="Permalink"></a></h3><pre><code class="language-julia">tsym = FiniteTranslationSymmetry(lattice)
+psym = project(PointSymmetryDatabase.get(25), [1 0 0; 0 1 0])
+println(&quot;point symmetry (Hermann Mauguin): $(psym.hermann_mauguin)&quot;)
+println(&quot;translation symmetry compatible with point symmetry? &quot;, iscompatible(tsym, psym))
+
+println(&quot;irreducible representations:&quot;)
+for tsym_irrep_index in 1:num_irreps(tsym)
+    kf = tsym.fractional_momenta[tsym_irrep_index]
+    kc = lattice.unitcell.reducedreciprocallatticevectors * kf
+    psym_little = little_symmetry(tsym, tsym_irrep_index, psym)
+    print(&quot;- irrep index: $tsym_irrep_index\n&quot;)
+    print(&quot;  fractional momentum: [&quot;)
+    for (i, x) in enumerate(kf)
+        i != 1 &amp;&amp; print(&quot;, &quot;)
+        print(x)
+    end
+    print(&quot;]\n&quot;)
+    print(&quot;  momentum: [&quot;)
+    for (i, x) in enumerate(kc)
+        i != 1 &amp;&amp; print(&quot;, &quot;)
+        print(x)
+    end
+    print(&quot;]\n&quot;)
+    print(&quot;  is point symmetry compatible with momentum: $(iscompatible(tsym, tsym_irrep_index, psym))\n&quot;)
+    print(&quot;  little point symmetry: $(psym_little.hermann_mauguin)\n&quot;)
+end</code></pre><pre class="documenter-example-output">point symmetry (Hermann Mauguin): 6mm
+translation symmetry compatible with point symmetry? true
+irreducible representations:
+- irrep index: 1
+  fractional momentum: [0//1, 0//1]
+  momentum: [0.0, 0.0]
+  is point symmetry compatible with momentum: true
+  little point symmetry: 6mm
+- irrep index: 2
+  fractional momentum: [1//6, 0//1]
+  momentum: [0.16666666666666666, 0.09622504486493763]
+  is point symmetry compatible with momentum: false
+  little point symmetry: m
+- irrep index: 3
+  fractional momentum: [1//3, 0//1]
+  momentum: [0.3333333333333333, 0.19245008972987526]
+  is point symmetry compatible with momentum: false
+  little point symmetry: m
+- irrep index: 4
+  fractional momentum: [1//2, 0//1]
+  momentum: [0.5, 0.2886751345948129]
+  is point symmetry compatible with momentum: false
+  little point symmetry: mm2
+- irrep index: 5
+  fractional momentum: [2//3, 0//1]
+  momentum: [0.6666666666666666, 0.3849001794597505]
+  is point symmetry compatible with momentum: false
+  little point symmetry: m
+- irrep index: 6
+  fractional momentum: [5//6, 0//1]
+  momentum: [0.8333333333333334, 0.48112522432468824]
+  is point symmetry compatible with momentum: false
+  little point symmetry: m
+- irrep index: 7
+  fractional momentum: [0//1, 1//6]
+  momentum: [0.0, 0.19245008972987526]
+  is point symmetry compatible with momentum: false
+  little point symmetry: m
+- irrep index: 8
+  fractional momentum: [1//6, 1//6]
+  momentum: [0.16666666666666666, 0.28867513459481287]
+  is point symmetry compatible with momentum: false
+  little point symmetry: m
+- irrep index: 9
+  fractional momentum: [1//3, 1//6]
+  momentum: [0.3333333333333333, 0.3849001794597505]
+  is point symmetry compatible with momentum: false
+  little point symmetry: 1
+- irrep index: 10
+  fractional momentum: [1//2, 1//6]
+  momentum: [0.5, 0.4811252243246882]
+  is point symmetry compatible with momentum: false
+  little point symmetry: 1
+- irrep index: 11
+  fractional momentum: [2//3, 1//6]
+  momentum: [0.6666666666666666, 0.5773502691896257]
+  is point symmetry compatible with momentum: false
+  little point symmetry: m
+- irrep index: 12
+  fractional momentum: [5//6, 1//6]
+  momentum: [0.8333333333333334, 0.6735753140545635]
+  is point symmetry compatible with momentum: false
+  little point symmetry: m
+- irrep index: 13
+  fractional momentum: [0//1, 1//3]
+  momentum: [0.0, 0.3849001794597505]
+  is point symmetry compatible with momentum: false
+  little point symmetry: m
+- irrep index: 14
+  fractional momentum: [1//6, 1//3]
+  momentum: [0.16666666666666666, 0.4811252243246882]
+  is point symmetry compatible with momentum: false
+  little point symmetry: 1
+- irrep index: 15
+  fractional momentum: [1//3, 1//3]
+  momentum: [0.3333333333333333, 0.5773502691896257]
+  is point symmetry compatible with momentum: false
+  little point symmetry: 3m
+- irrep index: 16
+  fractional momentum: [1//2, 1//3]
+  momentum: [0.5, 0.6735753140545635]
+  is point symmetry compatible with momentum: false
+  little point symmetry: 1
+- irrep index: 17
+  fractional momentum: [2//3, 1//3]
+  momentum: [0.6666666666666666, 0.769800358919501]
+  is point symmetry compatible with momentum: false
+  little point symmetry: m
+- irrep index: 18
+  fractional momentum: [5//6, 1//3]
+  momentum: [0.8333333333333334, 0.8660254037844388]
+  is point symmetry compatible with momentum: false
+  little point symmetry: m
+- irrep index: 19
+  fractional momentum: [0//1, 1//2]
+  momentum: [0.0, 0.5773502691896258]
+  is point symmetry compatible with momentum: false
+  little point symmetry: mm2
+- irrep index: 20
+  fractional momentum: [1//6, 1//2]
+  momentum: [0.16666666666666666, 0.6735753140545635]
+  is point symmetry compatible with momentum: false
+  little point symmetry: 1
+- irrep index: 21
+  fractional momentum: [1//3, 1//2]
+  momentum: [0.3333333333333333, 0.769800358919501]
+  is point symmetry compatible with momentum: false
+  little point symmetry: 1
+- irrep index: 22
+  fractional momentum: [1//2, 1//2]
+  momentum: [0.5, 0.8660254037844388]
+  is point symmetry compatible with momentum: false
+  little point symmetry: mm2
+- irrep index: 23
+  fractional momentum: [2//3, 1//2]
+  momentum: [0.6666666666666666, 0.9622504486493764]
+  is point symmetry compatible with momentum: false
+  little point symmetry: 1
+- irrep index: 24
+  fractional momentum: [5//6, 1//2]
+  momentum: [0.8333333333333334, 1.0584754935143141]
+  is point symmetry compatible with momentum: false
+  little point symmetry: 1
+- irrep index: 25
+  fractional momentum: [0//1, 2//3]
+  momentum: [0.0, 0.769800358919501]
+  is point symmetry compatible with momentum: false
+  little point symmetry: m
+- irrep index: 26
+  fractional momentum: [1//6, 2//3]
+  momentum: [0.16666666666666666, 0.8660254037844387]
+  is point symmetry compatible with momentum: false
+  little point symmetry: m
+- irrep index: 27
+  fractional momentum: [1//3, 2//3]
+  momentum: [0.3333333333333333, 0.9622504486493764]
+  is point symmetry compatible with momentum: false
+  little point symmetry: m
+- irrep index: 28
+  fractional momentum: [1//2, 2//3]
+  momentum: [0.5, 1.058475493514314]
+  is point symmetry compatible with momentum: false
+  little point symmetry: 1
+- irrep index: 29
+  fractional momentum: [2//3, 2//3]
+  momentum: [0.6666666666666666, 1.1547005383792515]
+  is point symmetry compatible with momentum: false
+  little point symmetry: 3m
+- irrep index: 30
+  fractional momentum: [5//6, 2//3]
+  momentum: [0.8333333333333334, 1.2509255832441892]
+  is point symmetry compatible with momentum: false
+  little point symmetry: 1
+- irrep index: 31
+  fractional momentum: [0//1, 5//6]
+  momentum: [0.0, 0.9622504486493765]
+  is point symmetry compatible with momentum: false
+  little point symmetry: m
+- irrep index: 32
+  fractional momentum: [1//6, 5//6]
+  momentum: [0.16666666666666666, 1.0584754935143141]
+  is point symmetry compatible with momentum: false
+  little point symmetry: m
+- irrep index: 33
+  fractional momentum: [1//3, 5//6]
+  momentum: [0.3333333333333333, 1.1547005383792517]
+  is point symmetry compatible with momentum: false
+  little point symmetry: m
+- irrep index: 34
+  fractional momentum: [1//2, 5//6]
+  momentum: [0.5, 1.2509255832441895]
+  is point symmetry compatible with momentum: false
+  little point symmetry: 1
+- irrep index: 35
+  fractional momentum: [2//3, 5//6]
+  momentum: [0.6666666666666666, 1.347150628109127]
+  is point symmetry compatible with momentum: false
+  little point symmetry: 1
+- irrep index: 36
+  fractional momentum: [5//6, 5//6]
+  momentum: [0.8333333333333334, 1.4433756729740648]
+  is point symmetry compatible with momentum: false
+  little point symmetry: m</pre><h3 id="Plot-Momentum-Space-3"><a class="docs-heading-anchor" href="#Plot-Momentum-Space-3">Plot Momentum Space</a><a class="docs-heading-anchor-permalink" href="#Plot-Momentum-Space-3" title="Permalink"></a></h3><pre><code class="language-julia">let
+    extent = [-1.2, 1.2, -1.6, 1.6]
+    extent = [-1.1, 1.1, -1.4, 1.4]
+    within = makewithin(extent)
+
+    reciprocallatticepoints = []
+    kpoints = []
+    littlegroupnames = String[]
+    generatornames = String[]
+    kpointnames = String[]
+
+    for tsym_irrep_index in 1:num_irreps(tsym)
+        psym_little = little_symmetry(tsym, tsym_irrep_index, psym)
+        kf = tsym.fractional_momenta[tsym_irrep_index]
+        kc = lattice.unitcell.reducedreciprocallatticevectors * kf
+        for i1 in -2:2, i2 in -2:2
+            G = lattice.unitcell.reducedreciprocallatticevectors * [i1, i2]
+            within(G...) &amp;&amp; push!(reciprocallatticepoints, G)
+            k = G + kc
+            if within(k...)
+                push!(kpoints, k)
+                push!(littlegroupnames, psym_little.hermann_mauguin)
+                push!(generatornames, join(simplifyname.(psym_little.element_names[psym_little.generators]), &quot;\n&quot;))
+                push!(kpointnames, &quot;$tsym_irrep_index&quot;)
+            end
+        end
+    end
+    reciprocallatticepoints = hcat(reciprocallatticepoints...)
+    kpoints = hcat(kpoints...)
+
+    img = plot(size=(800, 1000), xlims=(extent[1]-0.1, extent[2]+0.1), ylims=(extent[3]-0.1, extent[4]+0.1), aspect_ratio=1)
+    scatter!(reciprocallatticepoints[1,:], reciprocallatticepoints[2,:],
+             markershape=:circle, markersize=6, markercolor=RGBA(1,1,1,0), markerstrokecolor=RGBA(1,0,0,1), label=&quot;reciprocal lattice&quot;)
+    scatter!(kpoints[1,:], kpoints[2,:],
+             markershape=:circle, markersize=4, markercolor=RGBA(0,0,1,0.5), markerstrokecolor=RGBA(0,0,1,0.5),
+             series_annotations=[Plots.text(&quot;k[$x]&quot;, 8, :left, :bottom) for x in kpointnames], label=&quot;momentum points&quot;)
+    scatter!(kpoints[1,:], kpoints[2,:],
+             markershape=:circle, markersize=0, color=RGBA(0,0,0,0),
+             series_annotations=[Plots.text(&quot;$x &quot;, 8, :right, :top) for x in littlegroupnames], label=&quot;&quot;)
+    scatter!(kpoints[1,:], kpoints[2,:],
+             markershape=:circle, markersize=0, color=RGBA(0,0,0,0),
+             series_annotations=[Plots.text(&quot;$x&quot;, 6, :left, :top) for x in generatornames], label=&quot;&quot;)
+    savefig(img, &quot;example_little_symmetry_kspace_honeycomb/momentumspace-6x6.svg&quot;)
+end</code></pre><pre class="documenter-example-output">qt.qpa.xcb: could not connect to display
+qt.qpa.plugin: Could not load the Qt platform plugin &quot;xcb&quot; in &quot;&quot; even though it was found.
+This application failed to start because no Qt platform plugin could be initialized. Reinstalling the application may fix this problem.
+
+Available platform plugins are: linuxfb, minimal, offscreen, vnc, xcb.
+
+Aborted (core dumped)
+connect: Connection refused
+GKS: can&#39;t connect to GKS socket application
+
+GKS: Open failed in routine OPEN_WS
+GKS: GKS not in proper state. GKS must be either in the state WSOP or WSAC in routine ACTIVATE_WS</pre><p><img src="momentumspace-6x6.svg" alt/></p><hr/><p><em>This page was generated using <a href="https://github.com/fredrikekre/Literate.jl">Literate.jl</a>.</em></p></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../example_honeycomb_symmetry/">« Honeycomb Lattice</a><a class="docs-footer-nextpage" href="../example_kagome_symmetry/">Kagome Lattice »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> on <span class="colophon-date" title="Wednesday 31 March 2021 23:39">Wednesday 31 March 2021</span>. Using Julia version 1.6.0.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
