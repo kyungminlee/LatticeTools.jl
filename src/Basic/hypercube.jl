@@ -24,14 +24,8 @@ struct Hypercube
     wrap::Function
 
     function Hypercube(shape_matrix::AbstractMatrix{<:Integer})
-        dim, dim2 = size(shape_matrix)
-        if dim != dim2
-            msg = "scale_matrix is not square: dimensions are ($dim, $dim2)"
-            throw(DimensionMismatch(msg))
-        end
-        det = LinearAlgebraX.detx(shape_matrix)
+        det = LinearAlgebraX.detx(shape_matrix) # square matrix asserted here
         iszero(det) && throw(ArgumentError("scale matrix null"))
-
         inverse_shape_matrix = LinearAlgebraX.invx(shape_matrix)
         function wrap(r::AbstractArray{<:Integer}, mode::RoundingMode=RoundDown)
             rnd = (x) -> round(Int, x, mode)
