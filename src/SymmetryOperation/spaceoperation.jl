@@ -59,7 +59,6 @@ struct SpaceOperation{Tp<:Real, Tt<:Real} <:AbstractSpaceSymmetryOperation{Tt}
         return SpaceOperation{Tp, Tt}(matrix, displacement)
     end
 
-
     @doc """
         SpaceOperation([point], [translation])
 

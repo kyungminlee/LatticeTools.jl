@@ -10,7 +10,7 @@ export fractional_momentum
 
 abstract type AbstractSymmetryEmbedding end
 
-SymmetryOrEmbedding = Union{<:AbstractSymmetry, <:AbstractSymmetryEmbedding}
+const SymmetryOrEmbedding = Union{<:AbstractSymmetry, <:AbstractSymmetryEmbedding}
 
 """
     SymmetryEmbedding{SymmetryType<:AbstractSymmetry}
@@ -270,8 +270,6 @@ end
 # end
 
 
-
-
 """
     little_symmetry(tsymbed, tsym_irrep_index, psymbed)
 """
@@ -324,8 +322,6 @@ function translation_symmetry_embedding(lattice::Lattice)
 end
 
 
-
-
 # struct SymmorphicSpaceSymmetryEmbedding<:AbstractSymmetryEmbedding
 #     lattice::Lattice
 #     translation_symmetry::FiniteTranslationSymmetry
@@ -351,7 +347,6 @@ end
 #         new(lattice, translation, point, elements)
 #     end
 # end
-
 
 
 # function embed(lattice::Lattice, tsym::FiniteTranslationSymmetry, psym::PointSymmetry)

@@ -5,7 +5,12 @@ import LinearAlgebraX
 ## 1. Hypercube and Operation
 
 """
-    iscompatible(hypercube, operator::TranslationOperation{<:Integer})
+    iscompatible(hypercube, op::TranslationOperation{<:Integer})
+
+Check whether the translation operation is compatible with the hypercube,
+i.e. leaves the superlattice invariant. If the dimensions do not match, throw exception.
+Otherwise always return true.
+    
 """
 function iscompatible(hypercube::Hypercube, op::TranslationOperation{<:Integer})::Bool
     if dimension(hypercube) != dimension(op)
@@ -15,7 +20,10 @@ function iscompatible(hypercube::Hypercube, op::TranslationOperation{<:Integer})
 end
 
 """
-    iscompatible(hypercube, operator::PointOperation{<:Integer})
+    iscompatible(hypercube, op::PointOperation{<:Integer})
+
+Check whether the point operation is compatible with the hypercube,
+i.e. leaves the superlattice invariant.
 """
 function iscompatible(hypercube::Hypercube, op::PointOperation{<:Integer})::Bool
     R, r = hypercube.wrap(op.matrix * hypercube.shape_matrix)
@@ -27,6 +35,9 @@ end
 
 """
     iscompatible(hypercube, symmetry::FiniteTranslationSymmetry)
+
+Check whether the translation symmetry is compatible with the hypercube,
+i.e. has the same superlattice.
 """
 function iscompatible(hypercube::Hypercube, tsym::FiniteTranslationSymmetry)::Bool
     R, r = hypercube.wrap(tsym.hypercube.shape_matrix)
@@ -35,6 +46,9 @@ end
 
 """
     iscompatible(hypercube, symmetry::PointSymmetry)
+
+Check whether the point symmetry is compatible with the hypercube,
+i.e. all of its elements leaves the superlattice invariant.
 """
 function iscompatible(hypercube::Hypercube, psym::PointSymmetry)::Bool
     return all(iscompatible(hypercube, pop) for pop in elements(psym))
@@ -45,6 +59,9 @@ end
 
 """
     iscompatible(tsym::FiniteTranslationSymmetry, pop::PointOperation{<:Integer})
+
+Check whether the point operation is compatible with the translation symmetry,
+i.e. leaves the superlattice invariant.
 """
 function iscompatible(tsym::FiniteTranslationSymmetry, pop::PointOperation{<:Integer})::Bool
     return iscompatible(tsym.hypercube, pop)
@@ -52,6 +69,9 @@ end
 
 """
     iscompatible(tsym::FiniteTranslationSymmetry, psym::PointSymmetry)
+
+Check whether the point symmetry is compatible with the translation symmetry,
+i.e. all of its elements leaves the superlattice invariant.
 """
 function iscompatible(tsym::FiniteTranslationSymmetry, psym::PointSymmetry)::Bool
     return iscompatible(tsym.hypercube, psym)
@@ -59,6 +79,9 @@ end
 
 """
     iscompatible(psym::PointSymmetry, tsym::FiniteTranslationSymmetry)
+
+Check whether the point symmetry is compatible with the translation symmetry,
+i.e. all of its elements leaves the superlattice invariant.
 """
 function iscompatible(psym::PointSymmetry, tsym::FiniteTranslationSymmetry)::Bool
     return iscompatible(tsym, psym)
@@ -69,6 +92,11 @@ end
 
 """
     iscompatible(tsym, tsym_irrep_index, point_operation)
+
+Check whether the point operation is compatible with the given irrep of translation (a.k.a. momentum).
+In specific, check whether
+(1) the point operation is compatible with the translation symmetry, and
+(2) the momentum is invariant under the point operation.
 """
 function iscompatible(
     tsym::FiniteTranslationSymmetry,
@@ -82,8 +110,14 @@ function iscompatible(
     return k1 == k2
 end
 
+
 """
     iscompatible(tsym, tsym_irrep_index, psym)
+
+Check whether the point symmetry is compatible with the given irrep of translation (a.k.a. momentum).
+In specific, check whether
+(1) the point operation is compatible with the translation symmetry, and
+(2) the momentum is invariant under all point operations.
 """
 function iscompatible(
     tsym::FiniteTranslationSymmetry,

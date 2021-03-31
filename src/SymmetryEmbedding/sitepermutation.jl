@@ -26,15 +26,9 @@ struct SitePermutation <: AbstractSpaceSymmetryOperationEmbedding
 end
 
 
-function Base.:(==)(lhs::SitePermutation, rhs::SitePermutation)
-    return lhs.permutation == rhs.permutation
-end
-function Base.:(*)(lhs::SitePermutation, rhs::SitePermutation)
-    return SitePermutation(lhs.permutation * rhs.permutation)
-end
-function Base.:(^)(lhs::SitePermutation, rhs::Integer)
-    return SitePermutation(lhs.permutation^rhs)
-end
+Base.:(==)(lhs::SitePermutation, rhs::SitePermutation) = lhs.permutation == rhs.permutation
+Base.:(*)(lhs::SitePermutation, rhs::SitePermutation) = SitePermutation(lhs.permutation * rhs.permutation)
+Base.:(^)(lhs::SitePermutation, rhs::Integer) = SitePermutation(lhs.permutation^rhs)
 
 # import Base.isless
 # isless(lhs::SitePermutation, rhs::SitePermutation) = isless(lhs.permutation, rhs.permutation)
