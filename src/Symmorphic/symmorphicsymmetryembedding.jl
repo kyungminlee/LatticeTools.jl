@@ -72,7 +72,7 @@ end
 group_order(sym::SymmorphicSymmetryEmbedding) = group_order(sym.normal) * group_order(sym.rest)
 
 
-function fractional_momentum(sym::SymmorphicSymmetryEmbedding{<:TranslationSymmetry, S2}, args...) where S2
+function fractional_momentum(sym::SymmorphicSymmetryEmbedding{<:FiniteTranslationSymmetry, S2}, args...) where S2
     return fractional_momentum(sym.normal, args...)
 end
 

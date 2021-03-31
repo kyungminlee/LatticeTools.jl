@@ -59,7 +59,6 @@ struct SpaceOperation{Tp<:Real, Tt<:Real} <:AbstractSpaceSymmetryOperation{Tt}
         return SpaceOperation{Tp, Tt}(matrix, displacement)
     end
 
-
     @doc """
         SpaceOperation([point], [translation])
 
@@ -189,9 +188,9 @@ dimension(arg::SpaceOperation) = length(arg.displacement)
 
 
 function Base.hash(op::SpaceOperation{Tp, Tt}, h::UInt) where {Tp, Tt}
-    h = hash(SpaceOperation{Tp, Tt}, h)
     h = hash(op.matrix, h)
     h = hash(op.displacement, h)
+    h = hash(SpaceOperation{Tp, Tt}, h)
     return h
 end
 

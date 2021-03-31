@@ -2,23 +2,23 @@ export UnitCell
 export make_unitcell, makeunitcell
 export dimension
 
-export numsite, sitecount,
-       hassite,
-       addsite!,
-       getsite,
-       getsiteindex,
-       getsitecoord,
-       getsiteindexcoord,
-       getsitename
+export numsite, numsites, sitecount
+export addsite!
+export hassite
+export getsite
+export getsiteindex
+export getsitecoord
+export getsiteindexcoord
+export getsitename
        
 export numorbital, numorbitals, orbitalcount
 export addorbital!
 export hasorbital
-export getorbitalindex
 export getorbital
-export getorbitalname
+export getorbitalindex
 export getorbitalsiteindex
 export getorbitalcoord
+export getorbitalname
 
 export carte2fract,
        fract2carte,
@@ -29,27 +29,6 @@ export findsiteindex
 
 import LinearAlgebra
 
-# export numorbital,
-#        hasorbital,
-#        addorbital!,
-#        getorbital,
-#        getorbitalindex,
-#        getorbitalcoord,
-#        getorbitalindexcoord,
-#        getorbitalname
-
-
-
-
-# @deprecate numorbital(args...) numsite(args...)
-# @deprecate hasorbital(args...) hassite(args...)
-# @deprecate addorbital!(args...) addsite!(args...)
-# @deprecate getorbital(args...) getsite(args...)
-# @deprecate getorbitalindex(args...) getsiteindex(args...)
-# @deprecate getorbitalcoord(args...) getsitecoord(args...)
-# @deprecate getorbitalindexcoord(args...) getsiteindexcoord(args...)
-# @deprecate getorbitalname(args...) getsitename(args...)
-# @deprecate findorbitalindex(args...; kwargs...) findsiteindex(args...; kwargs...)
 
 """
     UnitCell{S}
@@ -144,6 +123,7 @@ function makeunitcell(
     )
 end
 
+
 function makeunitcell(
     latticevectors::AbstractVector{<:AbstractVector};
     SiteType::DataType=Any,
@@ -152,6 +132,7 @@ function makeunitcell(
 )
     return makeunitcell(hcat(latticevectors...); SiteType=SiteType, OrbitalType=OrbitalType, tol=tol)
 end
+
 
 function makeunitcell(
     latticeconstant::Real;
@@ -163,7 +144,7 @@ function makeunitcell(
 end
 
 
-const make_unitcell = makeunitcell
+@deprecate make_unitcell makeunitcell
 
 
 """
@@ -183,6 +164,9 @@ Number of sites of the unit cell.
 * `uc ::UnitCell`
 """
 numsite(uc::UnitCell) = length(uc.sites)
+
+
+numsites(uc::UnitCell) = length(uc.sites)
 
 
 """
@@ -225,6 +209,17 @@ function addsite!(uc::UnitCell{S, O}, sitename::S, sitecoord::FractCoord) where 
     uc.siteindices[sitename] = index
     return index
 end
+
+
+function addsite!(uc::UnitCell{S, O}, sitename::S, wholecoord::AbstractVector{<:Integer}, fractcoord::AbstractVector{<:Real}) where {S, O}
+    return addsite!(uc, sitename, FractCoord(wholecoord, fractcoord))
+end
+
+function addsite!(uc::UnitCell{S, O}, sitename::S, cartecoord::CarteCoord) where {S, O}
+    fractcoord = carte2fract(uc, cartecoord)
+    return addsite!(uc, sitename, fractcoord)
+end
+
 
 
 """

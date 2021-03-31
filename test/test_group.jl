@@ -203,8 +203,8 @@ using YAML
     end
 
     @testset "group isomorphism 3" begin
-        tsym1 = TranslationSymmetry([3 0; 0 3])
-        tsym2 = TranslationSymmetry([3 1; 0 3])
+        tsym1 = FiniteTranslationSymmetry([3 0; 0 3])
+        tsym2 = FiniteTranslationSymmetry([3 1; 0 3])
         @test isnothing(group_isomorphism(tsym1.group, tsym2.group))
     end
 

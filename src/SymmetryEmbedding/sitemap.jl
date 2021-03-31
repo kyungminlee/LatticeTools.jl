@@ -34,7 +34,7 @@ end
 Find the sitemap for every element of the translation symmetry.
 Return `[findsitemap(unitcell, m) for m in elements(translation_symmetry)]`.
 """
-function findsitemap(unitcell::UnitCell, tsym::TranslationSymmetry)
+function findsitemap(unitcell::UnitCell, tsym::FiniteTranslationSymmetry)
     return [findsitemap(unitcell, m) for m in elements(tsym)]
 end
 

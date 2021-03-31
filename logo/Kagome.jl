@@ -38,7 +38,7 @@ function make_kagome_lattice(size_matrix ::AbstractMatrix{<:Integer}; compute_sy
     lattice = make_lattice(unitcell, size_matrix)
     hypercube = lattice.hypercube
     supercell = lattice.supercell
-    tsym = TranslationSymmetry(lattice)
+    tsym = FiniteTranslationSymmetry(lattice)
     psym = little_symmetry(tsym, project(PointSymmetryDatabase.get(25), [1 0 0; 0 1 0]))
     tsymbed = embed(lattice, tsym)
     psymbed = embed(lattice, psym)

@@ -43,20 +43,20 @@ irrepcount(::SymmetryEmbedding, ::Any)
 ```
 
 ```@docs
-fractional_momentum(::SymmetryEmbedding{TranslationSymmetry})
-iscompatible(::SymmetryEmbedding{TranslationSymmetry}, ::SymmetryEmbedding{PointSymmetry})
-iscompatible(::SymmetryEmbedding{TranslationSymmetry}, ::Int, ::SymmetryEmbedding{PointSymmetry})
-little_group_elements(::SymmetryEmbedding{TranslationSymmetry}, ::SymmetryEmbedding{PointSymmetry})
-little_group_elements(::SymmetryEmbedding{TranslationSymmetry}, ::Int, ::SymmetryEmbedding{PointSymmetry})
-little_symmetry(::SymmetryEmbedding{TranslationSymmetry}, ::SymmetryEmbedding{PointSymmetry})
-little_symmetry(::SymmetryEmbedding{TranslationSymmetry}, ::Int, ::SymmetryEmbedding{PointSymmetry})
+fractional_momentum(::SymmetryEmbedding{FiniteTranslationSymmetry})
+iscompatible(::SymmetryEmbedding{FiniteTranslationSymmetry}, ::SymmetryEmbedding{PointSymmetry})
+iscompatible(::SymmetryEmbedding{FiniteTranslationSymmetry}, ::Int, ::SymmetryEmbedding{PointSymmetry})
+little_group_elements(::SymmetryEmbedding{FiniteTranslationSymmetry}, ::SymmetryEmbedding{PointSymmetry})
+little_group_elements(::SymmetryEmbedding{FiniteTranslationSymmetry}, ::Int, ::SymmetryEmbedding{PointSymmetry})
+little_symmetry(::SymmetryEmbedding{FiniteTranslationSymmetry}, ::SymmetryEmbedding{PointSymmetry})
+little_symmetry(::SymmetryEmbedding{FiniteTranslationSymmetry}, ::Int, ::SymmetryEmbedding{PointSymmetry})
 symmetry_name(::SymmetryEmbedding)
 ```
 
 ## Embedding a Symmetry onto a Lattice
 
 ```@docs
-embed(::Lattice, ::TranslationSymmetry) 
+embed(::Lattice, ::FiniteTranslationSymmetry) 
 embed(::Lattice, ::PointSymmetry)
 translation_symmetry_embedding(::Lattice)
 ```

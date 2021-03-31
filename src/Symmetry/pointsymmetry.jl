@@ -66,9 +66,9 @@ struct PointSymmetry <: AbstractSymmetry{PointOperation{Int}}
         element_names::AbstractVector{<:AbstractString},
         matrix_representations::AbstractVector{<:AbstractMatrix{<:Integer}},
         hermann_mauguin::AbstractString,
-        schoenflies::AbstractString,
+        schoenflies::AbstractString;
+        tol::Real=Base.rtoldefault(Float64)
     )
-        tol = Base.rtoldefault(Float64)
         # number counting check
         if length(element_names) != group_order(group)
             throw(ArgumentError("number of elements different from order of group"))
@@ -289,9 +289,9 @@ Return the generating point operations.
 generator_elements(sym::PointSymmetry) = element(sym, sym.generators)
 
 """
-    symmetry_name(sym::TranslationSymmetry)
+    symmetry_name(sym::FiniteTranslationSymmetry)
 
-Name of the point symmetry. Return `TranslationSymmetry[<Hermann Mauguin>]`.
+Name of the point symmetry. Return `FiniteTranslationSymmetry[<Hermann Mauguin>]`.
 """
 symmetry_name(sym::PointSymmetry) = "PointSymmetry[$(sym.hermann_mauguin)]"
 
@@ -456,7 +456,7 @@ irrep_dimension(sym::PointSymmetry, idx::Integer) = size(first(irrep(sym, idx)),
 
 
 # function get_irrep_iterator(lattice::Lattice,
-#                             tsym::TranslationSymmetry,
+#                             tsym::FiniteTranslationSymmetry,
 #                             psym::PointSymmetry,
 #                             tsym_irrep_index::Integer,
 #                             psym_irrep_index::Integer,

@@ -10,7 +10,7 @@ export fractional_momentum
 
 abstract type AbstractSymmetryEmbedding end
 
-SymmetryOrEmbedding = Union{<:AbstractSymmetry, <:AbstractSymmetryEmbedding}
+const SymmetryOrEmbedding = Union{<:AbstractSymmetry, <:AbstractSymmetryEmbedding}
 
 """
     SymmetryEmbedding{SymmetryType<:AbstractSymmetry}
@@ -129,7 +129,7 @@ for f in [
             $($f)(::SymmetryEmbedding, args...)
 
         Calls `$($f)` for the underlying symmetry.
-        See [`$($f)(::TranslationSymmetry)`](@ref), [`$($f)(::PointSymmetry)`](@ref).
+        See [`$($f)(::FiniteTranslationSymmetry)`](@ref), [`$($f)(::PointSymmetry)`](@ref).
         """
         ($f)(symbed::SymmetryEmbedding, args...) = ($f)(symmetry(symbed), args...)
     end)
@@ -137,11 +137,11 @@ end
 
 
 """
-    fractional_momentum(symbed::SymmetryEmbedding{TranslationSymmetry}, args...)
+    fractional_momentum(symbed::SymmetryEmbedding{FiniteTranslationSymmetry}, args...)
 
 Return fractional momentum(s) of the translation symmetry embedding.
 """
-function fractional_momentum(symbed::SymmetryEmbedding{TranslationSymmetry}, args...)
+function fractional_momentum(symbed::SymmetryEmbedding{FiniteTranslationSymmetry}, args...)
     return fractional_momentum(symmetry(symbed), args...)
 end
 
@@ -154,7 +154,7 @@ the translation symmetry embedding `tsymbed`, i.e. whether they have
 the same "lattice".
 """
 function iscompatible(
-    tsymbed::SymmetryEmbedding{TranslationSymmetry},
+    tsymbed::SymmetryEmbedding{FiniteTranslationSymmetry},
     psymbed::SymmetryEmbedding{PointSymmetry},
 )::Bool
     return tsymbed.lattice == psymbed.lattice
@@ -169,7 +169,7 @@ the translation symmetry irrep defined by `tsym_irrep_index` and `symmetry(tsymb
 In other words, the little group elements
 """
 function iscompatible(
-    tsymbed::SymmetryEmbedding{TranslationSymmetry},
+    tsymbed::SymmetryEmbedding{FiniteTranslationSymmetry},
     tsym_irrep_index::Integer,
     psymbed::SymmetryEmbedding{PointSymmetry},
 )::Bool
@@ -182,7 +182,7 @@ end
     little_group_elements(tsymbed, psymbed)
 """
 function little_group_elements(
-    tsymbed::SymmetryEmbedding{TranslationSymmetry},
+    tsymbed::SymmetryEmbedding{FiniteTranslationSymmetry},
     psymbed::SymmetryEmbedding{PointSymmetry},
 )
     if !iscompatible(tsymbed, psymbed)
@@ -196,7 +196,7 @@ end
     little_group_elements(tsymbed, tsym_irrep_index, psymbed)
 """
 function little_group_elements(
-    tsymbed::SymmetryEmbedding{TranslationSymmetry},
+    tsymbed::SymmetryEmbedding{FiniteTranslationSymmetry},
     tsym_irrep_index::Integer,
     psymbed::SymmetryEmbedding{PointSymmetry},
 )
@@ -211,7 +211,7 @@ end
     little_symmetry(tsymbed, psymbed)
 """
 function little_symmetry(
-    tsymbed::SymmetryEmbedding{TranslationSymmetry},
+    tsymbed::SymmetryEmbedding{FiniteTranslationSymmetry},
     psymbed::SymmetryEmbedding{PointSymmetry},
 )
     if !iscompatible(tsymbed, psymbed)
@@ -228,7 +228,7 @@ end
 # """
 #     little_symmetry_strong(tsymbed, psymbed)
 # """
-# function little_symmetry_strong(tsymbed::SymmetryEmbedding{TranslationSymmetry},
+# function little_symmetry_strong(tsymbed::SymmetryEmbedding{FiniteTranslationSymmetry},
 #                                 psymbed::SymmetryEmbedding{PointSymmetry})
 #     if !iscompatible(tsymbed, psymbed)
 #         throw(ArgumentError("translation and point symmetry-embeddings not compatible"))
@@ -270,13 +270,11 @@ end
 # end
 
 
-
-
 """
     little_symmetry(tsymbed, tsym_irrep_index, psymbed)
 """
 function little_symmetry(
-    tsymbed::SymmetryEmbedding{TranslationSymmetry},
+    tsymbed::SymmetryEmbedding{FiniteTranslationSymmetry},
     tsym_irrep_index::Integer,
     psymbed::SymmetryEmbedding{PointSymmetry},
 )
@@ -300,11 +298,11 @@ end
 
 
 """
-    embed(lattice::Lattice, tsym::TranslationSymmetry)
+    embed(lattice::Lattice, tsym::FiniteTranslationSymmetry)
 
 Embed translation symmetry `tsym` to lattice.
 """
-embed(lattice::Lattice, tsym::TranslationSymmetry) = SymmetryEmbedding(lattice, tsym)
+embed(lattice::Lattice, tsym::FiniteTranslationSymmetry) = SymmetryEmbedding(lattice, tsym)
 
 
 """
@@ -319,22 +317,20 @@ embed(lattice::Lattice, psym::PointSymmetry) = SymmetryEmbedding(lattice, psym)
     translation_symmetry_embedding(lattice::Lattice)
 """
 function translation_symmetry_embedding(lattice::Lattice)
-    tsym = TranslationSymmetry(lattice)
+    tsym = FiniteTranslationSymmetry(lattice)
     return embed(lattice, tsym)
 end
 
 
-
-
 # struct SymmorphicSpaceSymmetryEmbedding<:AbstractSymmetryEmbedding
 #     lattice::Lattice
-#     translation_symmetry::TranslationSymmetry
+#     translation_symmetry::FiniteTranslationSymmetry
 #     point_symmetry::PointSymmetry
 #     elements::Matrix{SitePermutation}
 
 #     function SymmorphicSpaceSymmetryEmbedding(
 #                 lattice::Lattice,
-#                 translation::TranslationSymmetry,
+#                 translation::FiniteTranslationSymmetry,
 #                 point::PointSymmetry)
 #         if !iscompatible(translation, point)
 #             throw(ArgumentError("translation symmetry and point symmetry not compatible"))
@@ -353,8 +349,7 @@ end
 # end
 
 
-
-# function embed(lattice::Lattice, tsym::TranslationSymmetry, psym::PointSymmetry)
+# function embed(lattice::Lattice, tsym::FiniteTranslationSymmetry, psym::PointSymmetry)
 #     SymmorphicSpaceSymmetryEmbedding(lattice, tsym, psym)
 # end
 

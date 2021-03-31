@@ -5,16 +5,16 @@ using LinearAlgebra
 using YAML
 
 
-@testset "TranslationSymmetry" begin
+@testset "FiniteTranslationSymmetry" begin
     @testset "constructors" begin
-        TranslationSymmetry(4*ones(Int, (1, 1)))
-        TranslationSymmetry([4 0; 0 4])
-        @test_throws ErrorException TranslationSymmetry([4 0 0; 0 4 0; 0 0 4])  # <- Temporary
-        @test_throws ArgumentError TranslationSymmetry(Hypercube([2 0; 0 2]), [2 0; 0 1])
+        FiniteTranslationSymmetry(4*ones(Int, (1, 1)))
+        FiniteTranslationSymmetry([4 0; 0 4])
+        @test_throws ErrorException FiniteTranslationSymmetry([4 0 0; 0 4 0; 0 0 4])  # <- Temporary
+        @test_throws ArgumentError FiniteTranslationSymmetry(Hypercube([2 0; 0 2]), [2 0; 0 1])
     end
 
     @testset "properties" begin
-        tsym = TranslationSymmetry([3 0; 0 1])
+        tsym = FiniteTranslationSymmetry([3 0; 0 1])
         mtab = [1 2 3; 2 3 1; 3 1 2]
         @test eltype(tsym) == TranslationOperation{Int}
         @test valtype(tsym) == TranslationOperation{Int}
@@ -50,7 +50,7 @@ using YAML
     end
 
     @testset "orthogonal lattice" begin
-        tsym = TranslationSymmetry([3 0; 0 3])
+        tsym = FiniteTranslationSymmetry([3 0; 0 3])
         @test isabelian(tsym.group)
 
         @test length(tsym.generators) == 2
@@ -145,7 +145,7 @@ using YAML
     end # @testset "orthogonal lattice" begin
 
     @testset "non-orthogonal lattice" begin
-        tsym = TranslationSymmetry([4 0; 0 3])
+        tsym = FiniteTranslationSymmetry([4 0; 0 3])
 
         @test length(tsym.generators) == 2
         # idx_gen = tsym.generators[1]
@@ -179,7 +179,7 @@ using YAML
         addsite!(unitcell, "Ox", FractCoord([0,0], [0.5, 0.0]))
         addsite!(unitcell, "Oy", FractCoord([0,0], [0.0, 0.5]))
         lattice = make_lattice(unitcell, [4 0; 0 4])
-        tsym = TranslationSymmetry(lattice)
+        tsym = FiniteTranslationSymmetry(lattice)
 
         let
             lattice_failure = make_lattice(unitcell, [4 0; 0 3])
@@ -228,7 +228,7 @@ using YAML
         @test_throws ArgumentError isbragg([4, 0], [2,0], [2,0])
         @test_throws ArgumentError isbragg([-2, 2], [2,0], [2,0])
 
-        tsym = TranslationSymmetry([3 0; 0 3])
+        tsym = FiniteTranslationSymmetry([3 0; 0 3])
         # Gamma point is always ok
         @test  isbragg([3,3], [0,0], [0,0])
         @test  isbragg([3,3], [0,0], [1,0])
@@ -269,12 +269,12 @@ using YAML
         @test !isbragg([1,0] .// [3,3], [[0,0], [1,0], [2,0]])
 
 
-        tsym = TranslationSymmetry([4 0; 0 4])
+        tsym = FiniteTranslationSymmetry([4 0; 0 4])
         @test  isbragg(tsym, 11, TranslationOperation([2,0]))
         @test !isbragg(tsym, 10, TranslationOperation([2,0]))
         @test  isbragg(tsym, 11, TranslationOperation.([[0,0], [2,0], [0,2], [2,2]]))
 
-        tsym = TranslationSymmetry([6 2; -2 6])
+        tsym = FiniteTranslationSymmetry([6 2; -2 6])
 
         # TODO more tests for isbragg
 
@@ -286,7 +286,7 @@ using YAML
             end
         end
     end
-end # @testset "TranslationSymmetry" begin
+end # @testset "FiniteTranslationSymmetry" begin
 
 
 

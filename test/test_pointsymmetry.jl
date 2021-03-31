@@ -240,8 +240,8 @@ using YAML
     @testset "iscompatible" begin
         hc1 = Hypercube([4 0; 0 4])
         hc2 = Hypercube([4 0; 0 3])
-        tsym1 = TranslationSymmetry(hc1)
-        tsym2 = TranslationSymmetry(hc2)
+        tsym1 = FiniteTranslationSymmetry(hc1)
+        tsym2 = FiniteTranslationSymmetry(hc2)
 
         @test_throws DimensionMismatch iscompatible(hc1, psym)
         @test_throws DimensionMismatch iscompatible(tsym1, psym)
@@ -254,7 +254,7 @@ using YAML
         @test !iscompatible(tsym2, psym_proj)
         @test little_symmetry(tsym1, psym_proj).hermann_mauguin == "422"
         @test little_symmetry(tsym2, psym_proj).hermann_mauguin == "222"
-        @test little_symmetry(TranslationSymmetry([4 1; 0 3]), psym_proj).hermann_mauguin == "2"
+        @test little_symmetry(FiniteTranslationSymmetry([4 1; 0 3]), psym_proj).hermann_mauguin == "2"
         @test_throws ArgumentError little_symmetry(tsym2, 1, psym_proj) # when specifying irrep, tsym and psym have to be compatible
     end
 
@@ -281,7 +281,7 @@ using YAML
 
             lattice = make_lattice(unitcell, [2 0; 0 2])
             psymbed = embed(lattice, psym)
-            tsym = TranslationSymmetry(lattice)
+            tsym = FiniteTranslationSymmetry(lattice)
             tsymbed = embed(lattice, tsym)
 
             perms = [embed(lattice, op) for op in elements(psym)]
@@ -309,7 +309,7 @@ using YAML
 
         @testset "little group" begin
             lattice = make_lattice(unitcell, [2 0; 0 2])
-            tsym = TranslationSymmetry(lattice)
+            tsym = FiniteTranslationSymmetry(lattice)
             @test little_group_elements(tsym, 1, psym) == collect(1:8)
             @test little_group_elements(tsym, 2, psym) == [1,2,5,6]
             @test little_group_elements(tsym, 3, psym) == [1,2,5,6]
@@ -324,7 +324,7 @@ using YAML
         @testset "little_symmetry" begin
             for LSYM in [little_symmetry, little_symmetry_iso]
                 lattice = make_lattice(unitcell, [4 0; 0 4])
-                tsym = TranslationSymmetry(lattice)
+                tsym = FiniteTranslationSymmetry(lattice)
                 for tsym_irrep in 1:num_irreps(tsym)
                     psym_little = LSYM(tsym, tsym_irrep, psym)
                     k = tsym.coordinates[tsym_irrep]

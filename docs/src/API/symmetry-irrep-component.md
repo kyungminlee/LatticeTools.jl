@@ -15,11 +15,11 @@ get_irrep_iterator(::IrrepComponent)
 ## Little Group
 
 ```@docs
-little_group_elements(::IrrepComponent{TranslationSymmetry}, ::PointSymmetry)
-little_group(::IrrepComponent{TranslationSymmetry}, ::PointSymmetry)
-little_group(::IrrepComponent{SymmetryEmbedding{TranslationSymmetry}}, ::SymmetryEmbedding{PointSymmetry})
-little_symmetry(::IrrepComponent{TranslationSymmetry}, ::PointSymmetry)
-iscompatible(::IrrepComponent{TranslationSymmetry}, ::PointSymmetry)
+little_group_elements(::IrrepComponent{FiniteTranslationSymmetry}, ::PointSymmetry)
+little_group(::IrrepComponent{FiniteTranslationSymmetry}, ::PointSymmetry)
+little_group(::IrrepComponent{SymmetryEmbedding{FiniteTranslationSymmetry}}, ::SymmetryEmbedding{PointSymmetry})
+little_symmetry(::IrrepComponent{FiniteTranslationSymmetry}, ::PointSymmetry)
+iscompatible(::IrrepComponent{FiniteTranslationSymmetry}, ::PointSymmetry)
 ```
 
 

@@ -11,56 +11,56 @@ CurrentModule = LatticeTools
 AbstractSymmetry
 ```
 
-## TranslationSymmetry
+## FiniteTranslationSymmetry
 
 ```@docs
-TranslationSymmetry
+FiniteTranslationSymmetry
 ```
 
 ### Constructors
 ```@docs
-TranslationSymmetry(::Matrix{Int})
-TranslationSymmetry(::Lattice)
-TranslationSymmetry(::Hypercube)
-TranslationSymmetry(::Hypercube, ::Matrix{Int})
+FiniteTranslationSymmetry(::Matrix{Int})
+FiniteTranslationSymmetry(::Lattice)
+FiniteTranslationSymmetry(::Hypercube)
+FiniteTranslationSymmetry(::Hypercube, ::Matrix{Int})
 ```
 
 ### Common Functions for Symmetry
 ```@docs
-dimension(::TranslationSymmetry)
-elements(::TranslationSymmetry)
-element(::TranslationSymmetry, ::Any)
-element_names(::TranslationSymmetry)
-element_name(::TranslationSymmetry, ::Any)
-group(::TranslationSymmetry)
-group_order(::TranslationSymmetry, ::Any)
-group_multiplication_table(::TranslationSymmetry)
-generator_indices(::TranslationSymmetry)
-generator_elements(::TranslationSymmetry)
-symmetry_name(::TranslationSymmetry)
-symmetry_product(::TranslationSymmetry)
+dimension(::FiniteTranslationSymmetry)
+elements(::FiniteTranslationSymmetry)
+element(::FiniteTranslationSymmetry, ::Any)
+element_names(::FiniteTranslationSymmetry)
+element_name(::FiniteTranslationSymmetry, ::Any)
+group(::FiniteTranslationSymmetry)
+group_order(::FiniteTranslationSymmetry, ::Any)
+group_multiplication_table(::FiniteTranslationSymmetry)
+generator_indices(::FiniteTranslationSymmetry)
+generator_elements(::FiniteTranslationSymmetry)
+symmetry_name(::FiniteTranslationSymmetry)
+symmetry_product(::FiniteTranslationSymmetry)
 ```
 
 ### Irreducible Representations
 ```@docs
-character_table(::TranslationSymmetry)
-irreps(::TranslationSymmetry)
-irrep(::TranslationSymmetry, ::Any)
-num_irreps(::TranslationSymmetry)
-numirreps(::TranslationSymmetry)
-irrepcount(::TranslationSymmetry)
-irrep_dimension(::TranslationSymmetry, ::Int)
+character_table(::FiniteTranslationSymmetry)
+irreps(::FiniteTranslationSymmetry)
+irrep(::FiniteTranslationSymmetry, ::Any)
+num_irreps(::FiniteTranslationSymmetry)
+numirreps(::FiniteTranslationSymmetry)
+irrepcount(::FiniteTranslationSymmetry)
+irrep_dimension(::FiniteTranslationSymmetry, ::Int)
 ```
 
 ### Functions Specific to Translation Symmetry
 ```@docs
-fractional_momentum(::TranslationSymmetry)
+fractional_momentum(::FiniteTranslationSymmetry)
 isbragg(::Vector{Int}, ::Vector{Int}, ::Vector{Int})
 isbragg(::Vector{Int}, ::Vector{Int}, ::Vector{Vector{Int}})
 isbragg(::Vector{Rational{Int}}, ::Vector{Int})
 isbragg(::Vector{Rational{Int}}, ::Vector{Vector{Int}})
-isbragg(::TranslationSymmetry, ::Int, ::TranslationOperation{Int})
-isbragg(::TranslationSymmetry, ::Int, ::Vector{TranslationOperation{Int}})
+isbragg(::FiniteTranslationSymmetry, ::Int, ::TranslationOperation{Int})
+isbragg(::FiniteTranslationSymmetry, ::Int, ::Vector{TranslationOperation{Int}})
 ```
 
 ## PointSymmetry
@@ -149,7 +149,7 @@ SymmorphicSymmetry
 ```
 
 ```@docs
-symmetry_product(::SymmorphicSymmetry{TranslationSymmetry,PointSymmetry,SpaceOperation{Int}})
+symmetry_product(::SymmorphicSymmetry{FiniteTranslationSymmetry,PointSymmetry,SpaceOperation{Int}})
 ```
 
 ```@docs
@@ -160,7 +160,7 @@ elements(::SymmorphicSymmetry)
 element(::SymmorphicSymmetry, ::Any)
 element_names(::SymmorphicSymmetry)
 element_name(::SymmorphicSymmetry, ::Any)
-fractional_momentum(::SymmorphicSymmetry{TranslationSymmetry, PointSymmetry, SpaceOperation})
+fractional_momentum(::SymmorphicSymmetry{FiniteTranslationSymmetry, PointSymmetry, SpaceOperation})
 generator_indices(::SymmorphicSymmetry)
 generator_elements(::SymmorphicSymmetry)
 ```

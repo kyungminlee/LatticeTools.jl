@@ -93,10 +93,10 @@ end
     symmetry_product(sym)
 
 # Arguments
-* `sym::SymmorphicSymmetry{TranslationSymmetry,PointSymmetry,S}) where {S<:SpaceOperation{<:Integer}}`
+* `sym::SymmorphicSymmetry{FiniteTranslationSymmetry,PointSymmetry,S}) where {S<:SpaceOperation{<:Integer}}`
 """
 function symmetry_product(
-    sym::SymmorphicSymmetry{TranslationSymmetry,PointSymmetry,S},
+    sym::SymmorphicSymmetry{FiniteTranslationSymmetry,PointSymmetry,S},
 ) where {S<:SpaceOperation{<:Integer}}
     function product(lhs::SpaceOperation{<:Integer}, rhs::SpaceOperation{<:Integer})
         foo = lhs * rhs
@@ -182,10 +182,10 @@ element_name(sym::SymmorphicSymmetry, g...) = sym.element_names[g...]
 Return the `g`th fractional momentum of the normal (translation) symmetry.
 
 # Arguments
-* `sym::SymmorphicSymmetry{<:TranslationSymmetry, S2, E}`
+* `sym::SymmorphicSymmetry{<:FiniteTranslationSymmetry, S2, E}`
 """
 function fractional_momentum(
-    sym::SymmorphicSymmetry{<:TranslationSymmetry, S2, E},
+    sym::SymmorphicSymmetry{<:FiniteTranslationSymmetry, S2, E},
     args...
 ) where {S2, E}
     return fractional_momentum(sym.normal, args...)

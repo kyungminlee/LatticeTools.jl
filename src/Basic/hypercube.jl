@@ -6,6 +6,7 @@ export isequiv
 
 import LinearAlgebraX
 
+
 """
     Hypercube(shape)
 

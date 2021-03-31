@@ -20,7 +20,7 @@ using LinearAlgebra
             # 2       4                 4       2
             # |       |                 |       |
             # o - 1 - . - 3 -           o - 3 - . - 1 -
-            tsym = TranslationSymmetry(lattice)
+            tsym = FiniteTranslationSymmetry(lattice)
             tsymbed = embed(lattice, tsym)
             translation_symmetry_embedding(lattice)
 
@@ -108,7 +108,7 @@ using LinearAlgebra
 
         @testset "rectangular" begin
             lattice = make_lattice(unitcell, [3 0; 0 2])
-            # tsym = TranslationSymmetry(lattice)
+            # tsym = FiniteTranslationSymmetry(lattice)
             # tsymbed = embed(lattice, tsym)
             psym = project(PointSymmetryDatabase.get(13), [1 0 0; 0 1 0])
             @test_throws ArgumentError embed(lattice, psym)

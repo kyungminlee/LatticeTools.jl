@@ -50,7 +50,7 @@ group_multiplication_table([[1 0; 0 1], [1 0; 0 -1], [-1 0; 0 1], [-1 0; 0 -1]])
 ## Space symmetry
 
 The term **symmetry**, on the other hand, is used to refer to realizations of the group structures on the lattice.
-Examples are [`TranslationSymmetry`](@ref), [`PointSymmetry`](@ref).
+Examples are [`FiniteTranslationSymmetry`](@ref), [`PointSymmetry`](@ref).
 
 In the current implementation of **LatticeTools.jl**, a symmetry object contains the following fields:
 - group
@@ -63,7 +63,7 @@ In the current implementation of **LatticeTools.jl**, a symmetry object contains
 
 ### Translation symmetry
 
-[`TranslationSymmetry`](@ref) represents a translation symmetry of the lattice with periodic boundary condition.
+[`FiniteTranslationSymmetry`](@ref) represents a translation symmetry of the lattice with periodic boundary condition.
 The group structure of the translation operations in d dimensions is given by $T_{\infty} / T_s$,
 where $T_{\infty} = \{ \sum_{i=1}^{d} a_i n_i | n_i \in \mathbb{Z} \}$ is the infinite lattice translations isomorphic to $\mathbb{Z}^{d}$,
 and $T_s = \{ \sum_{i=1}^{d} b_i n_i | n_i \in \mathbb{Z} \}$ is the supercell translations isomorphic to $\mathbb{Z}_{n_1} \times \mathbb{Z}_{n_2} \times \cdots \times \mathbb{Z}_{n_d}$.
@@ -76,7 +76,7 @@ they are the Fourier modes in terms of the generator elements.
 
 ### Point symmetry
 
-[`PointSymmetry`](@ref) has a slightly more complex structure than `TranslationSymmetry`.
+[`PointSymmetry`](@ref) has a slightly more complex structure than `FiniteTranslationSymmetry`.
 It can be non-abelian, and thus may have irreps of dimension 2 or higher.
 Also, there are only a finite number of them in a given dimension.
 
@@ -127,7 +127,7 @@ Let's consider compatibilities between lattices and symmetries.
 Lattice is built on (1) definition of unitcell, and (2) Bravais lattice.
 Since the second part, the Bravais lattice (with periodic boundary condition),
 encodes directly the information of the translation symmetry,
-a [`Lattice`](@ref) and a [`TranslationSymmetry`](@ref) is compatible if they
+a [`Lattice`](@ref) and a [`FiniteTranslationSymmetry`](@ref) is compatible if they
 *share the same Bravais lattice*. No further requirement is needed.
 
 ### 2. Between lattice and point symmetry

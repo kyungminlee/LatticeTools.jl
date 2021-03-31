@@ -3,9 +3,9 @@ using LatticeTools
 
 
 @testset "symmorphic" begin
-    tsym = TranslationSymmetry([4 0; 0 4])
+    tsym = FiniteTranslationSymmetry([4 0; 0 4])
     psym = project(PointSymmetryDatabase.find("4mm"), [1 0 0; 0 1 0])
-    @test_throws ArgumentError TranslationSymmetry([4 0; 0 3]) ⋊ psym
+    @test_throws ArgumentError FiniteTranslationSymmetry([4 0; 0 3]) ⋊ psym
     @test_throws ArgumentError psym ⋊ tsym
     ssym = tsym ⋊ psym
 
@@ -118,7 +118,7 @@ using LatticeTools
             end
         end
         @test count == length(collect(get_irrep_components(ssymbed1)))
-        @test all(isa(ssic.normal, IrrepComponent{SymmetryEmbedding{TranslationSymmetry}})
+        @test all(isa(ssic.normal, IrrepComponent{SymmetryEmbedding{FiniteTranslationSymmetry}})
                       for ssic in get_irrep_components(ssymbed1))
     end
     @testset "fractional_momentum" begin

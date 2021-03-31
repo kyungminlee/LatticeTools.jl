@@ -22,7 +22,7 @@ addsite!(unitcell, "Ox", FractCoord([0,0], [0.5, 0.0]));
 addsite!(unitcell, "Oy", FractCoord([0,0], [0.0, 0.5]));
 
 lattice = makelattice(unitcell, [4 0; 0 4]);
-tsym = TranslationSymmetry(lattice);
+tsym = FiniteTranslationSymmetry(lattice);
 psym = project(PointSymmetryDatabase.get(13), [1 0 0; 0 1 0]);
 
 
