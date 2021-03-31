@@ -144,7 +144,7 @@ function makeunitcell(
 end
 
 
-@deprecate make_unitcell makeunitcell
+@deprecate make_unitcell(args...; kwargs...) makeunitcell(args...; kwargs...)
 
 
 """
