@@ -66,9 +66,9 @@ struct PointSymmetry <: AbstractSymmetry{PointOperation{Int}}
         element_names::AbstractVector{<:AbstractString},
         matrix_representations::AbstractVector{<:AbstractMatrix{<:Integer}},
         hermann_mauguin::AbstractString,
-        schoenflies::AbstractString,
+        schoenflies::AbstractString;
+        tol::Real=Base.rtoldefault(Float64)
     )
-        tol = Base.rtoldefault(Float64)
         # number counting check
         if length(element_names) != group_order(group)
             throw(ArgumentError("number of elements different from order of group"))
