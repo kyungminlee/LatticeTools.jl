@@ -30,7 +30,7 @@ export make_kagome_obc
 
 function make_kagome_lattice(size_matrix ::AbstractMatrix{<:Integer}; compute_symmetry::Bool=false)
     latticevectors = [1 -0.5; 0 0.5*sqrt(3.0)];
-    unitcell = make_unitcell(latticevectors, SiteType=String)
+    unitcell = makeunitcell(latticevectors, SiteType=String)
     addsite!(unitcell, "A", carte2fract(unitcell, [0.5, 0.0]))
     addsite!(unitcell, "B", carte2fract(unitcell, [0.25, 0.25*sqrt(3.0)]))
     addsite!(unitcell, "C", carte2fract(unitcell, [0.5+0.25, 0.25*sqrt(3.0)]))
@@ -151,7 +151,7 @@ function make_kagome_obc(sites::AbstractVector{<:Tuple})
 
     site_folding = Dict{Int, Int}()
 
-    new_kagome_supercell = make_unitcell(
+    new_kagome_supercell = makeunitcell(
         big_kagome.lattice.supercell.latticevectors,
         SiteType=Tuple{String, Vector{Int}}
     )

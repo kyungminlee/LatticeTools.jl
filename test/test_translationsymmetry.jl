@@ -175,7 +175,7 @@ using YAML
     end  # @testset "non-orthogonal lattice" begin
 
     @testset "lattice permutation" begin
-        unitcell = make_unitcell([1.0 0.0; 0.0 1.0]; SiteType=String)
+        unitcell = makeunitcell([1.0 0.0; 0.0 1.0]; SiteType=String)
         addsite!(unitcell, "Ox", FractCoord([0,0], [0.5, 0.0]))
         addsite!(unitcell, "Oy", FractCoord([0,0], [0.0, 0.5]))
         lattice = make_lattice(unitcell, [4 0; 0 4])

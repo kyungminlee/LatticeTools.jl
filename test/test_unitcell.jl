@@ -6,42 +6,42 @@ using LatticeTools
     latticevectors = [0.5 0.0; 0.0 1.0]
 
     @testset "Constructors" begin
-        uc = make_unitcell(latticevectors)
+        uc = makeunitcell(latticevectors)
         @test isapprox(uc.latticevectors, latticevectors)
         @test isapprox(uc.reducedreciprocallatticevectors, [2.0 0.0; 0.0 1.0])
         @test isapprox(uc.reciprocallatticevectors, [4*pi 0.0; 0.0 2*pi])
 
-        uc2 = make_unitcell([[0.5,0.0], [0.0,1.0]])
+        uc2 = makeunitcell([[0.5,0.0], [0.0,1.0]])
 
-        @test_throws ArgumentError make_unitcell(latticevectors; SiteType=Int)
-        @test_throws ArgumentError make_unitcell([1.0 0.0;]; SiteType=String)
-        @test_throws ArgumentError make_unitcell([1.0 0.0; 1.0 0.0]; SiteType=String)
-        @test_throws ArgumentError make_unitcell([1.0 0.0; 0.0 1.0]; SiteType=String, tol=-1E-8)
+        @test_throws ArgumentError makeunitcell(latticevectors; SiteType=Int)
+        @test_throws ArgumentError makeunitcell([1.0 0.0;]; SiteType=String)
+        @test_throws ArgumentError makeunitcell([1.0 0.0; 1.0 0.0]; SiteType=String)
+        @test_throws ArgumentError makeunitcell([1.0 0.0; 0.0 1.0]; SiteType=String, tol=-1E-8)
 
-        uc1d = make_unitcell(2.0)
+        uc1d = makeunitcell(2.0)
         uc1d.latticevectors == 2.0 * ones(Float64, 1, 1)
     end
 
     @testset "Equality" begin
-        uc1 = make_unitcell([2.0 0.0; 1.0 2.0]; SiteType=String)
-        uc2 = make_unitcell([2.0 0.0; 1.0 2.0]; SiteType=String)
-        uc3 = make_unitcell([2.0 0.0; 1.0 2.0]; SiteType=Tuple{String, Int})
-        uc4 = make_unitcell([2.0 0.0; 0.0 2.0]; SiteType=String)
+        uc1 = makeunitcell([2.0 0.0; 1.0 2.0]; SiteType=String)
+        uc2 = makeunitcell([2.0 0.0; 1.0 2.0]; SiteType=String)
+        uc3 = makeunitcell([2.0 0.0; 1.0 2.0]; SiteType=Tuple{String, Int})
+        uc4 = makeunitcell([2.0 0.0; 0.0 2.0]; SiteType=String)
         @test uc1 == uc2
         @test uc1 != uc3
         @test uc1 != uc4
     end
 
     @testset "AngledLatticeVectors" begin
-        uc1 = make_unitcell([2.0 0.0; 1.0 2.0])
-        uc2 = make_unitcell([[2.0, 1.0], [0.0, 2.0]])
+        uc1 = makeunitcell([2.0 0.0; 1.0 2.0])
+        uc2 = makeunitcell([[2.0, 1.0], [0.0, 2.0]])
         @test uc1 == uc2
         @test isapprox(uc1.reciprocallatticevectors / π, [1.0 -0.5; 0.0 1.0])
         @test isapprox(uc2.reciprocallatticevectors / π, [1.0 -0.5; 0.0 1.0])
     end
 
     @testset "Methods" begin
-        uc = make_unitcell(latticevectors)
+        uc = makeunitcell(latticevectors)
         fc1 = FractCoord([0, 0], [0.5, 0.0])
         fc2 = FractCoord([0, 0], [0.0, 0.5])
         index1 = addsite!(uc, "Ox", fc1)
@@ -101,7 +101,7 @@ using LatticeTools
     end
 
     @testset "Methods Exceptions" begin
-        uc = make_unitcell(latticevectors; SiteType=String)
+        uc = makeunitcell(latticevectors; SiteType=String)
         addsite!(uc, "Ox", FractCoord([0, 0], [0.0, 0.0]))
         @test_throws ArgumentError addsite!(uc, "Oy", FractCoord([0], [0.5]))
         @test_throws ArgumentError addsite!(uc, "Ox", FractCoord([0, 0], [0.0, 0.5]))
@@ -110,7 +110,7 @@ using LatticeTools
     end
 
     @testset "Type" begin
-        uc = make_unitcell(latticevectors; SiteType=String)
+        uc = makeunitcell(latticevectors; SiteType=String)
         fc = Dict("Ox" => FractCoord([0, 0], [0.5, 0.0]),
                   "Oy" => FractCoord([0, 0], [0.0, 0.5]))
         for site in ["Ox", "Oy"]
@@ -122,7 +122,7 @@ using LatticeTools
 
     @testset "fract2carte/carte2fract" begin
         latticevectors = [0.5 0.0; 0.0 1.0]
-        uc = make_unitcell(latticevectors)
+        uc = makeunitcell(latticevectors)
 
         rawfractcoord = [-1.2, 1.5]
 
@@ -138,7 +138,7 @@ using LatticeTools
 
         @testset "tolerance" begin
             latticevectors = [1.0 0.0; 0.0 1.0]
-            uc = make_unitcell(latticevectors)
+            uc = makeunitcell(latticevectors)
 
             fc1 = carte2fract(uc, [1.0 - 1E-9, 1.0])
             fc2 = carte2fract(uc, [1.0 - 1E-9, 1.0]; tol=0.0)
@@ -151,7 +151,7 @@ using LatticeTools
 
     @testset "fract2carte/carte2fract exception" begin
         latticevectors = [0.5 0.0; 0.0 1.0]
-        uc1 = make_unitcell(latticevectors)
+        uc1 = makeunitcell(latticevectors)
 
         carte2fract(uc1, [1.0, 2.0])
         @test_throws ArgumentError carte2fract(uc1, [1.0])
@@ -163,7 +163,7 @@ using LatticeTools
     end
 
     @testset "momentumgrid" begin
-        uc = make_unitcell([1.0 0.0; 0.0 1.0]; SiteType=String)
+        uc = makeunitcell([1.0 0.0; 0.0 1.0]; SiteType=String)
 
         @test_throws ArgumentError momentumgrid(uc, [2,])
         @test_throws ArgumentError momentumgrid(uc, [2,3,4])
@@ -176,7 +176,7 @@ using LatticeTools
     end
 
     @testset "whichunitcell" begin
-        uc = make_unitcell([1.0 0.0; 0.0 1.0]; SiteType=String)
+        uc = makeunitcell([1.0 0.0; 0.0 1.0]; SiteType=String)
         addsite!(uc, "A", FractCoord([0,0], [0.1, 0.1]))
         addsite!(uc, "B", FractCoord([0,0], [0.2, 0.2]))
         @test whichunitcell(uc, "A", [1.1, 2.1]) == [1, 2]
@@ -186,7 +186,7 @@ using LatticeTools
     end
 
     @testset "findsiteindex" begin
-        uc = make_unitcell([1.0 0.0; 0.0 1.0]; SiteType=String)
+        uc = makeunitcell([1.0 0.0; 0.0 1.0]; SiteType=String)
         addsite!(uc, "A", FractCoord([0, 0], [0.0, 0.0]))
         @test findsiteindex(uc, FractCoord([0,0], [0.0, 0.0])) == (1, [0,0])
         @test findsiteindex(uc, FractCoord([1,0], [0.0, 0.0])) == (1, [1,0])
