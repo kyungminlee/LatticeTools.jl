@@ -4,6 +4,7 @@ export generate_coordinates
 export volume
 export isequiv
 
+import LinearAlgebra
 import LinearAlgebraX
 
 
@@ -24,7 +25,8 @@ struct Hypercube
     wrap::Function
 
     function Hypercube(shape_matrix::AbstractMatrix{<:Integer})
-        det = LinearAlgebraX.detx(shape_matrix) # square matrix asserted here
+        LinearAlgebra.checksquare(shape_matrix)
+        det = LinearAlgebraX.detx(shape_matrix) # does not check whether shape_matrix is square
         iszero(det) && throw(ArgumentError("scale matrix null"))
         inverse_shape_matrix = LinearAlgebraX.invx(shape_matrix)
         function wrap(r::AbstractArray{<:Integer}, mode::RoundingMode=RoundDown)
