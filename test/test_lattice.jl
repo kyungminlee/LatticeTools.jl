@@ -3,7 +3,7 @@ using LatticeTools
 
 
 @testset "Lattice1D" begin
-    unitcell = make_unitcell(2.0; SiteType=String)
+    unitcell = makeunitcell(2.0; SiteType=String)
     addsite!(unitcell, "Spin", FractCoord([0], [0.0]))
     lattice = make_lattice(unitcell, 3)
     scale_matrix = 3 * ones(Int, (1,1))
@@ -18,7 +18,7 @@ end
 
 
 @testset "Lattice" begin
-    unitcell = make_unitcell([1.0 0.0; 0.0 1.0]; SiteType=String)
+    unitcell = makeunitcell([1.0 0.0; 0.0 1.0]; SiteType=String)
     addsite!(unitcell, "d", FractCoord([0,0], [0.0, 0.0]))
     addsite!(unitcell, "px", FractCoord([0,0], [0.5, 0.0]))
     addsite!(unitcell, "py", FractCoord([0,0], [0.0, 0.5]))
@@ -51,7 +51,7 @@ end
         @test lattice.hypercube == lattice3.hypercube
         @test lattice.bravais_coordinates != lattice3.bravais_coordinates
     end
-    let unitcell2 = make_unitcell([1.0 0.0; 0.0 1.0]; SiteType=String)
+    let unitcell2 = makeunitcell([1.0 0.0; 0.0 1.0]; SiteType=String)
         addsite!(unitcell2, "d", FractCoord([0,0], [0.0, 0.0]))
         @test lattice != make_lattice(unitcell2, [2 0; 0 2])
     end
@@ -59,7 +59,7 @@ end
 
 
 @testset "LatticeWithOrbital" begin
-    unitcell = make_unitcell([1.0 0.0; 0.0 1.0]; SiteType=String, OrbitalType=String)
+    unitcell = makeunitcell([1.0 0.0; 0.0 1.0]; SiteType=String, OrbitalType=String)
     addsite!(unitcell, "Cu", FractCoord([0,0], [0.0, 0.0]))
     addsite!(unitcell, "Ox", FractCoord([0,0], [0.5, 0.0]))
     addsite!(unitcell, "Oy", FractCoord([0,0], [0.0, 0.5]))
@@ -96,7 +96,7 @@ end
         @test lattice.hypercube == lattice3.hypercube
         @test lattice.bravais_coordinates != lattice3.bravais_coordinates
     end
-    let unitcell2 = make_unitcell([1.0 0.0; 0.0 1.0]; SiteType=String, OrbitalType=String)
+    let unitcell2 = makeunitcell([1.0 0.0; 0.0 1.0]; SiteType=String, OrbitalType=String)
         addsite!(unitcell2, "d", FractCoord([0,0], [0.0, 0.0]))
         @test lattice != make_lattice(unitcell2, [2 0; 0 2])
     end

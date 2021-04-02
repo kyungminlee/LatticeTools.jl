@@ -1,8 +1,6 @@
 export findsitemap
 export findorbitalmap
 
-@deprecate findorbitalmap(args...) findsitemap(args...)
-
 
 """
     findsitemap(unitcell, translation_operation)
