@@ -74,12 +74,17 @@ struct PointSymmetry <: AbstractSymmetry{PointOperation{Int}}
             throw(ArgumentError("number of elements different from order of group"))
         elseif length(matrix_representations) != group_order(group)
             throw(ArgumentError("number of matrix representations different from order of group"))
-        elseif !allunique(matrix_representations)
-            throw(ArgumentError("matrix representations have to be all unique"))
         elseif generate_subgroup(group, generators) != BitSet(1:group_order(group))
             throw(ArgumentError("Generators $(generators) does not generate the group"))
+        elseif !ishomomorphic(group, matrix_representations)
+            msg = """
+            matrix representation not homomorphic to group:
+            $matrix_representations
+            $group
+            """
+            throw(ArgumentError(msg))
         end
-        # TODO Test matrix representation for isomorphism
+
         let prev_set = BitSet()
             for elements in conjugacy_classes
                 !isempty(intersect(elements, prev_set)) && throw(ArgumentError("Same element in multiple conjugacy classes"))
@@ -101,21 +106,25 @@ struct PointSymmetry <: AbstractSymmetry{PointOperation{Int}}
             end
             d = size(rep[1], 1)
             if !isapprox(rep[1], Matrix(LinearAlgebra.I, (d, d)); atol=tol)
-                throw(ArgumentError("matrix representation of identity should be identity"))
+                throw(ArgumentError("irrep matrix representation of identity should be identity"))
             end
             for m in rep
                 if size(m) != (d,d)
-                    throw(ArgumentError("matrix representation should all have the same dimension"))
+                    throw(ArgumentError("irrep matrix representation should all have the same dimension"))
                 end
             end
             if !ishomomorphic(group, rep; equal=(x,y) -> isapprox(x,y;atol=tol))
-                throw(ArgumentError("matrix representation not homomorphic to group"))
+                throw(ArgumentError("irrep matrix representation not homomorphic to group"))
             end
         end
         let dim = size(first(matrix_representations), 1)
             if any(size(m) != (dim, dim) for m in matrix_representations)
-                throw(ArgumentError("matrix representations should be square matrices of the same dimension"))
+                throw(ArgumentError("irrep matrix representations should be square matrices of the same dimension"))
             end
+        end
+
+        if !allunique(matrix_representations)
+            @warn "matrix representations not all unique"
         end
 
         elements = PointOperation.(matrix_representations)

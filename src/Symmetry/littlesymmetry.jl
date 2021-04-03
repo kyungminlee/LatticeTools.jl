@@ -173,7 +173,11 @@ function little_symmetry_iso(
     tsym_irrep_index::Integer,
     psym::PointSymmetry,
 )
-    tsym_irrep_index == 1 && return psym
+    @warn "Function little_symmetry_iso deprecated. Correctness not guaranteed." maxlog=1
+    if !iscompatible(tsym, psym)
+        throw(ArgumentError("translation and point symmetries are not compatible"))
+    end
+    tsym_irrep_index == 1 && return little_symmetry(tsym, psym)
     (lg_irrep, lg_matrep, lg_element_names) = let
         lg_elements = little_group_elements(tsym, tsym_irrep_index, psym)
 
@@ -195,8 +199,8 @@ function little_symmetry_iso(
     simple_element_names = sort(simplify_name.(lg_element_names))
     for i in 1:32
         psym = PointSymmetryDatabase.get(i)
-        if ( sort(simplify_name.(psym.element_names)) == simple_element_names )
-             #&& !isnothing(group_isomorphism(lg_irrep.group, psym.group)) )
+        if ( sort(simplify_name.(psym.element_names)) == simple_element_names
+             && !isnothing(group_isomorphism(lg_irrep.group, psym.group)) )
             hermann_mauguin = psym.hermann_mauguin
             break
         end
