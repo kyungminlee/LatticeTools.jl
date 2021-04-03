@@ -123,7 +123,7 @@ using YAML
                         element_names, matrix_representations, hermann_mauguin, schoenflies)
         end
         let matrix_representations = [[1 0 0; 1 0 0]]
-            @test_throws ArgumentError PointSymmetry(group, generators,
+            @test_throws DimensionMismatch PointSymmetry(group, generators,
                         conjugacy_classes, character_table, irreps,
                         element_names, matrix_representations, hermann_mauguin, schoenflies)
         end

@@ -69,6 +69,11 @@ struct PointSymmetry <: AbstractSymmetry{PointOperation{Int}}
         schoenflies::AbstractString;
         tol::Real=Base.rtoldefault(Float64)
     )
+        let dim = size(first(matrix_representations), 1)
+            if any(size(m) != (dim, dim) for m in matrix_representations)
+                throw(DimensionMismatch("irrep matrix representations should be square matrices of the same dimension"))
+            end
+        end
         # number counting check
         if length(element_names) != group_order(group)
             throw(ArgumentError("number of elements different from order of group"))
@@ -84,6 +89,7 @@ struct PointSymmetry <: AbstractSymmetry{PointOperation{Int}}
             """
             throw(ArgumentError(msg))
         end
+
 
         let prev_set = BitSet()
             for elements in conjugacy_classes
@@ -115,11 +121,6 @@ struct PointSymmetry <: AbstractSymmetry{PointOperation{Int}}
             end
             if !ishomomorphic(group, rep; equal=(x,y) -> isapprox(x,y;atol=tol))
                 throw(ArgumentError("irrep matrix representation not homomorphic to group"))
-            end
-        end
-        let dim = size(first(matrix_representations), 1)
-            if any(size(m) != (dim, dim) for m in matrix_representations)
-                throw(ArgumentError("irrep matrix representations should be square matrices of the same dimension"))
             end
         end
 
