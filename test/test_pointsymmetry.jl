@@ -33,24 +33,25 @@ using YAML
                              element_names, matrix_representations,
                              hermann_mauguin, schoenflies)
 
-        let TBL = LatticeTools
+        let LT = LatticeTools
             @test eltype(psym) == PointOperation{Int}
             @test valtype(psym) == PointOperation{Int}
-            @test all(TBL.element(psym, i) == PointOperation(matrix_representations[i]) for i in 1:2)
-            @test TBL.elements(psym) == PointOperation.(matrix_representations)
-            @test all(TBL.element_name(psym, i) == element_names[i] for i in 1:2)
-            @test TBL.element_names(psym) == element_names
-            @test TBL.group(psym) == group
-            @test TBL.group_order(psym) == group_order(group)
-            @test TBL.group_multiplication_table(psym) == group.multiplication_table
-            @test TBL.character_table(psym) == character_table
-            @test TBL.irreps(psym) == irreps
-            @test all(TBL.irrep(psym, i) == irreps[i] for i in 1:2)
+            @test all(LT.element(psym, i) == PointOperation(matrix_representations[i]) for i in 1:2)
+            @test LT.elements(psym) == PointOperation.(matrix_representations)
+            @test all(LT.element_name(psym, i) == element_names[i] for i in 1:2)
+            @test LT.element_names(psym) == element_names
+            @test LT.group(psym) == group
+            @test LT.group_order(psym) == group_order(group)
+            @test LT.group_multiplication_table(psym) == group.multiplication_table
+            @test LT.character_table(psym) == character_table
+            @test LT.irreps(psym) == irreps
+            @test all(LT.irrep(psym, i) == irreps[i] for i in 1:2)
             @test num_irreps(psym) == 2
-            @test all(TBL.irrep_dimension(psym, i) == 1 for i in 1:2)
+            @test all(LT.irrep_dimension(psym, i) == 1 for i in 1:2)
             @test generator_indices(psym) == [2]
             @test generator_elements(psym) == [PointOperation([-1 0; 0 -1])]
         end
+
 
         let generators = [1]
             @test_throws ArgumentError PointSymmetry(group, generators,
@@ -112,25 +113,37 @@ using YAML
                         element_names, matrix_representations, hermann_mauguin, schoenflies)
         end
         let matrix_representations = [[1 0; 0 1], [-1 0 0; 0 -1 0]]
-            @test_throws ArgumentError PointSymmetry(group, generators,
+            @test_throws DimensionMismatch PointSymmetry(group, generators,
                         conjugacy_classes, character_table, irreps,
                         element_names, matrix_representations, hermann_mauguin, schoenflies)
         end
         let matrix_representations = [[1 0 0; 1 0 0], [-1 0 0; -1 0 0]]
-            @test_throws ArgumentError PointSymmetry(group, generators,
+            @test_throws DimensionMismatch PointSymmetry(group, generators,
                         conjugacy_classes, character_table, irreps,
                         element_names, matrix_representations, hermann_mauguin, schoenflies)
         end
         let matrix_representations = [[1 0 0; 1 0 0]]
-            @test_throws ArgumentError PointSymmetry(group, generators,
+            @test_throws DimensionMismatch PointSymmetry(group, generators,
                         conjugacy_classes, character_table, irreps,
                         element_names, matrix_representations, hermann_mauguin, schoenflies)
         end
         let matrix_representations = [[1 0 ; 0 1], [1 0; 0 1]]
-            @test_throws ArgumentError PointSymmetry(group, generators,
-                        conjugacy_classes, character_table, irreps,
-                        element_names, matrix_representations, hermann_mauguin, schoenflies)
+            PointSymmetry(
+                group, generators,
+                conjugacy_classes, character_table, irreps,
+                element_names, matrix_representations, hermann_mauguin, schoenflies,
+            )
+            # no error thrown since homomorphic.
         end
+
+        let
+            matrix_representations = [hcat(1), hcat(2)]
+            @test_throws ArgumentError PointSymmetry(
+                group, generators,
+                conjugacy_classes, character_table, irreps,
+                element_names, matrix_representations, hermann_mauguin, schoenflies
+            )
+        end        
     end
 
     # D_4 (422)
@@ -197,7 +210,6 @@ using YAML
         @test SpaceOperation([0 1 0; 1 0 0; 0 0 -1], [0, 0, 0]) ∈ psym
         @test SpaceOperation([0 1 0; 1 0 0; 0 0 -1], [1, 0, 0]) ∉ psym
     end
-
 
     @testset "irreps" begin
         @test num_irreps(psym) == 5
@@ -322,7 +334,7 @@ using YAML
         end
 
         @testset "little_symmetry" begin
-            for LSYM in [little_symmetry, little_symmetry_iso]
+            for LSYM in [little_symmetry] #, little_symmetry_iso]
                 lattice = make_lattice(unitcell, [4 0; 0 4])
                 tsym = FiniteTranslationSymmetry(lattice)
                 for tsym_irrep in 1:num_irreps(tsym)

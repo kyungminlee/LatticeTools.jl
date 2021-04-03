@@ -25,13 +25,13 @@ Base.hash(p::P, h::UInt) where {P<:Phase} = Base.hash(P, Base.hash(p.value, h))
     let
         θt = directproduct(θ, t)
         θt2 = directproduct(Phase(cis(2π/3)), TranslationOperation([1, 0]))
-        @show θt
-        @show θt2
-        @show (θt.operations) == (θt2.operations)
-        @show typeof(θt.operations)
-        @show typeof(θt2.operations)
-        @show hash(θt.operations), hash(θt2.operations)
-        @show (θt.operations), (θt2.operations)
+        # @show θt
+        # @show θt2
+        # @show (θt.operations) == (θt2.operations)
+        # @show typeof(θt.operations)
+        # @show typeof(θt2.operations)
+        # @show hash(θt.operations), hash(θt2.operations)
+        # @show (θt.operations), (θt2.operations)
 
         @test θt == θt2
         @test hash(θt) == hash(θt2)

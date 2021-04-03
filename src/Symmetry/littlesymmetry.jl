@@ -163,6 +163,8 @@ function little_symmetry(tsym::FiniteTranslationSymmetry, tsym_irrep::Integer, p
 end
 
 
+# COV_EXCL_START
+
 """
     little_symmetry_iso(tsym, tsym_irrep_index, psym)
 
@@ -173,8 +175,12 @@ function little_symmetry_iso(
     tsym_irrep_index::Integer,
     psym::PointSymmetry,
 )
-    tsym_irrep_index == 1 && return psym
-    (lg_irrep, lg_matrep, lg_element_names) = let
+    @warn "Function little_symmetry_iso deprecated. Correctness not guaranteed." maxlog=1
+    if !iscompatible(tsym, psym)
+        throw(ArgumentError("translation and point symmetries are not compatible"))
+    end
+    tsym_irrep_index == 1 && return little_symmetry(tsym, psym)
+    (lg_matrep, lg_element_names, lg_irrep) = let
         lg_elements = little_group_elements(tsym, tsym_irrep_index, psym)
 
         lg_raw = little_group(tsym, psym, lg_elements)
@@ -185,7 +191,7 @@ function little_symmetry_iso(
 
         lg_matrep = lg_matrep_raw[ϕ]
         lg_element_names = lg_element_names_raw[ϕ]
-        (lg_irrep, lg_matrep, lg_element_names)
+        (lg_matrep, lg_element_names, lg_irrep)
     end
 
     generators = minimal_generating_set(lg_irrep.group)
@@ -195,8 +201,8 @@ function little_symmetry_iso(
     simple_element_names = sort(simplify_name.(lg_element_names))
     for i in 1:32
         psym = PointSymmetryDatabase.get(i)
-        if ( sort(simplify_name.(psym.element_names)) == simple_element_names )
-             #&& !isnothing(group_isomorphism(lg_irrep.group, psym.group)) )
+        if ( sort(simplify_name.(psym.element_names)) == simple_element_names
+             && !isnothing(group_isomorphism(lg_irrep.group, psym.group)) )
             hermann_mauguin = psym.hermann_mauguin
             break
         end
@@ -214,3 +220,4 @@ function little_symmetry_iso(
         schoenflies,
     )
 end
+# COV_EXCL_STOP

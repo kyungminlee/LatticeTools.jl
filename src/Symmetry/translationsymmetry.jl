@@ -196,7 +196,7 @@ struct FiniteTranslationSymmetry <: AbstractSymmetry{TranslationOperation{Int}}
 end
 
 function TranslationSymmetry(args...; kwargs...)
-    @warn "TranslationSymmetry has been renamed to FiniteTranslationSymmetry."
+    @warn "TranslationSymmetry has been renamed to FiniteTranslationSymmetry." maxlog=1
     return FiniteTranslationSymmetry(args...; kwargs...)
 end
 
