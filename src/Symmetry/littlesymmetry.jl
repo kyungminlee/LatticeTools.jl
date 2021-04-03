@@ -163,6 +163,8 @@ function little_symmetry(tsym::FiniteTranslationSymmetry, tsym_irrep::Integer, p
 end
 
 
+# COV_EXCL_START
+
 """
     little_symmetry_iso(tsym, tsym_irrep_index, psym)
 
@@ -178,7 +180,7 @@ function little_symmetry_iso(
         throw(ArgumentError("translation and point symmetries are not compatible"))
     end
     tsym_irrep_index == 1 && return little_symmetry(tsym, psym)
-    (lg_irrep, lg_matrep, lg_element_names) = let
+    (lg_matrep, lg_element_names, lg_irrep) = let
         lg_elements = little_group_elements(tsym, tsym_irrep_index, psym)
 
         lg_raw = little_group(tsym, psym, lg_elements)
@@ -189,7 +191,7 @@ function little_symmetry_iso(
 
         lg_matrep = lg_matrep_raw[ϕ]
         lg_element_names = lg_element_names_raw[ϕ]
-        (lg_irrep, lg_matrep, lg_element_names)
+        (lg_matrep, lg_element_names, lg_irrep)
     end
 
     generators = minimal_generating_set(lg_irrep.group)
@@ -218,3 +220,4 @@ function little_symmetry_iso(
         schoenflies,
     )
 end
+# COV_EXCL_STOP
