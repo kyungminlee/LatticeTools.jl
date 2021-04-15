@@ -1,3 +1,4 @@
+#=
 export DirectProductOperation
 export isidentity
 export directproduct
@@ -59,3 +60,4 @@ function directproduct(::Type{E}, products::Function...) where {E<:DirectProduct
     end
     return product
 end
+=#

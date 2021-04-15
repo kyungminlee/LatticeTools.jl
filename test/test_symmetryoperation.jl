@@ -3,33 +3,33 @@ using LatticeTools
 
 
 @testset "symmetryoperation" begin
-    iden = IdentityOperation(Int, 2)
+    # iden = IdentityOperation(Int, 2)
 
-    @testset "IdentityOperation" begin
-        @test iden == IdentityOperation{Int}(2)
+    # @testset "IdentityOperation" begin
+    #     @test iden == IdentityOperation{Int}(2)
 
-        @test iden != IdentityOperation(Int, 3)
-        @test iden * iden == iden
-        n=0;  @test iden^n == iden
-        n=4;  @test iden^n == iden
-        n=-3; @test iden^n == iden
-        @test inv(iden) == iden
-        @test isidentity(iden)
-        @test istranslation(iden)
-        @test ispoint(iden)
-        @test domaintype(iden) == Int
-        @test domaintype(typeof(iden)) == Int
-        @test dimension(iden) == 2
-        @test hash(iden) == hash(IdentityOperation(Int, 2))
-        @test hash(iden) != hash(IdentityOperation(Int, 3))
+    #     @test iden != IdentityOperation(Int, 3)
+    #     @test iden * iden == iden
+    #     n=0;  @test iden^n == iden
+    #     n=4;  @test iden^n == iden
+    #     n=-3; @test iden^n == iden
+    #     @test inv(iden) == iden
+    #     @test isidentity(iden)
+    #     @test istranslation(iden)
+    #     @test ispoint(iden)
+    #     @test domaintype(iden) == Int
+    #     @test domaintype(typeof(iden)) == Int
+    #     @test dimension(iden) == 2
+    #     @test hash(iden) == hash(IdentityOperation(Int, 2))
+    #     @test hash(iden) != hash(IdentityOperation(Int, 3))
 
-        @test apply_operation(iden, [3,2]) == [3,2]
-        @test iden([3,2]) == [3,2]
+    #     @test apply_operation(iden, [3,2]) == [3,2]
+    #     @test iden([3,2]) == [3,2]
 
-        @test_throws DimensionMismatch iden * IdentityOperation(Int, 3)
-        @test_throws DimensionMismatch iden([3,2,1])
-        @test_throws DimensionMismatch apply_operation(iden, [3,2,1])
-    end
+    #     @test_throws DimensionMismatch iden * IdentityOperation(Int, 3)
+    #     @test_throws DimensionMismatch iden([3,2,1])
+    #     @test_throws DimensionMismatch apply_operation(iden, [3,2,1])
+    # end
 
     @testset "TranslationOperation" begin
         t0  = TranslationOperation([0,0])
@@ -56,17 +56,17 @@ using LatticeTools
             @test hash(t1) != hash(t2)
         end
 
-        @testset "equality-heterotype" begin
-            @test t0 == IdentityOperation(Int, 2)
-            @test IdentityOperation(Int, 2) == t0
-        end
+        # @testset "equality-heterotype" begin
+        #     @test t0 == IdentityOperation(Int, 2)
+        #     @test IdentityOperation(Int, 2) == t0
+        # end
 
         @testset "operator" begin
-            @test t1 * iden == t1
-            @test iden * t1 == t1
+            # @test t1 * iden == t1
+            # @test iden * t1 == t1
 
-            @test_throws DimensionMismatch t1 * IdentityOperation(Int, 5)
-            @test_throws DimensionMismatch IdentityOperation(Int, 5) * t1
+            # @test_throws DimensionMismatch t1 * IdentityOperation(Int, 5)
+            # @test_throws DimensionMismatch IdentityOperation(Int, 5) * t1
 
             @test t2^2 == TranslationOperation([4,8])
 
@@ -87,14 +87,14 @@ using LatticeTools
         end
 
         @testset "promotion" begin
-            @test promote_type(typeof(t1), typeof(iden)) == TranslationOperation{Int}
+            # @test promote_type(typeof(t1), typeof(iden)) == TranslationOperation{Int}
             arr = TranslationOperation{Int}[]
-            push!(arr, IdentityOperation(Int, 2))
+            # push!(arr, IdentityOperation(Int, 2))
             push!(arr, [3, 4])
             @test isa(arr[1], TranslationOperation{Int})
-            @test isa(arr[2], TranslationOperation{Int})
-            @test arr[1].displacement == [0,0]
-            @test arr[2].displacement == [3,4]
+            # @test isa(arr[2], TranslationOperation{Int})
+            # @test arr[1].displacement == [0,0]
+            @test arr[1].displacement == [3,4]
         end
     end
 
@@ -124,10 +124,10 @@ using LatticeTools
         end
 
         @testset "equality-heterotype" begin
-            @test p0 == iden
-            @test iden == p0
-            @test p1 != iden
-            @test iden != p1
+            # @test p0 == iden
+            # @test iden == p0
+            # @test p1 != iden
+            # @test iden != p1
             @test p1 != TranslationOperation([1,0])
             @test p0 == TranslationOperation([0,0])
             @test TranslationOperation([1,0]) != p1
@@ -160,14 +160,14 @@ using LatticeTools
         end
 
         @testset "promotion" begin
-            @test promote_type(typeof(p1), typeof(iden)) == PointOperation{Int}
+            # @test promote_type(typeof(p1), typeof(iden)) == PointOperation{Int}
             arr = PointOperation{Int}[]
-            push!(arr, IdentityOperation(Int, 2))
+            # push!(arr, IdentityOperation(Int, 2))
             push!(arr, [0 1; 1 0])
+            # @test isa(arr[1], PointOperation{Int})
+            # @test arr[1].matrix == [1 0; 0 1]
             @test isa(arr[1], PointOperation{Int})
-            @test arr[1].matrix == [1 0; 0 1]
-            @test isa(arr[2], PointOperation{Int})
-            @test arr[2].matrix == [0 1; 1 0]
+            @test arr[1].matrix == [0 1; 1 0]
         end
     end
 
@@ -259,8 +259,8 @@ using LatticeTools
             @test SpaceOperation(c4p) == c4p
             @test c4p == SpaceOperation(c4p)
             @test isidentity(SpaceOperation(c4p * c4m))
-            @test SpaceOperation(c4p * c4m) == IdentityOperation(Int, 2)
-            @test IdentityOperation(Int, 2) == SpaceOperation(c4p * c4m)
+            # @test SpaceOperation(c4p * c4m) == IdentityOperation(Int, 2)
+            # @test IdentityOperation(Int, 2) == SpaceOperation(c4p * c4m)
 
             @test m10 * m10 * t10 == t10
             @test c4p * t10 * c4m == TranslationOperation([0, 1])
@@ -270,11 +270,11 @@ using LatticeTools
         end
 
         @testset "promotion" begin
-            @test promote_type(IdentityOperation{Int}, SpaceOperation{Int, Int}) == SpaceOperation{Int, Int}
+            # @test promote_type(IdentityOperation{Int}, SpaceOperation{Int, Int}) == SpaceOperation{Int, Int}
             @test promote_type(TranslationOperation{Int}, SpaceOperation{Int, Int}) == SpaceOperation{Int, Int}
             @test promote_type(PointOperation{Int}, SpaceOperation{Int, Int}) == SpaceOperation{Int, Int}
 
-            @test promote_type(IdentityOperation{Int}, SpaceOperation{Int, Rational{Int}}) == SpaceOperation{Int, Rational{Int}}
+            # @test promote_type(IdentityOperation{Int}, SpaceOperation{Int, Rational{Int}}) == SpaceOperation{Int, Rational{Int}}
             @test promote_type(TranslationOperation{Int}, SpaceOperation{Int, Rational{Int}}) == SpaceOperation{Int, Rational{Int}}
             @test promote_type(PointOperation{Int}, SpaceOperation{Int, Rational{Int}}) == SpaceOperation{Int, Rational{Int}}
 
@@ -283,16 +283,14 @@ using LatticeTools
             arr = SpaceOperation{Int, Rational{Int}}[]
             push!(arr, PointOperation([0 1; 1 0]))
             push!(arr, TranslationOperation([1, 0]))
-            push!(arr, IdentityOperation(Int, 2))
+            # push!(arr, IdentityOperation(Int, 2))
             push!(arr, [1,0])
             push!(arr, [0 1; 1 0])
 
             @test arr[1].matrix == [0 1; 1 0] && arr[1].displacement == [0,0]
             @test arr[2].matrix == [1 0; 0 1] && arr[2].displacement == [1,0]
-            @test arr[3].matrix == [1 0; 0 1] && arr[3].displacement == [0,0]
-            @test arr[4].matrix == [1 0; 0 1] && arr[4].displacement == [1,0]
-            @test arr[5].matrix == [0 1; 1 0] && arr[5].displacement == [0,0]
-
+            @test arr[3].matrix == [1 0; 0 1] && arr[3].displacement == [1,0]
+            @test arr[4].matrix == [0 1; 1 0] && arr[4].displacement == [0,0]
         end
 
         @testset "apply" begin
@@ -308,12 +306,12 @@ using LatticeTools
             @test pt([5,0]) == [0, 6]
             # @test tp([5,0]) == tpc([5,0])
             # @test pt([5,0]) == ptc([5,0])
-            @test tp^0 == IdentityOperation(Int, 2)
+            @test isidentity(tp^0) # == IdentityOperation(Int, 2)
             @test tp^1 == tp
             @test tp^2 == t * p * t * p
             @test tp^(-2) == inv(p) * inv(t) * inv(p) * inv(t)
 
-            n = 0;   @test tp^n == IdentityOperation(Int, 2)
+            n = 0;   @test isidentity(tp^n) # == IdentityOperation(Int, 2)
             n = 1;   @test tp^n == tp
             n = 2;   @test tp^n == t * p * t * p
             n = -2;  @test tp^n == inv(p) * inv(t) * inv(p) * inv(t)

@@ -1,3 +1,4 @@
+#=
 export AbstractSpaceSymmetryOperation
 
 export Permutation
@@ -157,3 +158,4 @@ end
 Test whether the permutation is an identity.
 """
 isidentity(perm::Permutation) = perm.map == 1:length(perm.map)
+=#

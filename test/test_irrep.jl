@@ -46,7 +46,7 @@ using LatticeTools
             @test lge1 == lge2
             lg_matrep = psym.matrix_representations[lge1]
             @test !isnothing(group_isomorphism(little_group(tsym, tsym_irrep, psym),
-                                  FiniteGroup(group_multiplication_table(lg_matrep))))
+                                  FiniteGroup(generate_multiplication_table(lg_matrep))))
             let psic = IrrepComponent(psym, 1, 1)
                 if k in [[0,0], [2,2]]
                     SymmorphicIrrepComponent(tsic, psic)
@@ -64,7 +64,7 @@ using LatticeTools
             @test iscompatible(tsic, psym_little)
             lg_matrep = psym.matrix_representations[little_group_elements(tsic, psym)]
             @test !isnothing(group_isomorphism(little_group(tsic, psym),
-                                FiniteGroup(group_multiplication_table(lg_matrep))))
+                                FiniteGroup(generate_multiplication_table(lg_matrep))))
             let psic = IrrepComponent(psym, 1, 1)
                 if k in [[0,0], [2,2]]
                     SymmorphicIrrepComponent(tsic, psic)
@@ -89,9 +89,9 @@ using LatticeTools
             @test length(permphase) == group_order(psym)
 
             perms = [p for (p, ϕ) in permphase]
-            @test ishomomorphic(psym.group, perms)
+            @test ishomomorphic(perms, psym.group)
 
-            mtab = group_multiplication_table(perms)
+            mtab = generate_multiplication_table(perms)
             @test mtab == psym.group.multiplication_table
         end
     end

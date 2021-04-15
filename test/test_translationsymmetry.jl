@@ -1,5 +1,6 @@
 using Test
 using LatticeTools
+using GroupTools
 
 using LinearAlgebra
 using YAML
@@ -122,8 +123,8 @@ using YAML
             @test [x for x in tsym] == collect(elements(tsym))
             @test all(x ∈ tsym for x in tsym)
             @test 100 ∉ tsym
-            @test IdentityOperation(Int, 2) ∈ tsym
-            @test IdentityOperation(Int, 3) ∉ tsym
+            # @test IdentityOperation(Int, 2) ∈ tsym
+            # @test IdentityOperation(Int, 3) ∉ tsym
             @test TranslationOperation([100, 100]) ∈ tsym
             @test TranslationOperation([100, 100, 100]) ∉ tsym
             @test PointOperation([1 0; 0 1]) ∈ tsym

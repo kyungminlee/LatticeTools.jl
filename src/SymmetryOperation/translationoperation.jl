@@ -4,7 +4,6 @@ export apply_operation
 export domaintype
 export isidentity, istranslation, ispoint
 
-
 """
     TranslationOperation{S<:Real}
 
@@ -46,20 +45,23 @@ struct TranslationOperation{S<:Real} <:AbstractSpaceSymmetryOperation{S}
     end
 end
 
-
-function Base.convert(::Type{TranslationOperation{S}}, obj::IdentityOperation{S}) where S
-    dim = dimension(obj)
-    return TranslationOperation{S}(zeros(S, dim))
+function Base.one(x::TranslationOperation{S}) where {S}
+    return TranslationOperation(zeros(S, length(x.displacement)))
 end
+
+# function Base.convert(::Type{TranslationOperation{S}}, obj::IdentityOperation{S}) where S
+#     dim = dimension(obj)
+#     return TranslationOperation{S}(zeros(S, dim))
+# end
 
 function Base.convert(::Type{TranslationOperation{S}}, displacement::AbstractVector{S}) where S
     return TranslationOperation{S}(displacement)
 end
 
 
-function Base.promote_rule(::Type{TranslationOperation{S}}, ::Type{IdentityOperation{S}}) where S
-    return TranslationOperation{S}
-end
+# function Base.promote_rule(::Type{TranslationOperation{S}}, ::Type{IdentityOperation{S}}) where S
+#     return TranslationOperation{S}
+# end
 
 
 ## properties
@@ -100,23 +102,21 @@ Base.hash(arg::TranslationOperation{S}, h::UInt) where S = hash(TranslationOpera
 function Base.:(==)(lhs::TranslationOperation{S}, rhs::TranslationOperation{S}) where S
     return lhs.displacement == rhs.displacement
 end
-function Base.:(==)(top::TranslationOperation{S}, iden::IdentityOperation{S}) where S
-    return iszero(top.displacement)
-end
-function Base.:(==)(iden::IdentityOperation{S}, top::TranslationOperation{S}) where S
-    return iszero(top.displacement)
-end
+# function Base.:(==)(top::TranslationOperation{S}, iden::IdentityOperation{S}) where S
+#     return iszero(top.displacement)
+# end
+# function Base.:(==)(iden::IdentityOperation{S}, top::TranslationOperation{S}) where S
+#     return iszero(top.displacement)
+# end
 
 
 function Base.:(*)(lhs::TranslationOperation{S}, rhs::TranslationOperation{S}) where S
     return TranslationOperation{S}(lhs.displacement .+ rhs.displacement)
 end
 
-
-function Base.:(^)(lhs::TranslationOperation{S}, rhs::Real) where S
+function Base.:(^)(lhs::TranslationOperation{S}, rhs::Integer) where S
     return TranslationOperation{S}(lhs.displacement .* rhs)
 end
-
 
 function Base.inv(arg::TranslationOperation{S}) where S
     return TranslationOperation{S}(-arg.displacement)

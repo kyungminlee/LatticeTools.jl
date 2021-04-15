@@ -75,7 +75,7 @@ end
 
 Get order of the symmetry group of `sic`.
 """
-group_order(sic::IrrepComponent) = group_order(sic.symmetry)
+GroupTools.group_order(sic::IrrepComponent) = group_order(sic.symmetry)
 
 
 """

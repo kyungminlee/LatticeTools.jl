@@ -6,7 +6,6 @@ export SitePermutation
 export embed
 export isidentity
 
-
 abstract type AbstractSymmetryOperationEmbedding <: AbstractSymmetryOperation end
 abstract type AbstractSpaceSymmetryOperationEmbedding <: AbstractSymmetryOperationEmbedding end
 

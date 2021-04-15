@@ -1,3 +1,4 @@
+#=
 using Test
 using LatticeTools
 
@@ -41,3 +42,4 @@ using LatticeTools
     @test generate_group(p2) == Set([p0, p2])
     @test generate_group(p1, p2) == Set([p0, p1, p2, p3])
 end
+=#

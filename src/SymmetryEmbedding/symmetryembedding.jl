@@ -46,7 +46,7 @@ struct SymmetryEmbedding{SymmetryType}<:AbstractSymmetryEmbedding
                         push!(reduced_elements, elem)
                     end
                 end
-                reduced_group = FiniteGroup(group_multiplication_table(reduced_elements))
+                reduced_group = FiniteGroup(generate_multiplication_table(reduced_elements))
                 isomorphic_group_names = String[]
                 for i in 1:32
                     target_symmetry = PointSymmetryDatabase.get(i)
@@ -115,9 +115,9 @@ Base.length(sym::SymmetryEmbedding) = length(elements(sym))
 for f in [
     :group_order,
     :group_multiplication_table,
-    :generator_indices,
     :element_names,
     :element_name,
+    :generator_indices,
     :character_table,
     :irreps,
     :irrep,
@@ -134,6 +134,7 @@ for f in [
         ($f)(symbed::SymmetryEmbedding, args...) = ($f)(symmetry(symbed), args...)
     end)
 end
+
 
 
 """

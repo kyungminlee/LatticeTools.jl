@@ -65,7 +65,7 @@ end
 
 Group order of the underlying symmorphic group of `arg`.
 """
-group_order(arg::SymmorphicIrrepComponent) = group_order(arg.normal) * group_order(arg.rest)
+GroupTools.group_order(arg::SymmorphicIrrepComponent) = group_order(arg.normal) * group_order(arg.rest)
 
 
 """
