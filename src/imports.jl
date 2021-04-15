@@ -1,3 +1,5 @@
+import GroupTools.FiniteGroup
+
 import GroupTools.AbstractGroup
 import GroupTools.AbstractSymmetry
 
@@ -30,3 +32,4 @@ export element_names
 
 export AbstractGroup
 export AbstractSymmetry
+export FiniteGroup
