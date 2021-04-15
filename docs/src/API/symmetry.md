@@ -143,10 +143,6 @@ SymmorphicSymmetry
 
 ## Operators
 
-```@docs
-⋊
-⋉
-```
 
 ```@docs
 symmetry_product(::SymmorphicSymmetry{FiniteTranslationSymmetry,PointSymmetry,SpaceOperation{Int}})

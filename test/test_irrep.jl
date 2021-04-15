@@ -105,7 +105,7 @@ using LatticeTools
             end
         end
         ssics2 = []
-        for ssic in get_irrep_components(tsym ⋊ psym)
+        for ssic in get_irrep_components(SymmorphicSymmetry(tsym, psym))
             push!(ssics2, ssic)
         end
         @test length(ssics1) == length(ssics2)
