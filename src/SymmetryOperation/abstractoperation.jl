@@ -1,8 +1,10 @@
-export AbstractSymmetryOperation
+#export AbstractSymmetryOperation
+using GroupTools
+
 export AbstractSpaceSymmetryOperation
 export domaintype
 
-abstract type AbstractSymmetryOperation end
+# abstract type AbstractSymmetryOperation end
 
 """
     AbstractSpaceSymmetryOperation{S<:Real}

@@ -111,8 +111,8 @@ end
 
 Return `FiniteGroup` of the elements.
 """
-function group(sym::SymmorphicSymmetry)
-    return FiniteGroup(group_multiplication_table(vec(sym.elements), symmetry_product(sym)))
+function GroupTools.group(sym::SymmorphicSymmetry)
+    return FiniteGroup(generate_multiplication_table(vec(sym.elements); product=symmetry_product(sym)))
 end
 
 
@@ -121,7 +121,7 @@ end
 
 Group order of `sym`, which is the product of the subgroup and the normal subgroup.
 """
-function group_order(sym::SymmorphicSymmetry)
+function GroupTools.group_order(sym::SymmorphicSymmetry)
     return group_order(sym.normal) * group_order(sym.rest)
 end
 
@@ -130,8 +130,8 @@ end
 
 Return group multiplication table of `sym`.
 """
-function group_multiplication_table(sym::SymmorphicSymmetry)
-    return group_multiplication_table(vec(sym.elements), symmetry_product(sym))
+function GroupTools.group_multiplication_table(sym::SymmorphicSymmetry)
+    return generate_multiplication_table(vec(sym.elements); product=symmetry_product(sym))
 end
 
 Base.eltype(::SymmorphicSymmetry{S1, S2, E}) where {S1, S2, E} = E
@@ -144,14 +144,14 @@ Base.valtype(::Type{SymmorphicSymmetry{S1, S2, E}}) where {S1, S2, E} = E
 
 Return the `i`th element of the symmorphic symmetry.
 """
-element(sym::SymmorphicSymmetry, g...) = sym.elements[g...]
+GroupTools.element(sym::SymmorphicSymmetry, g...) = sym.elements[g...]
 
 """
     elements(sym::SymmorphicSymmetry)
 
 Return the elements of the symmorphic symmetry.
 """
-elements(sym::SymmorphicSymmetry) = sym.elements
+GroupTools.elements(sym::SymmorphicSymmetry) = sym.elements
 
 
 """
@@ -159,14 +159,14 @@ elements(sym::SymmorphicSymmetry) = sym.elements
 
 Return the element names of the symmorphic symmetry.
 """
-element_names(sym::SymmorphicSymmetry) = sym.element_names
+GroupTools.element_names(sym::SymmorphicSymmetry) = sym.element_names
 
 """
     element_name(sym::SymmorphicSymmetry, g...)
 
 Return the name of the `g`th element of the symmorphic symmetry.
 """
-element_name(sym::SymmorphicSymmetry, g...) = sym.element_names[g...]
+GroupTools.element_name(sym::SymmorphicSymmetry, g...) = sym.element_names[g...]
 
 
 # character_table(sym::SymmorphicSymmetry) = sym.character_table

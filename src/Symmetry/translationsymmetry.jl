@@ -1,7 +1,7 @@
 export FiniteTranslationSymmetry
 export TranslationSymmetry
 export dimension
-export group, group_order, group_multiplication_table,
+export group, # group_order, group_multiplication_table,
        character_table,
        irrep, irreps, irrep_dimension,
        num_irreps, numirreps, irrepcount,
@@ -16,6 +16,8 @@ export isbragg
 export symmetry_name
 
 export translation_symmetry_embedding
+
+using GroupTools
 
 import LinearAlgebraX
 import MathExpr
@@ -121,7 +123,7 @@ struct FiniteTranslationSymmetry <: AbstractSymmetry{TranslationOperation{Int}}
         coordinate_indices = Dict(r => i for (i, r) in enumerate(coordinates))
 
         pbcadd = (x::Vector{Int}, y::Vector{Int}) -> hypercube.wrap(x+y)[2]
-        group = FiniteGroup(group_multiplication_table(coordinates, pbcadd))
+        group = FiniteGroup(generate_multiplication_table(coordinates; product=pbcadd))
         @assert isabelian(group)
 
         ord_group = group_order(group)
@@ -212,14 +214,14 @@ dimension(sym::FiniteTranslationSymmetry) = dimension(sym.hypercube)
 
 Group structure of the translation symmetry
 """
-group(sym::FiniteTranslationSymmetry) = sym.group
+GroupTools.group(sym::FiniteTranslationSymmetry) = sym.group
 
 """
     group_order(sym::FiniteTranslationSymmetry, g...)
 
 Group order of the translation symmetry. Calls `group_order(group(sym), g...)`
 """
-group_order(sym::FiniteTranslationSymmetry, g...) = group_order(group(sym), g...)
+GroupTools.group_order(sym::FiniteTranslationSymmetry, g...) = group_order(group(sym), g...)
 
 """
     group_multiplication_table(sym::FiniteTranslationSymmetry)
@@ -227,7 +229,7 @@ group_order(sym::FiniteTranslationSymmetry, g...) = group_order(group(sym), g...
 Group multiplication table of the translation symmetry.
 Calls `group_multiplication_table(group(sym))`
 """
-group_multiplication_table(sym::FiniteTranslationSymmetry) = group_multiplication_table(group(sym))
+GroupTools.group_multiplication_table(sym::FiniteTranslationSymmetry) = group_multiplication_table(group(sym))
 
 
 """
@@ -235,14 +237,14 @@ group_multiplication_table(sym::FiniteTranslationSymmetry) = group_multiplicatio
 
 Get the elements of the translation symmetry.
 """
-elements(sym::FiniteTranslationSymmetry) = sym.elements
+GroupTools.elements(sym::FiniteTranslationSymmetry) = sym.elements
 
 """
     element(sym::FiniteTranslationSymmetry, i)
 
 Get the `i`th element of the translation symmetry.
 """
-element(sym::FiniteTranslationSymmetry, g) = sym.elements[g]
+GroupTools.element(sym::FiniteTranslationSymmetry, g) = sym.elements[g]
 
 
 """
@@ -250,14 +252,14 @@ element(sym::FiniteTranslationSymmetry, g) = sym.elements[g]
 
 Get the names of the elements of the translation symmetry.
 """
-element_names(sym::FiniteTranslationSymmetry) = sym.element_names
+GroupTools.element_names(sym::FiniteTranslationSymmetry) = sym.element_names
 
 """
     element_name(sym::FiniteTranslationSymmetry, i)
 
 Get the name of the `i`th element of the translation symmetry.
 """
-element_name(sym::FiniteTranslationSymmetry, g) = sym.element_names[g]
+GroupTools.element_name(sym::FiniteTranslationSymmetry, g) = sym.element_names[g]
 
 
 """
@@ -322,9 +324,9 @@ Base.valtype(::Type{<:FiniteTranslationSymmetry}) = TranslationOperation{Int}
 
 
 Base.in(item::Any, sym::FiniteTranslationSymmetry) = false
-function Base.in(item::IdentityOperation, sym::FiniteTranslationSymmetry)
-    dimension(item) == dimension(sym)
-end
+# function Base.in(item::IdentityOperation, sym::FiniteTranslationSymmetry)
+#     dimension(item) == dimension(sym)
+# end
 function Base.in(item::TranslationOperation{<:Integer}, sym::FiniteTranslationSymmetry)
     dimension(item) == dimension(sym)
 end

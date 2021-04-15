@@ -12,7 +12,7 @@ import YAML
 import MathExpr
 
 using ..LatticeTools: FiniteGroup, IrrepData
-using ..LatticeTools: group_isomorphism, group_multiplication_table, simplify_name
+using ..LatticeTools: group_isomorphism, group_multiplication_table, simplify_name, generate_multiplication_table
 
 
 IRREP_DATABASE = IrrepData[]
@@ -90,7 +90,7 @@ end
 
 
 function find_irrep(matrep::AbstractVector{<:AbstractMatrix{<:Integer}})
-    group = FiniteGroup(group_multiplication_table(matrep))
+    group = FiniteGroup(generate_multiplication_table(matrep))
     (irrep, ϕ) = IrrepDatabase.find(group)
     matrep_new = matrep[ϕ]
     return (irrep, matrep_new, ϕ)

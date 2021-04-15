@@ -4,7 +4,9 @@ export apply_operation
 export domaintype
 export isidentity, istranslation, ispoint
 
+import LinearAlgebra
 import LinearAlgebraX
+
 
 """
     PointOperation{S<:Real}
@@ -33,20 +35,24 @@ struct PointOperation{S<:Real} <:AbstractSpaceSymmetryOperation{S}
     end
 end
 
-
-function Base.convert(::Type{PointOperation{S}}, obj::IdentityOperation{S}) where S
-    dim = dimension(obj)
-    return PointOperation{S}(Matrix(LinearAlgebra.I, dim, dim))
+function Base.one(x::PointOperation{S}) where {S}
+    return PointOperation(Matrix{S}(LinearAlgebra.I, size(x.matrix)))
 end
+
+
+# function Base.convert(::Type{PointOperation{S}}, obj::IdentityOperation{S}) where S
+#     dim = dimension(obj)
+#     return PointOperation{S}(Matrix(LinearAlgebra.I, dim, dim))
+# end
 
 function Base.convert(::Type{PointOperation{S}}, matrix::AbstractMatrix{S}) where S
     return PointOperation{S}(matrix)
 end
 
 
-function Base.promote_rule(::Type{PointOperation{S}}, ::Type{IdentityOperation{S}}) where S
-    return PointOperation{S}
-end
+# function Base.promote_rule(::Type{PointOperation{S}}, ::Type{IdentityOperation{S}}) where S
+#     return PointOperation{S}
+# end
 
 
 ## properties
@@ -86,12 +92,12 @@ Base.hash(arg::PointOperation{S}, h::UInt) where S = hash(PointOperation{S}, has
 function Base.:(==)(lhs::PointOperation, rhs::PointOperation)
     return lhs.matrix == rhs.matrix
 end
-function Base.:(==)(pop::PointOperation, ::IdentityOperation)
-    return isidentity(pop)
-end
-function Base.:(==)(::IdentityOperation, pop::PointOperation)
-    return isidentity(pop)
-end
+# function Base.:(==)(pop::PointOperation, ::IdentityOperation)
+#     return isidentity(pop)
+# end
+# function Base.:(==)(::IdentityOperation, pop::PointOperation)
+#     return isidentity(pop)
+# end
 function Base.:(==)(pop::PointOperation, top::TranslationOperation)
     return isidentity(pop) && isidentity(top)
 end

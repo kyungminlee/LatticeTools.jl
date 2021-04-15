@@ -21,6 +21,8 @@ export symmetry_name
 
 import LinearAlgebra
 import MathExpr
+using GroupTools
+
 
 simplify_name(name::AbstractString) = replace(replace(name, r"<sub>.*?</sub>"=>""), r"<sup>.*?</sup>"=>"")
 
@@ -81,7 +83,7 @@ struct PointSymmetry <: AbstractSymmetry{PointOperation{Int}}
             throw(ArgumentError("number of matrix representations different from order of group"))
         elseif generate_subgroup(group, generators) != BitSet(1:group_order(group))
             throw(ArgumentError("Generators $(generators) does not generate the group"))
-        elseif !ishomomorphic(group, matrix_representations)
+        elseif !ishomomorphic(matrix_representations, group)
             msg = """
             matrix representation not homomorphic to group:
             $matrix_representations
@@ -119,7 +121,7 @@ struct PointSymmetry <: AbstractSymmetry{PointOperation{Int}}
                     throw(ArgumentError("irrep matrix representation should all have the same dimension"))
                 end
             end
-            if !ishomomorphic(group, rep; equal=(x,y) -> isapprox(x,y;atol=tol))
+            if !ishomomorphic(rep, group; equal=(x,y) -> isapprox(x,y;atol=tol))
                 throw(ArgumentError("irrep matrix representation not homomorphic to group"))
             end
         end
@@ -236,14 +238,14 @@ dimension(sym::PointSymmetry) = size(sym.matrix_representations[1], 1)
 
 Return the elements of the point symmetry.
 """
-elements(sym::PointSymmetry) = sym.elements
+GroupTools.elements(sym::PointSymmetry) = sym.elements
 
 """
     element(sym::PointSymmetry, i)
 
 Return the `i`th element of the point symmetry.
 """
-element(sym::PointSymmetry, g) = sym.elements[g]
+GroupTools.element(sym::PointSymmetry, g) = sym.elements[g]
 
 
 """
@@ -251,14 +253,14 @@ element(sym::PointSymmetry, g) = sym.elements[g]
 
 Return the names of the elements of the point symmetry.
 """
-element_names(sym::PointSymmetry) = sym.element_names
+GroupTools.element_names(sym::PointSymmetry) = sym.element_names
 
 """
     element_name(sym::PointSymmetry, i)
 
 Return the name of the `i`th element of the point symmetry.
 """
-element_name(sym::PointSymmetry, g) = sym.element_names[g]
+GroupTools.element_name(sym::PointSymmetry, g) = sym.element_names[g]
 
 
 """
@@ -266,14 +268,14 @@ element_name(sym::PointSymmetry, g) = sym.element_names[g]
 
 Group structure of the point symmetry
 """
-group(psym::PointSymmetry) = psym.group
+GroupTools.group(psym::PointSymmetry) = psym.group
 
 """
     group_order(sym::PointSymmetry, g...)
 
 Group order of the point symmetry. Calls `group_order(group(sym), g...)`
 """
-group_order(psym::PointSymmetry, g...) = group_order(group(psym), g...)
+GroupTools.group_order(psym::PointSymmetry, g...) = group_order(group(psym), g...)
 
 """
     group_multiplication_table(sym::PointSymmetry)
@@ -281,7 +283,7 @@ group_order(psym::PointSymmetry, g...) = group_order(group(psym), g...)
 Group multiplication table of the point symmetry.
 Calls `group_multiplication_table(group(sym))`
 """
-group_multiplication_table(sym::PointSymmetry) = group_multiplication_table(group(sym))
+GroupTools.group_multiplication_table(sym::PointSymmetry) = group_multiplication_table(group(sym))
 
 
 """
@@ -334,7 +336,7 @@ Base.valtype(::Type{<:PointSymmetry}) = PointOperation{Int}
 
 
 Base.in(item::Any, sym::PointSymmetry) = false
-Base.in(item::IdentityOperation, sym::PointSymmetry) = dimension(item) == dimension(sym)
+# Base.in(item::IdentityOperation, sym::PointSymmetry) = dimension(item) == dimension(sym)
 function Base.in(item::TranslationOperation, sym::PointSymmetry)
     return dimension(item) == dimension(sym) && ispoint(item)
 end

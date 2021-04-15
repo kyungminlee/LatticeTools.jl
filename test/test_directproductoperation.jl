@@ -1,3 +1,4 @@
+#=
 using Test
 using LatticeTools
 
@@ -61,3 +62,4 @@ Base.hash(p::P, h::UInt) where {P<:Phase} = Base.hash(P, Base.hash(p.value, h))
         (α^2 ×ˢ t) (α^2 ×ˢ t^2) (α^2 ×ˢ t^3)
     ]
 end
+=#

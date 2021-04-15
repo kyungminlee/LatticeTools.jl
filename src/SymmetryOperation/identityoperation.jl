@@ -1,3 +1,4 @@
+#=
 export IdentityOperation
 
 export apply_operation
@@ -127,3 +128,4 @@ function (symop::IdentityOperation{S})(arg::AbstractArray{S}) where {S<:Real}
     end
     return arg
 end
+=#

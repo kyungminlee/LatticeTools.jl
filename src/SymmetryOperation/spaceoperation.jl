@@ -95,12 +95,12 @@ function Base.convert(::Type{SpaceOperation{Tp1, Tt1}}, arg::SpaceOperation{Tp2,
     return SpaceOperation(convert(Matrix{Tp1}, arg.matrix), convert(Vector{Tt1}, arg.displacement))
 end
 
-function Base.convert(::Type{SpaceOperation{Tp1, Tt1}}, op::IdentityOperation{T}) where {Tp1, Tt1, T}
-    dim = dimension(op)
-    mat = Matrix{Tp1}(LinearAlgebra.I, (dim, dim))
-    dis = zeros(Tt1, size(mat, 1))
-    return SpaceOperation(mat, dis)
-end
+# function Base.convert(::Type{SpaceOperation{Tp1, Tt1}}, op::IdentityOperation{T}) where {Tp1, Tt1, T}
+#     dim = dimension(op)
+#     mat = Matrix{Tp1}(LinearAlgebra.I, (dim, dim))
+#     dis = zeros(Tt1, size(mat, 1))
+#     return SpaceOperation(mat, dis)
+# end
 
 function Base.convert(::Type{SpaceOperation{Tp1, Tt1}}, op::PointOperation{Tp2}) where {Tp1, Tt1, Tp2}
     dim = dimension(op)
@@ -137,9 +137,9 @@ function Base.promote_rule(::Type{SpaceOperation{Tp1, Tt1}}, ::Type{SpaceOperati
     return SpaceOperation{Tp, Tt}
 end
 
-function Base.promote_rule(::Type{SpaceOperation{Tp, Tt}}, ::Type{IdentityOperation{T}}) where {Tp, Tt, T}
-    return SpaceOperation{Tp, Tt}
-end
+# function Base.promote_rule(::Type{SpaceOperation{Tp, Tt}}, ::Type{IdentityOperation{T}}) where {Tp, Tt, T}
+#     return SpaceOperation{Tp, Tt}
+# end
 
 function Base.promote_rule(::Type{SpaceOperation{Tp1, Tt1}}, ::Type{TranslationOperation{Tt2}}) where {Tp1, Tt1, Tt2}
     Tt = promote_type(Tt1, Tt2)
@@ -216,13 +216,13 @@ function Base.:(==)(lhs::PointOperation{Tp}, rhs::SpaceOperation{Tp, Tt}) where 
     return iszero(rhs.displacement) && lhs.matrix == rhs.matrix
 end
 
-function Base.:(==)(sop::SpaceOperation{Tp, Tt}, iden::IdentityOperation{<:Union{Tp, Tt}}) where {Tp, Tt}
-    return dimension(sop) == dimension(iden) && iszero(sop.displacement) && isone(sop.matrix)
-end
+# function Base.:(==)(sop::SpaceOperation{Tp, Tt}, iden::IdentityOperation{<:Union{Tp, Tt}}) where {Tp, Tt}
+#     return dimension(sop) == dimension(iden) && iszero(sop.displacement) && isone(sop.matrix)
+# end
 
-function Base.:(==)(iden::IdentityOperation{<:Union{Tp, Tt}}, sop::SpaceOperation{Tp, Tt}) where {Tp, Tt}
-    return dimension(sop) == dimension(iden) && iszero(sop.displacement) && isone(sop.matrix)
-end
+# function Base.:(==)(iden::IdentityOperation{<:Union{Tp, Tt}}, sop::SpaceOperation{Tp, Tt}) where {Tp, Tt}
+#     return dimension(sop) == dimension(iden) && iszero(sop.displacement) && isone(sop.matrix)
+# end
 
 function Base.:(*)(lhs::PointOperation{Tp}, rhs::TranslationOperation{Tt}) where {Tp, Tt}
     return SpaceOperation{Tp, Tt}(lhs.matrix, rhs.displacement)
