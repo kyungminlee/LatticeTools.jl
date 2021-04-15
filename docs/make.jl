@@ -48,7 +48,6 @@ makedocs(
         ],
         "API Reference" => [
             "Basic" => "API/basic.md",
-            "Group" => "API/group.md",
             "Symmetry Operation" => "API/symmetry-operation.md",
             "Symmetry" => "API/symmetry.md",
             "Symmetry Embedding" => "API/symmetry-embedding.md",

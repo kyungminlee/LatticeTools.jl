@@ -7,31 +7,6 @@ AbstractSpaceSymmetryOperation
 domaintype(::AbstractSpaceSymmetryOperation)
 ```
 
-
-## IdentityOperation
-```@docs
-IdentityOperation
-```
-
-### Constructors
-```@docs
-IdentityOperation(::Type{Int}, ::Int)
-```
-
-### Properties
-```@docs
-isidentity(::IdentityOperation)
-istranslation(::IdentityOperation)
-ispoint(::IdentityOperation)
-dimension(::IdentityOperation)
-```
-
-### Apply
-```@docs
-apply_operation(::IdentityOperation{Int}, ::Vector{Int})
-```
-
-
 ## TranslationOperation
 ```@docs
 TranslationOperation
