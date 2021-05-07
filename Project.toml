@@ -15,8 +15,8 @@ Serialization = "9e88b42a-f829-5b0c-bbe9-9e923198166b"
 YAML = "ddb6d928-2868-570f-bddf-ab3f9cf99eb6"
 
 [compat]
-julia = ">= 1.5"
 GroupTools = ">= 0.5"
+julia = ">= 1.5"
 
 [extras]
 Combinatorics = "861a8166-3701-5b0c-9a16-15d98fcdc6aa"
