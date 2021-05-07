@@ -14,8 +14,8 @@
 [LatticeTools.jl](https://github.com/kyungminlee/LatticeTools.jl) is currently not included in Julia's default package registry. To install, add the package registry [KyungminLeeRegistry](https://github.com/kyungminlee/KyungminLeeRegistry.jl) and then install the package:
 
 ```julia-repl
-(@v1.5) pkg> registry add https://github.com/kyungminlee/KyungminLeeRegistry.git
-(@v1.5) pkg> add LatticeTools
+pkg> registry add https://github.com/kyungminlee/KyungminLeeRegistry.git
+pkg> add LatticeTools
 ```
 
 [docs-stable-img]: https://img.shields.io/badge/docs-stable-blue.svg
