@@ -3,8 +3,6 @@ export SymmorphicSymmetryEmbedding
 export embed
 export get_irrep_components
 export iscompatible
-export ⋉, ⋊
-export ⋉ˢ, ⋊ˢ
 export fractional_momentum
 
 """
@@ -53,11 +51,11 @@ function embed(lattice::Lattice, ssym::SymmorphicSymmetry)
 end
 
 
-⋊(normal::SymmetryEmbedding, rest::SymmetryEmbedding) = SymmorphicSymmetryEmbedding(normal, rest)
-⋊ˢ(normal::SymmetryEmbedding, rest::SymmetryEmbedding) = SymmorphicSymmetryEmbedding(normal, rest)
+# ⋊(normal::SymmetryEmbedding, rest::SymmetryEmbedding) = SymmorphicSymmetryEmbedding(normal, rest)
+# ⋊ˢ(normal::SymmetryEmbedding, rest::SymmetryEmbedding) = SymmorphicSymmetryEmbedding(normal, rest)
 
-⋉(rest::SymmetryEmbedding, normal::SymmetryEmbedding) = SymmorphicSymmetryEmbedding(normal, rest)
-⋉ˢ(rest::SymmetryEmbedding, normal::SymmetryEmbedding) = SymmorphicSymmetryEmbedding(normal, rest)
+# ⋉(rest::SymmetryEmbedding, normal::SymmetryEmbedding) = SymmorphicSymmetryEmbedding(normal, rest)
+# ⋉ˢ(rest::SymmetryEmbedding, normal::SymmetryEmbedding) = SymmorphicSymmetryEmbedding(normal, rest)
 
 Base.eltype(::SymmorphicSymmetryEmbedding) = SitePermutation
 Base.valtype(::SymmorphicSymmetryEmbedding) = SitePermutation
@@ -69,7 +67,7 @@ function Base.:(==)(lhs::SSE, rhs::SSE) where {SSE<:SymmorphicSymmetryEmbedding}
 end
 
 
-group_order(sym::SymmorphicSymmetryEmbedding) = group_order(sym.normal) * group_order(sym.rest)
+GroupTools.group_order(sym::SymmorphicSymmetryEmbedding) = group_order(sym.normal) * group_order(sym.rest)
 
 
 function fractional_momentum(sym::SymmorphicSymmetryEmbedding{<:FiniteTranslationSymmetry, S2}, args...) where S2

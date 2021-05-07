@@ -5,8 +5,8 @@
 
 export SymmorphicSymmetry
 export SymmorphicIrrepComponent
-export ⋊, ⋉
-export ⋊ˢ, ⋉ˢ
+# export ⋊, ⋉
+# export ⋊ˢ, ⋉ˢ
 export symmetry_product
 export group, group_order, group_multiplication_table,
        element, elements, element_name, element_names
@@ -67,22 +67,22 @@ struct SymmorphicSymmetry{
 end
 
 
-"""
-    ⋊(normal::AbstractSymmetry, rest::AbstractSymmetry)
+# """
+#     ⋊(normal::AbstractSymmetry, rest::AbstractSymmetry)
 
-Return symmorphic symmetry `normal ⋊ rest`.
-"""
-⋊(normal::AbstractSymmetry, rest::AbstractSymmetry) = SymmorphicSymmetry(normal, rest)
-⋊ˢ(normal::AbstractSymmetry, rest::AbstractSymmetry) = SymmorphicSymmetry(normal, rest)
+# Return symmorphic symmetry `normal ⋊ rest`.
+# """
+# ⋊(normal::AbstractSymmetry, rest::AbstractSymmetry) = SymmorphicSymmetry(normal, rest)
+# ⋊ˢ(normal::AbstractSymmetry, rest::AbstractSymmetry) = SymmorphicSymmetry(normal, rest)
 
 
-"""
-    ⋉(rest::AbstractSymmetry, normal::AbstractSymmetry)
+# """
+#     ⋉(rest::AbstractSymmetry, normal::AbstractSymmetry)
 
-Return symmorphic symmetry `normal ⋊ rest`.
-"""
-⋉(rest::AbstractSymmetry, normal::AbstractSymmetry) = SymmorphicSymmetry(normal, rest)
-⋉ˢ(rest::AbstractSymmetry, normal::AbstractSymmetry) = SymmorphicSymmetry(normal, rest)
+# Return symmorphic symmetry `normal ⋊ rest`.
+# """
+# ⋉(rest::AbstractSymmetry, normal::AbstractSymmetry) = SymmorphicSymmetry(normal, rest)
+# ⋉ˢ(rest::AbstractSymmetry, normal::AbstractSymmetry) = SymmorphicSymmetry(normal, rest)
 
 function Base.:(==)(lhs::SymmorphicSymmetry{S1, S2, E}, rhs::SymmorphicSymmetry{S1, S2, E}) where {S1, S2, E}
     return lhs.normal == rhs.normal && lhs.rest == rhs.rest
@@ -111,7 +111,7 @@ end
 
 Return `FiniteGroup` of the elements.
 """
-function GroupTools.group(sym::SymmorphicSymmetry)
+function group(sym::SymmorphicSymmetry)
     return FiniteGroup(generate_multiplication_table(vec(sym.elements); product=symmetry_product(sym)))
 end
 
@@ -121,7 +121,7 @@ end
 
 Group order of `sym`, which is the product of the subgroup and the normal subgroup.
 """
-function GroupTools.group_order(sym::SymmorphicSymmetry)
+function group_order(sym::SymmorphicSymmetry)
     return group_order(sym.normal) * group_order(sym.rest)
 end
 
@@ -144,14 +144,14 @@ Base.valtype(::Type{SymmorphicSymmetry{S1, S2, E}}) where {S1, S2, E} = E
 
 Return the `i`th element of the symmorphic symmetry.
 """
-GroupTools.element(sym::SymmorphicSymmetry, g...) = sym.elements[g...]
+element(sym::SymmorphicSymmetry, g...) = sym.elements[g...]
 
 """
     elements(sym::SymmorphicSymmetry)
 
 Return the elements of the symmorphic symmetry.
 """
-GroupTools.elements(sym::SymmorphicSymmetry) = sym.elements
+elements(sym::SymmorphicSymmetry) = sym.elements
 
 
 """
@@ -159,14 +159,14 @@ GroupTools.elements(sym::SymmorphicSymmetry) = sym.elements
 
 Return the element names of the symmorphic symmetry.
 """
-GroupTools.element_names(sym::SymmorphicSymmetry) = sym.element_names
+element_names(sym::SymmorphicSymmetry) = sym.element_names
 
 """
     element_name(sym::SymmorphicSymmetry, g...)
 
 Return the name of the `g`th element of the symmorphic symmetry.
 """
-GroupTools.element_name(sym::SymmorphicSymmetry, g...) = sym.element_names[g...]
+element_name(sym::SymmorphicSymmetry, g...) = sym.element_names[g...]
 
 
 # character_table(sym::SymmorphicSymmetry) = sym.character_table

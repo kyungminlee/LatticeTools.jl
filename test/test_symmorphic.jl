@@ -5,9 +5,9 @@ using LatticeTools
 @testset "symmorphic" begin
     tsym = FiniteTranslationSymmetry([4 0; 0 4])
     psym = project(PointSymmetryDatabase.find("4mm"), [1 0 0; 0 1 0])
-    @test_throws ArgumentError FiniteTranslationSymmetry([4 0; 0 3]) ⋊ psym
-    @test_throws ArgumentError psym ⋊ tsym
-    ssym = tsym ⋊ psym
+    @test_throws ArgumentError SymmorphicSymmetry(FiniteTranslationSymmetry([4 0; 0 3]), psym)
+    @test_throws ArgumentError SymmorphicSymmetry(psym, tsym)
+    ssym = SymmorphicSymmetry(tsym, psym)
 
     @test eltype(ssym) == SpaceOperation{Int, Int}
     @test valtype(ssym) == SpaceOperation{Int, Int}
@@ -67,21 +67,17 @@ using LatticeTools
         tsymbed = embed(lattice, tsym)
         psymbed = embed(lattice, psym)
 
-        ssym = tsym ⋊ psym
-        ssym2 = psym ⋉ tsym
-
-        @test ssym == ssym2
+        ssym = SymmorphicSymmetry(tsym, psym)
 
         ssymbed1 = embed(lattice, ssym)
-        ssymbed2 = tsymbed ⋊ psymbed
-        ssymbed3 = psymbed ⋉ tsymbed
+        ssymbed2 = SymmorphicSymmetryEmbedding(tsymbed, psymbed)
         ssymbed4 = SymmorphicSymmetryEmbedding(tsymbed, psymbed)
         @test_throws ArgumentError SymmorphicSymmetryEmbedding(psymbed, tsymbed)
         @test_throws ArgumentError SymmorphicSymmetryEmbedding(make_lattice(unitcell, [4 0; 0 3]), ssym)
 
         let lattice2 = make_lattice(unitcell, [4 0; 0 3])
             tsymbed2 = translation_symmetry_embedding(lattice2)
-            @test_throws ArgumentError tsymbed2 ⋊ psymbed
+            @test_throws ArgumentError SymmorphicSymmetryEmbedding(tsymbed2, psymbed)
         end
 
         @test typeof(ssymbed1) == typeof(ssymbed2)
@@ -90,7 +86,7 @@ using LatticeTools
         @test valtype(ssymbed1) == SitePermutation
         @test valtype(ssymbed2) == SitePermutation
 
-        @test ssymbed1 == ssymbed2 == ssymbed3 == ssymbed4
+        @test ssymbed1 == ssymbed2 == ssymbed4
 
         @test ssymbed1.lattice == lattice
         @test ssymbed1.normal.symmetry == tsymbed.symmetry
@@ -128,11 +124,11 @@ using LatticeTools
         lattice = make_lattice(unitcell, [4 0; 0 4])
         tsymbed = embed(lattice, tsym)
         psymbed = embed(lattice, psym)
-        ssymbed = tsymbed ⋊ psymbed
+        ssymbed = SymmorphicSymmetryEmbedding(tsymbed, psymbed)
 
         tsym = symmetry(tsymbed)
         psym = symmetry(psymbed)
-        ssym = tsym ⋊ psym
+        ssym = SymmorphicSymmetry(tsym, psym)
 
         kf = tsym.fractional_momenta
         @test all(

@@ -11,6 +11,7 @@ import GroupTools.element_names
 import GroupTools.isidentity
 import GroupTools.apply_operation
 
+import GroupTools.group
 import GroupTools.group_order
 import GroupTools.group_multiplication_table
 import GroupTools.generate_multiplication_table

@@ -1,7 +1,7 @@
 name = "LatticeTools"
 uuid = "8a267902-5e0e-44c3-8ef8-9b2b5c352816"
 author = "Kyungmin Lee"
-version = "0.10.1"
+version = "0.11.3"
 
 [deps]
 FileIO = "5789e2e9-d7fb-5bc7-8068-2c6fae9b9549"
@@ -15,6 +15,7 @@ Serialization = "9e88b42a-f829-5b0c-bbe9-9e923198166b"
 YAML = "ddb6d928-2868-570f-bddf-ab3f9cf99eb6"
 
 [compat]
+GroupTools = ">= 0.5"
 julia = ">= 1.5"
 
 [extras]
