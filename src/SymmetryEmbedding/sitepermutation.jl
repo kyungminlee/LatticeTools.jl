@@ -24,21 +24,19 @@ struct SitePermutation <: AbstractSpaceSymmetryOperationEmbedding
     SitePermutation(p::AbstractVector{<:Integer}) = new(Permutation(p))
 end
 
-
 Base.:(==)(lhs::SitePermutation, rhs::SitePermutation) = lhs.permutation == rhs.permutation
 Base.:(*)(lhs::SitePermutation, rhs::SitePermutation) = SitePermutation(lhs.permutation * rhs.permutation)
 Base.:(^)(lhs::SitePermutation, rhs::Integer) = SitePermutation(lhs.permutation^rhs)
+Base.inv(sp::SitePermutation) = SitePermutation(inv(sp.permutation))
 
 # import Base.isless
 # isless(lhs::SitePermutation, rhs::SitePermutation) = isless(lhs.permutation, rhs.permutation)
 
-function Base.hash(arg::SitePermutation, h::UInt)
-    return hash(SitePermutation, hash(arg.permutation, h))
-end
-
-Base.inv(sp::SitePermutation) = SitePermutation(inv(sp.permutation))
+Base.hash(arg::SitePermutation, h::UInt) = hash(SitePermutation, hash(arg.permutation, h))
 
 (p::SitePermutation)(i::Integer) = p.permutation(i)
+
+Base.size(p::SitePermutation, args...; kwargs...) = size(p.permutation, args...; kwargs...)
 
 
 """
