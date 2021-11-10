@@ -18,6 +18,7 @@ site_coordinates = hcat(site_coordinates...)
 site_coordinates[2,:] = -site_coordinates[2,:]
 
 Drawing(800, 300, "logo.svg")
+background("white")
 
 origin()
 translate(-450, 130)

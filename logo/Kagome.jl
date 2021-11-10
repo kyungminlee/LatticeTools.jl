@@ -42,7 +42,7 @@ function make_kagome_lattice(size_matrix ::AbstractMatrix{<:Integer}; compute_sy
     psym = little_symmetry(tsym, project(PointSymmetryDatabase.get(25), [1 0 0; 0 1 0]))
     tsymbed = embed(lattice, tsym)
     psymbed = embed(lattice, psym)
-    ssymbed = SymmorphicSymmetry(tsymbed, psymbed)
+    #ssymbed = SymmorphicSymmetry(tsymbed, psymbed)
 
     nnbonds = []
     nnnbonds = []
@@ -126,7 +126,7 @@ function make_kagome_lattice(size_matrix ::AbstractMatrix{<:Integer}; compute_sy
 
     return (unitcell=unitcell,
             lattice=lattice,
-            space_symmetry_embedding=ssymbed,
+            #space_symmetry_embedding=ssymbed,
             nearest_neighbor_bonds=nnbonds,
             next_nearest_neighbor_bonds=nnnbonds,
             nearest_neighbor_triangles=nn_triangles,
